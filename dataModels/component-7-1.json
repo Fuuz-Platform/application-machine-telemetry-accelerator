@@ -1,0 +1,401 @@
+{
+  "header": {
+    "id": "site",
+    "name": "Site",
+    "description": "Represents a physical location/campus (plant, distribution center, HQ) where operations, assets, and personnel are logically grouped. Top-level scope for facilities, compliance settings, and region-specific configurations.\n\n**Typical Use Cases**\n\n- Segregate production metrics, inventory, labor, and compliance by location.\n- Scope access controls, schedules, and integrations to a physical site.",
+    "dataModelKindId": "reference",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cmjztd8on1zg3016c5usq2cny",
+    "number": "3",
+    "dataModelId": "site",
+    "modelDefinition": {
+      "name": "Site",
+      "metadata": {
+        "mfgx": {
+          "module": {
+            "id": "machineDataApp",
+            "group": {
+              "id": "machineTelemetrySiteApplication"
+            }
+          },
+          "exposed": true,
+          "mutable": true,
+          "mutations": {
+            "create": true,
+            "update": true,
+            "del": true
+          },
+          "dataChangeCapture": {
+            "exposed": false,
+            "retentionDays": 120
+          },
+          "customFields": {
+            "exposed": true
+          },
+          "editor": {
+            "autosort": true
+          },
+          "labelField": "code"
+        },
+        "mongo": {
+          "collection": "site"
+        },
+        "graphql": {
+          "type": "Object"
+        }
+      },
+      "kind": "Reference",
+      "fields": [
+        {
+          "name": "id",
+          "type": "ID!",
+          "description": "**`id`** (`ID!`, unique, queryable, where-enabled, create-included, update-excluded)\n **What it is:** The immutable, primary unique identifier for a Site record.\n **Behavior:**\n\n- Returned in queries and usable in `where` filters.\n- Included on create; not updatable once persisted.\n **Examples:** `\"c3f1b3c0-8b3d-4b2b-9e3d-2f9e5b6a12cd\"`\n **Notes:** Every model must include an `id`. This key is used in relations (e.g., Areas reference Site via `siteId`).",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": false
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": true
+          }
+        },
+        {
+          "name": "code",
+          "type": "String!",
+          "description": "**`code`** (`String!`, unique, queryable, where-enabled, create/update-included)\n **What it is:** The human-friendly, unique label for the site, used as the main display (`labelField`) and common key in integrations.\n **Behavior:**\n\n- Must be unique per tenant.\n- Required at creation; can be updated (ensure downstream references are resilient).\n **Examples:** `DET-PLANT01`, `MX-GDL-DC1`\n **Recommended Pattern:** `[COUNTRY/REGION]-[CITY]-[FACILITY]` (e.g., `US-DET-PLT1`).",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": true
+          }
+        },
+        {
+          "name": "isActive",
+          "type": "Boolean!",
+          "description": "**`isActive`** (`Boolean!`, default `true`, queryable, where-enabled, create/update-included)\n **What it is:** Operational flag indicating whether the site is active for scheduling, telemetry, and reporting.\n **Behavior:**\n\n- Defaults to `true` on creation.\n- When `false`, new scheduling/jobs should be blocked; historical data remains accessible.\n **Examples:** `true` (operational), `false` (paused/archived).",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": true
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "city",
+          "type": "String",
+          "description": "**`city`** (`String`, queryable, where-enabled, create/update-included)\n **What it is:** City or municipality.\n **Examples:** `Detroit`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "country",
+          "type": "String",
+          "description": "**`country`** (`String`, queryable, where-enabled, create/update-included)\n **What it is:** Country name or code.\n **Examples:** `USA`, `US`, `Mexico`, `MX`.\n **Recommendation:** Normalize to ISO-3166 alpha-2 (e.g., `US`, `MX`) and keep a display mapping.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "industry",
+          "type": "String",
+          "description": "**`industry`** (`String`, queryable, where-enabled, create/update-included)\n **What it is:** Industry classification for the site’s operations.\n **Examples:** `Automotive`, `Food & Beverage`, `Aerospace`, `Pharma`.\n **Usage:** Useful for reporting, filtering, and applying templates/policies.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "description": "**`name`** (`String`, queryable, where-enabled, create/update-included)\n **What it is:** The formal or long name of the site.\n **Usage:** For display purposes, documentation, and reporting.\n **Examples:** `Detroit Plant 1`, `Guadalajara Distribution Center`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "postalCode",
+          "type": "String",
+          "description": "**`postalCode`** (`String`, queryable, where-enabled, create/update-included)\n **What it is:** Postal or ZIP code.\n **Examples:** `48201`, `44940`.\n **Validation:** Optional format checks per country.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "state",
+          "type": "String",
+          "description": "**`state`** (`String`, queryable, where-enabled, create/update-included)\n **What it is:** State/province/region (use ISO whenever possible).\n **Examples:** `MI`, `Jalisco`.\n **Note:** Consider normalizing to ISO-3166-2 codes in validation logic.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "street",
+          "type": "String",
+          "description": "**`street`** (`String`, queryable, where-enabled, create/update-included)\n **What it is:** Street address line for logistics and compliance.\n **Examples:** `1234 Industrial Way`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "timezone",
+          "type": "String",
+          "description": "**`timezone`** (`String`, queryable, where-enabled, create/update-included)\n **What it is:** IANA timezone identifier used for job windows, OEE, and event timestamps.\n **Examples:** `America/Detroit`, `America/Mexico_City`.\n **Validation:** Ensure valid IANA TZ (e.g., via library or known list); this drives scheduling behavior.\n\n*Note - you might use the tenant timezone setting instead - if ONLY supporting single site within the app.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "type",
+          "type": "String",
+          "description": "**`type`** (`String`, queryable, where-enabled, create/update-included)\n **What it is:** Classification of the site.\n **Common Values:** `Plant`, `DistributionCenter`, `Headquarters`, `R&D`, `VendorManaged`.\n **Notes:** Use consistent enumerations in your app logic even though stored as string.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "areas",
+          "description": "**`areas`** (`[Area!]!`, relation via `Site.id → Area.siteId`, queryable, where-enabled, create/update-included)\n **What it is:** Collection of Areas associated to the Site.\n **Behavior:**\n\n- Populated through relation: `from: \"id\"` (Site) to `to: \"siteId\"` (Area).\n- Included in create/update inputs to allow nested operations if your mutation handlers support it.\n **Notes:** Typical hierarchy is **Site → Area → Line → Cell**; enforce referential integrity in mutations.",
+          "type": "[Area!]!",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "fields": {
+                  "from": "id",
+                  "to": "siteId"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        }
+      ],
+      "description": "Represents a physical location/campus (plant, distribution center, HQ) where operations, assets, and personnel are logically grouped. Top-level scope for facilities, compliance settings, and region-specific configurations.\n\n**Typical Use Cases**\n\n- Segregate production metrics, inventory, labor, and compliance by location.\n- Scope access controls, schedules, and integrations to a physical site."
+    },
+    "dataModelTypeId": "master"
+  },
+  "migration": "$",
+  "migrations": [
+    {
+      "dataModelVersionId": "cmjztd8on1zg3016c5usq2cny",
+      "dataModelVersion": {
+        "number": "3"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmjzt6scv1zaz016c9frrd7px",
+      "dataModelVersion": {
+        "number": "2"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmjzt2l1v1z4c016c84vc8kx1",
+      "dataModelVersion": {
+        "number": "1"
+      },
+      "mappingExpression": "$"
+    }
+  ]
+}

@@ -1,0 +1,948 @@
+{
+  "header": {
+    "id": "oeeRealTimeCalculationsWebFlow",
+    "name": "OEE Real Time Calculations - Web Flow",
+    "description": "",
+    "active": true,
+    "substitutesDataFlowId": null,
+    "dataFlowTypeId": "Screen",
+    "logLevelId": "Info",
+    "mcpToolConfiguration": null,
+    "moduleId": "machineDataApp",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cmlb13jpz3oin01as37vp6931",
+    "number": "0.0.17",
+    "description": "",
+    "dataFlowId": "oeeRealTimeCalculationsWebFlow",
+    "flow": {
+      "id": "cmlb13jpz3oin01as37vp6931",
+      "name": "OEE Real Time Calculations - Web Flow",
+      "type": "Screen",
+      "nodes": [
+        {
+          "id": "ec0c3986-fdfc-4eef-a79c-539fe03ab6b8",
+          "name": "Request",
+          "type": "request",
+          "data": {
+            "nextNodes": [
+              "bfbe8b0c-f835-443f-87f7-dc7df2d76713"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "1590ec46-48b8-425c-a6b4-4c7037dce6b6",
+          "name": "Response",
+          "type": "response",
+          "data": {
+            "nextNodes": []
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "10e94acd-8d5e-4fc1-8047-a4e24bf54038",
+          "name": "Set Context",
+          "type": "setContext",
+          "data": {
+            "nextNodes": [
+              "587b62e7-8db8-4664-b008-d9b114ac8338"
+            ],
+            "transform": "{\r\n  \"boundary\": $\r\n}"
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "587b62e7-8db8-4664-b008-d9b114ac8338",
+          "name": "Query",
+          "type": "query",
+          "data": {
+            "api": "application",
+            "variablesTransform": "{\r\n  \"wcId\": $state.context.boundary.workcenterId,\r\n  \"window24hStart\": $state.context.boundary.boundaries.window24hStart,\r\n  \"window30dStart\": $state.context.boundary.boundaries.window30dStart,\r\n  \"window60dStart\": $state.context.boundary.boundaries.window60dStart,\r\n  \"window90dStart\": $state.context.boundary.boundaries.window90dStart,\r\n  \"now\": $state.context.boundary.boundaries.now,\r\n  \"currentHourStart\": $state.context.boundary.boundaries.currentHourStart,\r\n  \"currentHourEnd\": $state.context.boundary.boundaries.currentHourEnd,\r\n  \"dayStart\": $state.context.boundary.boundaries.dayStart,\r\n  \"dayEnd\": $state.context.boundary.boundaries.dayEnd,\r\n  \"shiftStart\": $state.context.boundary.boundaries.shiftStart,\r\n  \"shiftEnd\": $state.context.boundary.boundaries.shiftEnd\r\n}",
+            "nextNodes": [
+              "1671fd35-4a3d-4454-8935-fc5e8e3155dc"
+            ],
+            "query": "query OEEDashboardData(\r\n  $wcId: String!\r\n  $window24hStart: DateTime!\r\n  $window30dStart: DateTime!\r\n  $window60dStart: DateTime!\r\n  $window90dStart: DateTime!\r\n  $now: DateTime!\r\n  $currentHourStart: DateTime!\r\n  $currentHourEnd: DateTime!\r\n  $dayStart: DateTime!\r\n  $dayEnd: DateTime!\r\n  $shiftStart: DateTime\r\n  $shiftEnd: DateTime\r\n) {\r\n  \r\n  # OEE HOURLY: 24h Window (grouped by hour)\r\n  oeeHourly24h: oeeHourly(\r\n    where: {\r\n      _and: [\r\n        { workcenterId: { _eq: $wcId } }\r\n        { periodStartAt: { _gte: $window24hStart } }\r\n        { periodStartAt: { _lt: $now } }\r\n      ]\r\n    }\r\n    orderBy: [{ field: periodStartAt, direction: asc }]\r\n  ) {\r\n    edges {\r\n      node {\r\n        periodStartAt(round: { unit: hour })\r\n        scheduleId\r\n        shift\r\n        oee\r\n        availability\r\n        performance\r\n        quality\r\n        _aggregate {\r\n          goodUnits { sum }\r\n          scrapUnits { sum }\r\n          totalUnits { sum }\r\n          idealUnits { sum }\r\n          runMinutes { values }\r\n          downtimeMinutes { values }\r\n          plannedDowntimeMinutes { values }\r\n          scheduledTime { values }\r\n        }\r\n      }\r\n    }\r\n  }\r\n  \r\n  # OEE HOURLY: Day Window\r\n  oeeHourlyDay: oeeHourly(\r\n    where: {\r\n      _and: [\r\n        { workcenterId: { _eq: $wcId } }\r\n        { periodStartAt: { _gte: $dayStart } }\r\n        { periodStartAt: { _lt: $dayEnd } }\r\n      ]\r\n    }\r\n    orderBy: [{ field: periodStartAt, direction: asc }]\r\n  ) {\r\n    edges {\r\n      node {\r\n        periodStartAt(round: { unit: hour })\r\n        _aggregate {\r\n          goodUnits { sum }\r\n          scrapUnits { sum }\r\n          totalUnits { sum }\r\n          idealUnits { sum }\r\n          runMinutes { values }\r\n          downtimeMinutes { values }\r\n          plannedDowntimeMinutes { values }\r\n          scheduledTime { values }\r\n        }\r\n      }\r\n    }\r\n  }\r\n  \r\n  # OEE HOURLY: Shift Window\r\n  oeeHourlyShift: oeeHourly(\r\n    where: {\r\n      _and: [\r\n        { workcenterId: { _eq: $wcId } }\r\n        { periodStartAt: { _gte: $shiftStart } }\r\n        { periodStartAt: { _lt: $shiftEnd } }\r\n      ]\r\n    }\r\n    orderBy: [{ field: periodStartAt, direction: asc }]\r\n  ) {\r\n    edges {\r\n      node {\r\n        periodStartAt(round: { unit: hour })\r\n        _aggregate {\r\n          goodUnits { sum }\r\n          scrapUnits { sum }\r\n          totalUnits { sum }\r\n          idealUnits { sum }\r\n          runMinutes { values }\r\n          downtimeMinutes { values }\r\n          plannedDowntimeMinutes { values }\r\n          scheduledTime { values }\r\n        }\r\n      }\r\n    }\r\n  }\r\n  \r\n  # OEE HOURLY: 90-day Aggregate (for utilization & throughput)\r\n  oeeHourly90d: oeeHourly(\r\n    where: {\r\n      _and: [\r\n        { workcenterId: { _eq: $wcId } }\r\n        { periodStartAt: { _gte: $window90dStart } }\r\n        { periodStartAt: { _lt: $now } }\r\n      ]\r\n    }\r\n  ) {\r\n    edges {\r\n      node {\r\n        periodStartAt(round: { unit: day })\r\n        _aggregate {\r\n          goodUnits { sum }\r\n          scrapUnits { sum }\r\n          totalUnits { sum }\r\n          idealUnits { sum }\r\n          runMinutes { values }\r\n          downtimeMinutes { values }\r\n          plannedDowntimeMinutes { values }\r\n          scheduledTime { values }\r\n        }\r\n      }\r\n    }\r\n  }\r\n  \r\n  # CURRENT HOUR: WorkcenterHistory (for live calc)\r\n  currentHourHistory: workcenterHistory(\r\n    where: {\r\n      _and: [\r\n        { workcenterId: { _eq: $wcId } }\r\n        { occurAt: { _lt: $currentHourEnd } }\r\n        { _or: [\r\n          { endAt: { _isNull: true } }\r\n          { endAt: { _gte: $currentHourStart } }\r\n        ]}\r\n      ]\r\n    }\r\n    orderBy: [{ field: occurAt, direction: asc }]\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        occurAt\r\n        endAt\r\n        runTime\r\n        plannedDowntime\r\n        unplannedDowntime\r\n        mode { \r\n          id \r\n          code  \r\n          color\r\n          countAsProductionTime\r\n          countAsDowntime\r\n          countAsPlannedDowntime\r\n        }\r\n        state { id code }\r\n        event { id code }\r\n      }\r\n    }\r\n  }\r\n  \r\n  # CURRENT HOUR: ProductionLog (for live units)\r\n  currentHourProduction: productionLog(\r\n    where: {\r\n      _and: [\r\n        { workcenterId: { _eq: $wcId } }\r\n        { occurAt: { _gte: $currentHourStart } }\r\n        { occurAt: { _lt: $currentHourEnd } }\r\n      ]\r\n    }\r\n  ) {\r\n    edges {\r\n      node {\r\n        idealUnits\r\n        quantityGood\r\n        quantityScrap\r\n      }\r\n    }\r\n  }\r\n  \r\n  # DOWNTIME BY EVENT: 24h (grouped by eventId for top 5)\r\n  downtimeByEvent24h: workcenterHistory(\r\n    where: {\r\n      _and: [\r\n        { workcenterId: { _eq: $wcId } }\r\n        { occurAt: { _gte: $window24hStart } }\r\n        { occurAt: { _lt: $now } }\r\n        { mode: { countAsDowntime: { _eq: true } } }\r\n      ]\r\n    }\r\n  ) {\r\n    edges {\r\n      node {\r\n       stateId\r\n        state { id code }\r\n        _aggregate {\r\n          unplannedDowntime { sum }\r\n          plannedDowntime { sum }\r\n          id { count }\r\n        }\r\n      }\r\n    }\r\n  }\r\n  \r\n  # DOWNTIME BY EVENT: Shift (grouped by eventId for top 5)\r\n  downtimeByEventShift: workcenterHistory(\r\n    where: {\r\n      _and: [\r\n        { workcenterId: { _eq: $wcId } }\r\n        { occurAt: { _gte: $shiftStart } }\r\n        { occurAt: { _lt: $shiftEnd } }\r\n        { mode: { countAsDowntime: { _eq: true } } }\r\n      ]\r\n    }\r\n  ) {\r\n    edges {\r\n      node {\r\n       stateId\r\n        state { id code }\r\n        _aggregate {\r\n          unplannedDowntime { sum }\r\n          plannedDowntime { sum }\r\n          id { count }\r\n        }\r\n      }\r\n    }\r\n  }\r\n    \r\n# ============================================\r\n  # RELIABILITY METRICS: 0-30 DAYS (Current)\r\n  # ============================================\r\n  \r\n  # Operating Time: 0-30 days (excludes fault states)\r\n  operatingTime0to30d: workcenterHistory(\r\n    where: {\r\n      _and: [\r\n        { workcenterId: { _eq: $wcId } }\r\n        { occurAt: { _gte: $window30dStart } }\r\n        { occurAt: { _lt: $now } }\r\n        { mode: { countAsProductionTime: { _eq: true } } }\r\n        { state: { isFault: { _eq: false } } }\r\n      ]\r\n    }\r\n  ) {\r\n    edges {\r\n      node {\r\n        workcenterId\r\n        _aggregate {\r\n          runTime { sum }\r\n        }\r\n      }\r\n    }\r\n  }\r\n  \r\n  # Faults: 0-30 days (runTime = repair time)\r\n  faults0to30d: workcenterHistory(\r\n    where: {\r\n      _and: [\r\n        { workcenterId: { _eq: $wcId } }\r\n        { occurAt: { _gte: $window30dStart } }\r\n        { occurAt: { _lt: $now } }\r\n        { state: { isFault: { _eq: true } } }\r\n      ]\r\n    }\r\n  ) {\r\n    edges {\r\n      node {\r\n \r\n        workcenterId\r\n        _aggregate {\r\n          runTime { sum }\r\n          id { count }\r\n        }\r\n      }\r\n    }\r\n  }\r\n  \r\n  # ============================================\r\n  # RELIABILITY METRICS: 30-60 DAYS (Prior)\r\n  # ============================================\r\n  \r\n  # Operating Time: 30-60 days (excludes fault states)\r\n  operatingTime30to60d: workcenterHistory(\r\n    where: {\r\n      _and: [\r\n        { workcenterId: { _eq: $wcId } }\r\n        { occurAt: { _gte: $window60dStart } }\r\n        { occurAt: { _lt: $window30dStart } }\r\n        { mode: { countAsProductionTime: { _eq: true } } }\r\n        { state: { isFault: { _eq: false } } }\r\n      ]\r\n    }\r\n  ) {\r\n    edges {\r\n      node {\r\n        workcenterId\r\n        _aggregate {\r\n          runTime { sum }\r\n        }\r\n      }\r\n    }\r\n  }\r\n  \r\n  # Faults: 30-60 days (runTime = repair time)\r\n  faults30to60d: workcenterHistory(\r\n    where: {\r\n      _and: [\r\n        { workcenterId: { _eq: $wcId } }\r\n        { occurAt: { _gte: $window60dStart } }\r\n        { occurAt: { _lt: $window30dStart } }\r\n        { state: { isFault: { _eq: true } } }\r\n      ]\r\n    }\r\n  ) {\r\n    edges {\r\n      node {\r\n\r\n        workcenterId\r\n        _aggregate {\r\n          runTime { sum }\r\n          id { count }\r\n        }\r\n      }\r\n    }\r\n  }\r\n  \r\n  # ============================================\r\n  # RELIABILITY METRICS: 60-90 DAYS (Baseline)\r\n  # ============================================\r\n  \r\n  # Operating Time: 60-90 days (excludes fault states)\r\n  operatingTime60to90d: workcenterHistory(\r\n    where: {\r\n      _and: [\r\n        { workcenterId: { _eq: $wcId } }\r\n        { occurAt: { _gte: $window90dStart } }\r\n        { occurAt: { _lt: $window60dStart } }\r\n        { mode: { countAsProductionTime: { _eq: true } } }\r\n        { state: { isFault: { _eq: false } } }\r\n      ]\r\n    }\r\n  ) {\r\n    edges {\r\n      node {\r\n        workcenterId\r\n        _aggregate {\r\n          runTime { sum }\r\n        }\r\n      }\r\n    }\r\n  }\r\n  \r\n  # Faults: 60-90 days (runTime = repair time)\r\n  faults60to90d: workcenterHistory(\r\n    where: {\r\n      _and: [\r\n        { workcenterId: { _eq: $wcId } }\r\n        { occurAt: { _gte: $window90dStart } }\r\n        { occurAt: { _lt: $window60dStart } }\r\n        { state: { isFault: { _eq: true } } }\r\n      ]\r\n    }\r\n  ) {\r\n    edges {\r\n      node {\r\n\r\n       workcenterId\r\n        _aggregate {\r\n          runTime { sum }\r\n          id { count }\r\n        }\r\n      }\r\n    }\r\n  }\r\n}"
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "66c898f5-6762-4bcf-893f-03d44b9b4bb3",
+          "name": "OEE Time Boundaries Javascript Remote",
+          "type": "savedTransformV2",
+          "data": {
+            "transformScriptLanguage": "JavaScript",
+            "requestTransform": "$",
+            "responseTransform": "$",
+            "enableAdvancedConfiguration": false,
+            "nextNodes": [
+              "10e94acd-8d5e-4fc1-8047-a4e24bf54038"
+            ],
+            "transformId": {
+              "id": "oeeTimeBoundaryScript",
+              "label": "OEE Time Boundary Script",
+              "name": "OEE Time Boundary Script",
+              "scriptLanguageId": "JavaScript"
+            }
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "1671fd35-4a3d-4454-8935-fc5e8e3155dc",
+          "name": "JavaScript",
+          "type": "javascriptTransform",
+          "data": {
+            "transform": "const workcenterId = $state.context.boundary.workcenterId;\r\nconst timezone = $state.context.boundary.timezone;\r\nconst workcenter = $state.context.boundary.workcenter;\r\nconst currentSchedule = $state.context.boundary.currentSchedule;\r\nconst boundaries = $state.context.boundary.boundaries;\r\n\r\nconst n = (v) => v || 0;\r\nconst clamp = (v) => Math.max(0, Math.min(1, v));\r\nconst pct = (v) => v != null ? (v * 100).toFixed(2) + \"%\" : \"N/A\";\r\n\r\nconst formatDuration = (ms) => {\r\n  if (ms == null || ms === 0) return \"0m\";\r\n  const hours = Math.floor(ms / 3600000);\r\n  const mins = Math.floor((ms % 3600000) / 60000);\r\n  return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;\r\n};\r\n\r\nconst formatPctChange = (change) => {\r\n  if (change == null) return \"N/A\";\r\n  const sign = change >= 0 ? \"+\" : \"\";\r\n  return sign + (change * 100).toFixed(1) + \"%\";\r\n};\r\n\r\nconst getDurationMs = (values) => {\r\n  if (!values || values.length === 0) return 0;\r\n  \r\n  let totalMs = 0;\r\n  values.forEach(v => {\r\n    if (typeof v === 'object' && v !== null && v.milliseconds !== undefined) {\r\n      totalMs += n(v.milliseconds);\r\n    }\r\n  });\r\n  return totalMs;\r\n};\r\n\r\nconst sumHourlyAggregates = (nodes) => {\r\n  return nodes.reduce((acc, node) => {\r\n    const agg = node._aggregate || {};\r\n    return {\r\n      goodUnits: acc.goodUnits + n(agg.goodUnits?.sum),\r\n      scrapUnits: acc.scrapUnits + n(agg.scrapUnits?.sum),\r\n      totalUnits: acc.totalUnits + n(agg.totalUnits?.sum),\r\n      idealUnits: acc.idealUnits + n(agg.idealUnits?.sum),\r\n      runMinutesMs: acc.runMinutesMs + getDurationMs(agg.runMinutes?.values),\r\n      downtimeMinutesMs: acc.downtimeMinutesMs + getDurationMs(agg.downtimeMinutes?.values),\r\n      plannedDowntimeMinutesMs: acc.plannedDowntimeMinutesMs + getDurationMs(agg.plannedDowntimeMinutes?.values),\r\n      scheduledTimeMs: acc.scheduledTimeMs + getDurationMs(agg.scheduledTime?.values)\r\n    };\r\n  }, {\r\n    goodUnits: 0,\r\n    scrapUnits: 0,\r\n    totalUnits: 0,\r\n    idealUnits: 0,\r\n    runMinutesMs: 0,\r\n    downtimeMinutesMs: 0,\r\n    plannedDowntimeMinutesMs: 0,\r\n    scheduledTimeMs: 0\r\n  });\r\n};\r\n\r\nconst calculateOEE = (totals) => {\r\n  const scheduledMs = totals.scheduledTimeMs;\r\n  const runMs = totals.runMinutesMs;\r\n  const goodUnits = totals.goodUnits;\r\n  const totalUnits = totals.totalUnits;\r\n  const idealUnits = totals.idealUnits;\r\n  \r\n  if (scheduledMs === 0) {\r\n    return {\r\n      availability: null,\r\n      performance: null,\r\n      quality: null,\r\n      oee: null,\r\n      isScheduled: false\r\n    };\r\n  }\r\n  \r\n  const availability = clamp(runMs / scheduledMs);\r\n  const performance = idealUnits > 0 ? clamp(totalUnits / idealUnits) : 1;\r\n  const quality = totalUnits > 0 ? clamp(goodUnits / totalUnits) : 1;\r\n  const oee = availability * performance * quality;\r\n  \r\n  return {\r\n    availability,\r\n    performance,\r\n    quality,\r\n    oee,\r\n    availabilityPct: pct(availability),\r\n    performancePct: pct(performance),\r\n    qualityPct: pct(quality),\r\n    oeePct: pct(oee),\r\n    isScheduled: true\r\n  };\r\n};\r\n\r\nconst sumOperatingTime = (nodes) => {\r\n  return nodes.reduce((sum, node) => {\r\n    return sum + n(node._aggregate?.runTime?.sum);\r\n  }, 0);\r\n};\r\n\r\nconst sumFaults = (nodes) => {\r\n  let faultCount = 0;\r\n  let repairTimeMs = 0;\r\n  \r\n  nodes.forEach(node => {\r\n    faultCount += n(node._aggregate?.id?.count);\r\n    repairTimeMs += n(node._aggregate?.runTime?.sum);\r\n  });\r\n  \r\n  return { faultCount, repairTimeMs };\r\n};\r\n\r\nconst calculateReliabilityPeriod = (operatingTimeMs, faultCount, repairTimeMs) => {\r\n  const mtbf = faultCount > 0 ? operatingTimeMs / faultCount : null;\r\n  const mttr = faultCount > 0 ? repairTimeMs / faultCount : null;\r\n  \r\n  return {\r\n    mtbf,\r\n    mtbfFormatted: mtbf != null ? formatDuration(mtbf) : \"N/A\",\r\n    mttr,\r\n    mttrFormatted: mttr != null ? formatDuration(mttr) : \"N/A\",\r\n    faultCount,\r\n    operatingTimeMs,\r\n    operatingTime: formatDuration(operatingTimeMs),\r\n    repairTimeMs,\r\n    repairTime: formatDuration(repairTimeMs)\r\n  };\r\n};\r\n\r\nconst oeeHourly24h = $.oeeHourly24h?.edges?.map(e => e.node) || [];\r\nconst oeeHourlyDay = $.oeeHourlyDay?.edges?.map(e => e.node) || [];\r\nconst oeeHourlyShift = $.oeeHourlyShift?.edges?.map(e => e.node) || [];\r\nconst oeeHourly90d = $.oeeHourly90d?.edges?.map(e => e.node) || [];\r\nconst currentHourHistory = $.currentHourHistory?.edges?.map(e => e.node) || [];\r\nconst currentHourProduction = $.currentHourProduction?.edges?.map(e => e.node) || [];\r\nconst downtimeByEvent24h = $.downtimeByEvent24h?.edges?.map(e => e.node) || [];\r\nconst downtimeByEventShift = $.downtimeByEventShift?.edges?.map(e => e.node) || [];\r\n\r\nconst operatingTime0to30dNodes = $.operatingTime0to30d?.edges?.map(e => e.node) || [];\r\nconst operatingTime30to60dNodes = $.operatingTime30to60d?.edges?.map(e => e.node) || [];\r\nconst operatingTime60to90dNodes = $.operatingTime60to90d?.edges?.map(e => e.node) || [];\r\nconst faults0to30dNodes = $.faults0to30d?.edges?.map(e => e.node) || [];\r\nconst faults30to60dNodes = $.faults30to60d?.edges?.map(e => e.node) || [];\r\nconst faults60to90dNodes = $.faults60to90d?.edges?.map(e => e.node) || [];\r\n\r\nconst totals24h = sumHourlyAggregates(oeeHourly24h);\r\nconst oee24h = calculateOEE(totals24h);\r\n\r\nconst metrics24h = {\r\n  ...oee24h,\r\n  ...totals24h,\r\n  runTime: formatDuration(totals24h.runMinutesMs),\r\n  downtime: formatDuration(totals24h.downtimeMinutesMs),\r\n  scheduledTime: formatDuration(totals24h.scheduledTimeMs),\r\n  hourCount: oeeHourly24h.length\r\n};\r\n\r\nconst totalsDay = sumHourlyAggregates(oeeHourlyDay);\r\nconst oeeDay = calculateOEE(totalsDay);\r\n\r\nconst metricsDay = {\r\n  ...oeeDay,\r\n  ...totalsDay,\r\n  runTime: formatDuration(totalsDay.runMinutesMs),\r\n  downtime: formatDuration(totalsDay.downtimeMinutesMs),\r\n  scheduledTime: formatDuration(totalsDay.scheduledTimeMs),\r\n  hourCount: oeeHourlyDay.length\r\n};\r\n\r\nconst totalsShift = sumHourlyAggregates(oeeHourlyShift);\r\nconst oeeShift = calculateOEE(totalsShift);\r\n\r\nconst metricsShift = {\r\n  ...oeeShift,\r\n  ...totalsShift,\r\n  runTime: formatDuration(totalsShift.runMinutesMs),\r\n  downtime: formatDuration(totalsShift.downtimeMinutesMs),\r\n  scheduledTime: formatDuration(totalsShift.scheduledTimeMs),\r\n  hourCount: oeeHourlyShift.length,\r\n  shiftStart: boundaries.shiftStart,\r\n  shiftEnd: boundaries.shiftEnd\r\n};\r\n\r\nconst totals90d = sumHourlyAggregates(oeeHourly90d);\r\nconst oee90d = calculateOEE(totals90d);\r\n\r\nconst metrics90d = {\r\n  ...oee90d,\r\n  ...totals90d,\r\n  runTime: formatDuration(totals90d.runMinutesMs),\r\n  downtime: formatDuration(totals90d.downtimeMinutesMs),\r\n  scheduledTime: formatDuration(totals90d.scheduledTimeMs),\r\n  dayCount: oeeHourly90d.length\r\n};\r\n\r\nconst currentHourStartMs = $moment(boundaries.currentHourStart).valueOf();\r\nconst currentHourEndMs = $moment(boundaries.currentHourEnd).valueOf();\r\nconst nowMs = $moment(boundaries.now).valueOf();\r\n\r\nlet currentHourRunMs = 0;\r\nlet currentHourDowntimeMs = 0;\r\nlet currentHourPlannedDowntimeMs = 0;\r\n\r\ncurrentHourHistory.forEach(rec => {\r\n  const occMs = $moment(rec.occurAt).valueOf();\r\n  const endMs = rec.endAt ? $moment(rec.endAt).valueOf() : nowMs;\r\n  \r\n  const overlapStart = Math.max(occMs, currentHourStartMs);\r\n  const overlapEnd = Math.min(endMs, currentHourEndMs, nowMs);\r\n  const duration = Math.max(0, overlapEnd - overlapStart);\r\n  \r\n  if (rec.mode?.countAsProductionTime) {\r\n    currentHourRunMs += duration;\r\n  }\r\n  if (rec.mode?.countAsDowntime) {\r\n    currentHourDowntimeMs += duration;\r\n  }\r\n  if (rec.mode?.countAsPlannedDowntime) {\r\n    currentHourPlannedDowntimeMs += duration;\r\n  }\r\n});\r\n\r\nconst currentHourGoodUnits = currentHourProduction.reduce((sum, p) => sum + n(p.quantityGood), 0);\r\nconst currentHourScrapUnits = currentHourProduction.reduce((sum, p) => sum + n(p.quantityScrap), 0);\r\nconst currentHourIdealUnits = currentHourProduction.reduce((sum, p) => sum + n(p.idealUnits), 0);\r\nconst currentHourTotalUnits = currentHourGoodUnits + currentHourScrapUnits;\r\n\r\nconst elapsedMs = nowMs - currentHourStartMs;\r\n\r\nconst currentHourTotals = {\r\n  goodUnits: currentHourGoodUnits,\r\n  scrapUnits: currentHourScrapUnits,\r\n  totalUnits: currentHourTotalUnits,\r\n  idealUnits: currentHourIdealUnits,\r\n  runMinutesMs: currentHourRunMs,\r\n  scheduledTimeMs: elapsedMs\r\n};\r\n\r\nconst currentHourOEE = calculateOEE(currentHourTotals);\r\n\r\nconst metricsCurrentHour = {\r\n  ...currentHourOEE,\r\n  ...currentHourTotals,\r\n  isLive: true,\r\n  elapsedMs,\r\n  elapsed: formatDuration(elapsedMs),\r\n  runTime: formatDuration(currentHourRunMs),\r\n  downtime: formatDuration(currentHourDowntimeMs)\r\n};\r\n\r\nconst calendarTime24h = 24 * 60 * 60 * 1000;\r\nconst loading24h = totals24h.scheduledTimeMs / calendarTime24h;\r\nconst teep24h = oee24h.oee != null ? oee24h.oee * loading24h : null;\r\n\r\nconst metricsTeep = {\r\n  teep: teep24h,\r\n  teepPct: pct(teep24h),\r\n  loading: loading24h,\r\n  loadingPct: pct(loading24h),\r\n  calendarTimeMs: calendarTime24h,\r\n  scheduledTimeMs: totals24h.scheduledTimeMs\r\n};\r\n\r\nconst opTime0to30d = sumOperatingTime(operatingTime0to30dNodes);\r\nconst opTime30to60d = sumOperatingTime(operatingTime30to60dNodes);\r\nconst opTime60to90d = sumOperatingTime(operatingTime60to90dNodes);\r\n\r\nconst faults0to30d = sumFaults(faults0to30dNodes);\r\nconst faults30to60d = sumFaults(faults30to60dNodes);\r\nconst faults60to90d = sumFaults(faults60to90dNodes);\r\n\r\nconst reliability0to30d = calculateReliabilityPeriod(opTime0to30d, faults0to30d.faultCount, faults0to30d.repairTimeMs);\r\nconst reliability30to60d = calculateReliabilityPeriod(opTime30to60d, faults30to60d.faultCount, faults30to60d.repairTimeMs);\r\nconst reliability60to90d = calculateReliabilityPeriod(opTime60to90d, faults60to90d.faultCount, faults60to90d.repairTimeMs);\r\n\r\nconst opTime90d = opTime0to30d + opTime30to60d + opTime60to90d;\r\nconst faults90dTotal = {\r\n  faultCount: faults0to30d.faultCount + faults30to60d.faultCount + faults60to90d.faultCount,\r\n  repairTimeMs: faults0to30d.repairTimeMs + faults30to60d.repairTimeMs + faults60to90d.repairTimeMs\r\n};\r\nconst reliability90d = calculateReliabilityPeriod(opTime90d, faults90dTotal.faultCount, faults90dTotal.repairTimeMs);\r\n\r\nconst mtbfChangeVsPrior = (reliability30to60d.mtbf != null && reliability30to60d.mtbf > 0) \r\n  ? (reliability0to30d.mtbf - reliability30to60d.mtbf) / reliability30to60d.mtbf \r\n  : null;\r\n\r\nconst mttrChangeVsPrior = (reliability30to60d.mttr != null && reliability30to60d.mttr > 0) \r\n  ? (reliability0to30d.mttr - reliability30to60d.mttr) / reliability30to60d.mttr \r\n  : null;\r\n\r\nconst getMtbfTrend = (change) => {\r\n  if (change == null) return \"unknown\";\r\n  if (change > 0.1) return \"improving\";\r\n  if (change < -0.1) return \"degrading\";\r\n  return \"stable\";\r\n};\r\n\r\nconst getMttrTrend = (change) => {\r\n  if (change == null) return \"unknown\";\r\n  if (change < -0.1) return \"improving\";\r\n  if (change > 0.1) return \"degrading\";\r\n  return \"stable\";\r\n};\r\n\r\nconst metricsReliability = {\r\n  current: {\r\n    ...reliability0to30d,\r\n    periodLabel: \"Last 30 days\",\r\n    periodDays: 30\r\n  },\r\n  prior: {\r\n    ...reliability30to60d,\r\n    periodLabel: \"30-60 days ago\",\r\n    periodDays: 30\r\n  },\r\n  baseline: {\r\n    ...reliability60to90d,\r\n    periodLabel: \"60-90 days ago\",\r\n    periodDays: 30\r\n  },\r\n  overall: {\r\n    ...reliability90d,\r\n    periodLabel: \"Last 90 days\",\r\n    periodDays: 90\r\n  },\r\n  trend: {\r\n    mtbfChangeVsPrior,\r\n    mtbfChangeFormatted: formatPctChange(mtbfChangeVsPrior),\r\n    mtbfTrend: getMtbfTrend(mtbfChangeVsPrior),\r\n    mttrChangeVsPrior,\r\n    mttrChangeFormatted: formatPctChange(mttrChangeVsPrior),\r\n    mttrTrend: getMttrTrend(mttrChangeVsPrior)\r\n  },\r\n  summary: {\r\n    mtbf: reliability0to30d.mtbf,\r\n    mtbfFormatted: reliability0to30d.mtbfFormatted,\r\n    mtbfTrendIcon: getMtbfTrend(mtbfChangeVsPrior) === \"improving\" ? \"▲\" : getMtbfTrend(mtbfChangeVsPrior) === \"degrading\" ? \"▼\" : \"→\",\r\n    mtbfTrendLabel: formatPctChange(mtbfChangeVsPrior) + \" vs prior 30d\",\r\n    mttr: reliability0to30d.mttr,\r\n    mttrFormatted: reliability0to30d.mttrFormatted,\r\n    mttrTrendIcon: getMttrTrend(mttrChangeVsPrior) === \"improving\" ? \"▼\" : getMttrTrend(mttrChangeVsPrior) === \"degrading\" ? \"▲\" : \"→\",\r\n    mttrTrendLabel: formatPctChange(mttrChangeVsPrior) + \" vs prior 30d\"\r\n  }\r\n};\r\n\r\nconst calendarTime90d = 90 * 24 * 60 * 60 * 1000;\r\nconst utilization90d = calendarTime90d > 0 ? totals90d.runMinutesMs / calendarTime90d : null;\r\nconst operatingHours90d = totals90d.runMinutesMs / 3600000;\r\nconst throughput90d = operatingHours90d > 0 ? totals90d.totalUnits / operatingHours90d : null;\r\nconst worldClassOEE = 0.85;\r\nconst oeeGap90d = oee90d.oee != null ? worldClassOEE - oee90d.oee : null;\r\n\r\nconst metricsEfficiency = {\r\n  utilization: utilization90d,\r\n  utilizationPct: pct(utilization90d),\r\n  throughput: throughput90d != null ? throughput90d.toFixed(2) + \" units/hr\" : \"N/A\",\r\n  throughputRaw: throughput90d,\r\n  oeeGap: oeeGap90d,\r\n  oeeGapPct: oeeGap90d != null ? (oeeGap90d * 100).toFixed(2) + \"%\" : \"N/A\",\r\n  worldClassOEE: pct(worldClassOEE),\r\n  windowDays: 90,\r\n  totals: {\r\n    runTimeMs: totals90d.runMinutesMs,\r\n    runTime: formatDuration(totals90d.runMinutesMs),\r\n    totalUnits: totals90d.totalUnits,\r\n    goodUnits: totals90d.goodUnits,\r\n    scrapUnits: totals90d.scrapUnits\r\n  }\r\n};\r\n\r\nconst downtimeMap24h = {};\r\ndowntimeByEvent24h.forEach(node => {\r\n  const eventId = node.eventId;\r\n  if (!downtimeMap24h[eventId]) {\r\n    downtimeMap24h[eventId] = {\r\n      eventId,\r\n      eventCode: node.event?.code,\r\n      totalMs: 0,\r\n      occurrences: 0\r\n    };\r\n  }\r\n  downtimeMap24h[eventId].totalMs += n(node._aggregate?.unplannedDowntime?.sum) + n(node._aggregate?.plannedDowntime?.sum);\r\n  downtimeMap24h[eventId].occurrences += n(node._aggregate?.id?.count);\r\n});\r\n\r\nconst topDowntimes24h = Object.values(downtimeMap24h)\r\n  .sort((a, b) => b.totalMs - a.totalMs)\r\n  .slice(0, 5)\r\n  .map(d => ({\r\n    ...d,\r\n    totalFormatted: formatDuration(d.totalMs)\r\n  }));\r\n\r\nconst downtimeMapShift = {};\r\ndowntimeByEventShift.forEach(node => {\r\n  const eventId = node.eventId;\r\n  if (!downtimeMapShift[eventId]) {\r\n    downtimeMapShift[eventId] = {\r\n      eventId,\r\n      eventCode: node.event?.code,\r\n      totalMs: 0,\r\n      occurrences: 0\r\n    };\r\n  }\r\n  downtimeMapShift[eventId].totalMs += n(node._aggregate?.unplannedDowntime?.sum) + n(node._aggregate?.plannedDowntime?.sum);\r\n  downtimeMapShift[eventId].occurrences += n(node._aggregate?.id?.count);\r\n});\r\n\r\nconst topDowntimesShift = Object.values(downtimeMapShift)\r\n  .sort((a, b) => b.totalMs - a.totalMs)\r\n  .slice(0, 5)\r\n  .map(d => ({\r\n    ...d,\r\n    totalFormatted: formatDuration(d.totalMs)\r\n  }));\r\n\r\nconst idealCycleTimeMs = totalsShift.idealUnits > 0 \r\n  ? totalsShift.scheduledTimeMs / totalsShift.idealUnits \r\n  : 0;\r\n\r\nconst qualityLossUnits = totalsShift.scrapUnits;\r\nconst performanceLossUnits = Math.max(0, totalsShift.idealUnits - totalsShift.totalUnits);\r\n\r\nconst lossAnalysis = {\r\n  plannedDowntimeMs: totalsShift.plannedDowntimeMinutesMs,\r\n  unplannedDowntimeMs: totalsShift.downtimeMinutesMs - totalsShift.plannedDowntimeMinutesMs,\r\n  plannedDowntime: formatDuration(totalsShift.plannedDowntimeMinutesMs),\r\n  unplannedDowntime: formatDuration(totalsShift.downtimeMinutesMs - totalsShift.plannedDowntimeMinutesMs),\r\n  performanceLossUnits,\r\n  performanceLossMs: performanceLossUnits * idealCycleTimeMs,\r\n  performanceLoss: formatDuration(performanceLossUnits * idealCycleTimeMs),\r\n  qualityLossUnits,\r\n  qualityLossMs: qualityLossUnits * idealCycleTimeMs,\r\n  qualityLoss: formatDuration(qualityLossUnits * idealCycleTimeMs),\r\n  idealCycleTimeMs\r\n};\r\n\r\nconst lastHistory = currentHourHistory[currentHourHistory.length - 1];\r\nconst currentStatus = lastHistory ? {\r\n  historyId: lastHistory.id,\r\n  startAt: lastHistory.occurAt,\r\n  durationMs: nowMs - $moment(lastHistory.occurAt).valueOf(),\r\n  duration: formatDuration(nowMs - $moment(lastHistory.occurAt).valueOf()),\r\n  mode: lastHistory.mode,\r\n  state: lastHistory.state,\r\n  event: lastHistory.event\r\n} : null;\r\n\r\nreturn {\r\n  workcenterId,\r\n  workcenter,\r\n  timezone,\r\n  currentSchedule,\r\n  lastRefresh: boundaries.now,\r\n  \r\n  currentStatus,\r\n  \r\n  metrics: {\r\n    currentHour: metricsCurrentHour,\r\n    shift: metricsShift,\r\n    day: metricsDay,\r\n    rolling24h: metrics24h,\r\n    rolling90d: metrics90d\r\n  },\r\n  \r\n  teep: metricsTeep,\r\n  reliability: metricsReliability,\r\n  efficiency: metricsEfficiency,\r\n  lossAnalysis,\r\n  \r\n  topDowntimes: {\r\n    shift: topDowntimesShift,\r\n    rolling24h: topDowntimes24h\r\n  }\r\n};",
+            "nextNodes": [
+              "328648e4-cc90-4e73-8c8d-fefcfa631c3f"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": true,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "bfbe8b0c-f835-443f-87f7-dc7df2d76713",
+          "name": "Get Dashboard Runtime properties",
+          "type": "transform",
+          "data": {
+            "nextNodes": [
+              "66c898f5-6762-4bcf-893f-03d44b9b4bb3"
+            ],
+            "transform": "{\r\n  \"wcId\":  $coalesce([$metadata.querystring.wcId, $components.Screen.context.workcenterId, \"wc-vmc-c2\"]),\r\n  \"tz\": $coalesce([$metadata.settings.TimeZone, $momentTzGuess()])\r\n    }"
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "328648e4-cc90-4e73-8c8d-fefcfa631c3f",
+          "name": "JSONata",
+          "type": "transform",
+          "data": {
+            "nextNodes": [
+              "1590ec46-48b8-425c-a6b4-4c7037dce6b6"
+            ],
+            "transform": "($data:= $;\r\n$components.Screen.fn.setContext($data))"
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        }
+      ],
+      "version": "0.0.16"
+    },
+    "diagram": {
+      "id": "cmlb13jpz3oin01as37vp6931",
+      "offsetX": -542,
+      "offsetY": 246,
+      "zoom": 100,
+      "gridSize": 5,
+      "layers": [
+        {
+          "id": "1b636c23-cc58-4a56-b04d-80d694551e74",
+          "type": "diagram-links",
+          "isSvg": true,
+          "transformed": true,
+          "models": {
+            "fe1e33d4-f584-412c-9f33-f69dc5d39f22": {
+              "points": [
+                {
+                  "id": "ca0f4174-ef2a-4f4b-9a11-a4696c83b5cf",
+                  "type": "point",
+                  "x": 1009,
+                  "y": 174.73
+                },
+                {
+                  "id": "4da2b52f-2e14-44e3-b93e-7a5b5ef09fb2",
+                  "type": "point",
+                  "x": 1080,
+                  "y": 174.73
+                }
+              ],
+              "id": "fe1e33d4-f584-412c-9f33-f69dc5d39f22",
+              "type": "default",
+              "selected": false,
+              "source": "10e94acd-8d5e-4fc1-8047-a4e24bf54038",
+              "sourcePort": "cml9i3svo002n356rkb2q9nvb",
+              "target": "587b62e7-8db8-4664-b008-d9b114ac8338",
+              "targetPort": "cml9i3ysy002t356rac5l9gzw",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "5222dbe5-96d4-4c4f-ac67-1eba5fa41a17": {
+              "points": [
+                {
+                  "id": "0761f65b-3324-4e81-b46e-57d1f96c8869",
+                  "type": "point",
+                  "x": 831.41,
+                  "y": 169.73
+                },
+                {
+                  "id": "34325b2a-0967-4451-981f-5ca15de08328",
+                  "type": "point",
+                  "x": 855,
+                  "y": 174.73
+                }
+              ],
+              "id": "5222dbe5-96d4-4c4f-ac67-1eba5fa41a17",
+              "type": "default",
+              "selected": false,
+              "source": "66c898f5-6762-4bcf-893f-03d44b9b4bb3",
+              "sourcePort": "cml9ldnjd001m356r625boun9",
+              "target": "10e94acd-8d5e-4fc1-8047-a4e24bf54038",
+              "targetPort": "cml9i3svo002l356rqqte3u7n",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "bba6d0ae-9cfe-4c7f-8814-21c4b1cd0eb0": {
+              "points": [
+                {
+                  "id": "c6cfdf02-bf43-4c16-bece-fbd2798a6017",
+                  "type": "point",
+                  "x": 1234,
+                  "y": 174.73
+                },
+                {
+                  "id": "30412747-8b39-49bd-8489-a2d2dd825039",
+                  "type": "point",
+                  "x": 1295,
+                  "y": 174.73
+                }
+              ],
+              "id": "bba6d0ae-9cfe-4c7f-8814-21c4b1cd0eb0",
+              "type": "default",
+              "selected": false,
+              "source": "587b62e7-8db8-4664-b008-d9b114ac8338",
+              "sourcePort": "cml9i3ysy002v356rgau3zf95",
+              "target": "1671fd35-4a3d-4454-8935-fc5e8e3155dc",
+              "targetPort": "cml9pcb360056356rzgfozzbm",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "2cae30e2-2ab8-494e-abde-686285529ec8": {
+              "points": [
+                {
+                  "id": "252c6e1c-97c9-422c-9475-c3b752020290",
+                  "type": "point",
+                  "x": 339,
+                  "y": 184.73
+                },
+                {
+                  "id": "d16a0fc1-f856-4320-b267-1c4eb2d56d7f",
+                  "type": "point",
+                  "x": 375,
+                  "y": 59.73
+                }
+              ],
+              "id": "2cae30e2-2ab8-494e-abde-686285529ec8",
+              "type": "default",
+              "selected": false,
+              "source": "ec0c3986-fdfc-4eef-a79c-539fe03ab6b8",
+              "sourcePort": "cml9hvi4y001n356rcu53kbiv",
+              "target": "bfbe8b0c-f835-443f-87f7-dc7df2d76713",
+              "targetPort": "cmlb0r6nq0048356rd0z2s341",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "c74318d6-5e60-404a-8d94-ed8685cd7fe8": {
+              "points": [
+                {
+                  "id": "35b2cd7a-cfb4-4c83-8835-186525f607ca",
+                  "type": "point",
+                  "x": 319,
+                  "y": 4.73
+                },
+                {
+                  "id": "3a4c7c07-c3ac-48da-8bfc-922668d40166",
+                  "type": "point",
+                  "x": 375,
+                  "y": 59.73
+                }
+              ],
+              "id": "c74318d6-5e60-404a-8d94-ed8685cd7fe8",
+              "type": "default",
+              "selected": false,
+              "source": "16dfae23-bbe5-451c-a81b-ef26765ec4ce",
+              "sourcePort": "cml9hveiq001l356r5ofelpq2",
+              "target": "bfbe8b0c-f835-443f-87f7-dc7df2d76713",
+              "targetPort": "cmlb0r6nq0048356rd0z2s341",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "54824bc6-14e7-4986-a352-fbd30f2b951a": {
+              "points": [
+                {
+                  "id": "d4d99bf5-fa9e-4c74-9b27-57029cc56f7d",
+                  "type": "point",
+                  "x": 607.17,
+                  "y": 59.73
+                },
+                {
+                  "id": "3019d1ed-3b4e-4ac4-9fac-1ece89332590",
+                  "type": "point",
+                  "x": 565,
+                  "y": 169.73
+                }
+              ],
+              "id": "54824bc6-14e7-4986-a352-fbd30f2b951a",
+              "type": "default",
+              "selected": false,
+              "source": "bfbe8b0c-f835-443f-87f7-dc7df2d76713",
+              "sourcePort": "cmlb0r6nq004a356r2zs1u6nx",
+              "target": "66c898f5-6762-4bcf-893f-03d44b9b4bb3",
+              "targetPort": "cml9ldnjd001k356rrjlihgje",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "b1255594-0bf1-4fda-b5bc-0819e66d1beb": {
+              "points": [
+                {
+                  "id": "4c5ce79b-f3be-4d8b-8c0c-0ca0896dbc2b",
+                  "type": "point",
+                  "x": 1449,
+                  "y": 174.73
+                },
+                {
+                  "id": "b670e9e8-fb86-461d-8449-5f9b8687b52e",
+                  "type": "point",
+                  "x": 1505,
+                  "y": 164.73
+                }
+              ],
+              "id": "b1255594-0bf1-4fda-b5bc-0819e66d1beb",
+              "type": "default",
+              "selected": false,
+              "source": "1671fd35-4a3d-4454-8935-fc5e8e3155dc",
+              "sourcePort": "cml9pcb360058356rbr3sour9",
+              "target": "328648e4-cc90-4e73-8c8d-fefcfa631c3f",
+              "targetPort": "cmlb0w4fr00bk356rpy32kdpg",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "ac362fa6-21a8-4938-951f-aa83ab631fcb": {
+              "points": [
+                {
+                  "id": "cfe859fa-414b-4314-b914-34aafb43e022",
+                  "type": "point",
+                  "x": 1659,
+                  "y": 164.73
+                },
+                {
+                  "id": "88636c68-d924-4e4a-9b08-cc899e05913d",
+                  "type": "point",
+                  "x": 1725,
+                  "y": 169.73
+                }
+              ],
+              "id": "ac362fa6-21a8-4938-951f-aa83ab631fcb",
+              "type": "default",
+              "selected": false,
+              "source": "328648e4-cc90-4e73-8c8d-fefcfa631c3f",
+              "sourcePort": "cmlb0w4fr00bm356rvzfcm52w",
+              "target": "1590ec46-48b8-425c-a6b4-4c7037dce6b6",
+              "targetPort": "cml9hvk3h001p356r2t462uai",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            }
+          }
+        },
+        {
+          "id": "53164bad-4d64-4479-bc36-534764fd5eff",
+          "type": "diagram-nodes",
+          "isSvg": false,
+          "transformed": true,
+          "models": {
+            "16dfae23-bbe5-451c-a81b-ef26765ec4ce": {
+              "id": "16dfae23-bbe5-451c-a81b-ef26765ec4ce",
+              "type": "debugSource",
+              "selected": false,
+              "x": 165,
+              "y": -35,
+              "ports": [
+                {
+                  "id": "cml9hveiq001l356r5ofelpq2",
+                  "type": "default",
+                  "x": 311,
+                  "y": -3.27,
+                  "name": "cml9hveiq001m356rqfhvb2hi",
+                  "parentNode": "16dfae23-bbe5-451c-a81b-ef26765ec4ce",
+                  "links": [
+                    "c74318d6-5e60-404a-8d94-ed8685cd7fe8"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "payload": null,
+                "context": {},
+                "nextNodes": [
+                  "bfbe8b0c-f835-443f-87f7-dc7df2d76713"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Source"
+            },
+            "ec0c3986-fdfc-4eef-a79c-539fe03ab6b8": {
+              "id": "ec0c3986-fdfc-4eef-a79c-539fe03ab6b8",
+              "type": "request",
+              "selected": false,
+              "x": 185,
+              "y": 145,
+              "ports": [
+                {
+                  "id": "cml9hvi4y001n356rcu53kbiv",
+                  "type": "default",
+                  "x": 331,
+                  "y": 176.73,
+                  "name": "cml9hvi4y001o356r174r3xjn",
+                  "parentNode": "ec0c3986-fdfc-4eef-a79c-539fe03ab6b8",
+                  "links": [
+                    "2cae30e2-2ab8-494e-abde-686285529ec8"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Payload",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "bfbe8b0c-f835-443f-87f7-dc7df2d76713"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Request"
+            },
+            "1590ec46-48b8-425c-a6b4-4c7037dce6b6": {
+              "id": "1590ec46-48b8-425c-a6b4-4c7037dce6b6",
+              "type": "response",
+              "selected": false,
+              "x": 1725,
+              "y": 130,
+              "ports": [
+                {
+                  "id": "cml9hvk3h001p356r2t462uai",
+                  "type": "default",
+                  "x": 1717,
+                  "y": 161.73,
+                  "name": "cml9hvk3h001q356rmb436b1a",
+                  "parentNode": "1590ec46-48b8-425c-a6b4-4c7037dce6b6",
+                  "links": [
+                    "ac362fa6-21a8-4938-951f-aa83ab631fcb"
+                  ],
+                  "in": true,
+                  "fieldLabel": "Response"
+                },
+                {
+                  "id": "cml9hvk3h001r356rtbaghyrj",
+                  "type": "default",
+                  "x": 1871,
+                  "y": 161.73,
+                  "name": "cml9hvk3h001s356rya5n7632",
+                  "parentNode": "1590ec46-48b8-425c-a6b4-4c7037dce6b6",
+                  "links": [],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": []
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Response"
+            },
+            "10e94acd-8d5e-4fc1-8047-a4e24bf54038": {
+              "id": "10e94acd-8d5e-4fc1-8047-a4e24bf54038",
+              "type": "setContext",
+              "selected": false,
+              "x": 855,
+              "y": 135,
+              "ports": [
+                {
+                  "id": "cml9i3svo002l356rqqte3u7n",
+                  "type": "default",
+                  "x": 847,
+                  "y": 166.73,
+                  "name": "cml9i3svo002m356rvj7n0dwv",
+                  "parentNode": "10e94acd-8d5e-4fc1-8047-a4e24bf54038",
+                  "links": [
+                    "5222dbe5-96d4-4c4f-ac67-1eba5fa41a17"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml9i3svo002n356rkb2q9nvb",
+                  "type": "default",
+                  "x": 1001,
+                  "y": 166.73,
+                  "name": "cml9i3svo002o356rvjdbqv0r",
+                  "parentNode": "10e94acd-8d5e-4fc1-8047-a4e24bf54038",
+                  "links": [
+                    "fe1e33d4-f584-412c-9f33-f69dc5d39f22"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "587b62e7-8db8-4664-b008-d9b114ac8338"
+                ],
+                "transform": "{\r\n  \"boundary\": $\r\n}"
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Set Context"
+            },
+            "587b62e7-8db8-4664-b008-d9b114ac8338": {
+              "id": "587b62e7-8db8-4664-b008-d9b114ac8338",
+              "type": "query",
+              "selected": false,
+              "x": 1080,
+              "y": 135,
+              "ports": [
+                {
+                  "id": "cml9i3ysy002t356rac5l9gzw",
+                  "type": "default",
+                  "x": 1072,
+                  "y": 166.73,
+                  "name": "cml9i3ysy002u356riakkk7qn",
+                  "parentNode": "587b62e7-8db8-4664-b008-d9b114ac8338",
+                  "links": [
+                    "fe1e33d4-f584-412c-9f33-f69dc5d39f22"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml9i3ysy002v356rgau3zf95",
+                  "type": "default",
+                  "x": 1226,
+                  "y": 166.73,
+                  "name": "cml9i3ysy002w356r1wa9xlis",
+                  "parentNode": "587b62e7-8db8-4664-b008-d9b114ac8338",
+                  "links": [
+                    "bba6d0ae-9cfe-4c7f-8814-21c4b1cd0eb0"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "application",
+                "variablesTransform": "{\r\n  \"wcId\": $state.context.boundary.workcenterId,\r\n  \"window24hStart\": $state.context.boundary.boundaries.window24hStart,\r\n  \"window30dStart\": $state.context.boundary.boundaries.window30dStart,\r\n  \"window60dStart\": $state.context.boundary.boundaries.window60dStart,\r\n  \"window90dStart\": $state.context.boundary.boundaries.window90dStart,\r\n  \"now\": $state.context.boundary.boundaries.now,\r\n  \"currentHourStart\": $state.context.boundary.boundaries.currentHourStart,\r\n  \"currentHourEnd\": $state.context.boundary.boundaries.currentHourEnd,\r\n  \"dayStart\": $state.context.boundary.boundaries.dayStart,\r\n  \"dayEnd\": $state.context.boundary.boundaries.dayEnd,\r\n  \"shiftStart\": $state.context.boundary.boundaries.shiftStart,\r\n  \"shiftEnd\": $state.context.boundary.boundaries.shiftEnd\r\n}",
+                "nextNodes": [
+                  "1671fd35-4a3d-4454-8935-fc5e8e3155dc"
+                ],
+                "query": "query OEEDashboardData(\r\n  $wcId: String!\r\n  $window24hStart: DateTime!\r\n  $window30dStart: DateTime!\r\n  $window60dStart: DateTime!\r\n  $window90dStart: DateTime!\r\n  $now: DateTime!\r\n  $currentHourStart: DateTime!\r\n  $currentHourEnd: DateTime!\r\n  $dayStart: DateTime!\r\n  $dayEnd: DateTime!\r\n  $shiftStart: DateTime\r\n  $shiftEnd: DateTime\r\n) {\r\n  \r\n  # OEE HOURLY: 24h Window (grouped by hour)\r\n  oeeHourly24h: oeeHourly(\r\n    where: {\r\n      _and: [\r\n        { workcenterId: { _eq: $wcId } }\r\n        { periodStartAt: { _gte: $window24hStart } }\r\n        { periodStartAt: { _lt: $now } }\r\n      ]\r\n    }\r\n    orderBy: [{ field: periodStartAt, direction: asc }]\r\n  ) {\r\n    edges {\r\n      node {\r\n        periodStartAt(round: { unit: hour })\r\n        scheduleId\r\n        shift\r\n        oee\r\n        availability\r\n        performance\r\n        quality\r\n        _aggregate {\r\n          goodUnits { sum }\r\n          scrapUnits { sum }\r\n          totalUnits { sum }\r\n          idealUnits { sum }\r\n          runMinutes { values }\r\n          downtimeMinutes { values }\r\n          plannedDowntimeMinutes { values }\r\n          scheduledTime { values }\r\n        }\r\n      }\r\n    }\r\n  }\r\n  \r\n  # OEE HOURLY: Day Window\r\n  oeeHourlyDay: oeeHourly(\r\n    where: {\r\n      _and: [\r\n        { workcenterId: { _eq: $wcId } }\r\n        { periodStartAt: { _gte: $dayStart } }\r\n        { periodStartAt: { _lt: $dayEnd } }\r\n      ]\r\n    }\r\n    orderBy: [{ field: periodStartAt, direction: asc }]\r\n  ) {\r\n    edges {\r\n      node {\r\n        periodStartAt(round: { unit: hour })\r\n        _aggregate {\r\n          goodUnits { sum }\r\n          scrapUnits { sum }\r\n          totalUnits { sum }\r\n          idealUnits { sum }\r\n          runMinutes { values }\r\n          downtimeMinutes { values }\r\n          plannedDowntimeMinutes { values }\r\n          scheduledTime { values }\r\n        }\r\n      }\r\n    }\r\n  }\r\n  \r\n  # OEE HOURLY: Shift Window\r\n  oeeHourlyShift: oeeHourly(\r\n    where: {\r\n      _and: [\r\n        { workcenterId: { _eq: $wcId } }\r\n        { periodStartAt: { _gte: $shiftStart } }\r\n        { periodStartAt: { _lt: $shiftEnd } }\r\n      ]\r\n    }\r\n    orderBy: [{ field: periodStartAt, direction: asc }]\r\n  ) {\r\n    edges {\r\n      node {\r\n        periodStartAt(round: { unit: hour })\r\n        _aggregate {\r\n          goodUnits { sum }\r\n          scrapUnits { sum }\r\n          totalUnits { sum }\r\n          idealUnits { sum }\r\n          runMinutes { values }\r\n          downtimeMinutes { values }\r\n          plannedDowntimeMinutes { values }\r\n          scheduledTime { values }\r\n        }\r\n      }\r\n    }\r\n  }\r\n  \r\n  # OEE HOURLY: 90-day Aggregate (for utilization & throughput)\r\n  oeeHourly90d: oeeHourly(\r\n    where: {\r\n      _and: [\r\n        { workcenterId: { _eq: $wcId } }\r\n        { periodStartAt: { _gte: $window90dStart } }\r\n        { periodStartAt: { _lt: $now } }\r\n      ]\r\n    }\r\n  ) {\r\n    edges {\r\n      node {\r\n        periodStartAt(round: { unit: day })\r\n        _aggregate {\r\n          goodUnits { sum }\r\n          scrapUnits { sum }\r\n          totalUnits { sum }\r\n          idealUnits { sum }\r\n          runMinutes { values }\r\n          downtimeMinutes { values }\r\n          plannedDowntimeMinutes { values }\r\n          scheduledTime { values }\r\n        }\r\n      }\r\n    }\r\n  }\r\n  \r\n  # CURRENT HOUR: WorkcenterHistory (for live calc)\r\n  currentHourHistory: workcenterHistory(\r\n    where: {\r\n      _and: [\r\n        { workcenterId: { _eq: $wcId } }\r\n        { occurAt: { _lt: $currentHourEnd } }\r\n        { _or: [\r\n          { endAt: { _isNull: true } }\r\n          { endAt: { _gte: $currentHourStart } }\r\n        ]}\r\n      ]\r\n    }\r\n    orderBy: [{ field: occurAt, direction: asc }]\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        occurAt\r\n        endAt\r\n        runTime\r\n        plannedDowntime\r\n        unplannedDowntime\r\n        mode { \r\n          id \r\n          code  \r\n          color\r\n          countAsProductionTime\r\n          countAsDowntime\r\n          countAsPlannedDowntime\r\n        }\r\n        state { id code }\r\n        event { id code }\r\n      }\r\n    }\r\n  }\r\n  \r\n  # CURRENT HOUR: ProductionLog (for live units)\r\n  currentHourProduction: productionLog(\r\n    where: {\r\n      _and: [\r\n        { workcenterId: { _eq: $wcId } }\r\n        { occurAt: { _gte: $currentHourStart } }\r\n        { occurAt: { _lt: $currentHourEnd } }\r\n      ]\r\n    }\r\n  ) {\r\n    edges {\r\n      node {\r\n        idealUnits\r\n        quantityGood\r\n        quantityScrap\r\n      }\r\n    }\r\n  }\r\n  \r\n  # DOWNTIME BY EVENT: 24h (grouped by eventId for top 5)\r\n  downtimeByEvent24h: workcenterHistory(\r\n    where: {\r\n      _and: [\r\n        { workcenterId: { _eq: $wcId } }\r\n        { occurAt: { _gte: $window24hStart } }\r\n        { occurAt: { _lt: $now } }\r\n        { mode: { countAsDowntime: { _eq: true } } }\r\n      ]\r\n    }\r\n  ) {\r\n    edges {\r\n      node {\r\n       stateId\r\n        state { id code }\r\n        _aggregate {\r\n          unplannedDowntime { sum }\r\n          plannedDowntime { sum }\r\n          id { count }\r\n        }\r\n      }\r\n    }\r\n  }\r\n  \r\n  # DOWNTIME BY EVENT: Shift (grouped by eventId for top 5)\r\n  downtimeByEventShift: workcenterHistory(\r\n    where: {\r\n      _and: [\r\n        { workcenterId: { _eq: $wcId } }\r\n        { occurAt: { _gte: $shiftStart } }\r\n        { occurAt: { _lt: $shiftEnd } }\r\n        { mode: { countAsDowntime: { _eq: true } } }\r\n      ]\r\n    }\r\n  ) {\r\n    edges {\r\n      node {\r\n       stateId\r\n        state { id code }\r\n        _aggregate {\r\n          unplannedDowntime { sum }\r\n          plannedDowntime { sum }\r\n          id { count }\r\n        }\r\n      }\r\n    }\r\n  }\r\n    \r\n# ============================================\r\n  # RELIABILITY METRICS: 0-30 DAYS (Current)\r\n  # ============================================\r\n  \r\n  # Operating Time: 0-30 days (excludes fault states)\r\n  operatingTime0to30d: workcenterHistory(\r\n    where: {\r\n      _and: [\r\n        { workcenterId: { _eq: $wcId } }\r\n        { occurAt: { _gte: $window30dStart } }\r\n        { occurAt: { _lt: $now } }\r\n        { mode: { countAsProductionTime: { _eq: true } } }\r\n        { state: { isFault: { _eq: false } } }\r\n      ]\r\n    }\r\n  ) {\r\n    edges {\r\n      node {\r\n        workcenterId\r\n        _aggregate {\r\n          runTime { sum }\r\n        }\r\n      }\r\n    }\r\n  }\r\n  \r\n  # Faults: 0-30 days (runTime = repair time)\r\n  faults0to30d: workcenterHistory(\r\n    where: {\r\n      _and: [\r\n        { workcenterId: { _eq: $wcId } }\r\n        { occurAt: { _gte: $window30dStart } }\r\n        { occurAt: { _lt: $now } }\r\n        { state: { isFault: { _eq: true } } }\r\n      ]\r\n    }\r\n  ) {\r\n    edges {\r\n      node {\r\n \r\n        workcenterId\r\n        _aggregate {\r\n          runTime { sum }\r\n          id { count }\r\n        }\r\n      }\r\n    }\r\n  }\r\n  \r\n  # ============================================\r\n  # RELIABILITY METRICS: 30-60 DAYS (Prior)\r\n  # ============================================\r\n  \r\n  # Operating Time: 30-60 days (excludes fault states)\r\n  operatingTime30to60d: workcenterHistory(\r\n    where: {\r\n      _and: [\r\n        { workcenterId: { _eq: $wcId } }\r\n        { occurAt: { _gte: $window60dStart } }\r\n        { occurAt: { _lt: $window30dStart } }\r\n        { mode: { countAsProductionTime: { _eq: true } } }\r\n        { state: { isFault: { _eq: false } } }\r\n      ]\r\n    }\r\n  ) {\r\n    edges {\r\n      node {\r\n        workcenterId\r\n        _aggregate {\r\n          runTime { sum }\r\n        }\r\n      }\r\n    }\r\n  }\r\n  \r\n  # Faults: 30-60 days (runTime = repair time)\r\n  faults30to60d: workcenterHistory(\r\n    where: {\r\n      _and: [\r\n        { workcenterId: { _eq: $wcId } }\r\n        { occurAt: { _gte: $window60dStart } }\r\n        { occurAt: { _lt: $window30dStart } }\r\n        { state: { isFault: { _eq: true } } }\r\n      ]\r\n    }\r\n  ) {\r\n    edges {\r\n      node {\r\n\r\n        workcenterId\r\n        _aggregate {\r\n          runTime { sum }\r\n          id { count }\r\n        }\r\n      }\r\n    }\r\n  }\r\n  \r\n  # ============================================\r\n  # RELIABILITY METRICS: 60-90 DAYS (Baseline)\r\n  # ============================================\r\n  \r\n  # Operating Time: 60-90 days (excludes fault states)\r\n  operatingTime60to90d: workcenterHistory(\r\n    where: {\r\n      _and: [\r\n        { workcenterId: { _eq: $wcId } }\r\n        { occurAt: { _gte: $window90dStart } }\r\n        { occurAt: { _lt: $window60dStart } }\r\n        { mode: { countAsProductionTime: { _eq: true } } }\r\n        { state: { isFault: { _eq: false } } }\r\n      ]\r\n    }\r\n  ) {\r\n    edges {\r\n      node {\r\n        workcenterId\r\n        _aggregate {\r\n          runTime { sum }\r\n        }\r\n      }\r\n    }\r\n  }\r\n  \r\n  # Faults: 60-90 days (runTime = repair time)\r\n  faults60to90d: workcenterHistory(\r\n    where: {\r\n      _and: [\r\n        { workcenterId: { _eq: $wcId } }\r\n        { occurAt: { _gte: $window90dStart } }\r\n        { occurAt: { _lt: $window60dStart } }\r\n        { state: { isFault: { _eq: true } } }\r\n      ]\r\n    }\r\n  ) {\r\n    edges {\r\n      node {\r\n\r\n       workcenterId\r\n        _aggregate {\r\n          runTime { sum }\r\n          id { count }\r\n        }\r\n      }\r\n    }\r\n  }\r\n}"
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Query"
+            },
+            "66c898f5-6762-4bcf-893f-03d44b9b4bb3": {
+              "id": "66c898f5-6762-4bcf-893f-03d44b9b4bb3",
+              "type": "savedTransformV2",
+              "selected": false,
+              "x": 565,
+              "y": 130,
+              "ports": [
+                {
+                  "id": "cml9ldnjd001k356rrjlihgje",
+                  "type": "default",
+                  "x": 557,
+                  "y": 161.73,
+                  "name": "cml9ldnjd001l356r99jfov8d",
+                  "parentNode": "66c898f5-6762-4bcf-893f-03d44b9b4bb3",
+                  "links": [
+                    "54824bc6-14e7-4986-a352-fbd30f2b951a"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml9ldnjd001m356r625boun9",
+                  "type": "default",
+                  "x": 823.41,
+                  "y": 161.73,
+                  "name": "cml9ldnjd001n356rofxaxucq",
+                  "parentNode": "66c898f5-6762-4bcf-893f-03d44b9b4bb3",
+                  "links": [
+                    "5222dbe5-96d4-4c4f-ac67-1eba5fa41a17"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transformScriptLanguage": "JavaScript",
+                "requestTransform": "$",
+                "responseTransform": "$",
+                "enableAdvancedConfiguration": false,
+                "nextNodes": [
+                  "10e94acd-8d5e-4fc1-8047-a4e24bf54038"
+                ],
+                "transformId": {
+                  "id": "oeeTimeBoundaryScript",
+                  "label": "OEE Time Boundary Script",
+                  "name": "OEE Time Boundary Script",
+                  "scriptLanguageId": "JavaScript"
+                }
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "OEE Time Boundaries Javascript Remote"
+            },
+            "1671fd35-4a3d-4454-8935-fc5e8e3155dc": {
+              "id": "1671fd35-4a3d-4454-8935-fc5e8e3155dc",
+              "type": "javascriptTransform",
+              "selected": false,
+              "x": 1295,
+              "y": 135,
+              "ports": [
+                {
+                  "id": "cml9pcb360056356rzgfozzbm",
+                  "type": "default",
+                  "x": 1287,
+                  "y": 166.73,
+                  "name": "cml9pcb360057356r21arp7z0",
+                  "parentNode": "1671fd35-4a3d-4454-8935-fc5e8e3155dc",
+                  "links": [
+                    "bba6d0ae-9cfe-4c7f-8814-21c4b1cd0eb0"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml9pcb360058356rbr3sour9",
+                  "type": "default",
+                  "x": 1441,
+                  "y": 166.73,
+                  "name": "cml9pcb360059356rubuqppz9",
+                  "parentNode": "1671fd35-4a3d-4454-8935-fc5e8e3155dc",
+                  "links": [
+                    "b1255594-0bf1-4fda-b5bc-0819e66d1beb"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "const workcenterId = $state.context.boundary.workcenterId;\r\nconst timezone = $state.context.boundary.timezone;\r\nconst workcenter = $state.context.boundary.workcenter;\r\nconst currentSchedule = $state.context.boundary.currentSchedule;\r\nconst boundaries = $state.context.boundary.boundaries;\r\n\r\nconst n = (v) => v || 0;\r\nconst clamp = (v) => Math.max(0, Math.min(1, v));\r\nconst pct = (v) => v != null ? (v * 100).toFixed(2) + \"%\" : \"N/A\";\r\n\r\nconst formatDuration = (ms) => {\r\n  if (ms == null || ms === 0) return \"0m\";\r\n  const hours = Math.floor(ms / 3600000);\r\n  const mins = Math.floor((ms % 3600000) / 60000);\r\n  return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;\r\n};\r\n\r\nconst formatPctChange = (change) => {\r\n  if (change == null) return \"N/A\";\r\n  const sign = change >= 0 ? \"+\" : \"\";\r\n  return sign + (change * 100).toFixed(1) + \"%\";\r\n};\r\n\r\nconst getDurationMs = (values) => {\r\n  if (!values || values.length === 0) return 0;\r\n  \r\n  let totalMs = 0;\r\n  values.forEach(v => {\r\n    if (typeof v === 'object' && v !== null && v.milliseconds !== undefined) {\r\n      totalMs += n(v.milliseconds);\r\n    }\r\n  });\r\n  return totalMs;\r\n};\r\n\r\nconst sumHourlyAggregates = (nodes) => {\r\n  return nodes.reduce((acc, node) => {\r\n    const agg = node._aggregate || {};\r\n    return {\r\n      goodUnits: acc.goodUnits + n(agg.goodUnits?.sum),\r\n      scrapUnits: acc.scrapUnits + n(agg.scrapUnits?.sum),\r\n      totalUnits: acc.totalUnits + n(agg.totalUnits?.sum),\r\n      idealUnits: acc.idealUnits + n(agg.idealUnits?.sum),\r\n      runMinutesMs: acc.runMinutesMs + getDurationMs(agg.runMinutes?.values),\r\n      downtimeMinutesMs: acc.downtimeMinutesMs + getDurationMs(agg.downtimeMinutes?.values),\r\n      plannedDowntimeMinutesMs: acc.plannedDowntimeMinutesMs + getDurationMs(agg.plannedDowntimeMinutes?.values),\r\n      scheduledTimeMs: acc.scheduledTimeMs + getDurationMs(agg.scheduledTime?.values)\r\n    };\r\n  }, {\r\n    goodUnits: 0,\r\n    scrapUnits: 0,\r\n    totalUnits: 0,\r\n    idealUnits: 0,\r\n    runMinutesMs: 0,\r\n    downtimeMinutesMs: 0,\r\n    plannedDowntimeMinutesMs: 0,\r\n    scheduledTimeMs: 0\r\n  });\r\n};\r\n\r\nconst calculateOEE = (totals) => {\r\n  const scheduledMs = totals.scheduledTimeMs;\r\n  const runMs = totals.runMinutesMs;\r\n  const goodUnits = totals.goodUnits;\r\n  const totalUnits = totals.totalUnits;\r\n  const idealUnits = totals.idealUnits;\r\n  \r\n  if (scheduledMs === 0) {\r\n    return {\r\n      availability: null,\r\n      performance: null,\r\n      quality: null,\r\n      oee: null,\r\n      isScheduled: false\r\n    };\r\n  }\r\n  \r\n  const availability = clamp(runMs / scheduledMs);\r\n  const performance = idealUnits > 0 ? clamp(totalUnits / idealUnits) : 1;\r\n  const quality = totalUnits > 0 ? clamp(goodUnits / totalUnits) : 1;\r\n  const oee = availability * performance * quality;\r\n  \r\n  return {\r\n    availability,\r\n    performance,\r\n    quality,\r\n    oee,\r\n    availabilityPct: pct(availability),\r\n    performancePct: pct(performance),\r\n    qualityPct: pct(quality),\r\n    oeePct: pct(oee),\r\n    isScheduled: true\r\n  };\r\n};\r\n\r\nconst sumOperatingTime = (nodes) => {\r\n  return nodes.reduce((sum, node) => {\r\n    return sum + n(node._aggregate?.runTime?.sum);\r\n  }, 0);\r\n};\r\n\r\nconst sumFaults = (nodes) => {\r\n  let faultCount = 0;\r\n  let repairTimeMs = 0;\r\n  \r\n  nodes.forEach(node => {\r\n    faultCount += n(node._aggregate?.id?.count);\r\n    repairTimeMs += n(node._aggregate?.runTime?.sum);\r\n  });\r\n  \r\n  return { faultCount, repairTimeMs };\r\n};\r\n\r\nconst calculateReliabilityPeriod = (operatingTimeMs, faultCount, repairTimeMs) => {\r\n  const mtbf = faultCount > 0 ? operatingTimeMs / faultCount : null;\r\n  const mttr = faultCount > 0 ? repairTimeMs / faultCount : null;\r\n  \r\n  return {\r\n    mtbf,\r\n    mtbfFormatted: mtbf != null ? formatDuration(mtbf) : \"N/A\",\r\n    mttr,\r\n    mttrFormatted: mttr != null ? formatDuration(mttr) : \"N/A\",\r\n    faultCount,\r\n    operatingTimeMs,\r\n    operatingTime: formatDuration(operatingTimeMs),\r\n    repairTimeMs,\r\n    repairTime: formatDuration(repairTimeMs)\r\n  };\r\n};\r\n\r\nconst oeeHourly24h = $.oeeHourly24h?.edges?.map(e => e.node) || [];\r\nconst oeeHourlyDay = $.oeeHourlyDay?.edges?.map(e => e.node) || [];\r\nconst oeeHourlyShift = $.oeeHourlyShift?.edges?.map(e => e.node) || [];\r\nconst oeeHourly90d = $.oeeHourly90d?.edges?.map(e => e.node) || [];\r\nconst currentHourHistory = $.currentHourHistory?.edges?.map(e => e.node) || [];\r\nconst currentHourProduction = $.currentHourProduction?.edges?.map(e => e.node) || [];\r\nconst downtimeByEvent24h = $.downtimeByEvent24h?.edges?.map(e => e.node) || [];\r\nconst downtimeByEventShift = $.downtimeByEventShift?.edges?.map(e => e.node) || [];\r\n\r\nconst operatingTime0to30dNodes = $.operatingTime0to30d?.edges?.map(e => e.node) || [];\r\nconst operatingTime30to60dNodes = $.operatingTime30to60d?.edges?.map(e => e.node) || [];\r\nconst operatingTime60to90dNodes = $.operatingTime60to90d?.edges?.map(e => e.node) || [];\r\nconst faults0to30dNodes = $.faults0to30d?.edges?.map(e => e.node) || [];\r\nconst faults30to60dNodes = $.faults30to60d?.edges?.map(e => e.node) || [];\r\nconst faults60to90dNodes = $.faults60to90d?.edges?.map(e => e.node) || [];\r\n\r\nconst totals24h = sumHourlyAggregates(oeeHourly24h);\r\nconst oee24h = calculateOEE(totals24h);\r\n\r\nconst metrics24h = {\r\n  ...oee24h,\r\n  ...totals24h,\r\n  runTime: formatDuration(totals24h.runMinutesMs),\r\n  downtime: formatDuration(totals24h.downtimeMinutesMs),\r\n  scheduledTime: formatDuration(totals24h.scheduledTimeMs),\r\n  hourCount: oeeHourly24h.length\r\n};\r\n\r\nconst totalsDay = sumHourlyAggregates(oeeHourlyDay);\r\nconst oeeDay = calculateOEE(totalsDay);\r\n\r\nconst metricsDay = {\r\n  ...oeeDay,\r\n  ...totalsDay,\r\n  runTime: formatDuration(totalsDay.runMinutesMs),\r\n  downtime: formatDuration(totalsDay.downtimeMinutesMs),\r\n  scheduledTime: formatDuration(totalsDay.scheduledTimeMs),\r\n  hourCount: oeeHourlyDay.length\r\n};\r\n\r\nconst totalsShift = sumHourlyAggregates(oeeHourlyShift);\r\nconst oeeShift = calculateOEE(totalsShift);\r\n\r\nconst metricsShift = {\r\n  ...oeeShift,\r\n  ...totalsShift,\r\n  runTime: formatDuration(totalsShift.runMinutesMs),\r\n  downtime: formatDuration(totalsShift.downtimeMinutesMs),\r\n  scheduledTime: formatDuration(totalsShift.scheduledTimeMs),\r\n  hourCount: oeeHourlyShift.length,\r\n  shiftStart: boundaries.shiftStart,\r\n  shiftEnd: boundaries.shiftEnd\r\n};\r\n\r\nconst totals90d = sumHourlyAggregates(oeeHourly90d);\r\nconst oee90d = calculateOEE(totals90d);\r\n\r\nconst metrics90d = {\r\n  ...oee90d,\r\n  ...totals90d,\r\n  runTime: formatDuration(totals90d.runMinutesMs),\r\n  downtime: formatDuration(totals90d.downtimeMinutesMs),\r\n  scheduledTime: formatDuration(totals90d.scheduledTimeMs),\r\n  dayCount: oeeHourly90d.length\r\n};\r\n\r\nconst currentHourStartMs = $moment(boundaries.currentHourStart).valueOf();\r\nconst currentHourEndMs = $moment(boundaries.currentHourEnd).valueOf();\r\nconst nowMs = $moment(boundaries.now).valueOf();\r\n\r\nlet currentHourRunMs = 0;\r\nlet currentHourDowntimeMs = 0;\r\nlet currentHourPlannedDowntimeMs = 0;\r\n\r\ncurrentHourHistory.forEach(rec => {\r\n  const occMs = $moment(rec.occurAt).valueOf();\r\n  const endMs = rec.endAt ? $moment(rec.endAt).valueOf() : nowMs;\r\n  \r\n  const overlapStart = Math.max(occMs, currentHourStartMs);\r\n  const overlapEnd = Math.min(endMs, currentHourEndMs, nowMs);\r\n  const duration = Math.max(0, overlapEnd - overlapStart);\r\n  \r\n  if (rec.mode?.countAsProductionTime) {\r\n    currentHourRunMs += duration;\r\n  }\r\n  if (rec.mode?.countAsDowntime) {\r\n    currentHourDowntimeMs += duration;\r\n  }\r\n  if (rec.mode?.countAsPlannedDowntime) {\r\n    currentHourPlannedDowntimeMs += duration;\r\n  }\r\n});\r\n\r\nconst currentHourGoodUnits = currentHourProduction.reduce((sum, p) => sum + n(p.quantityGood), 0);\r\nconst currentHourScrapUnits = currentHourProduction.reduce((sum, p) => sum + n(p.quantityScrap), 0);\r\nconst currentHourIdealUnits = currentHourProduction.reduce((sum, p) => sum + n(p.idealUnits), 0);\r\nconst currentHourTotalUnits = currentHourGoodUnits + currentHourScrapUnits;\r\n\r\nconst elapsedMs = nowMs - currentHourStartMs;\r\n\r\nconst currentHourTotals = {\r\n  goodUnits: currentHourGoodUnits,\r\n  scrapUnits: currentHourScrapUnits,\r\n  totalUnits: currentHourTotalUnits,\r\n  idealUnits: currentHourIdealUnits,\r\n  runMinutesMs: currentHourRunMs,\r\n  scheduledTimeMs: elapsedMs\r\n};\r\n\r\nconst currentHourOEE = calculateOEE(currentHourTotals);\r\n\r\nconst metricsCurrentHour = {\r\n  ...currentHourOEE,\r\n  ...currentHourTotals,\r\n  isLive: true,\r\n  elapsedMs,\r\n  elapsed: formatDuration(elapsedMs),\r\n  runTime: formatDuration(currentHourRunMs),\r\n  downtime: formatDuration(currentHourDowntimeMs)\r\n};\r\n\r\nconst calendarTime24h = 24 * 60 * 60 * 1000;\r\nconst loading24h = totals24h.scheduledTimeMs / calendarTime24h;\r\nconst teep24h = oee24h.oee != null ? oee24h.oee * loading24h : null;\r\n\r\nconst metricsTeep = {\r\n  teep: teep24h,\r\n  teepPct: pct(teep24h),\r\n  loading: loading24h,\r\n  loadingPct: pct(loading24h),\r\n  calendarTimeMs: calendarTime24h,\r\n  scheduledTimeMs: totals24h.scheduledTimeMs\r\n};\r\n\r\nconst opTime0to30d = sumOperatingTime(operatingTime0to30dNodes);\r\nconst opTime30to60d = sumOperatingTime(operatingTime30to60dNodes);\r\nconst opTime60to90d = sumOperatingTime(operatingTime60to90dNodes);\r\n\r\nconst faults0to30d = sumFaults(faults0to30dNodes);\r\nconst faults30to60d = sumFaults(faults30to60dNodes);\r\nconst faults60to90d = sumFaults(faults60to90dNodes);\r\n\r\nconst reliability0to30d = calculateReliabilityPeriod(opTime0to30d, faults0to30d.faultCount, faults0to30d.repairTimeMs);\r\nconst reliability30to60d = calculateReliabilityPeriod(opTime30to60d, faults30to60d.faultCount, faults30to60d.repairTimeMs);\r\nconst reliability60to90d = calculateReliabilityPeriod(opTime60to90d, faults60to90d.faultCount, faults60to90d.repairTimeMs);\r\n\r\nconst opTime90d = opTime0to30d + opTime30to60d + opTime60to90d;\r\nconst faults90dTotal = {\r\n  faultCount: faults0to30d.faultCount + faults30to60d.faultCount + faults60to90d.faultCount,\r\n  repairTimeMs: faults0to30d.repairTimeMs + faults30to60d.repairTimeMs + faults60to90d.repairTimeMs\r\n};\r\nconst reliability90d = calculateReliabilityPeriod(opTime90d, faults90dTotal.faultCount, faults90dTotal.repairTimeMs);\r\n\r\nconst mtbfChangeVsPrior = (reliability30to60d.mtbf != null && reliability30to60d.mtbf > 0) \r\n  ? (reliability0to30d.mtbf - reliability30to60d.mtbf) / reliability30to60d.mtbf \r\n  : null;\r\n\r\nconst mttrChangeVsPrior = (reliability30to60d.mttr != null && reliability30to60d.mttr > 0) \r\n  ? (reliability0to30d.mttr - reliability30to60d.mttr) / reliability30to60d.mttr \r\n  : null;\r\n\r\nconst getMtbfTrend = (change) => {\r\n  if (change == null) return \"unknown\";\r\n  if (change > 0.1) return \"improving\";\r\n  if (change < -0.1) return \"degrading\";\r\n  return \"stable\";\r\n};\r\n\r\nconst getMttrTrend = (change) => {\r\n  if (change == null) return \"unknown\";\r\n  if (change < -0.1) return \"improving\";\r\n  if (change > 0.1) return \"degrading\";\r\n  return \"stable\";\r\n};\r\n\r\nconst metricsReliability = {\r\n  current: {\r\n    ...reliability0to30d,\r\n    periodLabel: \"Last 30 days\",\r\n    periodDays: 30\r\n  },\r\n  prior: {\r\n    ...reliability30to60d,\r\n    periodLabel: \"30-60 days ago\",\r\n    periodDays: 30\r\n  },\r\n  baseline: {\r\n    ...reliability60to90d,\r\n    periodLabel: \"60-90 days ago\",\r\n    periodDays: 30\r\n  },\r\n  overall: {\r\n    ...reliability90d,\r\n    periodLabel: \"Last 90 days\",\r\n    periodDays: 90\r\n  },\r\n  trend: {\r\n    mtbfChangeVsPrior,\r\n    mtbfChangeFormatted: formatPctChange(mtbfChangeVsPrior),\r\n    mtbfTrend: getMtbfTrend(mtbfChangeVsPrior),\r\n    mttrChangeVsPrior,\r\n    mttrChangeFormatted: formatPctChange(mttrChangeVsPrior),\r\n    mttrTrend: getMttrTrend(mttrChangeVsPrior)\r\n  },\r\n  summary: {\r\n    mtbf: reliability0to30d.mtbf,\r\n    mtbfFormatted: reliability0to30d.mtbfFormatted,\r\n    mtbfTrendIcon: getMtbfTrend(mtbfChangeVsPrior) === \"improving\" ? \"▲\" : getMtbfTrend(mtbfChangeVsPrior) === \"degrading\" ? \"▼\" : \"→\",\r\n    mtbfTrendLabel: formatPctChange(mtbfChangeVsPrior) + \" vs prior 30d\",\r\n    mttr: reliability0to30d.mttr,\r\n    mttrFormatted: reliability0to30d.mttrFormatted,\r\n    mttrTrendIcon: getMttrTrend(mttrChangeVsPrior) === \"improving\" ? \"▼\" : getMttrTrend(mttrChangeVsPrior) === \"degrading\" ? \"▲\" : \"→\",\r\n    mttrTrendLabel: formatPctChange(mttrChangeVsPrior) + \" vs prior 30d\"\r\n  }\r\n};\r\n\r\nconst calendarTime90d = 90 * 24 * 60 * 60 * 1000;\r\nconst utilization90d = calendarTime90d > 0 ? totals90d.runMinutesMs / calendarTime90d : null;\r\nconst operatingHours90d = totals90d.runMinutesMs / 3600000;\r\nconst throughput90d = operatingHours90d > 0 ? totals90d.totalUnits / operatingHours90d : null;\r\nconst worldClassOEE = 0.85;\r\nconst oeeGap90d = oee90d.oee != null ? worldClassOEE - oee90d.oee : null;\r\n\r\nconst metricsEfficiency = {\r\n  utilization: utilization90d,\r\n  utilizationPct: pct(utilization90d),\r\n  throughput: throughput90d != null ? throughput90d.toFixed(2) + \" units/hr\" : \"N/A\",\r\n  throughputRaw: throughput90d,\r\n  oeeGap: oeeGap90d,\r\n  oeeGapPct: oeeGap90d != null ? (oeeGap90d * 100).toFixed(2) + \"%\" : \"N/A\",\r\n  worldClassOEE: pct(worldClassOEE),\r\n  windowDays: 90,\r\n  totals: {\r\n    runTimeMs: totals90d.runMinutesMs,\r\n    runTime: formatDuration(totals90d.runMinutesMs),\r\n    totalUnits: totals90d.totalUnits,\r\n    goodUnits: totals90d.goodUnits,\r\n    scrapUnits: totals90d.scrapUnits\r\n  }\r\n};\r\n\r\nconst downtimeMap24h = {};\r\ndowntimeByEvent24h.forEach(node => {\r\n  const eventId = node.eventId;\r\n  if (!downtimeMap24h[eventId]) {\r\n    downtimeMap24h[eventId] = {\r\n      eventId,\r\n      eventCode: node.event?.code,\r\n      totalMs: 0,\r\n      occurrences: 0\r\n    };\r\n  }\r\n  downtimeMap24h[eventId].totalMs += n(node._aggregate?.unplannedDowntime?.sum) + n(node._aggregate?.plannedDowntime?.sum);\r\n  downtimeMap24h[eventId].occurrences += n(node._aggregate?.id?.count);\r\n});\r\n\r\nconst topDowntimes24h = Object.values(downtimeMap24h)\r\n  .sort((a, b) => b.totalMs - a.totalMs)\r\n  .slice(0, 5)\r\n  .map(d => ({\r\n    ...d,\r\n    totalFormatted: formatDuration(d.totalMs)\r\n  }));\r\n\r\nconst downtimeMapShift = {};\r\ndowntimeByEventShift.forEach(node => {\r\n  const eventId = node.eventId;\r\n  if (!downtimeMapShift[eventId]) {\r\n    downtimeMapShift[eventId] = {\r\n      eventId,\r\n      eventCode: node.event?.code,\r\n      totalMs: 0,\r\n      occurrences: 0\r\n    };\r\n  }\r\n  downtimeMapShift[eventId].totalMs += n(node._aggregate?.unplannedDowntime?.sum) + n(node._aggregate?.plannedDowntime?.sum);\r\n  downtimeMapShift[eventId].occurrences += n(node._aggregate?.id?.count);\r\n});\r\n\r\nconst topDowntimesShift = Object.values(downtimeMapShift)\r\n  .sort((a, b) => b.totalMs - a.totalMs)\r\n  .slice(0, 5)\r\n  .map(d => ({\r\n    ...d,\r\n    totalFormatted: formatDuration(d.totalMs)\r\n  }));\r\n\r\nconst idealCycleTimeMs = totalsShift.idealUnits > 0 \r\n  ? totalsShift.scheduledTimeMs / totalsShift.idealUnits \r\n  : 0;\r\n\r\nconst qualityLossUnits = totalsShift.scrapUnits;\r\nconst performanceLossUnits = Math.max(0, totalsShift.idealUnits - totalsShift.totalUnits);\r\n\r\nconst lossAnalysis = {\r\n  plannedDowntimeMs: totalsShift.plannedDowntimeMinutesMs,\r\n  unplannedDowntimeMs: totalsShift.downtimeMinutesMs - totalsShift.plannedDowntimeMinutesMs,\r\n  plannedDowntime: formatDuration(totalsShift.plannedDowntimeMinutesMs),\r\n  unplannedDowntime: formatDuration(totalsShift.downtimeMinutesMs - totalsShift.plannedDowntimeMinutesMs),\r\n  performanceLossUnits,\r\n  performanceLossMs: performanceLossUnits * idealCycleTimeMs,\r\n  performanceLoss: formatDuration(performanceLossUnits * idealCycleTimeMs),\r\n  qualityLossUnits,\r\n  qualityLossMs: qualityLossUnits * idealCycleTimeMs,\r\n  qualityLoss: formatDuration(qualityLossUnits * idealCycleTimeMs),\r\n  idealCycleTimeMs\r\n};\r\n\r\nconst lastHistory = currentHourHistory[currentHourHistory.length - 1];\r\nconst currentStatus = lastHistory ? {\r\n  historyId: lastHistory.id,\r\n  startAt: lastHistory.occurAt,\r\n  durationMs: nowMs - $moment(lastHistory.occurAt).valueOf(),\r\n  duration: formatDuration(nowMs - $moment(lastHistory.occurAt).valueOf()),\r\n  mode: lastHistory.mode,\r\n  state: lastHistory.state,\r\n  event: lastHistory.event\r\n} : null;\r\n\r\nreturn {\r\n  workcenterId,\r\n  workcenter,\r\n  timezone,\r\n  currentSchedule,\r\n  lastRefresh: boundaries.now,\r\n  \r\n  currentStatus,\r\n  \r\n  metrics: {\r\n    currentHour: metricsCurrentHour,\r\n    shift: metricsShift,\r\n    day: metricsDay,\r\n    rolling24h: metrics24h,\r\n    rolling90d: metrics90d\r\n  },\r\n  \r\n  teep: metricsTeep,\r\n  reliability: metricsReliability,\r\n  efficiency: metricsEfficiency,\r\n  lossAnalysis,\r\n  \r\n  topDowntimes: {\r\n    shift: topDowntimesShift,\r\n    rolling24h: topDowntimes24h\r\n  }\r\n};",
+                "nextNodes": [
+                  "328648e4-cc90-4e73-8c8d-fefcfa631c3f"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": true,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "JavaScript"
+            },
+            "bfbe8b0c-f835-443f-87f7-dc7df2d76713": {
+              "id": "bfbe8b0c-f835-443f-87f7-dc7df2d76713",
+              "type": "transform",
+              "selected": false,
+              "x": 375,
+              "y": 20,
+              "ports": [
+                {
+                  "id": "cmlb0r6nq0048356rd0z2s341",
+                  "type": "default",
+                  "x": 367,
+                  "y": 51.73,
+                  "name": "cmlb0r6nq0049356ra8yeydea",
+                  "parentNode": "bfbe8b0c-f835-443f-87f7-dc7df2d76713",
+                  "links": [
+                    "2cae30e2-2ab8-494e-abde-686285529ec8",
+                    "c74318d6-5e60-404a-8d94-ed8685cd7fe8"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmlb0r6nq004a356r2zs1u6nx",
+                  "type": "default",
+                  "x": 599.17,
+                  "y": 51.73,
+                  "name": "cmlb0r6nq004b356r2539ya09",
+                  "parentNode": "bfbe8b0c-f835-443f-87f7-dc7df2d76713",
+                  "links": [
+                    "54824bc6-14e7-4986-a352-fbd30f2b951a"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "66c898f5-6762-4bcf-893f-03d44b9b4bb3"
+                ],
+                "transform": "{\r\n  \"wcId\":  $coalesce([$metadata.querystring.wcId, $components.Screen.context.workcenterId, \"wc-vmc-c2\"]),\r\n  \"tz\": $coalesce([$metadata.settings.TimeZone, $momentTzGuess()])\r\n    }"
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Get Dashboard Runtime properties"
+            },
+            "328648e4-cc90-4e73-8c8d-fefcfa631c3f": {
+              "id": "328648e4-cc90-4e73-8c8d-fefcfa631c3f",
+              "type": "transform",
+              "selected": true,
+              "x": 1505,
+              "y": 125,
+              "ports": [
+                {
+                  "id": "cmlb0w4fr00bk356rpy32kdpg",
+                  "type": "default",
+                  "x": 1497,
+                  "y": 156.73,
+                  "name": "cmlb0w4fr00bl356rfo2co12g",
+                  "parentNode": "328648e4-cc90-4e73-8c8d-fefcfa631c3f",
+                  "links": [
+                    "b1255594-0bf1-4fda-b5bc-0819e66d1beb"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmlb0w4fr00bm356rvzfcm52w",
+                  "type": "default",
+                  "x": 1651,
+                  "y": 156.73,
+                  "name": "cmlb0w4fr00bn356rxyl1e7hf",
+                  "parentNode": "328648e4-cc90-4e73-8c8d-fefcfa631c3f",
+                  "links": [
+                    "ac362fa6-21a8-4938-951f-aa83ab631fcb"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "1590ec46-48b8-425c-a6b4-4c7037dce6b6"
+                ],
+                "transform": "($data:= $;\r\n$components.Screen.fn.setContext($data))"
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "JSONata"
+            }
+          }
+        }
+      ],
+      "name": "OEE Real Time Calculations - Web Flow",
+      "type": "Screen",
+      "version": "0.0.16",
+      "walkthrough": {
+        "steps": []
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "api": "application",
+  "modelName": "Module",
+  "payload": [
+    {
+      "id": "machineDataApp",
+      "name": "Machine Data App",
+      "description": "For testing and user support",
+      "moduleGroupId": "machineTelemetrySiteApplication",
+      "_customFields": {
+        "_externalId": null
+      }
+    }
+  ],
+  "metadata": {
+    "insertEarly": true
+  }
+}

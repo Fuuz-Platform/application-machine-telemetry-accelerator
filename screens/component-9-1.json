@@ -1,0 +1,4629 @@
+{
+  "header": {
+    "id": "alarmsDashboard",
+    "name": "Alarms Dashboard",
+    "description": "",
+    "active": true,
+    "edgeScreen": false,
+    "forceFullscreen": false,
+    "moduleId": "machineDataApp",
+    "substitutesScreenId": null,
+    "isWidget": false
+  },
+  "version": {
+    "id": "cml6m7kbqrm9x01a5h16k9sv7",
+    "number": "0.0.1",
+    "description": "",
+    "screenId": "alarmsDashboard",
+    "design": {
+      "components": [
+        {
+          "name": "Alarm Dashboard v0.0.2",
+          "tabTitle": "Alarm Monitoring",
+          "type": "canvas",
+          "props": {
+            "design": {
+              "ROOT": {
+                "type": {
+                  "resolvedName": "Screen"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexDirection": "column",
+                  "flexWrap": false,
+                  "alignItems": "stretch",
+                  "justifyContent": "flex-start",
+                  "width": "100%",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "flowsDelay": 0,
+                  "removeOuterMargin": true,
+                  "background": "paper",
+                  "forceFullscreen": true,
+                  "intervals": [],
+                  "pageLoadAction": "(\n  $time := $moment();\n  $thirtyDaysAgo := $moment().subtract(30, 'days').toISOString();\n  \n  $statement := 'query GetAlarmCounts($where: AlarmWhereInput) {\n    alarm(where: $where) {\n      edges {\n        node {\n          alarmStateId\n          _aggregate {\n            id {\n              count\n            }\n          }\n        }\n      }\n    }\n  }';\n  \n  $variables := {\n    'where': {\n      'triggeredAt': {\n        '_gte': $thirtyDaysAgo\n      }\n    }\n  };\n  \n  $result := $query({'statement': $statement, 'variables': $variables});\n  $alarmGroups := $result.alarm.edges.node;\n  \n  $activeCount := $alarmGroups[alarmStateId = 'ACTIVE']._aggregate.id.count ? $alarmGroups[alarmStateId = 'ACTIVE']._aggregate.id.count : 0;\n  $acknowledgedCount := $alarmGroups[alarmStateId = 'ACTIVE_ACK']._aggregate.id.count ? $alarmGroups[alarmStateId = 'ACTIVE_ACK']._aggregate.id.count : 0;\n  \n  $clearedUnackCount := $alarmGroups[alarmStateId = 'CLEARED_UNACK']._aggregate.id.count ? $alarmGroups[alarmStateId = 'CLEARED_UNACK']._aggregate.id.count : 0;\n  $clearedAckCount := $alarmGroups[alarmStateId = 'CLEARED_ACK']._aggregate.id.count ? $alarmGroups[alarmStateId = 'CLEARED_ACK']._aggregate.id.count : 0;\n  $clearedCount := $clearedUnackCount + $clearedAckCount;\n  \n  $totalCount := $sum($alarmGroups._aggregate.id.count);\n  \n  $alarmRatePerHour := $round($totalCount / (30 * 24), 1);\n  $alarmRateColor := $alarmRatePerHour < 10 ? '#4CAF50' : '#F44336';\n  \n  $context := {\n    'activeCount': $activeCount,\n    'acknowledgedCount': $acknowledgedCount,\n    'clearedCount': $clearedCount,\n    'totalCount': $totalCount,\n    'alarmRatePerHour': $alarmRatePerHour,\n    'alarmRateColor': $alarmRateColor,\n    'lastRefreshedAt': $moment($time).format('MM/DD/YYYY HH:mm:ss')\n  };\n  \n  $components.Screen.fn.setContext($context);\n  \n  $context\n)",
+                  "description": "ISA 101 compliant alarm monitoring dashboard"
+                },
+                "displayName": "Screen",
+                "custom": {
+                  "elementName": "Screen",
+                  "version": "0.0.2",
+                  "elementCounts": {
+                    "Table": 3,
+                    "Table Column": 44,
+                    "Container": 3
+                  }
+                },
+                "parent": null,
+                "hidden": false,
+                "nodes": [
+                  "AlarmHeaderContainer",
+                  "AlarmBrandSeparator",
+                  "AlarmMainContent"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmHeaderContainer": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 6,
+                  "margin": 0,
+                  "flexWrap": true,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "auto",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "full",
+                    "border": "0px none "
+                  },
+                  "justifyItems": "center",
+                  "style": {},
+                  "background": "paper"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmHeaderContainer"
+                },
+                "parent": "ROOT",
+                "hidden": false,
+                "nodes": [
+                  "AlarmTitleGroup",
+                  "AlarmRefreshGroup"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmTitleGroup": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "center",
+                  "width": "auto",
+                  "height": "50",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {},
+                  "gap": "12px"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmTitleGroup"
+                },
+                "parent": "AlarmHeaderContainer",
+                "hidden": false,
+                "nodes": [
+                  "AlarmIconContainer",
+                  "AlarmTitleContainer"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmIconContainer": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "width": "40",
+                  "height": "40",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 8,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "center",
+                  "style": {},
+                  "customBackground": "#ef444420"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmIconContainer"
+                },
+                "parent": "AlarmTitleGroup",
+                "hidden": false,
+                "nodes": [
+                  "AlarmIcon"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmIcon": {
+                "type": {
+                  "resolvedName": "Icon"
+                },
+                "isCanvas": false,
+                "props": {
+                  "icon": {
+                    "icon": "bell-exclamation",
+                    "color": "inherit",
+                    "variant": "light",
+                    "size": "icon"
+                  },
+                  "title": "Alarm Dashboard",
+                  "height": "32px",
+                  "width": "32px",
+                  "color": "#ef4444",
+                  "variant": "light",
+                  "size": "lg"
+                },
+                "displayName": "Icon",
+                "custom": {
+                  "elementName": "AlarmIcon"
+                },
+                "parent": "AlarmIconContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "AlarmTitleContainer": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "center",
+                  "alignItems": "flex-start",
+                  "width": "auto",
+                  "height": "50",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmTitleContainer"
+                },
+                "parent": "AlarmTitleGroup",
+                "hidden": false,
+                "nodes": [
+                  "AlarmTitle"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmTitle": {
+                "type": {
+                  "resolvedName": "RichText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "width": "auto",
+                  "height": "auto",
+                  "content": {
+                    "blocks": [
+                      {
+                        "key": "alarm-title",
+                        "text": "Alarm Management Dashboard\nISA 101 Real-Time Monitoring - Last 30 Days",
+                        "type": "unstyled",
+                        "depth": 0,
+                        "inlineStyleRanges": [
+                          {
+                            "offset": 0,
+                            "length": 27,
+                            "style": "fontfamily-Roboto"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 27,
+                            "style": "fontsize-20"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 27,
+                            "style": "BOLD"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 27,
+                            "style": "color-#1e293b"
+                          }
+                        ],
+                        "entityRanges": [],
+                        "data": {}
+                      }
+                    ],
+                    "entityMap": {}
+                  }
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "AlarmTitle"
+                },
+                "parent": "AlarmTitleContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "AlarmRefreshGroup": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "center",
+                  "alignItems": "flex-end",
+                  "width": "auto",
+                  "height": "50",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "end",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmRefreshGroup"
+                },
+                "parent": "AlarmHeaderContainer",
+                "hidden": false,
+                "nodes": [
+                  "AlarmRefreshForm"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmRefreshForm": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "isCanvas": true,
+                "props": {
+                  "query": {
+                    "api": "Application",
+                    "query": null,
+                    "dataPath": "edges[0]",
+                    "dataTransform": {
+                      "transform": null,
+                      "remote": true
+                    },
+                    "dataSubscription": {
+                      "enabled": false
+                    },
+                    "autoLoad": false,
+                    "fields": [
+                      "id"
+                    ],
+                    "disableDataChangeIndicator": false,
+                    "dataChangeIndicatorSize": "normal"
+                  },
+                  "blockNavigationWhenDirty": false,
+                  "enableConfirmOnDataChanged": false
+                },
+                "displayName": "Form",
+                "custom": {
+                  "elementName": "AlarmRefreshForm"
+                },
+                "parent": "AlarmRefreshGroup",
+                "hidden": false,
+                "nodes": [
+                  "AlarmRefreshFormContainer"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmRefreshFormContainer": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-end",
+                  "alignItems": "center",
+                  "width": "auto",
+                  "height": "50",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "end",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmRefreshFormContainer"
+                },
+                "parent": "AlarmRefreshForm",
+                "hidden": false,
+                "nodes": [
+                  "AlarmRefreshText"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmRefreshText": {
+                "type": {
+                  "resolvedName": "DisplayText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 0,
+                  "width": "auto",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "display",
+                  "label": "lastRefresh",
+                  "justifyContent": "flex-end",
+                  "alignTextItems": "center",
+                  "labelFontSize": "caption",
+                  "fontSize": "caption",
+                  "formElement": "AlarmRefreshForm",
+                  "labelPosition": {
+                    "id": "null",
+                    "label": "None"
+                  },
+                  "labelFontColor": "#64748b",
+                  "disabled": true,
+                  "query": {},
+                  "dataPath": "lastRefresh",
+                  "target": {
+                    "dataPath": null
+                  },
+                  "fontColor": "#64748b",
+                  "data": {
+                    "__transform": "'Last Refreshed: ' & $components.Screen.context.lastRefreshedAt",
+                    "__cacheKey": "refresh",
+                    "__dynamicFields": {
+                      "payload": [],
+                      "context": [
+                        "components.Screen.context.lastRefreshedAt"
+                      ]
+                    }
+                  }
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "AlarmRefreshText"
+                },
+                "parent": "AlarmRefreshFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "AlarmBrandSeparator": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "4px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {
+                    "background-image": "linear-gradient(90deg, #dc2626, #f59e0b, #10b981)"
+                  },
+                  "data": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmBrandSeparator"
+                },
+                "parent": "ROOT",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "AlarmMainContent": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 6,
+                  "flexWrap": true,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "stretch",
+                  "style": {},
+                  "gap": "20px"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmMainContent"
+                },
+                "parent": "ROOT",
+                "hidden": false,
+                "nodes": [
+                  "AlarmKPIRow",
+                  "AlarmActiveSection",
+                  "AlarmAcknowledgedSection",
+                  "AlarmClearedSection"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmKPIRow": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 6,
+                  "flexWrap": true,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "auto",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "stretch",
+                  "style": {},
+                  "gap": "12px"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmKPIRow"
+                },
+                "parent": "AlarmMainContent",
+                "hidden": false,
+                "nodes": [
+                  "AlarmCardActive",
+                  "AlarmCardAcknowledged",
+                  "AlarmCardCleared",
+                  "AlarmCardRate",
+                  "AlarmCardTotal"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmCardActive": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 6,
+                  "margin": 6,
+                  "flexWrap": true,
+                  "flexDirection": "column",
+                  "justifyContent": "space-between",
+                  "alignItems": "stretch",
+                  "width": "300",
+                  "height": "110px",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 8,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "single",
+                    "border": "1px solid #e2e8f0"
+                  },
+                  "justifyItems": "stretch",
+                  "style": {
+                    "min-width": "240px",
+                    "box-shadow": "2px 2px 6px #dc2626"
+                  },
+                  "background": "paper",
+                  "gap": "8px"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmCardActive"
+                },
+                "parent": "AlarmKPIRow",
+                "hidden": false,
+                "nodes": [
+                  "AlarmCardActiveContent"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmCardActiveContent": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "stretch",
+                  "style": {},
+                  "gap": "4px"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmCardActiveContent"
+                },
+                "parent": "AlarmCardActive",
+                "hidden": false,
+                "nodes": [
+                  "AlarmCardActiveHeader",
+                  "AlarmCardActiveForm"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmCardActiveHeader": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "space-between",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "35",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmCardActiveHeader"
+                },
+                "parent": "AlarmCardActiveContent",
+                "hidden": false,
+                "nodes": [
+                  "AlarmCardActiveIconContainer",
+                  "AlarmCardActiveLabel"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmCardActiveIconContainer": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "width": "30",
+                  "height": "30",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 6,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "center",
+                  "style": {},
+                  "customBackground": "#fee2e2"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmCardActiveIconContainer"
+                },
+                "parent": "AlarmCardActiveHeader",
+                "hidden": false,
+                "nodes": [
+                  "AlarmCardActiveIcon"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmCardActiveIcon": {
+                "type": {
+                  "resolvedName": "Icon"
+                },
+                "isCanvas": false,
+                "props": {
+                  "icon": {
+                    "icon": "bell-exclamation",
+                    "color": "inherit",
+                    "variant": "solid",
+                    "size": "icon"
+                  },
+                  "title": "Active Alarms",
+                  "height": "18px",
+                  "width": "18px",
+                  "color": "#dc2626",
+                  "variant": "solid",
+                  "size": "sm"
+                },
+                "displayName": "Icon",
+                "custom": {
+                  "elementName": "AlarmCardActiveIcon"
+                },
+                "parent": "AlarmCardActiveIconContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "AlarmCardActiveLabel": {
+                "type": {
+                  "resolvedName": "RichText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "width": "auto",
+                  "height": "100%",
+                  "content": {
+                    "blocks": [
+                      {
+                        "key": "alarmcardactive-label",
+                        "text": "Active Alarms",
+                        "type": "unstyled",
+                        "depth": 0,
+                        "inlineStyleRanges": [
+                          {
+                            "offset": 0,
+                            "length": 13,
+                            "style": "fontfamily-Roboto"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 13,
+                            "style": "fontsize-11"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 13,
+                            "style": "BOLD"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 13,
+                            "style": "color-#64748b"
+                          }
+                        ],
+                        "entityRanges": [],
+                        "data": {}
+                      }
+                    ],
+                    "entityMap": {}
+                  }
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "AlarmCardActiveLabel"
+                },
+                "parent": "AlarmCardActiveHeader",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "AlarmCardActiveForm": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "isCanvas": true,
+                "props": {
+                  "query": {
+                    "api": "Application",
+                    "query": null,
+                    "dataPath": "edges[0]",
+                    "dataTransform": {
+                      "transform": null,
+                      "remote": true
+                    },
+                    "dataSubscription": {
+                      "enabled": false
+                    },
+                    "autoLoad": false,
+                    "fields": [
+                      "id"
+                    ],
+                    "disableDataChangeIndicator": false,
+                    "dataChangeIndicatorSize": "normal"
+                  },
+                  "blockNavigationWhenDirty": false,
+                  "enableConfirmOnDataChanged": false
+                },
+                "displayName": "Form",
+                "custom": {
+                  "elementName": "AlarmCardActiveForm"
+                },
+                "parent": "AlarmCardActiveContent",
+                "hidden": false,
+                "nodes": [
+                  "AlarmCardActiveFormContainer"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmCardActiveFormContainer": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "center",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmCardActiveFormContainer"
+                },
+                "parent": "AlarmCardActiveForm",
+                "hidden": false,
+                "nodes": [
+                  "AlarmCardActiveValue"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmCardActiveValue": {
+                "type": {
+                  "resolvedName": "DisplayText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 0,
+                  "width": "auto",
+                  "height": "100%",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "display",
+                  "label": "activeCount",
+                  "justifyContent": "center",
+                  "alignTextItems": "center",
+                  "labelFontSize": "body1",
+                  "fontSize": "h3",
+                  "formElement": "AlarmCardActiveForm",
+                  "labelPosition": {
+                    "id": "null",
+                    "label": "None"
+                  },
+                  "labelFontColor": "#64748b",
+                  "disabled": true,
+                  "query": {},
+                  "dataPath": "activeCount",
+                  "target": {
+                    "dataPath": null
+                  },
+                  "fontColor": "#dc2626",
+                  "data": {
+                    "__transform": "$components.Screen.context.activeCount",
+                    "__cacheKey": "activeCo",
+                    "__dynamicFields": {
+                      "payload": [],
+                      "context": [
+                        "components.Screen.context.activeCount"
+                      ]
+                    }
+                  }
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "AlarmCardActiveValue"
+                },
+                "parent": "AlarmCardActiveFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "AlarmCardAcknowledged": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 6,
+                  "margin": 6,
+                  "flexWrap": true,
+                  "flexDirection": "column",
+                  "justifyContent": "space-between",
+                  "alignItems": "stretch",
+                  "width": "300",
+                  "height": "110px",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 8,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "single",
+                    "border": "1px solid #e2e8f0"
+                  },
+                  "justifyItems": "stretch",
+                  "style": {
+                    "min-width": "240px",
+                    "box-shadow": "2px 2px 6px #f97316"
+                  },
+                  "background": "paper",
+                  "gap": "8px"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmCardAcknowledged"
+                },
+                "parent": "AlarmKPIRow",
+                "hidden": false,
+                "nodes": [
+                  "AlarmCardAcknowledgedContent"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmCardAcknowledgedContent": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "stretch",
+                  "style": {},
+                  "gap": "4px"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmCardAcknowledgedContent"
+                },
+                "parent": "AlarmCardAcknowledged",
+                "hidden": false,
+                "nodes": [
+                  "AlarmCardAcknowledgedHeader",
+                  "AlarmCardAcknowledgedForm"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmCardAcknowledgedHeader": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "space-between",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "35",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmCardAcknowledgedHeader"
+                },
+                "parent": "AlarmCardAcknowledgedContent",
+                "hidden": false,
+                "nodes": [
+                  "AlarmCardAcknowledgedIconContainer",
+                  "AlarmCardAcknowledgedLabel"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmCardAcknowledgedIconContainer": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "width": "30",
+                  "height": "30",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 6,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "center",
+                  "style": {},
+                  "customBackground": "#fed7aa"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmCardAcknowledgedIconContainer"
+                },
+                "parent": "AlarmCardAcknowledgedHeader",
+                "hidden": false,
+                "nodes": [
+                  "AlarmCardAcknowledgedIcon"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmCardAcknowledgedIcon": {
+                "type": {
+                  "resolvedName": "Icon"
+                },
+                "isCanvas": false,
+                "props": {
+                  "icon": {
+                    "icon": "check-circle",
+                    "color": "inherit",
+                    "variant": "solid",
+                    "size": "icon"
+                  },
+                  "title": "Acknowledged",
+                  "height": "18px",
+                  "width": "18px",
+                  "color": "#f97316",
+                  "variant": "solid",
+                  "size": "sm"
+                },
+                "displayName": "Icon",
+                "custom": {
+                  "elementName": "AlarmCardAcknowledgedIcon"
+                },
+                "parent": "AlarmCardAcknowledgedIconContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "AlarmCardAcknowledgedLabel": {
+                "type": {
+                  "resolvedName": "RichText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "width": "auto",
+                  "height": "100%",
+                  "content": {
+                    "blocks": [
+                      {
+                        "key": "alarmcardacknowledged-label",
+                        "text": "Acknowledged",
+                        "type": "unstyled",
+                        "depth": 0,
+                        "inlineStyleRanges": [
+                          {
+                            "offset": 0,
+                            "length": 12,
+                            "style": "fontfamily-Roboto"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 12,
+                            "style": "fontsize-11"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 12,
+                            "style": "BOLD"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 12,
+                            "style": "color-#64748b"
+                          }
+                        ],
+                        "entityRanges": [],
+                        "data": {}
+                      }
+                    ],
+                    "entityMap": {}
+                  }
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "AlarmCardAcknowledgedLabel"
+                },
+                "parent": "AlarmCardAcknowledgedHeader",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "AlarmCardAcknowledgedForm": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "isCanvas": true,
+                "props": {
+                  "query": {
+                    "api": "Application",
+                    "query": null,
+                    "dataPath": "edges[0]",
+                    "dataTransform": {
+                      "transform": null,
+                      "remote": true
+                    },
+                    "dataSubscription": {
+                      "enabled": false
+                    },
+                    "autoLoad": false,
+                    "fields": [
+                      "id"
+                    ],
+                    "disableDataChangeIndicator": false,
+                    "dataChangeIndicatorSize": "normal"
+                  },
+                  "blockNavigationWhenDirty": false,
+                  "enableConfirmOnDataChanged": false
+                },
+                "displayName": "Form",
+                "custom": {
+                  "elementName": "AlarmCardAcknowledgedForm"
+                },
+                "parent": "AlarmCardAcknowledgedContent",
+                "hidden": false,
+                "nodes": [
+                  "AlarmCardAcknowledgedFormContainer"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmCardAcknowledgedFormContainer": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "center",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmCardAcknowledgedFormContainer"
+                },
+                "parent": "AlarmCardAcknowledgedForm",
+                "hidden": false,
+                "nodes": [
+                  "AlarmCardAcknowledgedValue"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmCardAcknowledgedValue": {
+                "type": {
+                  "resolvedName": "DisplayText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 0,
+                  "width": "auto",
+                  "height": "100%",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "display",
+                  "label": "acknowledgedCount",
+                  "justifyContent": "center",
+                  "alignTextItems": "center",
+                  "labelFontSize": "body1",
+                  "fontSize": "h3",
+                  "formElement": "AlarmCardAcknowledgedForm",
+                  "labelPosition": {
+                    "id": "null",
+                    "label": "None"
+                  },
+                  "labelFontColor": "#64748b",
+                  "disabled": true,
+                  "query": {},
+                  "dataPath": "acknowledgedCount",
+                  "target": {
+                    "dataPath": null
+                  },
+                  "fontColor": "#ea580c",
+                  "data": {
+                    "__transform": "$components.Screen.context.acknowledgedCount",
+                    "__cacheKey": "acknowle",
+                    "__dynamicFields": {
+                      "payload": [],
+                      "context": [
+                        "components.Screen.context.acknowledgedCount"
+                      ]
+                    }
+                  }
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "AlarmCardAcknowledgedValue"
+                },
+                "parent": "AlarmCardAcknowledgedFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "AlarmCardCleared": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 6,
+                  "margin": 6,
+                  "flexWrap": true,
+                  "flexDirection": "column",
+                  "justifyContent": "space-between",
+                  "alignItems": "stretch",
+                  "width": "300",
+                  "height": "110px",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 8,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "single",
+                    "border": "1px solid #e2e8f0"
+                  },
+                  "justifyItems": "stretch",
+                  "style": {
+                    "min-width": "240px",
+                    "box-shadow": "2px 2px 6px #16a34a"
+                  },
+                  "background": "paper",
+                  "gap": "8px"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmCardCleared"
+                },
+                "parent": "AlarmKPIRow",
+                "hidden": false,
+                "nodes": [
+                  "AlarmCardClearedContent"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmCardClearedContent": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "stretch",
+                  "style": {},
+                  "gap": "4px"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmCardClearedContent"
+                },
+                "parent": "AlarmCardCleared",
+                "hidden": false,
+                "nodes": [
+                  "AlarmCardClearedHeader",
+                  "AlarmCardClearedForm"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmCardClearedHeader": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "space-between",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "35",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmCardClearedHeader"
+                },
+                "parent": "AlarmCardClearedContent",
+                "hidden": false,
+                "nodes": [
+                  "AlarmCardClearedIconContainer",
+                  "AlarmCardClearedLabel"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmCardClearedIconContainer": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "width": "30",
+                  "height": "30",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 6,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "center",
+                  "style": {},
+                  "customBackground": "#bbf7d0"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmCardClearedIconContainer"
+                },
+                "parent": "AlarmCardClearedHeader",
+                "hidden": false,
+                "nodes": [
+                  "AlarmCardClearedIcon"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmCardClearedIcon": {
+                "type": {
+                  "resolvedName": "Icon"
+                },
+                "isCanvas": false,
+                "props": {
+                  "icon": {
+                    "icon": "circle-check",
+                    "color": "inherit",
+                    "variant": "solid",
+                    "size": "icon"
+                  },
+                  "title": "Cleared (24h)",
+                  "height": "18px",
+                  "width": "18px",
+                  "color": "#16a34a",
+                  "variant": "solid",
+                  "size": "sm"
+                },
+                "displayName": "Icon",
+                "custom": {
+                  "elementName": "AlarmCardClearedIcon"
+                },
+                "parent": "AlarmCardClearedIconContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "AlarmCardClearedLabel": {
+                "type": {
+                  "resolvedName": "RichText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "width": "auto",
+                  "height": "100%",
+                  "content": {
+                    "blocks": [
+                      {
+                        "key": "alarmcardcleared-label",
+                        "text": "Cleared (30d)",
+                        "type": "unstyled",
+                        "depth": 0,
+                        "inlineStyleRanges": [
+                          {
+                            "offset": 0,
+                            "length": 13,
+                            "style": "fontfamily-Roboto"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 13,
+                            "style": "fontsize-11"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 13,
+                            "style": "BOLD"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 13,
+                            "style": "color-#64748b"
+                          }
+                        ],
+                        "entityRanges": [],
+                        "data": {}
+                      }
+                    ],
+                    "entityMap": {}
+                  }
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "AlarmCardClearedLabel"
+                },
+                "parent": "AlarmCardClearedHeader",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "AlarmCardClearedForm": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "isCanvas": true,
+                "props": {
+                  "query": {
+                    "api": "Application",
+                    "query": null,
+                    "dataPath": "edges[0]",
+                    "dataTransform": {
+                      "transform": null,
+                      "remote": true
+                    },
+                    "dataSubscription": {
+                      "enabled": false
+                    },
+                    "autoLoad": false,
+                    "fields": [
+                      "id"
+                    ],
+                    "disableDataChangeIndicator": false,
+                    "dataChangeIndicatorSize": "normal"
+                  },
+                  "blockNavigationWhenDirty": false,
+                  "enableConfirmOnDataChanged": false
+                },
+                "displayName": "Form",
+                "custom": {
+                  "elementName": "AlarmCardClearedForm"
+                },
+                "parent": "AlarmCardClearedContent",
+                "hidden": false,
+                "nodes": [
+                  "AlarmCardClearedFormContainer"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmCardClearedFormContainer": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "center",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmCardClearedFormContainer"
+                },
+                "parent": "AlarmCardClearedForm",
+                "hidden": false,
+                "nodes": [
+                  "AlarmCardClearedValue"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmCardClearedValue": {
+                "type": {
+                  "resolvedName": "DisplayText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 0,
+                  "width": "auto",
+                  "height": "100%",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "display",
+                  "label": "clearedCount",
+                  "justifyContent": "center",
+                  "alignTextItems": "center",
+                  "labelFontSize": "body1",
+                  "fontSize": "h3",
+                  "formElement": "AlarmCardClearedForm",
+                  "labelPosition": {
+                    "id": "null",
+                    "label": "None"
+                  },
+                  "labelFontColor": "#64748b",
+                  "disabled": true,
+                  "query": {},
+                  "dataPath": "clearedCount",
+                  "target": {
+                    "dataPath": null
+                  },
+                  "fontColor": "#15803d",
+                  "data": {
+                    "__transform": "$components.Screen.context.clearedCount",
+                    "__cacheKey": "clearedC",
+                    "__dynamicFields": {
+                      "payload": [],
+                      "context": [
+                        "components.Screen.context.clearedCount"
+                      ]
+                    }
+                  }
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "AlarmCardClearedValue"
+                },
+                "parent": "AlarmCardClearedFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "AlarmCardRate": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 6,
+                  "margin": 6,
+                  "flexWrap": true,
+                  "flexDirection": "column",
+                  "justifyContent": "space-between",
+                  "alignItems": "stretch",
+                  "width": "300",
+                  "height": "110px",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 8,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "single",
+                    "border": "1px solid #e2e8f0"
+                  },
+                  "justifyItems": "stretch",
+                  "style": {
+                    "min-width": "240px",
+                    "box-shadow": "2px 2px 6px #8b5cf6"
+                  },
+                  "background": "paper",
+                  "gap": "8px"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmCardRate"
+                },
+                "parent": "AlarmKPIRow",
+                "hidden": false,
+                "nodes": [
+                  "AlarmCardRateContent"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmCardRateContent": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "stretch",
+                  "style": {},
+                  "gap": "4px"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmCardRateContent"
+                },
+                "parent": "AlarmCardRate",
+                "hidden": false,
+                "nodes": [
+                  "AlarmCardRateHeader",
+                  "AlarmCardRateForm"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmCardRateHeader": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "space-between",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "35",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmCardRateHeader"
+                },
+                "parent": "AlarmCardRateContent",
+                "hidden": false,
+                "nodes": [
+                  "AlarmCardRateIconContainer",
+                  "AlarmCardRateLabel"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmCardRateIconContainer": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "width": "30",
+                  "height": "30",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 6,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "center",
+                  "style": {},
+                  "customBackground": "#ede9fe"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmCardRateIconContainer"
+                },
+                "parent": "AlarmCardRateHeader",
+                "hidden": false,
+                "nodes": [
+                  "AlarmCardRateIcon"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmCardRateIcon": {
+                "type": {
+                  "resolvedName": "Icon"
+                },
+                "isCanvas": false,
+                "props": {
+                  "icon": {
+                    "icon": "gauge-high",
+                    "color": "inherit",
+                    "variant": "solid",
+                    "size": "icon"
+                  },
+                  "title": "Alarm Rate",
+                  "height": "18px",
+                  "width": "18px",
+                  "color": "#8b5cf6",
+                  "variant": "solid",
+                  "size": "sm"
+                },
+                "displayName": "Icon",
+                "custom": {
+                  "elementName": "AlarmCardRateIcon"
+                },
+                "parent": "AlarmCardRateIconContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "AlarmCardRateLabel": {
+                "type": {
+                  "resolvedName": "RichText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "width": "auto",
+                  "height": "100%",
+                  "content": {
+                    "blocks": [
+                      {
+                        "key": "alarmcardrate-label",
+                        "text": "Alarm Rate",
+                        "type": "unstyled",
+                        "depth": 0,
+                        "inlineStyleRanges": [
+                          {
+                            "offset": 0,
+                            "length": 10,
+                            "style": "fontfamily-Roboto"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 10,
+                            "style": "fontsize-11"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 10,
+                            "style": "BOLD"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 10,
+                            "style": "color-#64748b"
+                          }
+                        ],
+                        "entityRanges": [],
+                        "data": {}
+                      }
+                    ],
+                    "entityMap": {}
+                  }
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "AlarmCardRateLabel"
+                },
+                "parent": "AlarmCardRateHeader",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "AlarmCardRateForm": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "isCanvas": true,
+                "props": {
+                  "query": {
+                    "api": "Application",
+                    "query": null,
+                    "dataPath": "edges[0]",
+                    "dataTransform": {
+                      "transform": null,
+                      "remote": true
+                    },
+                    "dataSubscription": {
+                      "enabled": false
+                    },
+                    "autoLoad": false,
+                    "fields": [
+                      "id"
+                    ],
+                    "disableDataChangeIndicator": false,
+                    "dataChangeIndicatorSize": "normal"
+                  },
+                  "blockNavigationWhenDirty": false,
+                  "enableConfirmOnDataChanged": false
+                },
+                "displayName": "Form",
+                "custom": {
+                  "elementName": "AlarmCardRateForm"
+                },
+                "parent": "AlarmCardRateContent",
+                "hidden": false,
+                "nodes": [
+                  "AlarmCardRateFormContainer"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmCardRateFormContainer": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "center",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmCardRateFormContainer"
+                },
+                "parent": "AlarmCardRateForm",
+                "hidden": false,
+                "nodes": [
+                  "AlarmCardRateValue"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmCardRateValue": {
+                "type": {
+                  "resolvedName": "DisplayText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 0,
+                  "width": "auto",
+                  "height": "100%",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "display",
+                  "label": "alarmRatePerHour",
+                  "justifyContent": "center",
+                  "alignTextItems": "center",
+                  "labelFontSize": "body1",
+                  "fontSize": "h3",
+                  "formElement": "AlarmCardRateForm",
+                  "labelPosition": {
+                    "id": "null",
+                    "label": "None"
+                  },
+                  "labelFontColor": "#64748b",
+                  "disabled": true,
+                  "query": {},
+                  "dataPath": "alarmRatePerHour",
+                  "target": {
+                    "dataPath": null
+                  },
+                  "fontColor": "#7c3aed",
+                  "data": {
+                    "__transform": "$string($components.Screen.context.alarmRatePerHour) & ' /hr'",
+                    "__cacheKey": "alarmRat",
+                    "__dynamicFields": {
+                      "payload": [],
+                      "context": [
+                        "components.Screen.context.alarmRatePerHour"
+                      ]
+                    }
+                  }
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "AlarmCardRateValue"
+                },
+                "parent": "AlarmCardRateFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "AlarmCardTotal": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 6,
+                  "margin": 6,
+                  "flexWrap": true,
+                  "flexDirection": "column",
+                  "justifyContent": "space-between",
+                  "alignItems": "stretch",
+                  "width": "300",
+                  "height": "110px",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 8,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "single",
+                    "border": "1px solid #e2e8f0"
+                  },
+                  "justifyItems": "stretch",
+                  "style": {
+                    "min-width": "240px",
+                    "box-shadow": "2px 2px 6px #2563eb"
+                  },
+                  "background": "paper",
+                  "gap": "8px"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmCardTotal"
+                },
+                "parent": "AlarmKPIRow",
+                "hidden": false,
+                "nodes": [
+                  "AlarmCardTotalContent"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmCardTotalContent": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "stretch",
+                  "style": {},
+                  "gap": "4px"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmCardTotalContent"
+                },
+                "parent": "AlarmCardTotal",
+                "hidden": false,
+                "nodes": [
+                  "AlarmCardTotalHeader",
+                  "AlarmCardTotalForm"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmCardTotalHeader": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "space-between",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "35",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmCardTotalHeader"
+                },
+                "parent": "AlarmCardTotalContent",
+                "hidden": false,
+                "nodes": [
+                  "AlarmCardTotalIconContainer",
+                  "AlarmCardTotalLabel"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmCardTotalIconContainer": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "width": "30",
+                  "height": "30",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 6,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "center",
+                  "style": {},
+                  "customBackground": "#dbeafe"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmCardTotalIconContainer"
+                },
+                "parent": "AlarmCardTotalHeader",
+                "hidden": false,
+                "nodes": [
+                  "AlarmCardTotalIcon"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmCardTotalIcon": {
+                "type": {
+                  "resolvedName": "Icon"
+                },
+                "isCanvas": false,
+                "props": {
+                  "icon": {
+                    "icon": "list-check",
+                    "color": "inherit",
+                    "variant": "solid",
+                    "size": "icon"
+                  },
+                  "title": "Total (24h)",
+                  "height": "18px",
+                  "width": "18px",
+                  "color": "#2563eb",
+                  "variant": "solid",
+                  "size": "sm"
+                },
+                "displayName": "Icon",
+                "custom": {
+                  "elementName": "AlarmCardTotalIcon"
+                },
+                "parent": "AlarmCardTotalIconContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "AlarmCardTotalLabel": {
+                "type": {
+                  "resolvedName": "RichText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "width": "auto",
+                  "height": "100%",
+                  "content": {
+                    "blocks": [
+                      {
+                        "key": "alarmcardtotal-label",
+                        "text": "Total (30d)",
+                        "type": "unstyled",
+                        "depth": 0,
+                        "inlineStyleRanges": [
+                          {
+                            "offset": 0,
+                            "length": 11,
+                            "style": "fontfamily-Roboto"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 11,
+                            "style": "fontsize-11"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 11,
+                            "style": "BOLD"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 11,
+                            "style": "color-#64748b"
+                          }
+                        ],
+                        "entityRanges": [],
+                        "data": {}
+                      }
+                    ],
+                    "entityMap": {}
+                  }
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "AlarmCardTotalLabel"
+                },
+                "parent": "AlarmCardTotalHeader",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "AlarmCardTotalForm": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "isCanvas": true,
+                "props": {
+                  "query": {
+                    "api": "Application",
+                    "query": null,
+                    "dataPath": "edges[0]",
+                    "dataTransform": {
+                      "transform": null,
+                      "remote": true
+                    },
+                    "dataSubscription": {
+                      "enabled": false
+                    },
+                    "autoLoad": false,
+                    "fields": [
+                      "id"
+                    ],
+                    "disableDataChangeIndicator": false,
+                    "dataChangeIndicatorSize": "normal"
+                  },
+                  "blockNavigationWhenDirty": false,
+                  "enableConfirmOnDataChanged": false
+                },
+                "displayName": "Form",
+                "custom": {
+                  "elementName": "AlarmCardTotalForm"
+                },
+                "parent": "AlarmCardTotalContent",
+                "hidden": false,
+                "nodes": [
+                  "AlarmCardTotalFormContainer"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmCardTotalFormContainer": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "center",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmCardTotalFormContainer"
+                },
+                "parent": "AlarmCardTotalForm",
+                "hidden": false,
+                "nodes": [
+                  "AlarmCardTotalValue"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmCardTotalValue": {
+                "type": {
+                  "resolvedName": "DisplayText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 0,
+                  "width": "auto",
+                  "height": "100%",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "display",
+                  "label": "totalCount",
+                  "justifyContent": "center",
+                  "alignTextItems": "center",
+                  "labelFontSize": "body1",
+                  "fontSize": "h3",
+                  "formElement": "AlarmCardTotalForm",
+                  "labelPosition": {
+                    "id": "null",
+                    "label": "None"
+                  },
+                  "labelFontColor": "#64748b",
+                  "disabled": true,
+                  "query": {},
+                  "dataPath": "totalCount",
+                  "target": {
+                    "dataPath": null
+                  },
+                  "fontColor": "#1d4ed8",
+                  "data": {
+                    "__transform": "$components.Screen.context.totalCount",
+                    "__cacheKey": "totalCou",
+                    "__dynamicFields": {
+                      "payload": [],
+                      "context": [
+                        "components.Screen.context.totalCount"
+                      ]
+                    }
+                  }
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "AlarmCardTotalValue"
+                },
+                "parent": "AlarmCardTotalFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "AlarmActiveSection": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 6,
+                  "margin": 6,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "auto",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 8,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "single",
+                    "border": "2px solid #dc2626"
+                  },
+                  "justifyItems": "stretch",
+                  "style": {},
+                  "background": "paper",
+                  "gap": "12px"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmActiveSection",
+                  "description": "Placeholder for Active Alarms table - ISA 101 Red priority",
+                  "dataSource": "$components.Screen.context.activeAlarms"
+                },
+                "parent": "AlarmMainContent",
+                "hidden": false,
+                "nodes": [
+                  "_2w2vXNk56",
+                  "AlarmActiveSectionPlaceholder"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmActiveSectionTitle": {
+                "type": {
+                  "resolvedName": "RichText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "width": "100%",
+                  "height": "auto",
+                  "content": {
+                    "blocks": [
+                      {
+                        "key": "active-section-title",
+                        "text": "Active Alarms (Unacknowledged)",
+                        "type": "unstyled",
+                        "depth": 0,
+                        "inlineStyleRanges": [
+                          {
+                            "offset": 0,
+                            "length": 31,
+                            "style": "fontfamily-Roboto"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 31,
+                            "style": "fontsize-16"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 31,
+                            "style": "BOLD"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 31,
+                            "style": "color-#dc2626"
+                          }
+                        ],
+                        "entityRanges": [],
+                        "data": {}
+                      }
+                    ],
+                    "entityMap": {}
+                  }
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "AlarmActiveSectionTitle"
+                },
+                "parent": "_2w2vXNk56",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "AlarmActiveSectionPlaceholder": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "200",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 4,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "single",
+                    "border": "1px dashed #cbd5e1"
+                  },
+                  "justifyItems": "center",
+                  "style": {},
+                  "background": "custom",
+                  "customBackground": "#f8fafc"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmActiveSectionPlaceholder"
+                },
+                "parent": "AlarmActiveSection",
+                "hidden": false,
+                "nodes": [
+                  "1vgMcW37_J"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmAcknowledgedSection": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 8,
+                  "margin": 6,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "auto",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 8,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "single",
+                    "border": "2px solid #f97316"
+                  },
+                  "justifyItems": "stretch",
+                  "style": {},
+                  "background": "paper",
+                  "gap": "12px"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmAcknowledgedSection",
+                  "description": "Placeholder for Acknowledged Alarms table - ISA 101 Orange priority",
+                  "dataSource": "$components.Screen.context.acknowledgedAlarms"
+                },
+                "parent": "AlarmMainContent",
+                "hidden": false,
+                "nodes": [
+                  "Xn7nXj5THY",
+                  "AlarmAcknowledgedSectionPlaceholder"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmAcknowledgedSectionTitle": {
+                "type": {
+                  "resolvedName": "RichText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "width": "100%",
+                  "height": "auto",
+                  "content": {
+                    "blocks": [
+                      {
+                        "key": "ack-section-title",
+                        "text": "Acknowledged Alarms",
+                        "type": "unstyled",
+                        "depth": 0,
+                        "inlineStyleRanges": [
+                          {
+                            "offset": 0,
+                            "length": 19,
+                            "style": "fontfamily-Roboto"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 19,
+                            "style": "fontsize-16"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 19,
+                            "style": "BOLD"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 19,
+                            "style": "color-#f97316"
+                          }
+                        ],
+                        "entityRanges": [],
+                        "data": {}
+                      }
+                    ],
+                    "entityMap": {}
+                  }
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "AlarmAcknowledgedSectionTitle"
+                },
+                "parent": "Xn7nXj5THY",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "AlarmAcknowledgedSectionPlaceholder": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "200",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 4,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "single",
+                    "border": "1px dashed #cbd5e1"
+                  },
+                  "justifyItems": "center",
+                  "style": {},
+                  "background": "custom",
+                  "customBackground": "#f8fafc"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmAcknowledgedSectionPlaceholder"
+                },
+                "parent": "AlarmAcknowledgedSection",
+                "hidden": false,
+                "nodes": [
+                  "0JN8sAG39F"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmClearedSection": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 8,
+                  "margin": 6,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "auto",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 8,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "single",
+                    "border": "2px solid #16a34a"
+                  },
+                  "justifyItems": "stretch",
+                  "style": {},
+                  "background": "paper",
+                  "gap": "12px"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmClearedSection",
+                  "description": "Placeholder for Cleared Alarms table - ISA 101 Green priority",
+                  "dataSource": "$components.Screen.context.clearedAlarms"
+                },
+                "parent": "AlarmMainContent",
+                "hidden": false,
+                "nodes": [
+                  "k5L-IO3_Qb",
+                  "AlarmClearedSectionPlaceholder"
+                ],
+                "linkedNodes": {}
+              },
+              "AlarmClearedSectionTitle": {
+                "type": {
+                  "resolvedName": "RichText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "width": "100%",
+                  "height": "auto",
+                  "content": {
+                    "blocks": [
+                      {
+                        "key": "cleared-section-title",
+                        "text": "Cleared Alarms (Last 24h - Top 10)",
+                        "type": "unstyled",
+                        "depth": 0,
+                        "inlineStyleRanges": [
+                          {
+                            "offset": 0,
+                            "length": 34,
+                            "style": "fontfamily-Roboto"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 34,
+                            "style": "fontsize-16"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 34,
+                            "style": "BOLD"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 34,
+                            "style": "color-#16a34a"
+                          }
+                        ],
+                        "entityRanges": [],
+                        "data": {}
+                      }
+                    ],
+                    "entityMap": {}
+                  }
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "AlarmClearedSectionTitle"
+                },
+                "parent": "k5L-IO3_Qb",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "AlarmClearedSectionPlaceholder": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "200",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 4,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "single",
+                    "border": "1px dashed #cbd5e1"
+                  },
+                  "justifyItems": "center",
+                  "style": {},
+                  "background": "custom",
+                  "customBackground": "#f8fafc"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "AlarmClearedSectionPlaceholder"
+                },
+                "parent": "AlarmClearedSection",
+                "hidden": false,
+                "nodes": [
+                  "Ji5CP7YfEW"
+                ],
+                "linkedNodes": {}
+              },
+              "1vgMcW37_J": {
+                "type": {
+                  "resolvedName": "Table"
+                },
+                "isCanvas": true,
+                "props": {
+                  "margin": 0,
+                  "width": "100%",
+                  "height": "100%",
+                  "flexGrow": false,
+                  "query": {
+                    "api": "Application",
+                    "query": null,
+                    "dataPath": "edges",
+                    "dataTransform": {
+                      "transform": null,
+                      "remote": true
+                    },
+                    "dataSubscription": {
+                      "enabled": false
+                    },
+                    "autoLoad": true,
+                    "fields": [
+                      "id"
+                    ],
+                    "disableDataChangeIndicator": false,
+                    "selectedDataChangeIndicator": null,
+                    "model": "Alarm",
+                    "filterPredicate": {},
+                    "parameters": "{ \"filter\": {\r\n  \"alarmStateId\": {\r\n    \"_eq\": \"ACTIVE\"\r\n  },\r\n  \"acknowledgedAt\": {\r\n    \"_isNull\": true\r\n  }\r\n}}"
+                  },
+                  "selectable": "none",
+                  "showToolPanels": false,
+                  "showStatusBar": true,
+                  "enableGrouping": false,
+                  "enableCharts": false,
+                  "showColumnMenu": true,
+                  "enableRowDragging": false,
+                  "disableColumnDragging": false,
+                  "disableDragLeaveHidesColumns": false,
+                  "masterDetail": false,
+                  "hideTableHeader": false,
+                  "rowMultiSelectWithClick": true,
+                  "description": "Represents an alarm event generated from telemetry, including trigger details, timestamps, and workflow state.",
+                  "fontSize": "14px",
+                  "limitToOneActiveDetail": false
+                },
+                "displayName": "Table",
+                "custom": {
+                  "elementName": "ActiveAlarmTable"
+                },
+                "parent": "AlarmActiveSectionPlaceholder",
+                "hidden": false,
+                "nodes": [
+                  "SAxlhsOl2v",
+                  "wak68Yd7zO",
+                  "POdjjgtdoF",
+                  "nc7RVAk3i1",
+                  "psUMiIRJTn",
+                  "j2m61KGT6d",
+                  "3kfSfBbOPt",
+                  "ytWBb3oVMN",
+                  "dNHvWLEUSt",
+                  "xQNL1dxoTb",
+                  "c96EuKwp3m",
+                  "DfLU6_kd1n",
+                  "uAg0NciMyH"
+                ],
+                "linkedNodes": {}
+              },
+              "SAxlhsOl2v": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": " ",
+                  "format": "menu",
+                  "sortable": false,
+                  "dataPath": "naA",
+                  "width": "50",
+                  "showColumnSuppressMenu": false,
+                  "editable": false,
+                  "sortAsNumber": false,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "query": {
+                    "fields": [
+                      "id",
+                      "code"
+                    ]
+                  },
+                  "actions": [
+                    {
+                      "text": "ACKNOWLEDGE ALARM",
+                      "icon": {
+                        "icon": "check",
+                        "color": "inherit",
+                        "variant": "duotone",
+                        "size": "icon",
+                        "customIconColor": "#f97316"
+                      },
+                      "action": [
+                        {
+                          "type": "mutation",
+                          "api": "Application",
+                          "mutation": "mutation UpdateAlarm($payload: [AlarmUpdatePayloadInput!]!) {\n  updateAlarm(payload: $payload) {\n    id\n  }\n}",
+                          "transforms": {
+                            "pre": "{\n  \"payload\": [\n    {\n      \"where\": {\n        \"id\": $.rowData.id\n      },\n      \"update\": {\n        \"alarmStateId\": \"ACTIVE_ACK\",\n        \"acknowledgedAt\": $moment().toISOString()\n      }\n    }\n  ]\n}"
+                          },
+                          "message": {
+                            "__transform": "'Alarm ' & $.rowData.code & ' acknowledged by ' & $metadata.user.firstName & ' ' & $metadata.user.lastName"
+                          }
+                        },
+                        {
+                          "type": "transformation",
+                          "transformation": "($components.ActiveAlarmTable.fn.search(); \r\n$components.AcknowledgedAlarmTable.fn.search())",
+                          "remote": false
+                        }
+                      ]
+                    },
+                    {
+                      "text": "CLEAR ALARM",
+                      "icon": {
+                        "icon": "check-double",
+                        "color": "inherit",
+                        "variant": "duotone",
+                        "size": "icon",
+                        "customIconColor": "#16a34a"
+                      },
+                      "action": [
+                        {
+                          "type": "mutation",
+                          "api": "Application",
+                          "mutation": "mutation UpdateAlarm($payload: [AlarmUpdatePayloadInput!]!) {\n  updateAlarm(payload: $payload) {\n    id\n  }\n}",
+                          "transforms": {
+                            "pre": "(\n  $triggeredAt := $.rowData.triggeredAt;\n  $clearedAt := $moment();\n  $durationMs := $moment($clearedAt).diff($moment($triggeredAt));\n  \n  {\n    \"payload\": [\n      {\n        \"where\": {\n          \"id\": $.rowData.id\n        },\n        \"update\": {\n          \"alarmStateId\": \"CLEARED_ACK\",\n          \"acknowledgedAt\": $.rowData.acknowledgedAt ? $.rowData.acknowledgedAt : $moment().toISOString(),\n          \"clearedAt\": $clearedAt.toISOString(),\n          \"duration\": $durationMs\n        }\n      }\n    ]\n  }\n)"
+                          },
+                          "message": {
+                            "__transform": "'Alarm ' & $.rowData.code & ' cleared by ' & $metadata.user.firstName & ' ' & $metadata.user.lastName"
+                          }
+                        },
+                        {
+                          "type": "transformation",
+                          "transformation": "($components.ActiveAlarmTable.fn.search();\r\n$components.ClearedAlarmTable.fn.search())",
+                          "remote": false
+                        }
+                      ]
+                    }
+                  ],
+                  "flows": [],
+                  "isFlow": false,
+                  "menuIcon": "ellipsis-v",
+                  "iconSize": "small",
+                  "title": "Alarm State Menu Options"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn1"
+                },
+                "parent": "1vgMcW37_J",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "wak68Yd7zO": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Code",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "code",
+                  "width": "100",
+                  "description": "**`code`** (`String!`)\nUnique, human-readable code for the Alarm.\n\n- Used as the label field for UI and integrations.\n- Example: `ALM-001`.",
+                  "query": {
+                    "fields": [
+                      "id",
+                      "code"
+                    ]
+                  },
+                  "field": "code",
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn2"
+                },
+                "parent": "1vgMcW37_J",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "nc7RVAk3i1": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Asset Code",
+                  "format": "text",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "dataPoint.asset.code",
+                  "description": "**`code`** (`String!`)\nA unique, human-readable code for the Asset.\n\n- **Behavior:** Required at creation; can be updated.\n- **Usage:** Serves as the label field for UI and integrations.\n- Uses a sequence value: \"ASSET-\" with a number and 0 padding of 3",
+                  "query": {
+                    "fields": [
+                      "dataPoint.asset.id",
+                      "dataPoint.asset.code"
+                    ]
+                  },
+                  "field": "dataPoint.asset.code"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn3"
+                },
+                "parent": "1vgMcW37_J",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "psUMiIRJTn": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Data Point",
+                  "format": "text",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "dataPoint.code",
+                  "description": "**`code`** (`String!`)\nUnique identifier for the DataPoint within its Asset.",
+                  "query": {
+                    "fields": [
+                      "dataPoint.id",
+                      "dataPoint.code"
+                    ]
+                  },
+                  "field": "dataPoint.code"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn4"
+                },
+                "parent": "1vgMcW37_J",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "j2m61KGT6d": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Triggered At",
+                  "format": "datetime",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "triggeredAt",
+                  "description": "**`triggeredAt`** (`DateTime!`)\nTimestamp when the alarm was first detected.",
+                  "query": {},
+                  "field": "triggeredAt"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn5"
+                },
+                "parent": "1vgMcW37_J",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "3kfSfBbOPt": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Deviation",
+                  "format": "float",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "deviation",
+                  "description": "**`deviation`** (`Float`)\nDifference between the trigger value and the nominal/setpoint value at the time of alarm.",
+                  "query": {},
+                  "field": "deviation",
+                  "sortAsNumber": true
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn6"
+                },
+                "parent": "1vgMcW37_J",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "POdjjgtdoF": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Notes",
+                  "format": "text",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "notes",
+                  "description": "**`notes`** (`String`)\nFree-form text for operator comments or corrective actions.",
+                  "query": {},
+                  "field": "notes"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn7"
+                },
+                "parent": "1vgMcW37_J",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ytWBb3oVMN": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Limit Value",
+                  "format": "float",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "limitValue",
+                  "description": "**`limitValue`** (`Float!`)\nThe configured threshold that was crossed to trigger the alarm.",
+                  "query": {},
+                  "field": "limitValue",
+                  "sortAsNumber": true
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn8"
+                },
+                "parent": "1vgMcW37_J",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "dNHvWLEUSt": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Trigger Value",
+                  "format": "float",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "triggerValue",
+                  "description": "**`triggerValue`** (`Float!`)\nThe actual measured value that caused the alarm.",
+                  "query": {},
+                  "field": "triggerValue",
+                  "sortAsNumber": true
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn9"
+                },
+                "parent": "1vgMcW37_J",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "xQNL1dxoTb": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Limit Type",
+                  "format": "text",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "limitType",
+                  "description": "**`limitType`** (`String!`)\nType of limit evaluation that triggered the alarm (e.g., `High`, `Low`, `Deviation`).",
+                  "query": {},
+                  "field": "limitType",
+                  "sortAsNumber": true
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn10"
+                },
+                "parent": "1vgMcW37_J",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "c96EuKwp3m": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Alarm State",
+                  "format": "text",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "alarmState.code",
+                  "description": "**`code`** (`String!`)\nA unique, human-readable code for the AlarmState.\n\n- **Behavior:** Required at creation; can be updated.\n- **Usage:** Serves as the label field for UI and integrations.\n- **Example:** `ACTIVE`, `ACKNOWLEDGED`, `CLEARED`.\n- **Constraint:** Must be unique within the tenant.",
+                  "query": {
+                    "fields": [
+                      "alarmState.id",
+                      "alarmState.code"
+                    ]
+                  },
+                  "field": "alarmState.code",
+                  "sortAsNumber": true
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn12"
+                },
+                "parent": "1vgMcW37_J",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "_2w2vXNk56": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "35",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "Container1"
+                },
+                "parent": "AlarmActiveSection",
+                "hidden": false,
+                "nodes": [
+                  "AlarmActiveSectionTitle"
+                ],
+                "linkedNodes": {}
+              },
+              "Xn7nXj5THY": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "35",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "Container2"
+                },
+                "parent": "AlarmAcknowledgedSection",
+                "hidden": false,
+                "nodes": [
+                  "AlarmAcknowledgedSectionTitle"
+                ],
+                "linkedNodes": {}
+              },
+              "k5L-IO3_Qb": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "35",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "Container3"
+                },
+                "parent": "AlarmClearedSection",
+                "hidden": false,
+                "nodes": [
+                  "AlarmClearedSectionTitle"
+                ],
+                "linkedNodes": {}
+              },
+              "DfLU6_kd1n": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Data Point Lower Limit",
+                  "format": "float",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "dataPoint.lowerLimit",
+                  "description": "**`lowerLimit`** (`Float`)\nMinimum acceptable value for the DataPoint.\n\n- **Default:** `0`.\n- **Usage:** Used for validation and alarms.",
+                  "query": {},
+                  "field": "dataPoint.lowerLimit"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn13"
+                },
+                "parent": "1vgMcW37_J",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "uAg0NciMyH": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Data Point Upper Limit",
+                  "format": "float",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "dataPoint.upperLimit",
+                  "description": "**`upperLimit`** (`Float`)\nMaximum acceptable value for the DataPoint.\n\n- **Usage:** Used for validation and alarms.",
+                  "query": {},
+                  "field": "dataPoint.upperLimit"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn14"
+                },
+                "parent": "1vgMcW37_J",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "0JN8sAG39F": {
+                "type": {
+                  "resolvedName": "Table"
+                },
+                "isCanvas": true,
+                "props": {
+                  "margin": 0,
+                  "width": "100%",
+                  "height": "100%",
+                  "flexGrow": false,
+                  "query": {
+                    "api": "Application",
+                    "query": null,
+                    "dataPath": "edges",
+                    "dataTransform": {
+                      "transform": null,
+                      "remote": true
+                    },
+                    "dataSubscription": {
+                      "enabled": false
+                    },
+                    "autoLoad": true,
+                    "fields": [
+                      "id"
+                    ],
+                    "disableDataChangeIndicator": false,
+                    "selectedDataChangeIndicator": null,
+                    "model": "Alarm",
+                    "filterPredicate": {},
+                    "parameters": "{ \"filter\": {\r\n  \"alarmStateId\": {\r\n    \"_eq\": \"ACTIVE_ACK\"\r\n  },\r\n  \"acknowledgedAt\": {\r\n    \"_isNull\": false\r\n  }\r\n}}"
+                  },
+                  "selectable": "none",
+                  "showToolPanels": false,
+                  "showStatusBar": true,
+                  "enableGrouping": false,
+                  "enableCharts": false,
+                  "showColumnMenu": true,
+                  "enableRowDragging": false,
+                  "disableColumnDragging": false,
+                  "disableDragLeaveHidesColumns": false,
+                  "masterDetail": false,
+                  "hideTableHeader": false,
+                  "rowMultiSelectWithClick": true,
+                  "description": "Represents an alarm event generated from telemetry, including trigger details, timestamps, and workflow state.",
+                  "fontSize": "14px",
+                  "limitToOneActiveDetail": false
+                },
+                "displayName": "Table",
+                "custom": {
+                  "elementName": "AcknowledgedAlarmTable"
+                },
+                "parent": "AlarmAcknowledgedSectionPlaceholder",
+                "hidden": false,
+                "nodes": [
+                  "3Ha1RRuiMc",
+                  "WEyB7OXLqA",
+                  "Csrv6NxDEa",
+                  "kan75bhFnx",
+                  "LJjNn8UN1a",
+                  "r7XdJUVztb",
+                  "g1FVgxvPeA",
+                  "jYye8YIGjD",
+                  "y7hz_kHr1w",
+                  "ROipX2Lg7u",
+                  "AV5JhqlGeO",
+                  "CbS-uIF6Bg",
+                  "btJ7jK5kPW",
+                  "M-JgX0R0IA",
+                  "zWxbTHmAmq"
+                ],
+                "linkedNodes": {}
+              },
+              "3Ha1RRuiMc": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": " ",
+                  "format": "menu",
+                  "sortable": false,
+                  "dataPath": "naA",
+                  "width": "50",
+                  "showColumnSuppressMenu": false,
+                  "editable": false,
+                  "sortAsNumber": false,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "query": {
+                    "fields": [
+                      "id",
+                      "code"
+                    ]
+                  },
+                  "actions": [
+                    {
+                      "text": "CLEAR ALARM",
+                      "icon": {
+                        "icon": "check-double",
+                        "color": "inherit",
+                        "variant": "duotone",
+                        "size": "icon",
+                        "customIconColor": "#16a34a"
+                      },
+                      "action": [
+                        {
+                          "type": "mutation",
+                          "api": "Application",
+                          "mutation": "mutation UpdateAlarm($payload: [AlarmUpdatePayloadInput!]!) {\n  updateAlarm(payload: $payload) {\n    id\n  }\n}",
+                          "transforms": {
+                            "pre": "(\n  $triggeredAt := $.rowData.triggeredAt;\n  $clearedAt := $moment();\n  $durationMs := $moment($clearedAt).diff($moment($triggeredAt));\n  \n  {\n    \"payload\": [\n      {\n        \"where\": {\n          \"id\": $.rowData.id\n        },\n        \"update\": {\n          \"alarmStateId\": \"CLEARED_ACK\",\n          \"acknowledgedAt\": $.rowData.acknowledgedAt ? $.rowData.acknowledgedAt : $moment().toISOString(),\n          \"clearedAt\": $clearedAt.toISOString(),\n          \"duration\": $durationMs\n        }\n      }\n    ]\n  }\n)"
+                          },
+                          "message": {
+                            "__transform": "'Alarm ' & $.rowData.code & ' cleared by ' & $metadata.user.firstName & ' ' & $metadata.user.lastName"
+                          }
+                        },
+                        {
+                          "type": "transformation",
+                          "transformation": "($components.AcknowledgedAlarmTable.fn.search();\r\n$components.ClearedAlarmTable.fn.search())",
+                          "remote": false
+                        }
+                      ]
+                    }
+                  ],
+                  "flows": [],
+                  "isFlow": false,
+                  "menuIcon": "ellipsis-v",
+                  "iconSize": "small",
+                  "title": "Alarm State Menu Options"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn15"
+                },
+                "parent": "0JN8sAG39F",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "WEyB7OXLqA": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Code",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "code",
+                  "width": "100",
+                  "description": "**`code`** (`String!`)\nUnique, human-readable code for the Alarm.\n\n- Used as the label field for UI and integrations.\n- Example: `ALM-001`.",
+                  "query": {
+                    "fields": [
+                      "id",
+                      "code"
+                    ]
+                  },
+                  "field": "code",
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn16"
+                },
+                "parent": "0JN8sAG39F",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "Csrv6NxDEa": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Notes",
+                  "format": "text",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "notes",
+                  "description": "**`notes`** (`String`)\nFree-form text for operator comments or corrective actions.",
+                  "query": {},
+                  "field": "notes"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn17"
+                },
+                "parent": "0JN8sAG39F",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "kan75bhFnx": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Asset Code",
+                  "format": "text",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "dataPoint.asset.code",
+                  "description": "**`code`** (`String!`)\nA unique, human-readable code for the Asset.\n\n- **Behavior:** Required at creation; can be updated.\n- **Usage:** Serves as the label field for UI and integrations.\n- Uses a sequence value: \"ASSET-\" with a number and 0 padding of 3",
+                  "query": {
+                    "fields": [
+                      "dataPoint.asset.id",
+                      "dataPoint.asset.code"
+                    ]
+                  },
+                  "field": "dataPoint.asset.code"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn18"
+                },
+                "parent": "0JN8sAG39F",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "LJjNn8UN1a": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Data Point",
+                  "format": "text",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "dataPoint.code",
+                  "description": "**`code`** (`String!`)\nUnique identifier for the DataPoint within its Asset.",
+                  "query": {
+                    "fields": [
+                      "dataPoint.id",
+                      "dataPoint.code"
+                    ]
+                  },
+                  "field": "dataPoint.code"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn19"
+                },
+                "parent": "0JN8sAG39F",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "r7XdJUVztb": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Triggered At",
+                  "format": "datetime",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "triggeredAt",
+                  "description": "**`triggeredAt`** (`DateTime!`)\nTimestamp when the alarm was first detected.",
+                  "query": {},
+                  "field": "triggeredAt"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn20"
+                },
+                "parent": "0JN8sAG39F",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "g1FVgxvPeA": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Deviation",
+                  "format": "float",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "deviation",
+                  "description": "**`deviation`** (`Float`)\nDifference between the trigger value and the nominal/setpoint value at the time of alarm.",
+                  "query": {},
+                  "field": "deviation",
+                  "sortAsNumber": true
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn21"
+                },
+                "parent": "0JN8sAG39F",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "jYye8YIGjD": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Limit Value",
+                  "format": "float",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "limitValue",
+                  "description": "**`limitValue`** (`Float!`)\nThe configured threshold that was crossed to trigger the alarm.",
+                  "query": {},
+                  "field": "limitValue",
+                  "sortAsNumber": true
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn22"
+                },
+                "parent": "0JN8sAG39F",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "y7hz_kHr1w": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Trigger Value",
+                  "format": "float",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "triggerValue",
+                  "description": "**`triggerValue`** (`Float!`)\nThe actual measured value that caused the alarm.",
+                  "query": {},
+                  "field": "triggerValue",
+                  "sortAsNumber": true
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn23"
+                },
+                "parent": "0JN8sAG39F",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ROipX2Lg7u": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Limit Type",
+                  "format": "text",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "limitType",
+                  "description": "**`limitType`** (`String!`)\nType of limit evaluation that triggered the alarm (e.g., `High`, `Low`, `Deviation`).",
+                  "query": {},
+                  "field": "limitType",
+                  "sortAsNumber": true
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn24"
+                },
+                "parent": "0JN8sAG39F",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "AV5JhqlGeO": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Alarm State",
+                  "format": "text",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "alarmState.code",
+                  "description": "**`code`** (`String!`)\nA unique, human-readable code for the AlarmState.\n\n- **Behavior:** Required at creation; can be updated.\n- **Usage:** Serves as the label field for UI and integrations.\n- **Example:** `ACTIVE`, `ACKNOWLEDGED`, `CLEARED`.\n- **Constraint:** Must be unique within the tenant.",
+                  "query": {
+                    "fields": [
+                      "alarmState.id",
+                      "alarmState.code"
+                    ]
+                  },
+                  "field": "alarmState.code",
+                  "sortAsNumber": true
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn25"
+                },
+                "parent": "0JN8sAG39F",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "CbS-uIF6Bg": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Data Point Lower Limit",
+                  "format": "float",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "dataPoint.lowerLimit",
+                  "description": "**`lowerLimit`** (`Float`)\nMinimum acceptable value for the DataPoint.\n\n- **Default:** `0`.\n- **Usage:** Used for validation and alarms.",
+                  "query": {},
+                  "field": "dataPoint.lowerLimit"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn26"
+                },
+                "parent": "0JN8sAG39F",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "btJ7jK5kPW": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Data Point Upper Limit",
+                  "format": "float",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "dataPoint.upperLimit",
+                  "description": "**`upperLimit`** (`Float`)\nMaximum acceptable value for the DataPoint.\n\n- **Usage:** Used for validation and alarms.",
+                  "query": {},
+                  "field": "dataPoint.upperLimit"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn27"
+                },
+                "parent": "0JN8sAG39F",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "Ji5CP7YfEW": {
+                "type": {
+                  "resolvedName": "Table"
+                },
+                "isCanvas": true,
+                "props": {
+                  "margin": 0,
+                  "width": "100%",
+                  "height": "100%",
+                  "flexGrow": false,
+                  "query": {
+                    "api": "Application",
+                    "query": null,
+                    "dataPath": "edges",
+                    "dataTransform": {
+                      "transform": null,
+                      "remote": true
+                    },
+                    "dataSubscription": {
+                      "enabled": false
+                    },
+                    "autoLoad": true,
+                    "fields": [
+                      "id"
+                    ],
+                    "disableDataChangeIndicator": false,
+                    "selectedDataChangeIndicator": null,
+                    "model": "Alarm",
+                    "filterPredicate": {},
+                    "parameters": "{ \"filter\": {\r\n  \"alarmStateId\": {\r\n    \"_in\": [\"CLEARED_UNACK\", \"CLEARED_ACK\"]\r\n  },\r\n  \"clearedAt\": {\r\n    \"_isNull\": false\r\n  }\r\n}}"
+                  },
+                  "selectable": "none",
+                  "showToolPanels": false,
+                  "showStatusBar": true,
+                  "enableGrouping": false,
+                  "enableCharts": false,
+                  "showColumnMenu": true,
+                  "enableRowDragging": false,
+                  "disableColumnDragging": false,
+                  "disableDragLeaveHidesColumns": false,
+                  "masterDetail": false,
+                  "hideTableHeader": false,
+                  "rowMultiSelectWithClick": true,
+                  "description": "Represents an alarm event generated from telemetry, including trigger details, timestamps, and workflow state.",
+                  "fontSize": "14px",
+                  "limitToOneActiveDetail": false
+                },
+                "displayName": "Table",
+                "custom": {
+                  "elementName": "ClearedAlarmTable"
+                },
+                "parent": "AlarmClearedSectionPlaceholder",
+                "hidden": false,
+                "nodes": [
+                  "pGTyIMcuse",
+                  "oQXObbqmFL",
+                  "BiIhy0m7OA",
+                  "d4mSeNAGoQ",
+                  "O5h20q9vmV",
+                  "QQW5cm1Qsk",
+                  "yYBQ8GCTiX",
+                  "uKVtt0596v",
+                  "vWMx0MLKMc",
+                  "H8jdp-uotp",
+                  "rfm3ip1ZJH",
+                  "eRVrShzQ70",
+                  "_U54xW_GJQ",
+                  "Q8kfU7TGO8"
+                ],
+                "linkedNodes": {}
+              },
+              "pGTyIMcuse": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Code",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "code",
+                  "width": "100",
+                  "description": "**`code`** (`String!`)\nUnique, human-readable code for the Alarm.\n\n- Used as the label field for UI and integrations.\n- Example: `ALM-001`.",
+                  "query": {
+                    "fields": [
+                      "id",
+                      "code"
+                    ]
+                  },
+                  "field": "code",
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn29"
+                },
+                "parent": "Ji5CP7YfEW",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "oQXObbqmFL": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Notes",
+                  "format": "text",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "notes",
+                  "description": "**`notes`** (`String`)\nFree-form text for operator comments or corrective actions.",
+                  "query": {},
+                  "field": "notes"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn30"
+                },
+                "parent": "Ji5CP7YfEW",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "BiIhy0m7OA": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Asset Code",
+                  "format": "text",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "dataPoint.asset.code",
+                  "description": "**`code`** (`String!`)\nA unique, human-readable code for the Asset.\n\n- **Behavior:** Required at creation; can be updated.\n- **Usage:** Serves as the label field for UI and integrations.\n- Uses a sequence value: \"ASSET-\" with a number and 0 padding of 3",
+                  "query": {
+                    "fields": [
+                      "dataPoint.asset.id",
+                      "dataPoint.asset.code"
+                    ]
+                  },
+                  "field": "dataPoint.asset.code"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn31"
+                },
+                "parent": "Ji5CP7YfEW",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "d4mSeNAGoQ": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Data Point",
+                  "format": "text",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "dataPoint.code",
+                  "description": "**`code`** (`String!`)\nUnique identifier for the DataPoint within its Asset.",
+                  "query": {
+                    "fields": [
+                      "dataPoint.id",
+                      "dataPoint.code"
+                    ]
+                  },
+                  "field": "dataPoint.code"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn32"
+                },
+                "parent": "Ji5CP7YfEW",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "O5h20q9vmV": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Triggered At",
+                  "format": "datetime",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "triggeredAt",
+                  "description": "**`triggeredAt`** (`DateTime!`)\nTimestamp when the alarm was first detected.",
+                  "query": {},
+                  "field": "triggeredAt"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn33"
+                },
+                "parent": "Ji5CP7YfEW",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "QQW5cm1Qsk": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Deviation",
+                  "format": "float",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "deviation",
+                  "description": "**`deviation`** (`Float`)\nDifference between the trigger value and the nominal/setpoint value at the time of alarm.",
+                  "query": {},
+                  "field": "deviation",
+                  "sortAsNumber": true
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn34"
+                },
+                "parent": "Ji5CP7YfEW",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "yYBQ8GCTiX": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Limit Value",
+                  "format": "float",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "limitValue",
+                  "description": "**`limitValue`** (`Float!`)\nThe configured threshold that was crossed to trigger the alarm.",
+                  "query": {},
+                  "field": "limitValue",
+                  "sortAsNumber": true
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn35"
+                },
+                "parent": "Ji5CP7YfEW",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "uKVtt0596v": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Trigger Value",
+                  "format": "float",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "triggerValue",
+                  "description": "**`triggerValue`** (`Float!`)\nThe actual measured value that caused the alarm.",
+                  "query": {},
+                  "field": "triggerValue",
+                  "sortAsNumber": true
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn36"
+                },
+                "parent": "Ji5CP7YfEW",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "vWMx0MLKMc": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Limit Type",
+                  "format": "text",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "limitType",
+                  "description": "**`limitType`** (`String!`)\nType of limit evaluation that triggered the alarm (e.g., `High`, `Low`, `Deviation`).",
+                  "query": {},
+                  "field": "limitType",
+                  "sortAsNumber": true
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn37"
+                },
+                "parent": "Ji5CP7YfEW",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "H8jdp-uotp": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Alarm State",
+                  "format": "text",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "alarmState.code",
+                  "description": "**`code`** (`String!`)\nA unique, human-readable code for the AlarmState.\n\n- **Behavior:** Required at creation; can be updated.\n- **Usage:** Serves as the label field for UI and integrations.\n- **Example:** `ACTIVE`, `ACKNOWLEDGED`, `CLEARED`.\n- **Constraint:** Must be unique within the tenant.",
+                  "query": {
+                    "fields": [
+                      "alarmState.id",
+                      "alarmState.code"
+                    ]
+                  },
+                  "field": "alarmState.code",
+                  "sortAsNumber": true
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn38"
+                },
+                "parent": "Ji5CP7YfEW",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "rfm3ip1ZJH": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Data Point Lower Limit",
+                  "format": "float",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "dataPoint.lowerLimit",
+                  "description": "**`lowerLimit`** (`Float`)\nMinimum acceptable value for the DataPoint.\n\n- **Default:** `0`.\n- **Usage:** Used for validation and alarms.",
+                  "query": {},
+                  "field": "dataPoint.lowerLimit"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn39"
+                },
+                "parent": "Ji5CP7YfEW",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "eRVrShzQ70": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Data Point Upper Limit",
+                  "format": "float",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "dataPoint.upperLimit",
+                  "description": "**`upperLimit`** (`Float`)\nMaximum acceptable value for the DataPoint.\n\n- **Usage:** Used for validation and alarms.",
+                  "query": {},
+                  "field": "dataPoint.upperLimit"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn40"
+                },
+                "parent": "Ji5CP7YfEW",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "M-JgX0R0IA": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Acknowledged At",
+                  "format": "datetime",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "acknowledgedAt",
+                  "description": "**`notes`** (`String`)\nFree-form text for operator comments or corrective actions.",
+                  "query": {},
+                  "field": "acknowledgedAt",
+                  "sortAsNumber": true,
+                  "timeZone": "setting"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn41"
+                },
+                "parent": "0JN8sAG39F",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "zWxbTHmAmq": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Acknowledged By User",
+                  "format": "text",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "acknowledgedByUser.email",
+                  "description": "The email address of the User.  The email is also used as the username.",
+                  "query": {
+                    "fields": [
+                      "acknowledgedByUser.id",
+                      "acknowledgedByUser.email"
+                    ]
+                  },
+                  "field": "acknowledgedByUser.email",
+                  "sortAsNumber": true,
+                  "timeZone": "setting"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn42"
+                },
+                "parent": "0JN8sAG39F",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "_U54xW_GJQ": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Cleared At",
+                  "format": "datetime",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "clearedAt",
+                  "description": "**`clearedAt`** (`DateTime`)\nTimestamp when the alarm condition returned to normal.",
+                  "query": {},
+                  "field": "clearedAt",
+                  "sortAsNumber": true,
+                  "timeZone": "setting"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn43"
+                },
+                "parent": "Ji5CP7YfEW",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "Q8kfU7TGO8": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Updated By User",
+                  "format": "text",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "dataPath": "updatedByUser.email",
+                  "description": "The email address of the User.  The email is also used as the username.",
+                  "query": {
+                    "fields": [
+                      "updatedByUser.id",
+                      "updatedByUser.email"
+                    ]
+                  },
+                  "field": "updatedByUser.email",
+                  "sortAsNumber": true,
+                  "timeZone": "setting"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn44"
+                },
+                "parent": "Ji5CP7YfEW",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "routes": [
+    {
+      "id": "cml6pjktedi5f01701p7f5oph",
+      "title": "Alarms Dashboard",
+      "path": "/system/testing/alarmsDashboard",
+      "moduleId": "machineDataApp",
+      "screenId": "alarmsDashboard",
+      "isMenuAccessible": true,
+      "submenu": ""
+    }
+  ]
+}

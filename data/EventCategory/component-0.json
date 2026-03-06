@@ -1,0 +1,187 @@
+{
+  "api": "application",
+  "modelName": "EventCategory",
+  "payload": [
+    {
+      "id": "chgv",
+      "name": "Changeover",
+      "sortOrder": 50,
+      "affectsOee": true,
+      "isActive": true,
+      "isPlanned": true,
+      "usable": true,
+      "code": "CHGV",
+      "color": "#22C55E",
+      "description": "Planned product or tooling changeovers including setup, adjustment, and first article inspection time.",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "elec",
+      "name": "Electrical Failure",
+      "sortOrder": 20,
+      "affectsOee": true,
+      "isActive": true,
+      "isPlanned": false,
+      "usable": true,
+      "code": "ELEC",
+      "color": "#F97316",
+      "description": "Electrical system failures including drives, PLCs, sensors, wiring, and power distribution issues.",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "extl",
+      "name": "External",
+      "sortOrder": 110,
+      "affectsOee": false,
+      "isActive": true,
+      "isPlanned": false,
+      "usable": true,
+      "code": "EXTL",
+      "color": "#F43F5E",
+      "description": "External factors including customer holds, supplier issues, and regulatory stops.",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "matl",
+      "name": "Material Issue",
+      "sortOrder": 40,
+      "affectsOee": true,
+      "isActive": true,
+      "isPlanned": false,
+      "usable": true,
+      "code": "MATL",
+      "color": "#84CC16",
+      "description": "Stoppages caused by material problems including shortages, wrong material, contamination, or material handling issues.",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "mech",
+      "name": "Mechanical Failure",
+      "sortOrder": 10,
+      "affectsOee": true,
+      "isActive": true,
+      "isPlanned": false,
+      "usable": true,
+      "code": "MECH",
+      "color": "#EF4444",
+      "description": "Equipment failures related to mechanical components including motors, bearings, gearboxes, belts, chains, and structural elements.",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "oper",
+      "name": "Operator",
+      "sortOrder": 100,
+      "affectsOee": false,
+      "isActive": true,
+      "isPlanned": true,
+      "usable": true,
+      "code": "OPER",
+      "color": "#EC4899",
+      "description": "Operator-related stoppages including breaks, meetings, training, and staffing shortages.",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "pmnt",
+      "name": "Planned Maintenance",
+      "sortOrder": 60,
+      "affectsOee": false,
+      "isActive": true,
+      "isPlanned": true,
+      "usable": true,
+      "code": "PMNT",
+      "color": "#14B8A6",
+      "description": "Scheduled preventive maintenance activities including inspections, lubrication, and component replacement.",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "proc",
+      "name": "Process Issue",
+      "sortOrder": 80,
+      "affectsOee": true,
+      "isActive": true,
+      "isPlanned": false,
+      "usable": true,
+      "code": "PROC",
+      "color": "#3B82F6",
+      "description": "Process-related stoppages including recipe problems, parameter deviations, and process upsets.",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "qual",
+      "name": "Quality Hold",
+      "sortOrder": 30,
+      "affectsOee": true,
+      "isActive": true,
+      "isPlanned": false,
+      "usable": true,
+      "code": "QUAL",
+      "color": "#EAB308",
+      "description": "Production stops due to quality issues including out-of-spec product, inspection holds, and quality investigations.",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "schd",
+      "name": "No Schedule",
+      "sortOrder": 120,
+      "affectsOee": false,
+      "isActive": true,
+      "isPlanned": true,
+      "usable": true,
+      "code": "SCHD",
+      "color": "#6B7280",
+      "description": "No production scheduled including weekends, holidays, and unplanned idle time.",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "umnt",
+      "name": "Unplanned Maintenance",
+      "sortOrder": 70,
+      "affectsOee": true,
+      "isActive": true,
+      "isPlanned": false,
+      "usable": true,
+      "code": "UMNT",
+      "color": "#06B6D4",
+      "description": "Reactive maintenance activities triggered by equipment failures or degradation.",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "util",
+      "name": "Utilities",
+      "sortOrder": 90,
+      "affectsOee": true,
+      "isActive": true,
+      "isPlanned": false,
+      "usable": true,
+      "code": "UTIL",
+      "color": "#8B5CF6",
+      "description": "Utility failures including compressed air, steam, water, nitrogen, and HVAC systems.",
+      "_customFields": {
+        "_externalId": null
+      }
+    }
+  ],
+  "metadata": {}
+}

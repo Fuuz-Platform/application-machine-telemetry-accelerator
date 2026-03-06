@@ -1,0 +1,1432 @@
+{
+  "header": {
+    "id": "proudctionLogCreateOeeEvents",
+    "name": "Production Log Create OEE Events",
+    "description": "",
+    "active": true,
+    "substitutesDataFlowId": null,
+    "dataFlowTypeId": "System",
+    "logLevelId": "Info",
+    "mcpToolConfiguration": null,
+    "moduleId": "machineDataApp",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cmkzw7i46upp1018w05tr0guv",
+    "number": "0.0.16",
+    "description": "",
+    "dataFlowId": "proudctionLogCreateOeeEvents",
+    "flow": {
+      "id": "cmkzw7i46upp1018w05tr0guv",
+      "name": "Production Log Create OEE Events",
+      "type": "System",
+      "nodes": [
+        {
+          "id": "7a192bf4-d934-47a4-8243-9be98755f9a9",
+          "name": "Data Changes",
+          "type": "dataChanges",
+          "data": {
+            "api": "Application",
+            "nextNodes": [
+              "00d31296-fa46-4ebf-a083-07bba8f90697"
+            ],
+            "type": "ProductionLog",
+            "operations": [
+              "Create"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "00d31296-fa46-4ebf-a083-07bba8f90697",
+          "name": "Reject",
+          "type": "unless",
+          "data": {
+            "transform": "$.value.after.processedInOeeHourlyAt != null",
+            "nextNodes": [
+              "f464a4fb-35b9-476c-b39c-0e4e2cc7e9c2"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "148357e7-3f72-4942-b76f-b089a5b837c3",
+          "name": "Merge Context",
+          "type": "mergeContext",
+          "data": {
+            "transform": "{\r\n \"setting\": $.setting.edges.node.defaultValue,\r\n \"productCycleTime\": $.product.edges.node.standardCycleTime,\r\n \"productUnit\": $.product.edges.node.unitId\r\n}",
+            "nextNodes": [
+              "c4a93d3e-6a97-454e-8b61-15c96eba521e"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "f464a4fb-35b9-476c-b39c-0e4e2cc7e9c2",
+          "name": "Set Context",
+          "type": "setContext",
+          "data": {
+            "nextNodes": [
+              "6ad5c438-de9b-4183-8f22-ad00fd7440b9"
+            ],
+            "transform": "{\r\n  \"afterData\": $.value.after\r\n}"
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "6ad5c438-de9b-4183-8f22-ad00fd7440b9",
+          "name": "Get Tenant Timezone & Product Data",
+          "type": "query",
+          "data": {
+            "api": "application",
+            "variablesTransform": "{\r\n  \"oeeWhere\": {\r\n    \"_and\": [\r\n      {\r\n        \"scheduleHourStartAt\": {\r\n          \"_lte\": $.value.after.occurAt\r\n        },\r\n        \"scheduleHourEndAt\": {\r\n          \"_gte\": $.value.after.occurAt\r\n        },\r\n        \"workcenterId\": {\r\n          \"_eq\": $.value.after.workcenterId\r\n        }\r\n      }\r\n    ]\r\n  },\r\n  \"productWhere\": {\r\n    \"id\": {\r\n      \"_eq\": $.value.after.productId\r\n    }\r\n  }\r\n}",
+            "query": "query GetOeeData(\r\n  $oeeWhere: OeeHourlyWhereInput\r\n  $oeeOrderBy: [OeeHourlyOrderByInput!]\r\n  $oeeFirst: Int\r\n  $oeeAfter: String\r\n  $productWhere: ProductWhereInput\r\n  $productOrderBy: [ProductOrderByInput!]\r\n  $productFirst: Int\r\n  $productAfter: String\r\n) {\r\n  setting(where: { id: { _eq: \"TimeZone\" } }) {\r\n    edges {\r\n      node {\r\n        defaultValue\r\n      }\r\n    }\r\n  }\r\n  \r\n  oeeHourly(where: $oeeWhere, orderBy: $oeeOrderBy, first: $oeeFirst, after: $oeeAfter) {\r\n    edges {\r\n      node {\r\n        id\r\n        goodUnits\r\n        idealUnits\r\n        performance\r\n        quality\r\n        scheduleHourStartAt\r\n        scheduleHourEndAt\r\n        scrapUnits\r\n        totalUnits\r\n        scheduleId\r\n        actualCycleTime (format: milliseconds)\r\n        idealCycleTime (format: milliseconds)\r\n        workcenterId\r\n      }\r\n    }\r\n  }\r\n  \r\n  product(where: $productWhere, orderBy: $productOrderBy, first: $productFirst, after: $productAfter) {\r\n    edges {\r\n      node {\r\n        standardCycleTime \r\n        unitId\r\n        idealCycleTime\r\n      }\r\n    }\r\n  }\r\n}",
+            "nextNodes": [
+              "148357e7-3f72-4942-b76f-b089a5b837c3"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "c4a93d3e-6a97-454e-8b61-15c96eba521e",
+          "name": "Generate OEE Details for ProductionLog Entry",
+          "type": "javascriptTransform",
+          "data": {
+            "transform": "// Extract production log data\r\nconst productionLog = ($.value && $.value.after) || ($state.context && $state.context.afterData) || null;\r\n\r\nif (!productionLog || !productionLog.workcenterId) {\r\n  throw new Error('Production log data not found. Check data flow configuration.');\r\n}\r\n\r\n// Helper: convert duration field to milliseconds\r\n// Handles both numeric (already ms) and string (ISO 8601 like \"PT8H\") formats\r\nfunction toMs(val) {\r\n  if (!val) return 0;\r\n  if (typeof val === 'number') return val;\r\n  if (typeof val === 'string') {\r\n    try {\r\n      return moment.duration(val).asMilliseconds();\r\n    } catch (e) {\r\n      console.log('Warning: Could not parse duration string: ' + val);\r\n      return 0;\r\n    }\r\n  }\r\n  return 0;\r\n}\r\n\r\n// Check if oeeHourly record exists for this time window\r\nconst oeeRecordExists = $.oeeHourly.edges && $.oeeHourly.edges.length > 0;\r\nif (!oeeRecordExists) {\r\n  console.log('No matching oeeHourly record found for occurAt: ' + productionLog.occurAt + ' on workcenter: ' + productionLog.workcenterId);\r\n  console.log('Skipping processing - productionLog will not be marked as processed');\r\n  return { skip: true };\r\n}\r\n\r\n// Extract data from query results\r\nconst oeeRecord = $.oeeHourly.edges[0].node;\r\nconst product = $.product.edges[0]?.node || {};\r\n\r\nconsole.log('Processing production log for ' + productionLog.workcenterId);\r\nconsole.log('OccurAt: ' + productionLog.occurAt);\r\nconsole.log('Existing OEE record:', oeeRecord);\r\nconsole.log('Product:', product);\r\n\r\n// Product cycle times - DIFFERENT FORMATS:\r\n// - product.idealCycleTime is a Duration field (returns milliseconds)\r\n// - product.standardCycleTime is stored in seconds\r\n// Both represent \"seconds per unit\" - normalize to seconds for calculation\r\nconst productIdealCycleTimeSec = product.idealCycleTime \r\n  ? toMs(product.idealCycleTime) / 1000   // Duration → ms → seconds\r\n  : (product.standardCycleTime || 0);      // Already in seconds\r\nconst hasValidIdealCycleTime = productIdealCycleTimeSec > 0;\r\n\r\nif (!hasValidIdealCycleTime) {\r\n  console.log('WARNING: Product has no idealCycleTime or standardCycleTime defined. Ideal metrics will not be calculated.');\r\n} else {\r\n  console.log('Product cycle time raw values - idealCycleTime: ' + product.idealCycleTime + ' (Duration/ms), standardCycleTime: ' + product.standardCycleTime + ' (seconds)');\r\n}\r\n\r\n// Get existing values from oeeHourly\r\n// Duration fields (actualCycleTime, idealCycleTime) are in MILLISECONDS - convert to seconds for calculation\r\nconst existingGoodUnits = oeeRecord.goodUnits || 0;\r\nconst existingScrapUnits = oeeRecord.scrapUnits || 0;\r\nconst existingTotalUnits = oeeRecord.totalUnits || 0;\r\nconst existingActualCycleTimeSec = toMs(oeeRecord.actualCycleTime) / 1000;\r\nconst existingIdealCycleTimeSec = toMs(oeeRecord.idealCycleTime) / 1000;\r\nconst existingIdealUnits = oeeRecord.idealUnits || 0;\r\n\r\n// Get new production data from productionLog\r\n// productionLog.cycleTime is in SECONDS for the total batch (e.g., 1800 = 1800 seconds for all units)\r\nconst newGoodQty = productionLog.quantityGood || 0;\r\nconst newScrapQty = productionLog.quantityScrap || 0;\r\nconst newTotalQty = newGoodQty + newScrapQty;\r\nconst newActualCycleTimeSec = productionLog.cycleTime || 0;\r\n\r\n// Calculate incremental ideal values for this production log\r\n// idealCycleTime increment = productIdealCycleTime × units produced (how long SHOULD it have taken)\r\n// idealUnits increment = actualCycleTime / productIdealCycleTime (how many units SHOULD we have made)\r\nconst newIdealCycleTimeSecIncrement = hasValidIdealCycleTime ? (productIdealCycleTimeSec * newTotalQty) : 0;\r\nconst newIdealUnitsIncrement = hasValidIdealCycleTime ? (newActualCycleTimeSec / productIdealCycleTimeSec) : 0;\r\n\r\n// Calculate new cumulative totals (in seconds)\r\nconst newGoodUnits = existingGoodUnits + newGoodQty;\r\nconst newScrapUnits = existingScrapUnits + newScrapQty;\r\nconst newTotalUnits = existingTotalUnits + newTotalQty;\r\nconst newActualCycleTimeSecTotal = existingActualCycleTimeSec + newActualCycleTimeSec;\r\nconst newIdealCycleTimeSecTotal = existingIdealCycleTimeSec + newIdealCycleTimeSecIncrement;\r\nconst newIdealUnitsTotal = existingIdealUnits + newIdealUnitsIncrement;\r\n\r\n// Recalculate KPIs per ISO 22400 using cumulative values\r\n// Quality = Good Units / Total Units\r\nconst quality = newTotalUnits > 0 ? newGoodUnits / newTotalUnits : 0;\r\n\r\n// Performance = Ideal Cycle Time / Actual Cycle Time (capped at 1.0)\r\nconst performance = newActualCycleTimeSecTotal > 0 ? Math.min(newIdealCycleTimeSecTotal / newActualCycleTimeSecTotal, 1) : 0;\r\n\r\n// Build update payload - Duration fields converted to MILLISECONDS for storage\r\nconst updatePayload = {\r\n  id: oeeRecord.id,\r\n  goodUnits: newGoodUnits,\r\n  scrapUnits: newScrapUnits,\r\n  totalUnits: newTotalUnits,\r\n  actualCycleTime: Math.round(newActualCycleTimeSecTotal * 1000),  // seconds → ms\r\n  idealCycleTime: Math.round(newIdealCycleTimeSecTotal * 1000),    // seconds → ms\r\n  idealUnits: Math.round(newIdealUnitsTotal * 100) / 100,\r\n  quality: Math.round(quality * 10000) / 10000,\r\n  performance: Math.round(performance * 10000) / 10000\r\n};\r\n\r\nconsole.log('=== Calculation Summary ===');\r\nconsole.log('Product ideal cycle time per unit: ' + productIdealCycleTimeSec + 's (from ' + (product.idealCycleTime ? 'idealCycleTime' : 'standardCycleTime') + ')');\r\nconsole.log('New production: Good=' + newGoodQty + ', Scrap=' + newScrapQty + ', Total=' + newTotalQty);\r\nconsole.log('New actual cycle time (batch): ' + newActualCycleTimeSec + 's');\r\nconsole.log('Ideal cycle time increment: ' + newIdealCycleTimeSecIncrement + 's');\r\nconsole.log('Ideal units increment: ' + newIdealUnitsIncrement.toFixed(2));\r\nconsole.log('--- Cumulative Totals ---');\r\nconsole.log('Total units: ' + newTotalUnits + ' (Good: ' + newGoodUnits + ', Scrap: ' + newScrapUnits + ')');\r\nconsole.log('Actual cycle time: ' + newActualCycleTimeSecTotal + 's (' + (newActualCycleTimeSecTotal/60).toFixed(2) + ' min)');\r\nconsole.log('Ideal cycle time: ' + newIdealCycleTimeSecTotal + 's (' + (newIdealCycleTimeSecTotal/60).toFixed(2) + ' min)');\r\nconsole.log('Ideal units: ' + newIdealUnitsTotal.toFixed(2));\r\nconsole.log('Quality: ' + (quality * 100).toFixed(2) + '%');\r\nconsole.log('Performance: ' + (performance * 100).toFixed(2) + '%');\r\n\r\nreturn updatePayload;",
+            "nextNodes": [
+              "5b49209a-b109-423a-b002-e35977758843"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "09f36ebe-8fe6-46b4-8ce3-db2b625b66ed",
+          "name": "Update OeeHourly Record",
+          "type": "mutate",
+          "data": {
+            "api": "Application",
+            "variablesTransform": "{\r\n  \"payload\": [{\r\n    \"where\": {\r\n      \"id\": $.id \r\n    },\r\n    \"update\": {\r\n      \"totalUnits\": $.totalUnits,\r\n      \"goodUnits\": $.goodUnits,\r\n      \"scrapUnits\": $.scrapUnits,\r\n      \"quality\": $.quality,\r\n      \"actualCycleTime\": $.actualCycleTime,\r\n      \"idealCycleTime\": $.idealCycleTime,\r\n      \"idealUnits\": $.idealUnits,\r\n      \"performance\": $.performance\r\n    }\r\n  }]\r\n}",
+            "mutation": "mutation UpdateOeeHourly($payload: [OeeHourlyUpdatePayloadInput!]!) {\n  updateOeeHourly(payload: $payload) {\n    id\n  }\n}",
+            "nextNodes": [
+              "8f51ba05-a8eb-4234-b5d3-210421454912"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": true,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "7b47a0d0-8f20-4fc0-98d9-c4dfa8c90268",
+          "name": "Update ProductionLog with processedOeeHourlyAt dateTime",
+          "type": "mutate",
+          "data": {
+            "api": "Application",
+            "variablesTransform": "{\r\n  \"payload\": [{\r\n    \"where\": {\r\n      \"id\": $state.context.afterData.id\r\n      \r\n    },\r\n    \"update\": {\r\n      \"processedInOeeHourlyAt\": $moment()\r\n    }\r\n  }]\r\n}",
+            "mutation": "mutation UpdateProductionLog($payload: [ProductionLogUpdatePayloadInput!]!) {\n  updateProductionLog(payload: $payload) {\n    id\n  }\n}",
+            "nextNodes": []
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "8f51ba05-a8eb-4234-b5d3-210421454912",
+          "name": "Mutex Unlock",
+          "type": "mutexUnlock",
+          "data": {
+            "nextNodes": [
+              "7b47a0d0-8f20-4fc0-98d9-c4dfa8c90268"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "dfb9bc66-d235-4b46-a7df-678a5f87ad74",
+          "name": "Mutex Lock",
+          "type": "mutexLock",
+          "data": {
+            "lockTTLms": 30000,
+            "lockRetries": -1,
+            "throwErrorWhenLockNotAcquired": false,
+            "nextNodes": [
+              "09f36ebe-8fe6-46b4-8ce3-db2b625b66ed"
+            ],
+            "resourceIdTransform": "$.updateOeeHourly.id"
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "5b49209a-b109-423a-b002-e35977758843",
+          "name": "Reject - If no id",
+          "type": "unless",
+          "data": {
+            "nextNodes": [
+              "dfb9bc66-d235-4b46-a7df-678a5f87ad74"
+            ],
+            "transform": "$isNilOrEmpty($.id)"
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        }
+      ],
+      "version": "0.0.16"
+    },
+    "diagram": {
+      "id": "cmkzw7i46upp1018w05tr0guv",
+      "offsetX": -412.02,
+      "offsetY": 207.99,
+      "zoom": 78.13,
+      "gridSize": 5,
+      "layers": [
+        {
+          "id": "90e3cc35-6599-4a8d-a232-cb63d39bf4d3",
+          "type": "diagram-links",
+          "isSvg": true,
+          "transformed": true,
+          "models": {
+            "b0750b8b-71f7-4b4e-be42-b3eb5ca878b2": {
+              "points": [
+                {
+                  "id": "f3960a78-774a-4a2d-a128-a272b68d076e",
+                  "type": "point",
+                  "x": 209,
+                  "y": 199.73
+                },
+                {
+                  "id": "b27ae2e8-7736-4bd7-9c7a-35bff06a2df8",
+                  "type": "point",
+                  "x": 228.78,
+                  "y": 204.85
+                },
+                {
+                  "id": "6b1665ed-42a6-477a-add2-5d5fba452653",
+                  "type": "point",
+                  "x": 253.77,
+                  "y": 282.08
+                }
+              ],
+              "id": "b0750b8b-71f7-4b4e-be42-b3eb5ca878b2",
+              "type": "default",
+              "selected": false,
+              "source": "7a192bf4-d934-47a4-8243-9be98755f9a9",
+              "sourcePort": "cmklbw5uw0079356oyfecaoy9",
+              "target": "00d31296-fa46-4ebf-a083-07bba8f90697",
+              "targetPort": "cmkldtewc00kf356ozey7yf9r",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "dcfd926c-cfb2-489d-9e67-b26191a270d3": {
+              "points": [
+                {
+                  "id": "437034ad-d080-4262-b646-0bedefd3d341",
+                  "type": "point",
+                  "x": 407.77,
+                  "y": 282.08
+                },
+                {
+                  "id": "e2bbf06b-f1d0-442d-b0d9-18d783cff76d",
+                  "type": "point",
+                  "x": 431.72,
+                  "y": 268.97
+                },
+                {
+                  "id": "50cb1f01-34ec-43c2-b426-4d46fa18dd37",
+                  "type": "point",
+                  "x": 456.72,
+                  "y": 282.08
+                }
+              ],
+              "id": "dcfd926c-cfb2-489d-9e67-b26191a270d3",
+              "type": "default",
+              "selected": false,
+              "source": "00d31296-fa46-4ebf-a083-07bba8f90697",
+              "sourcePort": "cmkldtewd00kh356o23nk2ck9",
+              "target": "f464a4fb-35b9-476c-b39c-0e4e2cc7e9c2",
+              "targetPort": "cmkldzopq00qf356orc9wdv9p",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "37b72d34-56bc-4705-accd-32075f990069": {
+              "points": [
+                {
+                  "id": "02ba7b90-5039-458b-bd69-d338fa0e2846",
+                  "type": "point",
+                  "x": 919.7,
+                  "y": 284.73
+                },
+                {
+                  "id": "5a097d72-d8e3-4f29-b1ff-a62f5a13353f",
+                  "type": "point",
+                  "x": 1131.09,
+                  "y": 268.97
+                },
+                {
+                  "id": "7c41fab4-3cff-49c3-8ea3-13b439f169d9",
+                  "type": "point",
+                  "x": 1045,
+                  "y": 279.73
+                }
+              ],
+              "id": "37b72d34-56bc-4705-accd-32075f990069",
+              "type": "default",
+              "selected": false,
+              "source": "6ad5c438-de9b-4183-8f22-ad00fd7440b9",
+              "sourcePort": "cmklh8r6t006z356oimo53gfo",
+              "target": "148357e7-3f72-4942-b76f-b089a5b837c3",
+              "targetPort": "cmkldw7u600o7356o51scpbik",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "30039046-305f-4eff-a61c-ca721fe51c06": {
+              "points": [
+                {
+                  "id": "9faa34c0-b732-4a93-9b11-5ef4ef98b1c5",
+                  "type": "point",
+                  "x": 204.94,
+                  "y": 346.2
+                },
+                {
+                  "id": "d97bb2b5-ea74-4e13-ad4e-8ccf83bcddb6",
+                  "type": "point",
+                  "x": 228.78,
+                  "y": 333.09
+                },
+                {
+                  "id": "78b04264-98d0-42fe-a430-1eb93b472419",
+                  "type": "point",
+                  "x": 253.77,
+                  "y": 282.08
+                }
+              ],
+              "id": "30039046-305f-4eff-a61c-ca721fe51c06",
+              "type": "default",
+              "selected": false,
+              "source": "7137aee9-7ead-494e-968e-46f3179a9332",
+              "sourcePort": "cmklbdgk4004p356oj6iolbdd",
+              "target": "00d31296-fa46-4ebf-a083-07bba8f90697",
+              "targetPort": "cmkldtewc00kf356ozey7yf9r",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "49449aa3-7156-4f1e-b246-412cf71af5c7": {
+              "points": [
+                {
+                  "id": "e941de30-7b4e-4647-a70d-2db9e5882af8",
+                  "type": "point",
+                  "x": 610.72,
+                  "y": 282.08
+                },
+                {
+                  "id": "0c906fda-da4c-42b4-9ffd-7980b5070c5d",
+                  "type": "point",
+                  "x": 675,
+                  "y": 284.73
+                }
+              ],
+              "id": "49449aa3-7156-4f1e-b246-412cf71af5c7",
+              "type": "default",
+              "selected": false,
+              "source": "f464a4fb-35b9-476c-b39c-0e4e2cc7e9c2",
+              "sourcePort": "cmkldzopq00qh356o6fzagd94",
+              "target": "6ad5c438-de9b-4183-8f22-ad00fd7440b9",
+              "targetPort": "cmklh8r6s006x356oozvxt8kd",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "e175dfc7-3767-440f-9a81-3c96e1547a6b": {
+              "points": [
+                {
+                  "id": "0e1cc5fa-499c-4338-93a2-21242faa6341",
+                  "type": "point",
+                  "x": 204.41,
+                  "y": 89.73
+                },
+                {
+                  "id": "f2bb6736-af4f-45ae-9310-4ead857b5376",
+                  "type": "point",
+                  "x": 253.77,
+                  "y": 282.08
+                }
+              ],
+              "id": "e175dfc7-3767-440f-9a81-3c96e1547a6b",
+              "type": "default",
+              "selected": false,
+              "source": "9571a408-df64-43b1-a72c-5082fd412c16",
+              "sourcePort": "cmklbczud004l356ogrsskafj",
+              "target": "00d31296-fa46-4ebf-a083-07bba8f90697",
+              "targetPort": "cmkldtewc00kf356ozey7yf9r",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "e45a24ab-324f-42ee-aaaf-fd508438f918": {
+              "points": [
+                {
+                  "id": "871e8a94-8a78-4b85-8658-0d66d844ecf6",
+                  "type": "point",
+                  "x": 1944,
+                  "y": 94.73
+                },
+                {
+                  "id": "1e32e0ca-26a2-4cc2-9bc3-85b9b3255aa4",
+                  "type": "point",
+                  "x": 1980,
+                  "y": 94.73
+                }
+              ],
+              "id": "e45a24ab-324f-42ee-aaaf-fd508438f918",
+              "type": "default",
+              "selected": false,
+              "source": "dfb9bc66-d235-4b46-a7df-678a5f87ad74",
+              "sourcePort": "cmkwttgi103da356rkbg2dtkp",
+              "target": "09f36ebe-8fe6-46b4-8ce3-db2b625b66ed",
+              "targetPort": "cmkpf2p0a00vh356rmtvvypge",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "152a828c-346e-4e5f-ad89-5b2e9c49af3c": {
+              "points": [
+                {
+                  "id": "74401b96-7917-4e2b-ae6b-b0d8b47c9654",
+                  "type": "point",
+                  "x": 2164.2,
+                  "y": 94.73
+                },
+                {
+                  "id": "a95321b6-4f1c-4e6b-8cd6-b470f5ed8b45",
+                  "type": "point",
+                  "x": 2200,
+                  "y": 94.73
+                }
+              ],
+              "id": "152a828c-346e-4e5f-ad89-5b2e9c49af3c",
+              "type": "default",
+              "selected": false,
+              "source": "09f36ebe-8fe6-46b4-8ce3-db2b625b66ed",
+              "sourcePort": "cmkpf2p0a00vj356r09c5yslh",
+              "target": "8f51ba05-a8eb-4234-b5d3-210421454912",
+              "targetPort": "cmkqttyrf008r356r583pg3iv",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "4cb09f28-8449-4de7-9fc9-671069809a2d": {
+              "points": [
+                {
+                  "id": "a448824a-bfce-4d54-a95f-5ddaf0de7cac",
+                  "type": "point",
+                  "x": 1199,
+                  "y": 279.73
+                },
+                {
+                  "id": "630632e0-2031-4c17-b93d-8a56168da4ad",
+                  "type": "point",
+                  "x": 1275,
+                  "y": 294.73
+                }
+              ],
+              "id": "4cb09f28-8449-4de7-9fc9-671069809a2d",
+              "type": "default",
+              "selected": false,
+              "source": "148357e7-3f72-4942-b76f-b089a5b837c3",
+              "sourcePort": "cmkldw7u600o9356orh7u4lgc",
+              "target": "c4a93d3e-6a97-454e-8b61-15c96eba521e",
+              "targetPort": "cmkopfuvr00li356ret9g02mi",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "e86f6e20-c987-4c08-a319-9b0ee1da9911": {
+              "points": [
+                {
+                  "id": "11b6e600-2558-423a-9773-50d8de0f42ec",
+                  "type": "point",
+                  "x": 2354,
+                  "y": 94.73
+                },
+                {
+                  "id": "d8bbab25-acb5-4101-8e5d-75a17a509b80",
+                  "type": "point",
+                  "x": 2390,
+                  "y": 94.73
+                }
+              ],
+              "id": "e86f6e20-c987-4c08-a319-9b0ee1da9911",
+              "type": "default",
+              "selected": false,
+              "source": "8f51ba05-a8eb-4234-b5d3-210421454912",
+              "sourcePort": "cmkqttyrf008t356rnjdrxuxs",
+              "target": "7b47a0d0-8f20-4fc0-98d9-c4dfa8c90268",
+              "targetPort": "cmkpf97fe0175356rec0hvt4i",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "3d0e77f8-1c93-4fdd-a3b7-1d75d4e876ae": {
+              "points": [
+                {
+                  "id": "a3ef731f-8a46-4dec-8403-965a7b507adc",
+                  "type": "point",
+                  "x": 1754,
+                  "y": 94.73
+                },
+                {
+                  "id": "415508d2-4eb1-4d95-8552-100c0e3aa32b",
+                  "type": "point",
+                  "x": 1790,
+                  "y": 94.73
+                }
+              ],
+              "id": "3d0e77f8-1c93-4fdd-a3b7-1d75d4e876ae",
+              "type": "default",
+              "source": "5b49209a-b109-423a-b002-e35977758843",
+              "sourcePort": "cmkzw66q3003g356o6cthmqcw",
+              "target": "dfb9bc66-d235-4b46-a7df-678a5f87ad74",
+              "targetPort": "cmkwttgi103d8356rdbdm4z4n",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "f3a62158-71b5-4e51-8a01-65068a6cc7ac": {
+              "points": [
+                {
+                  "id": "9e232756-1701-41d4-992b-4788e2548b61",
+                  "type": "point",
+                  "x": 1566.86,
+                  "y": 294.73
+                },
+                {
+                  "id": "06b7f453-aa84-49cc-86fa-56f317e7e8be",
+                  "type": "point",
+                  "x": 1600,
+                  "y": 94.73
+                }
+              ],
+              "id": "f3a62158-71b5-4e51-8a01-65068a6cc7ac",
+              "type": "default",
+              "source": "c4a93d3e-6a97-454e-8b61-15c96eba521e",
+              "sourcePort": "cmkopfuvr00lk356r1llw2ck7",
+              "target": "5b49209a-b109-423a-b002-e35977758843",
+              "targetPort": "cmkzw66q3003e356oocw0zgmd",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            }
+          }
+        },
+        {
+          "id": "3b000eba-a4d7-482b-85a4-944969a25131",
+          "type": "diagram-nodes",
+          "isSvg": false,
+          "transformed": true,
+          "models": {
+            "9571a408-df64-43b1-a72c-5082fd412c16": {
+              "id": "9571a408-df64-43b1-a72c-5082fd412c16",
+              "type": "debugSource",
+              "selected": false,
+              "x": 50.42,
+              "y": 50,
+              "ports": [
+                {
+                  "id": "cmklbczud004l356ogrsskafj",
+                  "type": "default",
+                  "x": 196.41,
+                  "y": 81.73,
+                  "name": "cmklbczud004m356ocnkr1iuw",
+                  "parentNode": "9571a408-df64-43b1-a72c-5082fd412c16",
+                  "links": [
+                    "e175dfc7-3767-440f-9a81-3c96e1547a6b"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "payload": {},
+                "context": {},
+                "nextNodes": [
+                  "00d31296-fa46-4ebf-a083-07bba8f90697"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Source"
+            },
+            "7137aee9-7ead-494e-968e-46f3179a9332": {
+              "id": "7137aee9-7ead-494e-968e-46f3179a9332",
+              "type": "debugDataChange",
+              "selected": false,
+              "x": 50,
+              "y": 306.47,
+              "ports": [
+                {
+                  "id": "cmklbdgk4004p356oj6iolbdd",
+                  "type": "default",
+                  "x": 196.94,
+                  "y": 338.2,
+                  "name": "cmklbdgk4004q356oqu8ie3k4",
+                  "parentNode": "7137aee9-7ead-494e-968e-46f3179a9332",
+                  "links": [
+                    "30039046-305f-4eff-a61c-ca721fe51c06"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "Application",
+                "beforeData": null,
+                "afterData": [
+                  {
+                    "type": "debugSource",
+                    "selected": true,
+                    "x": null,
+                    "y": null,
+                    "ports": [],
+                    "data": {
+                      "payload": {
+                        "value": {
+                          "collection": "productionLog",
+                          "operation": "create",
+                          "before": null,
+                          "after": {
+                            "code": "PROD-20260123162807-YCUL4",
+                            "cycleTime": 1800,
+                            "quantityGood": 98,
+                            "quantityScrap": 2,
+                            "source": "Integration",
+                            "occurAt": "2026-01-23T21:28:07.420Z",
+                            "productId": "prd-det-006",
+                            "workOrderId": "wo-det-0144",
+                            "workcenterId": "wc-pd-c1",
+                            "scheduleId": "second",
+                            "_customFields": {},
+                            "id": "cmkre77xc45e6017wfkmxa2t6",
+                            "createdByUserId": "ckzzmdqs8000y0jwx2o5qhwmi",
+                            "createdAt": "2026-01-23T21:28:15.072Z",
+                            "updatedByUserId": "ckzzmdqs8000y0jwx2o5qhwmi",
+                            "updatedAt": "2026-01-23T21:28:15.072Z",
+                            "_id": "cmkre77xc45e6017wfkmxa2t6"
+                          },
+                          "_trace": {
+                            "traceId": "cmkre77o601ra01qm16wr13yq",
+                            "applicationSpanEventLogId": "cmkre77wm45e5017w4a9efgma",
+                            "url": "/system/orchestration/flowDesigner/cmkrblf0jz8mc01bccr7f8cuh"
+                          },
+                          "_metadata": {}
+                        },
+                        "topic": "mfgx.tenant.fuuzOverflow.dataChange.application.productionLog.create",
+                        "headers": {
+                          "x-mfgx-origin-service-name": "web",
+                          "x-mfgx-forwarded-for-service-name": "application",
+                          "x-mfgx-trace-id": "cmkre77o601ra01qm16wr13yq",
+                          "x-mfgx-trace-span-id": "874c219a-1d7a-4092-a2a3-b6bc4930fcc4",
+                          "x-mfgx-trace-url": "/system/orchestration/flowDesigner/cmkrblf0jz8mc01bccr7f8cuh",
+                          "x-mfgx-trace-request-timestamp": "1769203695087",
+                          "x-mfgx-trace-initial-request-timestamp": "1769203694742",
+                          "x-mfgx-trace-client-session-id": "cmkre53hm0004356rpdpldk1f"
+                        }
+                      }
+                    },
+                    "debug": {
+                      "breakpointEnabled": false,
+                      "publishSubscribeClient": false,
+                      "publishToMFGx": false
+                    },
+                    "logging": {
+                      "executionMetrics": false,
+                      "executionStarted": false,
+                      "executionSucceeded": false,
+                      "executionFailed": true,
+                      "enableTraceLogging": false
+                    },
+                    "name": "Source",
+                    "note": ""
+                  }
+                ],
+                "type": "ProductionLog",
+                "operation": "Create",
+                "nextNodes": [
+                  "00d31296-fa46-4ebf-a083-07bba8f90697"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Data Change Source"
+            },
+            "7a192bf4-d934-47a4-8243-9be98755f9a9": {
+              "id": "7a192bf4-d934-47a4-8243-9be98755f9a9",
+              "type": "dataChanges",
+              "selected": false,
+              "x": 55,
+              "y": 160,
+              "ports": [
+                {
+                  "id": "cmklbw5uw0079356oyfecaoy9",
+                  "type": "default",
+                  "x": 201,
+                  "y": 191.73,
+                  "name": "cmklbw5uw007a356oysvor0ak",
+                  "parentNode": "7a192bf4-d934-47a4-8243-9be98755f9a9",
+                  "links": [
+                    "b0750b8b-71f7-4b4e-be42-b3eb5ca878b2"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Message",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "Application",
+                "nextNodes": [
+                  "00d31296-fa46-4ebf-a083-07bba8f90697"
+                ],
+                "type": "ProductionLog",
+                "operations": [
+                  "Create"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Data Changes"
+            },
+            "00d31296-fa46-4ebf-a083-07bba8f90697": {
+              "id": "00d31296-fa46-4ebf-a083-07bba8f90697",
+              "type": "unless",
+              "selected": false,
+              "x": 253.78,
+              "y": 242.35,
+              "ports": [
+                {
+                  "id": "cmkldtewc00kf356ozey7yf9r",
+                  "type": "default",
+                  "x": 245.77,
+                  "y": 274.08,
+                  "name": "cmkldtewc00kg356owk3td5lf",
+                  "parentNode": "00d31296-fa46-4ebf-a083-07bba8f90697",
+                  "links": [
+                    "b0750b8b-71f7-4b4e-be42-b3eb5ca878b2",
+                    "30039046-305f-4eff-a61c-ca721fe51c06",
+                    "e175dfc7-3767-440f-9a81-3c96e1547a6b"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkldtewd00kh356o23nk2ck9",
+                  "type": "default",
+                  "x": 399.77,
+                  "y": 274.08,
+                  "name": "cmkldtewd00ki356oy5l8omcr",
+                  "parentNode": "00d31296-fa46-4ebf-a083-07bba8f90697",
+                  "links": [
+                    "dcfd926c-cfb2-489d-9e67-b26191a270d3"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "$.value.after.processedInOeeHourlyAt != null",
+                "nextNodes": [
+                  "f464a4fb-35b9-476c-b39c-0e4e2cc7e9c2"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Reject"
+            },
+            "148357e7-3f72-4942-b76f-b089a5b837c3": {
+              "id": "148357e7-3f72-4942-b76f-b089a5b837c3",
+              "type": "mergeContext",
+              "selected": false,
+              "x": 1045,
+              "y": 240,
+              "ports": [
+                {
+                  "id": "cmkldw7u600o7356o51scpbik",
+                  "type": "default",
+                  "x": 1037,
+                  "y": 271.73,
+                  "name": "cmkldw7u600o8356o9cx40xkv",
+                  "parentNode": "148357e7-3f72-4942-b76f-b089a5b837c3",
+                  "links": [
+                    "37b72d34-56bc-4705-accd-32075f990069"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkldw7u600o9356orh7u4lgc",
+                  "type": "default",
+                  "x": 1191,
+                  "y": 271.73,
+                  "name": "cmkldw7u600oa356opho0kc6j",
+                  "parentNode": "148357e7-3f72-4942-b76f-b089a5b837c3",
+                  "links": [
+                    "4cb09f28-8449-4de7-9fc9-671069809a2d"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "{\r\n \"setting\": $.setting.edges.node.defaultValue,\r\n \"productCycleTime\": $.product.edges.node.standardCycleTime,\r\n \"productUnit\": $.product.edges.node.unitId\r\n}",
+                "nextNodes": [
+                  "c4a93d3e-6a97-454e-8b61-15c96eba521e"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Merge Context"
+            },
+            "f464a4fb-35b9-476c-b39c-0e4e2cc7e9c2": {
+              "id": "f464a4fb-35b9-476c-b39c-0e4e2cc7e9c2",
+              "type": "setContext",
+              "selected": false,
+              "x": 456.72,
+              "y": 242.35,
+              "ports": [
+                {
+                  "id": "cmkldzopq00qf356orc9wdv9p",
+                  "type": "default",
+                  "x": 448.72,
+                  "y": 274.08,
+                  "name": "cmkldzopq00qg356o7t0rl4wn",
+                  "parentNode": "f464a4fb-35b9-476c-b39c-0e4e2cc7e9c2",
+                  "links": [
+                    "dcfd926c-cfb2-489d-9e67-b26191a270d3"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkldzopq00qh356o6fzagd94",
+                  "type": "default",
+                  "x": 602.72,
+                  "y": 274.08,
+                  "name": "cmkldzopq00qi356o1l1znk4g",
+                  "parentNode": "f464a4fb-35b9-476c-b39c-0e4e2cc7e9c2",
+                  "links": [
+                    "49449aa3-7156-4f1e-b246-412cf71af5c7"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "6ad5c438-de9b-4183-8f22-ad00fd7440b9"
+                ],
+                "transform": "{\r\n  \"afterData\": $.value.after\r\n}"
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Set Context"
+            },
+            "6ad5c438-de9b-4183-8f22-ad00fd7440b9": {
+              "id": "6ad5c438-de9b-4183-8f22-ad00fd7440b9",
+              "type": "query",
+              "selected": false,
+              "x": 675,
+              "y": 245,
+              "ports": [
+                {
+                  "id": "cmklh8r6s006x356oozvxt8kd",
+                  "type": "default",
+                  "x": 667,
+                  "y": 276.73,
+                  "name": "cmklh8r6s006y356op3554slu",
+                  "parentNode": "6ad5c438-de9b-4183-8f22-ad00fd7440b9",
+                  "links": [
+                    "49449aa3-7156-4f1e-b246-412cf71af5c7"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmklh8r6t006z356oimo53gfo",
+                  "type": "default",
+                  "x": 911.7,
+                  "y": 276.73,
+                  "name": "cmklh8r6t0070356om7c1cwye",
+                  "parentNode": "6ad5c438-de9b-4183-8f22-ad00fd7440b9",
+                  "links": [
+                    "37b72d34-56bc-4705-accd-32075f990069"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "application",
+                "variablesTransform": "{\r\n  \"oeeWhere\": {\r\n    \"_and\": [\r\n      {\r\n        \"scheduleHourStartAt\": {\r\n          \"_lte\": $.value.after.occurAt\r\n        },\r\n        \"scheduleHourEndAt\": {\r\n          \"_gte\": $.value.after.occurAt\r\n        },\r\n        \"workcenterId\": {\r\n          \"_eq\": $.value.after.workcenterId\r\n        }\r\n      }\r\n    ]\r\n  },\r\n  \"productWhere\": {\r\n    \"id\": {\r\n      \"_eq\": $.value.after.productId\r\n    }\r\n  }\r\n}",
+                "query": "query GetOeeData(\r\n  $oeeWhere: OeeHourlyWhereInput\r\n  $oeeOrderBy: [OeeHourlyOrderByInput!]\r\n  $oeeFirst: Int\r\n  $oeeAfter: String\r\n  $productWhere: ProductWhereInput\r\n  $productOrderBy: [ProductOrderByInput!]\r\n  $productFirst: Int\r\n  $productAfter: String\r\n) {\r\n  setting(where: { id: { _eq: \"TimeZone\" } }) {\r\n    edges {\r\n      node {\r\n        defaultValue\r\n      }\r\n    }\r\n  }\r\n  \r\n  oeeHourly(where: $oeeWhere, orderBy: $oeeOrderBy, first: $oeeFirst, after: $oeeAfter) {\r\n    edges {\r\n      node {\r\n        id\r\n        goodUnits\r\n        idealUnits\r\n        performance\r\n        quality\r\n        scheduleHourStartAt\r\n        scheduleHourEndAt\r\n        scrapUnits\r\n        totalUnits\r\n        scheduleId\r\n        actualCycleTime (format: milliseconds)\r\n        idealCycleTime (format: milliseconds)\r\n        workcenterId\r\n      }\r\n    }\r\n  }\r\n  \r\n  product(where: $productWhere, orderBy: $productOrderBy, first: $productFirst, after: $productAfter) {\r\n    edges {\r\n      node {\r\n        standardCycleTime \r\n        unitId\r\n        idealCycleTime\r\n      }\r\n    }\r\n  }\r\n}",
+                "nextNodes": [
+                  "148357e7-3f72-4942-b76f-b089a5b837c3"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Get Tenant Timezone & Product Data"
+            },
+            "c4a93d3e-6a97-454e-8b61-15c96eba521e": {
+              "id": "c4a93d3e-6a97-454e-8b61-15c96eba521e",
+              "type": "javascriptTransform",
+              "selected": false,
+              "x": 1275,
+              "y": 255,
+              "ports": [
+                {
+                  "id": "cmkopfuvr00li356ret9g02mi",
+                  "type": "default",
+                  "x": 1267,
+                  "y": 286.73,
+                  "name": "cmkopfuvr00lj356ri0rcvrcw",
+                  "parentNode": "c4a93d3e-6a97-454e-8b61-15c96eba521e",
+                  "links": [
+                    "4cb09f28-8449-4de7-9fc9-671069809a2d"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkopfuvr00lk356r1llw2ck7",
+                  "type": "default",
+                  "x": 1558.86,
+                  "y": 286.73,
+                  "name": "cmkopfuvr00ll356r78a3iy75",
+                  "parentNode": "c4a93d3e-6a97-454e-8b61-15c96eba521e",
+                  "links": [
+                    "f3a62158-71b5-4e51-8a01-65068a6cc7ac"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "// Extract production log data\r\nconst productionLog = ($.value && $.value.after) || ($state.context && $state.context.afterData) || null;\r\n\r\nif (!productionLog || !productionLog.workcenterId) {\r\n  throw new Error('Production log data not found. Check data flow configuration.');\r\n}\r\n\r\n// Helper: convert duration field to milliseconds\r\n// Handles both numeric (already ms) and string (ISO 8601 like \"PT8H\") formats\r\nfunction toMs(val) {\r\n  if (!val) return 0;\r\n  if (typeof val === 'number') return val;\r\n  if (typeof val === 'string') {\r\n    try {\r\n      return moment.duration(val).asMilliseconds();\r\n    } catch (e) {\r\n      console.log('Warning: Could not parse duration string: ' + val);\r\n      return 0;\r\n    }\r\n  }\r\n  return 0;\r\n}\r\n\r\n// Check if oeeHourly record exists for this time window\r\nconst oeeRecordExists = $.oeeHourly.edges && $.oeeHourly.edges.length > 0;\r\nif (!oeeRecordExists) {\r\n  console.log('No matching oeeHourly record found for occurAt: ' + productionLog.occurAt + ' on workcenter: ' + productionLog.workcenterId);\r\n  console.log('Skipping processing - productionLog will not be marked as processed');\r\n  return { skip: true };\r\n}\r\n\r\n// Extract data from query results\r\nconst oeeRecord = $.oeeHourly.edges[0].node;\r\nconst product = $.product.edges[0]?.node || {};\r\n\r\nconsole.log('Processing production log for ' + productionLog.workcenterId);\r\nconsole.log('OccurAt: ' + productionLog.occurAt);\r\nconsole.log('Existing OEE record:', oeeRecord);\r\nconsole.log('Product:', product);\r\n\r\n// Product cycle times - DIFFERENT FORMATS:\r\n// - product.idealCycleTime is a Duration field (returns milliseconds)\r\n// - product.standardCycleTime is stored in seconds\r\n// Both represent \"seconds per unit\" - normalize to seconds for calculation\r\nconst productIdealCycleTimeSec = product.idealCycleTime \r\n  ? toMs(product.idealCycleTime) / 1000   // Duration → ms → seconds\r\n  : (product.standardCycleTime || 0);      // Already in seconds\r\nconst hasValidIdealCycleTime = productIdealCycleTimeSec > 0;\r\n\r\nif (!hasValidIdealCycleTime) {\r\n  console.log('WARNING: Product has no idealCycleTime or standardCycleTime defined. Ideal metrics will not be calculated.');\r\n} else {\r\n  console.log('Product cycle time raw values - idealCycleTime: ' + product.idealCycleTime + ' (Duration/ms), standardCycleTime: ' + product.standardCycleTime + ' (seconds)');\r\n}\r\n\r\n// Get existing values from oeeHourly\r\n// Duration fields (actualCycleTime, idealCycleTime) are in MILLISECONDS - convert to seconds for calculation\r\nconst existingGoodUnits = oeeRecord.goodUnits || 0;\r\nconst existingScrapUnits = oeeRecord.scrapUnits || 0;\r\nconst existingTotalUnits = oeeRecord.totalUnits || 0;\r\nconst existingActualCycleTimeSec = toMs(oeeRecord.actualCycleTime) / 1000;\r\nconst existingIdealCycleTimeSec = toMs(oeeRecord.idealCycleTime) / 1000;\r\nconst existingIdealUnits = oeeRecord.idealUnits || 0;\r\n\r\n// Get new production data from productionLog\r\n// productionLog.cycleTime is in SECONDS for the total batch (e.g., 1800 = 1800 seconds for all units)\r\nconst newGoodQty = productionLog.quantityGood || 0;\r\nconst newScrapQty = productionLog.quantityScrap || 0;\r\nconst newTotalQty = newGoodQty + newScrapQty;\r\nconst newActualCycleTimeSec = productionLog.cycleTime || 0;\r\n\r\n// Calculate incremental ideal values for this production log\r\n// idealCycleTime increment = productIdealCycleTime × units produced (how long SHOULD it have taken)\r\n// idealUnits increment = actualCycleTime / productIdealCycleTime (how many units SHOULD we have made)\r\nconst newIdealCycleTimeSecIncrement = hasValidIdealCycleTime ? (productIdealCycleTimeSec * newTotalQty) : 0;\r\nconst newIdealUnitsIncrement = hasValidIdealCycleTime ? (newActualCycleTimeSec / productIdealCycleTimeSec) : 0;\r\n\r\n// Calculate new cumulative totals (in seconds)\r\nconst newGoodUnits = existingGoodUnits + newGoodQty;\r\nconst newScrapUnits = existingScrapUnits + newScrapQty;\r\nconst newTotalUnits = existingTotalUnits + newTotalQty;\r\nconst newActualCycleTimeSecTotal = existingActualCycleTimeSec + newActualCycleTimeSec;\r\nconst newIdealCycleTimeSecTotal = existingIdealCycleTimeSec + newIdealCycleTimeSecIncrement;\r\nconst newIdealUnitsTotal = existingIdealUnits + newIdealUnitsIncrement;\r\n\r\n// Recalculate KPIs per ISO 22400 using cumulative values\r\n// Quality = Good Units / Total Units\r\nconst quality = newTotalUnits > 0 ? newGoodUnits / newTotalUnits : 0;\r\n\r\n// Performance = Ideal Cycle Time / Actual Cycle Time (capped at 1.0)\r\nconst performance = newActualCycleTimeSecTotal > 0 ? Math.min(newIdealCycleTimeSecTotal / newActualCycleTimeSecTotal, 1) : 0;\r\n\r\n// Build update payload - Duration fields converted to MILLISECONDS for storage\r\nconst updatePayload = {\r\n  id: oeeRecord.id,\r\n  goodUnits: newGoodUnits,\r\n  scrapUnits: newScrapUnits,\r\n  totalUnits: newTotalUnits,\r\n  actualCycleTime: Math.round(newActualCycleTimeSecTotal * 1000),  // seconds → ms\r\n  idealCycleTime: Math.round(newIdealCycleTimeSecTotal * 1000),    // seconds → ms\r\n  idealUnits: Math.round(newIdealUnitsTotal * 100) / 100,\r\n  quality: Math.round(quality * 10000) / 10000,\r\n  performance: Math.round(performance * 10000) / 10000\r\n};\r\n\r\nconsole.log('=== Calculation Summary ===');\r\nconsole.log('Product ideal cycle time per unit: ' + productIdealCycleTimeSec + 's (from ' + (product.idealCycleTime ? 'idealCycleTime' : 'standardCycleTime') + ')');\r\nconsole.log('New production: Good=' + newGoodQty + ', Scrap=' + newScrapQty + ', Total=' + newTotalQty);\r\nconsole.log('New actual cycle time (batch): ' + newActualCycleTimeSec + 's');\r\nconsole.log('Ideal cycle time increment: ' + newIdealCycleTimeSecIncrement + 's');\r\nconsole.log('Ideal units increment: ' + newIdealUnitsIncrement.toFixed(2));\r\nconsole.log('--- Cumulative Totals ---');\r\nconsole.log('Total units: ' + newTotalUnits + ' (Good: ' + newGoodUnits + ', Scrap: ' + newScrapUnits + ')');\r\nconsole.log('Actual cycle time: ' + newActualCycleTimeSecTotal + 's (' + (newActualCycleTimeSecTotal/60).toFixed(2) + ' min)');\r\nconsole.log('Ideal cycle time: ' + newIdealCycleTimeSecTotal + 's (' + (newIdealCycleTimeSecTotal/60).toFixed(2) + ' min)');\r\nconsole.log('Ideal units: ' + newIdealUnitsTotal.toFixed(2));\r\nconsole.log('Quality: ' + (quality * 100).toFixed(2) + '%');\r\nconsole.log('Performance: ' + (performance * 100).toFixed(2) + '%');\r\n\r\nreturn updatePayload;",
+                "nextNodes": [
+                  "5b49209a-b109-423a-b002-e35977758843"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Generate OEE Details for ProductionLog Entry"
+            },
+            "09f36ebe-8fe6-46b4-8ce3-db2b625b66ed": {
+              "id": "09f36ebe-8fe6-46b4-8ce3-db2b625b66ed",
+              "type": "mutate",
+              "selected": true,
+              "x": 1980,
+              "y": 55,
+              "ports": [
+                {
+                  "id": "cmkpf2p0a00vh356rmtvvypge",
+                  "type": "default",
+                  "x": 1972,
+                  "y": 86.73,
+                  "name": "cmkpf2p0a00vi356rut2corh6",
+                  "parentNode": "09f36ebe-8fe6-46b4-8ce3-db2b625b66ed",
+                  "links": [
+                    "e45a24ab-324f-42ee-aaaf-fd508438f918"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkpf2p0a00vj356r09c5yslh",
+                  "type": "default",
+                  "x": 2156.2,
+                  "y": 86.73,
+                  "name": "cmkpf2p0a00vk356rm8j21vll",
+                  "parentNode": "09f36ebe-8fe6-46b4-8ce3-db2b625b66ed",
+                  "links": [
+                    "152a828c-346e-4e5f-ad89-5b2e9c49af3c"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "Application",
+                "variablesTransform": "{\r\n  \"payload\": [{\r\n    \"where\": {\r\n      \"id\": $.id \r\n    },\r\n    \"update\": {\r\n      \"totalUnits\": $.totalUnits,\r\n      \"goodUnits\": $.goodUnits,\r\n      \"scrapUnits\": $.scrapUnits,\r\n      \"quality\": $.quality,\r\n      \"actualCycleTime\": $.actualCycleTime,\r\n      \"idealCycleTime\": $.idealCycleTime,\r\n      \"idealUnits\": $.idealUnits,\r\n      \"performance\": $.performance\r\n    }\r\n  }]\r\n}",
+                "mutation": "mutation UpdateOeeHourly($payload: [OeeHourlyUpdatePayloadInput!]!) {\n  updateOeeHourly(payload: $payload) {\n    id\n  }\n}",
+                "nextNodes": [
+                  "8f51ba05-a8eb-4234-b5d3-210421454912"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": true,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Update OeeHourly Record"
+            },
+            "7b47a0d0-8f20-4fc0-98d9-c4dfa8c90268": {
+              "id": "7b47a0d0-8f20-4fc0-98d9-c4dfa8c90268",
+              "type": "mutate",
+              "selected": false,
+              "x": 2390,
+              "y": 55,
+              "ports": [
+                {
+                  "id": "cmkpf97fe0175356rec0hvt4i",
+                  "type": "default",
+                  "x": 2382,
+                  "y": 86.73,
+                  "name": "cmkpf97fe0176356rwgxhkfbt",
+                  "parentNode": "7b47a0d0-8f20-4fc0-98d9-c4dfa8c90268",
+                  "links": [
+                    "e86f6e20-c987-4c08-a319-9b0ee1da9911"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkpf97fe0177356rqbb1g9vp",
+                  "type": "default",
+                  "x": 2757.31,
+                  "y": 86.73,
+                  "name": "cmkpf97fe0178356rbqjstyz6",
+                  "parentNode": "7b47a0d0-8f20-4fc0-98d9-c4dfa8c90268",
+                  "links": [],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "Application",
+                "variablesTransform": "{\r\n  \"payload\": [{\r\n    \"where\": {\r\n      \"id\": $state.context.afterData.id\r\n      \r\n    },\r\n    \"update\": {\r\n      \"processedInOeeHourlyAt\": $moment()\r\n    }\r\n  }]\r\n}",
+                "mutation": "mutation UpdateProductionLog($payload: [ProductionLogUpdatePayloadInput!]!) {\n  updateProductionLog(payload: $payload) {\n    id\n  }\n}",
+                "nextNodes": []
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Update ProductionLog with processedOeeHourlyAt dateTime"
+            },
+            "8f51ba05-a8eb-4234-b5d3-210421454912": {
+              "id": "8f51ba05-a8eb-4234-b5d3-210421454912",
+              "type": "mutexUnlock",
+              "selected": false,
+              "x": 2200,
+              "y": 55,
+              "ports": [
+                {
+                  "id": "cmkqttyrf008r356r583pg3iv",
+                  "type": "default",
+                  "x": 2192,
+                  "y": 86.73,
+                  "name": "cmkqttyrf008s356r9dxdic24",
+                  "parentNode": "8f51ba05-a8eb-4234-b5d3-210421454912",
+                  "links": [
+                    "152a828c-346e-4e5f-ad89-5b2e9c49af3c"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkqttyrf008t356rnjdrxuxs",
+                  "type": "default",
+                  "x": 2346,
+                  "y": 86.73,
+                  "name": "cmkqttyrf008u356rabs5oe88",
+                  "parentNode": "8f51ba05-a8eb-4234-b5d3-210421454912",
+                  "links": [
+                    "e86f6e20-c987-4c08-a319-9b0ee1da9911"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "7b47a0d0-8f20-4fc0-98d9-c4dfa8c90268"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Mutex Unlock"
+            },
+            "dfb9bc66-d235-4b46-a7df-678a5f87ad74": {
+              "id": "dfb9bc66-d235-4b46-a7df-678a5f87ad74",
+              "type": "mutexLock",
+              "selected": false,
+              "x": 1790,
+              "y": 55,
+              "ports": [
+                {
+                  "id": "cmkwttgi103d8356rdbdm4z4n",
+                  "type": "default",
+                  "x": 1782,
+                  "y": 86.73,
+                  "name": "cmkwttgi103d9356r22bvordw",
+                  "parentNode": "dfb9bc66-d235-4b46-a7df-678a5f87ad74",
+                  "links": [
+                    "3d0e77f8-1c93-4fdd-a3b7-1d75d4e876ae"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkwttgi103da356rkbg2dtkp",
+                  "type": "default",
+                  "x": 1936,
+                  "y": 86.73,
+                  "name": "cmkwttgi103db356r09win56m",
+                  "parentNode": "dfb9bc66-d235-4b46-a7df-678a5f87ad74",
+                  "links": [
+                    "e45a24ab-324f-42ee-aaaf-fd508438f918"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "lockTTLms": 30000,
+                "lockRetries": -1,
+                "throwErrorWhenLockNotAcquired": false,
+                "nextNodes": [
+                  "09f36ebe-8fe6-46b4-8ce3-db2b625b66ed"
+                ],
+                "resourceIdTransform": "$.updateOeeHourly.id"
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Mutex Lock"
+            },
+            "5b49209a-b109-423a-b002-e35977758843": {
+              "id": "5b49209a-b109-423a-b002-e35977758843",
+              "type": "unless",
+              "selected": false,
+              "x": 1600,
+              "y": 55,
+              "ports": [
+                {
+                  "id": "cmkzw66q3003e356oocw0zgmd",
+                  "type": "default",
+                  "x": 1592,
+                  "y": 86.73,
+                  "name": "cmkzw66q3003f356ovra9shbk",
+                  "parentNode": "5b49209a-b109-423a-b002-e35977758843",
+                  "links": [
+                    "f3a62158-71b5-4e51-8a01-65068a6cc7ac"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkzw66q3003g356o6cthmqcw",
+                  "type": "default",
+                  "x": 1746,
+                  "y": 86.73,
+                  "name": "cmkzw66q3003h356oug8538fo",
+                  "parentNode": "5b49209a-b109-423a-b002-e35977758843",
+                  "links": [
+                    "3d0e77f8-1c93-4fdd-a3b7-1d75d4e876ae"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "dfb9bc66-d235-4b46-a7df-678a5f87ad74"
+                ],
+                "transform": "$isNilOrEmpty($.id)"
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Reject - If no id"
+            }
+          }
+        }
+      ],
+      "name": "Production Log Create OEE Events",
+      "type": "System",
+      "version": "0.0.16",
+      "walkthrough": {
+        "steps": []
+      }
+    }
+  }
+}

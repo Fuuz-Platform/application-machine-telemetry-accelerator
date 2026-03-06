@@ -1,0 +1,684 @@
+{
+  "header": {
+    "id": "workcenterHistory",
+    "name": "WorkcenterHistory",
+    "description": "Time-series record of workcenter state changes for OEE calculation, downtime analysis, and historical reporting. Each record represents a period in a specific mode/state with optional event classification.",
+    "dataModelKindId": "reference",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cml8bqda67a1e01826r0h7cub",
+    "number": "11",
+    "dataModelId": "workcenterHistory",
+    "modelDefinition": {
+      "name": "WorkcenterHistory",
+      "metadata": {
+        "mfgx": {
+          "module": {
+            "id": "machineDataApp",
+            "group": {
+              "id": "machineTelemetrySiteApplication"
+            }
+          },
+          "exposed": true,
+          "mutable": true,
+          "mutations": {
+            "create": true,
+            "update": true,
+            "del": true
+          },
+          "dataChangeCapture": {
+            "exposed": false,
+            "retentionDays": 730
+          },
+          "customFields": {
+            "exposed": true
+          },
+          "editor": {
+            "autosort": true
+          },
+          "labelField": "code",
+          "triggers": {}
+        },
+        "mongo": {
+          "collection": "workcenterHistory"
+        },
+        "graphql": {
+          "type": "Object"
+        }
+      },
+      "kind": "Reference",
+      "fields": [
+        {
+          "name": "id",
+          "type": "ID!",
+          "description": "**`id`** (`ID!`)\nPrimary unique identifier for the WorkcenterHistory record.\n\n- Required on creation; cannot be updated.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": false
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": true
+          }
+        },
+        {
+          "name": "code",
+          "type": "String!",
+          "description": "**`code`** (`String!`)\nAuto-generated sequence code for the history record.\n\n- Used for reference and audit trail.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "plannedDowntime",
+          "description": "planned downtime in milliseconds for aggregation",
+          "type": "Int",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "runTime",
+          "type": "Int",
+          "description": "runtime in milliseconds for aggregation",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "unplannedDowntime",
+          "description": "unplanned downtime in milliseconds for aggregation",
+          "type": "Int",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "notes",
+          "type": "String",
+          "description": "**`notes`** (`String`)\nOperator notes or comments for this period.\n\n- Captures additional context for downtime events.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "endAt",
+          "type": "DateTime",
+          "description": "**`endAt`** (`DateTime`)\nEnd timestamp of this state period.\n\n- Null for the current/active period.\n- Set when state changes to a new value.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "occurAt",
+          "type": "DateTime!",
+          "description": "**`occurAt`** (`DateTime!`)\nStart timestamp of this state period.\n\n- Required for all history records.\n- Used for time-based queries and aggregations.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "processedInOeeHourlyAt",
+          "type": "DateTime",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "duration",
+          "type": "Duration",
+          "description": "**`duration`** (`Duration`)\nCalculated duration of this state period.\n\n- Computed from occurAt and endAt.\n- Used for OEE and downtime duration reporting.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "modeId",
+          "type": "ID!",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "mode",
+          "description": "",
+          "type": "Mode!",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "deletionReferenceBehavior": "prevent",
+                "fields": {
+                  "from": "modeId",
+                  "to": "id"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "stateId",
+          "type": "ID!",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "state",
+          "description": "",
+          "type": "State!",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "deletionReferenceBehavior": "prevent",
+                "fields": {
+                  "from": "stateId",
+                  "to": "id"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "workcenterId",
+          "type": "ID!",
+          "description": "**`workcenterId`** (`ID!`)\nForeign key to the Workcenter.\n\n- Required for all history records.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "workcenter",
+          "type": "Workcenter!",
+          "description": "**`workcenter`** (`Workcenter!`)\nRelated Workcenter object for context.",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "deletionReferenceBehavior": "cascade",
+                "fields": {
+                  "from": "workcenterId",
+                  "to": "id"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "currentWorkcenter",
+          "description": "",
+          "type": "Workcenter",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "fields": {
+                  "from": "id",
+                  "to": "currentWorkcenterHistoryId"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "eventId",
+          "type": "ID",
+          "description": "**`eventId`** (`ID`)\nForeign key to the Event (downtime reason).\n\n- Set when period represents a classified downtime.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "event",
+          "type": "Event",
+          "description": "**`event`** (`Event`)\nRelated Event object for downtime classification.",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "deletionReferenceBehavior": "setNull",
+                "fields": {
+                  "from": "eventId",
+                  "to": "id"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "scheduleId",
+          "type": "ID",
+          "description": "**`scheduleId`** (`ID`)\nForeign key to the Schedule during this period.\n\n- Enables schedule-based reporting and analysis.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "schedule",
+          "type": "Schedule",
+          "description": "**`schedule`** (`Schedule`)\nRelated Schedule object for scheduling context.",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "deletionReferenceBehavior": "setNull",
+                "fields": {
+                  "from": "scheduleId",
+                  "to": "id"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        }
+      ],
+      "description": "Time-series record of workcenter state changes for OEE calculation, downtime analysis, and historical reporting. Each record represents a period in a specific mode/state with optional event classification."
+    },
+    "dataModelTypeId": "transactional"
+  },
+  "migration": "$",
+  "migrations": [
+    {
+      "dataModelVersionId": "cml8bqda67a1e01826r0h7cub",
+      "dataModelVersion": {
+        "number": "11"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkwmb91o4wg60129agek2zqu",
+      "dataModelVersion": {
+        "number": "10"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkwm6ko94mpr0129auhd9fy3",
+      "dataModelVersion": {
+        "number": "9"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmks9ddszq6hq018dclly06zp",
+      "dataModelVersion": {
+        "number": "8"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkjr5causzt5017ahz69a80b",
+      "dataModelVersion": {
+        "number": "7"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkfs4bmmr0qj018j9ti8bbjt",
+      "dataModelVersion": {
+        "number": "6"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkcrrff1tpqy01966osl5prr",
+      "dataModelVersion": {
+        "number": "5"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkcrm5jktpor01969cg2ceem",
+      "dataModelVersion": {
+        "number": "4"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmk1ejx6758ij017j6ezc44j4",
+      "dataModelVersion": {
+        "number": "3"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmk1c8hcj57dk017j7ya300fd",
+      "dataModelVersion": {
+        "number": "2"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "workcenterHistory_v1",
+      "dataModelVersion": {
+        "number": "1"
+      },
+      "mappingExpression": "$"
+    }
+  ]
+}

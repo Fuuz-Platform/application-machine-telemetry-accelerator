@@ -1,0 +1,154 @@
+{
+  "api": "application",
+  "modelName": "ProductionLog",
+  "payload": [
+    {
+      "id": "cmkd4p1kzxgjj016iaq2bb3ts",
+      "code": "PROD-1768341203448-QZWV0",
+      "cycleTime": 120,
+      "idealUnits": null,
+      "performance": null,
+      "quantityGood": 168,
+      "quantityScrap": 8,
+      "notes": null,
+      "source": "Integration",
+      "occurAt": "2026-01-13T21:53:23.448Z",
+      "processedInOeeHourlyAt": null,
+      "productId": "prd-det-013",
+      "workcenterId": "wc-hex-c2",
+      "operatorId": null,
+      "scheduleId": null,
+      "workOrderId": "wo-det-0069",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmkd4p1l0xgjk016i0dyea7f6",
+      "code": "PROD-1768341203448-KKI0I",
+      "cycleTime": 90,
+      "idealUnits": null,
+      "performance": null,
+      "quantityGood": 77,
+      "quantityScrap": 2,
+      "notes": null,
+      "source": "Integration",
+      "occurAt": "2026-01-13T21:53:23.448Z",
+      "processedInOeeHourlyAt": null,
+      "productId": "prd-det-011",
+      "workcenterId": "wc-fa-c1",
+      "operatorId": null,
+      "scheduleId": null,
+      "workOrderId": "wo-det-1797",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmkd4p1l0xgjl016i3swsgorb",
+      "code": "PROD-1768341203448-Q2UNV",
+      "cycleTime": 1,
+      "idealUnits": null,
+      "performance": null,
+      "quantityGood": 5682,
+      "quantityScrap": 28,
+      "notes": null,
+      "source": "Integration",
+      "occurAt": "2026-01-13T21:53:23.448Z",
+      "processedInOeeHourlyAt": null,
+      "productId": "prd-mke-015",
+      "workcenterId": "wc-hp-c1",
+      "operatorId": null,
+      "scheduleId": null,
+      "workOrderId": "wo-mke-0443",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmkd4p1l0xgjm016i7vi2ae98",
+      "code": "PROD-1768341203448-21KSD",
+      "cycleTime": 10,
+      "idealUnits": null,
+      "performance": null,
+      "quantityGood": 468,
+      "quantityScrap": 4,
+      "notes": null,
+      "source": "Integration",
+      "occurAt": "2026-01-13T21:53:23.448Z",
+      "processedInOeeHourlyAt": null,
+      "productId": "prd-det-010",
+      "workcenterId": "wc-pd-c2",
+      "operatorId": null,
+      "scheduleId": null,
+      "workOrderId": "wo-det-0014",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmkd4p1l0xgjn016i8ugm8o08",
+      "code": "PROD-1768341203448-NAYRR",
+      "cycleTime": 1,
+      "idealUnits": null,
+      "performance": null,
+      "quantityGood": 3172,
+      "quantityScrap": 15,
+      "notes": null,
+      "source": "Integration",
+      "occurAt": "2026-01-13T21:53:23.448Z",
+      "processedInOeeHourlyAt": null,
+      "productId": "prd-mke-015",
+      "workcenterId": "wc-pmp-c2",
+      "operatorId": null,
+      "scheduleId": null,
+      "workOrderId": "wo-mke-0370",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmkd4p1l1xgjo016iek6o83cz",
+      "code": "PROD-1768341203448-SUK7K",
+      "cycleTime": 2,
+      "idealUnits": null,
+      "performance": null,
+      "quantityGood": 1578,
+      "quantityScrap": 15,
+      "notes": null,
+      "source": "Integration",
+      "occurAt": "2026-01-13T21:53:23.448Z",
+      "processedInOeeHourlyAt": null,
+      "productId": "prd-mke-003",
+      "workcenterId": "wc-br-c2",
+      "operatorId": null,
+      "scheduleId": null,
+      "workOrderId": "wo-mke-0383",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmkd4p1l1xgjp016i0luc33ot",
+      "code": "PROD-1768341203448-P3J2H",
+      "cycleTime": 18,
+      "idealUnits": null,
+      "performance": null,
+      "quantityGood": 173,
+      "quantityScrap": 3,
+      "notes": null,
+      "source": "Integration",
+      "occurAt": "2026-01-13T21:53:23.448Z",
+      "processedInOeeHourlyAt": null,
+      "productId": "prd-det-006",
+      "workcenterId": "wc-fil-c1",
+      "operatorId": null,
+      "scheduleId": null,
+      "workOrderId": "wo-det-0127",
+      "_customFields": {
+        "_externalId": null
+      }
+    }
+  ],
+  "metadata": {}
+}

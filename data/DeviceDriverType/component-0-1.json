@@ -1,0 +1,72 @@
+{
+  "api": "application",
+  "modelName": "DeviceDriverType",
+  "payload": [
+    {
+      "id": "file",
+      "name": "File",
+      "description": "Drivers for file access."
+    },
+    {
+      "id": "http",
+      "name": "HTTP",
+      "description": "Drivers for HTTP Driver functionality."
+    },
+    {
+      "id": "modbus",
+      "name": "Modbus",
+      "description": "Drivers which support Modbus devices."
+    },
+    {
+      "id": "mqtt",
+      "name": "MQTT",
+      "description": "MQTT Drivers."
+    },
+    {
+      "id": "mqttSparkplug",
+      "name": "MQTT Sparkplug",
+      "description": "Driver type for setting up a sparkplug B edge node."
+    },
+    {
+      "id": "opcua",
+      "name": "OPCUA",
+      "description": "Drivers for opcua functionality."
+    },
+    {
+      "id": "pccc",
+      "name": "PCCC PLC",
+      "description": "Drivers which support PCCC PLC operations."
+    },
+    {
+      "id": "plc",
+      "name": "PLC",
+      "description": "Drivers which support common PLC operations."
+    },
+    {
+      "id": "printer",
+      "name": "Printer",
+      "description": "Drivers which support common printing operations."
+    },
+    {
+      "id": "remoteSystemCall",
+      "name": "Remote System Call",
+      "description": "Drivers for making remote system calls."
+    },
+    {
+      "id": "server",
+      "name": "Server",
+      "description": "Server Drivers."
+    },
+    {
+      "id": "sql",
+      "name": "SQL",
+      "description": "Drivers for SQL databases."
+    },
+    {
+      "id": "tcp",
+      "name": "TCP",
+      "description": "Drivers for writing to tcp sockets."
+    }
+  ],
+  "metadata": {}
+}

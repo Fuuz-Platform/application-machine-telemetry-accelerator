@@ -1,0 +1,1044 @@
+{
+  "header": {
+    "id": "oeeDailyAggregationFlow",
+    "name": "OEE Daily Aggregation Flow",
+    "description": "",
+    "active": true,
+    "substitutesDataFlowId": null,
+    "dataFlowTypeId": "System",
+    "logLevelId": "Info",
+    "mcpToolConfiguration": null,
+    "moduleId": "machineDataApp",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cml561mndpg51018lcmhuajom",
+    "number": "0.0.8",
+    "description": "",
+    "dataFlowId": "oeeDailyAggregationFlow",
+    "flow": {
+      "id": "cml561mndpg51018lcmhuajom",
+      "name": "OEE Daily Aggregation Flow",
+      "type": "System",
+      "nodes": [
+        {
+          "id": "712f050c-dcf3-4421-a6b3-0737551e098a",
+          "name": "Schedule",
+          "type": "schedule",
+          "data": {
+            "configure": "Open Schedule Editor",
+            "nextNodes": [
+              "c2d53b0f-d693-4447-a38f-5c56030c7084"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "c2d53b0f-d693-4447-a38f-5c56030c7084",
+          "name": "Get Tenant Timezone & active workcenters",
+          "type": "query",
+          "data": {
+            "api": "application",
+            "nextNodes": [
+              "2c12d43a-a94b-4c6a-96fd-9fd0d3e47974"
+            ],
+            "query": "query GetTimezoneAndWorkcenters {\r\n  setting(where: { id: { _eq: \"TimeZone\" } }) {\r\n    edges {\r\n      node {\r\n        defaultValue\r\n      }\r\n    }\r\n  }\r\n  \r\n  workcenter(\r\n    where: {\r\n      scheduleGroupId: { _isNull: false }\r\n      isActive: { _eq: true }\r\n\r\n    }\r\n    first: 1000\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        code\r\n        name\r\n        scheduleGroupId\r\n        currentWorkcenterHistoryId\r\n      }\r\n    }\r\n  }\r\n}",
+            "variablesTransform": "[]"
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "2c12d43a-a94b-4c6a-96fd-9fd0d3e47974",
+          "name": "JavaScript",
+          "type": "javascriptTransform",
+          "data": {
+            "transform": "'use strict';\r\n\r\n// Extract timezone from query result\r\nconst settingEdges = $.setting?.edges || [];\r\nlet timezone = null;\r\n\r\nif (settingEdges.length > 0 && settingEdges[0].node?.defaultValue) {\r\n  timezone = settingEdges[0].node.defaultValue;\r\n  console.log('Using configured timezone: ' + timezone);\r\n} else {\r\n  timezone = $momentTzGuess();\r\n  console.log('No timezone configured, using guess: ' + timezone);\r\n}\r\n\r\n// Extract workcenters\r\nconst workcenters = $.workcenter?.edges?.map(e => e.node) || [];\r\n\r\nconsole.log('Found ' + workcenters.length + ' active workcenters with schedules');\r\n\r\n// Calculate today's boundaries in local timezone\r\nconst now = $moment().tz(timezone);\r\nconst todayStart = now.clone().startOf('day');\r\nconst todayEnd = now.clone();\r\n\r\n// Calculate yesterday's boundaries\r\nconst yesterdayStart = now.clone().subtract(1, 'day').startOf('day');\r\nconst yesterdayEnd = now.clone().subtract(1, 'day').endOf('day');\r\n\r\n// Determine if we should calculate yesterday (first 5 minutes of new day)\r\nconst minutesIntoDay = now.diff(todayStart, 'minutes');\r\nconst shouldCalculateYesterday = minutesIntoDay < 20;\r\n\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\nconsole.log('OEE Daily Real-time Aggregation - Boundaries Calculated');\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\nconsole.log('Timezone: ' + timezone);\r\nconsole.log('Current Time (local): ' + now.format('YYYY-MM-DD HH:mm:ss'));\r\nconsole.log('Minutes into day: ' + minutesIntoDay);\r\nconsole.log('Should calculate yesterday: ' + shouldCalculateYesterday);\r\nconsole.log('---');\r\nconsole.log('TODAY:');\r\nconsole.log('  Date: ' + todayStart.format('YYYY-MM-DD'));\r\nconsole.log('  Period (local): ' + todayStart.format('YYYY-MM-DD HH:mm:ss') + ' to ' + todayEnd.format('YYYY-MM-DD HH:mm:ss'));\r\n\r\nif (shouldCalculateYesterday) {\r\n  console.log('---');\r\n  console.log('YESTERDAY (final calculation):');\r\n  console.log('  Date: ' + yesterdayStart.format('YYYY-MM-DD'));\r\n  console.log('  Period (local): ' + yesterdayStart.format('YYYY-MM-DD HH:mm:ss') + ' to ' + yesterdayEnd.format('YYYY-MM-DD HH:mm:ss'));\r\n}\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\n\r\n// Build array of periods to calculate\r\nconst periods = [\r\n  {\r\n    name: 'today',\r\n    date: todayStart.format('YYYY-MM-DD'),\r\n    startLocal: todayStart.toISOString(),\r\n    endLocal: todayEnd.toISOString(),\r\n    startUTC: todayStart.clone().utc().toISOString(),\r\n    endUTC: todayEnd.clone().utc().toISOString()\r\n  }\r\n];\r\n\r\n// Add yesterday if within grace period\r\nif (shouldCalculateYesterday) {\r\n  periods.push({\r\n    name: 'yesterday',\r\n    date: yesterdayStart.format('YYYY-MM-DD'),\r\n    startLocal: yesterdayStart.toISOString(),\r\n    endLocal: yesterdayEnd.toISOString(),\r\n    startUTC: yesterdayStart.clone().utc().toISOString(),\r\n    endUTC: yesterdayEnd.clone().utc().toISOString()\r\n  });\r\n}\r\n\r\n// Return data for context\r\nreturn {\r\n  timezone: timezone,\r\n  workcenters: workcenters,\r\n  workcenterCount: workcenters.length,\r\n  periods: periods,\r\n  shouldCalculateYesterday: shouldCalculateYesterday\r\n};",
+            "nextNodes": [
+              "0497c7c2-9f9a-49c2-b048-4af0d3cefb78"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "0497c7c2-9f9a-49c2-b048-4af0d3cefb78",
+          "name": "Set Context",
+          "type": "setContext",
+          "data": {
+            "transform": "{\r\n  \"timezone\": $.timezone,\r\n  \"queryMetadata\": $.periods ~> $map(function($period) {\r\n    $.workcenters ~> $map(function($wc) {\r\n      {\r\n        \"workcenterId\": $wc.id,\r\n        \"workcenterCode\": $wc.code,\r\n        \"workcenterName\": $wc.name,\r\n        \"todayStart\": $period.startUTC,\r\n        \"todayEnd\": $period.endUTC,\r\n        \"todayDate\": $period.date,\r\n        \"periodName\": $period.name\r\n      }\r\n    })\r\n  }) ~> $reduce($append, [])\r\n}",
+            "nextNodes": [
+              "88ba31c7-4bcd-4d05-aaff-af6454286a18"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "a81029a8-c50f-4dff-a778-0a3174c5f66e",
+          "name": "Query",
+          "type": "query",
+          "data": {
+            "api": "application",
+            "variablesTransform": "$",
+            "query": "query GetWorkcenterData(\r\n  $workcenterId: String!\r\n  $todayStart: DateTime!\r\n  $todayEnd: DateTime!\r\n) {\r\n  # Return the period identifiers for tracking\r\n  _meta: __type(name: \"Query\") {\r\n    name\r\n    \r\n  }\r\n  \r\n  # Get workcenter details for code\r\n  workcenter(where: { id: { _eq: $workcenterId } }) {\r\n    edges {\r\n      node {\r\n        id\r\n        code\r\n        name\r\n      }\r\n    }\r\n  }\r\n  \r\n  # Get all WorkcenterHistory for this workcenter that overlaps with period\r\n  workcenterHistory(\r\n    where: {\r\n      workcenterId: { _eq: $workcenterId }\r\n      _and: [\r\n        {\r\n          occurAt: { _lt: $todayEnd }\r\n        }\r\n        {\r\n          _or: [\r\n            { endAt: { _gte: $todayStart } }\r\n            { endAt: { _isNull: true } }\r\n          ]\r\n        }\r\n      ]\r\n    }\r\n    first: 10000\r\n    orderBy: { field: occurAt, direction: asc }\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        workcenterId\r\n        occurAt\r\n        endAt\r\n        duration(format: milliseconds)\r\n        scheduleId\r\n        modeId\r\n        mode {\r\n          id\r\n          name\r\n          countAsProductionTime\r\n          countAsDowntime\r\n          countAsPlannedDowntime\r\n        }\r\n      }\r\n    }\r\n  }\r\n  \r\n  # Get ProductionLog for this workcenter created during period\r\n  productionLog(\r\n    where: {\r\n      workcenterId: { _eq: $workcenterId }\r\n      occurAt: { _gte: $todayStart, _lte: $todayEnd }\r\n    }\r\n    first: 10000\r\n    orderBy: { field: occurAt, direction: asc }\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        workcenterId\r\n        occurAt\r\n        quantityGood\r\n        quantityScrap\r\n        cycleTime\r\n        productId\r\n        product {\r\n          standardCycleTime\r\n          idealCycleTime(format: milliseconds)\r\n        }\r\n      }\r\n    }\r\n  }\r\n}",
+            "nextNodes": [
+              "1956decd-edd0-4d77-81ec-1342598c8291"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "88ba31c7-4bcd-4d05-aaff-af6454286a18",
+          "name": "JSONata",
+          "type": "transform",
+          "data": {
+            "nextNodes": [
+              "addd0ca2-994c-418f-ab42-7d2801af9e64"
+            ],
+            "transform": "$state.context.queryMetadata"
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "addd0ca2-994c-418f-ab42-7d2801af9e64",
+          "name": "Broadcast",
+          "type": "broadcast",
+          "data": {
+            "nextNodes": [
+              "a81029a8-c50f-4dff-a778-0a3174c5f66e"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "1956decd-edd0-4d77-81ec-1342598c8291",
+          "name": "JavaScript",
+          "type": "javascriptTransform",
+          "data": {
+            "nextNodes": [
+              "f95f0e19-9528-4ac8-acf3-0f41745704ba"
+            ],
+            "transform": "'use strict';\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// OEE DAILY REAL-TIME AGGREGATION - ISO 22400-2 COMPLIANT\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// \r\n// TIME CLASSIFICATION LOGIC:\r\n// 1. If scheduleId = null → unscheduledTime (off-shift, not in OEE)\r\n// 2. If scheduleId exists → scheduledTime, then classify by mode:\r\n//    - countAsProduction → operatingTime\r\n//    - countAsPlannedDowntime → plannedDowntime\r\n//    - countAsDowntime → unplannedDowntime\r\n//    - else → idleTime\r\n//\r\n// ISO 22400-2 FORMULAS:\r\n// - Planned Production Time = Scheduled Time - Planned Downtime\r\n// - Availability = (PPT - Unplanned Downtime) / PPT\r\n// - Performance = Ideal Cycle Time / Operating Time\r\n// - Quality = Good Qty / Produced Qty\r\n// - OEE = A × P × Q\r\n//\r\n// ═══════════════════════════════════════════════════════════════════════\r\n\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\nconsole.log('OEE DAILY AGGREGATION - ISO 22400-2');\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\n\r\n// Get context data\r\nconst timezone = $state.context.timezone;\r\nconst queryMetadata = $state.context.queryMetadata || [];\r\n\r\nconsole.log('Timezone: ' + timezone);\r\nconsole.log('Query Metadata Items: ' + queryMetadata.length);\r\n\r\n// Input is array of query results (broadcast sends one at a time)\r\nconst results = Array.isArray($) ? $ : [$];\r\nconsole.log('Query Results: ' + results.length);\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\n\r\n// Validate context\r\nif (!timezone || queryMetadata.length === 0) {\r\n  console.error('ERROR: Missing required context data (timezone or queryMetadata)');\r\n  return [];\r\n}\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// HELPER FUNCTIONS\r\n// ═══════════════════════════════════════════════════════════════════════\r\n\r\n// Null-safe number conversion\r\nfunction num(val) {\r\n  if (val === null || val === undefined) return 0;\r\n  const n = Number(val);\r\n  return isNaN(n) ? 0 : n;\r\n}\r\n\r\n// Convert duration to milliseconds\r\nfunction toMs(val) {\r\n  if (!val) return 0;\r\n  if (typeof val === 'number') return val;\r\n  if (typeof val === 'string') {\r\n    try {\r\n      return $momentDuration(val).asMilliseconds();\r\n    } catch (e) {\r\n      console.warn('Cannot parse duration: ' + val);\r\n      return 0;\r\n    }\r\n  }\r\n  return 0;\r\n}\r\n\r\n// Get product ideal cycle time: coalesce(idealCycleTime, standardCycleTime * 1000, 0)\r\nfunction getIdealCycleTimeMs(product) {\r\n  if (!product) return 0;\r\n  \r\n  // Try idealCycleTime first (Duration in ms)\r\n  if (product.idealCycleTime) {\r\n    const ms = toMs(product.idealCycleTime);\r\n    if (ms > 0) return ms;\r\n  }\r\n  \r\n  // Try standardCycleTime (Float in seconds) - convert to ms\r\n  if (product.standardCycleTime && product.standardCycleTime > 0) {\r\n    return product.standardCycleTime * 1000;\r\n  }\r\n  \r\n  return 0;\r\n}\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// PROCESS EACH QUERY RESULT\r\n// ═══════════════════════════════════════════════════════════════════════\r\n\r\nconst oeeDailyRecords = [];\r\nlet processedCount = 0;\r\nlet skippedCount = 0;\r\n\r\nresults.forEach(function(result, idx) {\r\n  \r\n  console.log('──────────────────────────────────────────────────────────');\r\n  console.log('Processing Result #' + idx);\r\n  \r\n  // ───────────────────────────────────────────────────────────────────\r\n  // EXTRACT WORKCENTER INFO FROM QUERY RESULTS\r\n  // ───────────────────────────────────────────────────────────────────\r\n  \r\n  const workcenterNode = result.workcenter?.edges?.[0]?.node;\r\n  if (!workcenterNode) {\r\n    console.warn('  ⚠ No workcenter data in query result, skipping');\r\n    skippedCount++;\r\n    return;\r\n  }\r\n  \r\n  const queryWorkcenterId = workcenterNode.id;\r\n  const queryWorkcenterCode = workcenterNode.code;\r\n  const queryWorkcenterName = workcenterNode.name;\r\n  \r\n  console.log('  Query Workcenter: ' + queryWorkcenterId);\r\n  \r\n  // ───────────────────────────────────────────────────────────────────\r\n  // FIND MATCHING METADATA BY WORKCENTER ID\r\n  // ───────────────────────────────────────────────────────────────────\r\n  \r\n  const metadata = queryMetadata.find(function(m) {\r\n    return m.workcenterId === queryWorkcenterId;\r\n  });\r\n  \r\n  if (!metadata) {\r\n    console.warn('  ⚠ No metadata found for workcenter: ' + queryWorkcenterId);\r\n    console.warn('  Available metadata workcenter IDs: ' + queryMetadata.slice(0, 5).map(function(m) { return m.workcenterId; }).join(', ') + '...');\r\n    skippedCount++;\r\n    return;\r\n  }\r\n  \r\n  // Extract period information from metadata\r\n  const periodDate = metadata.todayDate;\r\n  const periodStart = metadata.todayStart;\r\n  const periodEnd = metadata.todayEnd;\r\n  const periodName = metadata.periodName;\r\n  \r\n  // Use query data for workcenter info (with metadata as fallback)\r\n  const workcenterId = queryWorkcenterId;\r\n  const workcenterCode = queryWorkcenterCode || metadata.workcenterCode || workcenterId;\r\n  const workcenterName = queryWorkcenterName || metadata.workcenterName || '';\r\n  \r\n  // Validate required fields\r\n  if (!workcenterId || !periodDate || !periodStart || !periodEnd) {\r\n    console.warn('  ⚠ Missing required fields, skipping');\r\n    console.warn('    workcenterId: ' + workcenterId);\r\n    console.warn('    periodDate: ' + periodDate);\r\n    skippedCount++;\r\n    return;\r\n  }\r\n  \r\n  console.log('  Workcenter: ' + workcenterCode + ' (' + workcenterId + ')');\r\n  if (workcenterName) {\r\n    console.log('  Name: ' + workcenterName);\r\n  }\r\n  console.log('  Period: ' + periodName + ' (' + periodDate + ')');\r\n  \r\n  // Create moment objects for period boundaries\r\n  const periodStartMoment = $moment(periodStart).utc();\r\n  const periodEndMoment = $moment(periodEnd).utc();\r\n  \r\n  console.log('  Range: ' + periodStartMoment.format('MM-DD HH:mm') + ' to ' + periodEndMoment.format('MM-DD HH:mm'));\r\n  \r\n  // ───────────────────────────────────────────────────────────────────\r\n  // EXTRACT QUERY RESULTS\r\n  // ───────────────────────────────────────────────────────────────────\r\n  \r\n  const historyRecords = (result.workcenterHistory?.edges || []).map(function(e) { return e.node; });\r\n  const productionLogs = (result.productionLog?.edges || []).map(function(e) { return e.node; });\r\n  \r\n  console.log('  History Records: ' + historyRecords.length);\r\n  console.log('  Production Logs: ' + productionLogs.length);\r\n  \r\n  // ───────────────────────────────────────────────────────────────────\r\n  // CALCULATE TIME METRICS FROM WORKCENTER HISTORY\r\n  // ───────────────────────────────────────────────────────────────────\r\n  \r\n  // Time classification buckets\r\n  let scheduledTimeMs = 0;        // Time WITH scheduleId\r\n  let unscheduledTimeMs = 0;      // Time WITHOUT scheduleId (off-shift, excluded from OEE)\r\n  let operatingTimeMs = 0;        // Production time (ISO: Operating Time)\r\n  let plannedDowntimeMs = 0;      // Scheduled breaks/maintenance (within scheduled time)\r\n  let unplannedDowntimeMs = 0;    // Unscheduled stops/failures (within scheduled time)\r\n  let idleTimeMs = 0;             // Minor stops, speed loss (within scheduled time)\r\n  \r\n  const schedulesUsed = new Set();\r\n  \r\n  historyRecords.forEach(function(record) {\r\n    \r\n    // Validate record has mode\r\n    if (!record.mode) {\r\n      console.warn('    ⚠ Skipping history record without mode: ' + record.id);\r\n      return;\r\n    }\r\n    \r\n    // Determine effective start and end times\r\n    const occurAt = $moment(record.occurAt).utc();\r\n    \r\n    let endAt;\r\n    if (record.endAt === null || record.endAt === undefined) {\r\n      // Active record (still in progress) - use period end\r\n      endAt = periodEndMoment.clone();\r\n    } else {\r\n      endAt = $moment(record.endAt).utc();\r\n    }\r\n    \r\n    // Clip to period boundaries\r\n    const effectiveStart = $momentMax([occurAt, periodStartMoment]);\r\n    const effectiveEnd = $momentMin([endAt, periodEndMoment]);\r\n    \r\n    // Calculate duration within this period\r\n    const durationMs = effectiveEnd.diff(effectiveStart, 'milliseconds');\r\n    \r\n    // Skip if no overlap with period\r\n    if (durationMs <= 0) {\r\n      return;\r\n    }\r\n    \r\n    // ═══════════════════════════════════════════════════════════════════\r\n    // TIME CLASSIFICATION LOGIC\r\n    // ═══════════════════════════════════════════════════════════════════\r\n    \r\n    const hasSchedule = record.scheduleId && record.scheduleId !== null && record.scheduleId !== '';\r\n    const mode = record.mode;\r\n    \r\n    if (!hasSchedule) {\r\n      // ─────────────────────────────────────────────────────────────────\r\n      // NO SCHEDULE = UNSCHEDULED TIME (OFF-SHIFT)\r\n      // ─────────────────────────────────────────────────────────────────\r\n      // Excluded from OEE calculation\r\n      // Mode flags are ignored when there's no schedule\r\n      unscheduledTimeMs += durationMs;\r\n      \r\n    } else {\r\n      // ─────────────────────────────────────────────────────────────────\r\n      // HAS SCHEDULE = SCHEDULED TIME\r\n      // ─────────────────────────────────────────────────────────────────\r\n      // Included in OEE calculation\r\n      // Classify by mode flags\r\n      \r\n      scheduledTimeMs += durationMs;\r\n      schedulesUsed.add(record.scheduleId);\r\n      \r\n      // Classify within scheduled time by mode flags (ISO 22400-2)\r\n      if (mode.countAsProduction || mode.countAsProductionTime) {\r\n        // Operating Time: Machine running and producing\r\n        operatingTimeMs += durationMs;\r\n        \r\n      } else if (mode.countAsPlannedDowntime) {\r\n        // Planned Downtime: Scheduled breaks, maintenance, changeovers\r\n        plannedDowntimeMs += durationMs;\r\n        \r\n      } else if (mode.countAsDowntime) {\r\n        // Unplanned Downtime: Breakdowns, failures\r\n        unplannedDowntimeMs += durationMs;\r\n        \r\n      } else {\r\n        // Idle Time: Minor stops, speed loss, unclassified\r\n        idleTimeMs += durationMs;\r\n      }\r\n    }\r\n  });\r\n  \r\n  console.log('  Time Classification (hours):');\r\n  console.log('    Scheduled: ' + (scheduledTimeMs / 3600000).toFixed(2) + 'h');\r\n  console.log('    Unscheduled: ' + (unscheduledTimeMs / 3600000).toFixed(2) + 'h');\r\n  console.log('    └─ Operating: ' + (operatingTimeMs / 3600000).toFixed(2) + 'h');\r\n  console.log('    └─ Planned DT: ' + (plannedDowntimeMs / 3600000).toFixed(2) + 'h');\r\n  console.log('    └─ Unplanned DT: ' + (unplannedDowntimeMs / 3600000).toFixed(2) + 'h');\r\n  console.log('    └─ Idle: ' + (idleTimeMs / 3600000).toFixed(2) + 'h');\r\n  \r\n  // ───────────────────────────────────────────────────────────────────\r\n  // CALCULATE PRODUCTION METRICS FROM PRODUCTION LOG\r\n  // ───────────────────────────────────────────────────────────────────\r\n  \r\n  let producedQty = 0;           // ISO: PQ (Produced Quantity)\r\n  let goodQty = 0;               // ISO: GQ (Good Quantity)\r\n  let scrapQty = 0;              // Scrap/Reject quantity\r\n  let actualCycleTimeMs = 0;     // Total actual time spent producing\r\n  let idealCycleTimeMs = 0;      // Total ideal time (theoretical minimum)\r\n  \r\n  productionLogs.forEach(function(log) {\r\n    \r\n    const good = num(log.quantityGood);\r\n    const scrap = num(log.quantityScrap);\r\n    const qty = good + scrap;\r\n    \r\n    producedQty += qty;\r\n    goodQty += good;\r\n    scrapQty += scrap;\r\n    \r\n    // Actual cycle time from log (in seconds, convert to ms)\r\n    if (log.cycleTime && qty > 0) {\r\n      actualCycleTimeMs += log.cycleTime * 1000 * qty;\r\n    }\r\n    \r\n    // Ideal cycle time from product\r\n    if (log.product && qty > 0) {\r\n      const idealPerUnit = getIdealCycleTimeMs(log.product);\r\n      idealCycleTimeMs += idealPerUnit * qty;\r\n    }\r\n  });\r\n  \r\n  console.log('  Production Metrics:');\r\n  console.log('    Produced: ' + producedQty + ' units');\r\n  console.log('    Good: ' + goodQty + ' units');\r\n  console.log('    Scrap: ' + scrapQty + ' units');\r\n  \r\n  // ───────────────────────────────────────────────────────────────────\r\n  // CALCULATE ISO 22400-2 OEE METRICS\r\n  // ───────────────────────────────────────────────────────────────────\r\n  \r\n  // ISO 22400-2 Formula 1: Planned Production Time (PBT)\r\n  // PBT = Scheduled Time - Planned Downtime\r\n  const plannedProductionTimeMs = Math.max(0, scheduledTimeMs - plannedDowntimeMs);\r\n  \r\n  // Total downtime (for reporting)\r\n  const totalDowntimeMs = plannedDowntimeMs + unplannedDowntimeMs;\r\n  \r\n  // ISO 22400-2 Formula 2: Availability\r\n  // A = (Planned Production Time - Unplanned Downtime) / Planned Production Time\r\n  let availability = 0;\r\n  if (plannedProductionTimeMs > 0) {\r\n    const availableTimeMs = Math.max(0, plannedProductionTimeMs - unplannedDowntimeMs);\r\n    availability = availableTimeMs / plannedProductionTimeMs;\r\n    availability = Math.max(0, Math.min(1, availability)); // Clamp to [0,1]\r\n  }\r\n  \r\n  // ISO 22400-2 Formula 3: Performance\r\n  // P = (Ideal Cycle Time × Produced Quantity) / Operating Time\r\n  let performance = 0;\r\n  if (operatingTimeMs > 0 && idealCycleTimeMs > 0) {\r\n    performance = idealCycleTimeMs / operatingTimeMs;\r\n    performance = Math.max(0, Math.min(1, performance)); // Clamp to [0,1]\r\n  }\r\n  \r\n  // ISO 22400-2 Formula 4: Quality\r\n  // Q = Good Quantity / Produced Quantity\r\n  let quality = 1; // Default 100% if no production (no defects created)\r\n  if (producedQty > 0) {\r\n    quality = goodQty / producedQty;\r\n    quality = Math.max(0, Math.min(1, quality)); // Clamp to [0,1]\r\n  }\r\n  \r\n  // ISO 22400-2 Formula 5: OEE\r\n  // OEE = Availability × Performance × Quality\r\n  const oee = availability * performance * quality;\r\n  \r\n  console.log('  OEE Metrics:');\r\n  console.log('    Availability: ' + (availability * 100).toFixed(1) + '%');\r\n  console.log('    Performance: ' + (performance * 100).toFixed(1) + '%');\r\n  console.log('    Quality: ' + (quality * 100).toFixed(1) + '%');\r\n  console.log('    OEE: ' + (oee * 100).toFixed(1) + '%');\r\n  \r\n  // ───────────────────────────────────────────────────────────────────\r\n  // CALCULATE DERIVED METRICS\r\n  // ───────────────────────────────────────────────────────────────────\r\n  \r\n  // Ideal units (how many could have been produced in operating time)\r\n  const avgIdealCycleTime = producedQty > 0 ? idealCycleTimeMs / producedQty : 0;\r\n  const idealUnits = (avgIdealCycleTime > 0 && operatingTimeMs > 0) \r\n    ? operatingTimeMs / avgIdealCycleTime \r\n    : 0;\r\n  \r\n  // Average actual cycle time per unit\r\n  const avgActualCycleTime = producedQty > 0 ? actualCycleTimeMs / producedQty : 0;\r\n  \r\n  // Build schedules metadata\r\n  const schedules = {\r\n    scheduleIds: Array.from(schedulesUsed),\r\n    primaryScheduleId: Array.from(schedulesUsed)[0] || null\r\n  };\r\n  \r\n  // Hours metrics\r\n  const hoursRecorded = Math.round(scheduledTimeMs / 3600000);\r\n  const hoursWithProduction = productionLogs.length > 0 ? 1 : 0;\r\n  \r\n  // ───────────────────────────────────────────────────────────────────\r\n  // CREATE OEEDAILY RECORD\r\n  // ───────────────────────────────────────────────────────────────────\r\n  \r\n  const recordId = workcenterCode + '-' + periodDate;\r\n  \r\n  const record = {\r\n    // Identity\r\n    id: recordId,\r\n    workcenterId: workcenterId,\r\n    \r\n    // Period\r\n    periodStartAt: periodStart,\r\n    periodEndAt: periodEnd,\r\n    periodDayAt: periodDate,\r\n    \r\n    // Quantities\r\n    totalUnits: producedQty,\r\n    goodUnits: goodQty,\r\n    scrapUnits: scrapQty,\r\n    idealUnits: Math.round(idealUnits * 100) / 100,\r\n    \r\n    // Time Durations (all in milliseconds, all positive)\r\n    scheduledTime: Math.max(0, Math.round(scheduledTimeMs)),\r\n    unscheduledTime: Math.max(0, Math.round(unscheduledTimeMs)),\r\n    runMinutes: Math.max(0, Math.round(operatingTimeMs)),\r\n    plannedProductionTime: Math.max(0, Math.round(plannedProductionTimeMs)),\r\n    actualProductionTime: Math.max(0, Math.round(operatingTimeMs)),\r\n    idleTime: Math.max(0, Math.round(idleTimeMs)),\r\n    downtimeTotal: Math.max(0, Math.round(totalDowntimeMs)),\r\n    downtimeUnplanned: Math.max(0, Math.round(unplannedDowntimeMs)),\r\n    downtimePlanned: Math.max(0, Math.round(plannedDowntimeMs)),\r\n    actualCycleTime: Math.max(0, Math.round(actualCycleTimeMs)),\r\n    idealCycleTime: Math.max(0, Math.round(idealCycleTimeMs)),\r\n    averageActualCycleTime: Math.max(0, Math.round(avgActualCycleTime)),\r\n    \r\n    // OEE Metrics (0-1 range, 4 decimal places)\r\n    availability: Math.round(availability * 10000) / 10000,\r\n    performance: Math.round(performance * 10000) / 10000,\r\n    quality: Math.round(quality * 10000) / 10000,\r\n    oee: Math.round(oee * 10000) / 10000,\r\n    \r\n    // Metadata\r\n    hoursRecorded: hoursRecorded,\r\n    hoursWithProduction: hoursWithProduction,\r\n    schedules: schedules\r\n  };\r\n  \r\n  oeeDailyRecords.push(record);\r\n  processedCount++;\r\n  console.log('  ✓ Created record: ' + recordId);\r\n});\r\n\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\nconsole.log('SUMMARY:');\r\nconsole.log('  Processed: ' + processedCount + ' records');\r\nconsole.log('  Skipped: ' + skippedCount + ' records');\r\nconsole.log('  Total OeeDaily records: ' + oeeDailyRecords.length);\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\n\r\nreturn oeeDailyRecords.length > 0 ? oeeDailyRecords : [];"
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "f95f0e19-9528-4ac8-acf3-0f41745704ba",
+          "name": "Mutate OEE Daily Records Upsert",
+          "type": "mutate",
+          "data": {
+            "api": "Application",
+            "variablesTransform": "$ ? {\r\n  \"payload\": [\r\n    {\r\n      \"where\": {\r\n        \"id\": $.id\r\n      },\r\n      \"create\": {\r\n        \"id\": $.id,\r\n        \"workcenterId\": $.workcenterId,\r\n        \"periodStartAt\": $.periodStartAt,\r\n        \"periodEndAt\": $.periodEndAt,\r\n        \"periodDayAt\": $.periodDayAt,\r\n        \"totalUnits\": $.totalUnits,\r\n        \"goodUnits\": $.goodUnits,\r\n        \"scrapUnits\": $.scrapUnits,\r\n        \"idealUnits\": $.idealUnits,\r\n        \"scheduledTime\": $.scheduledTime,\r\n        \"unscheduledTime\": $.unscheduledTime,\r\n        \"runMinutes\": $.runMinutes,\r\n        \"plannedProductionTime\": $.plannedProductionTime,\r\n        \"actualProductionTime\": $.actualProductionTime,\r\n        \"idleTime\": $.idleTime,\r\n        \"downtimeTotal\": $.downtimeTotal,\r\n        \"downtimeUnplanned\": $.downtimeUnplanned,\r\n        \"downtimePlanned\": $.downtimePlanned,\r\n        \"actualCycleTime\": $.actualCycleTime,\r\n        \"idealCycleTime\": $.idealCycleTime,\r\n        \"averageActualCycleTime\": $.averageActualCycleTime,\r\n        \"availability\": $.availability,\r\n        \"performance\": $.performance,\r\n        \"quality\": $.quality,\r\n        \"oee\": $.oee,\r\n        \"hoursRecorded\": $.hoursRecorded,\r\n        \"hoursWithProduction\": $.hoursWithProduction,\r\n        \"schedules\": $.schedules\r\n      },\r\n      \"update\": {\r\n        \"workcenterId\": $.workcenterId,\r\n        \"periodStartAt\": $.periodStartAt,\r\n        \"periodEndAt\": $.periodEndAt,\r\n        \"periodDayAt\": $.periodDayAt,\r\n        \"totalUnits\": $.totalUnits,\r\n        \"goodUnits\": $.goodUnits,\r\n        \"scrapUnits\": $.scrapUnits,\r\n        \"idealUnits\": $.idealUnits,\r\n        \"scheduledTime\": $.scheduledTime,\r\n        \"unscheduledTime\": $.unscheduledTime,\r\n        \"runMinutes\": $.runMinutes,\r\n        \"plannedProductionTime\": $.plannedProductionTime,\r\n        \"actualProductionTime\": $.actualProductionTime,\r\n        \"idleTime\": $.idleTime,\r\n        \"downtimeTotal\": $.downtimeTotal,\r\n        \"downtimeUnplanned\": $.downtimeUnplanned,\r\n        \"downtimePlanned\": $.downtimePlanned,\r\n        \"actualCycleTime\": $.actualCycleTime,\r\n        \"idealCycleTime\": $.idealCycleTime,\r\n        \"averageActualCycleTime\": $.averageActualCycleTime,\r\n        \"availability\": $.availability,\r\n        \"performance\": $.performance,\r\n        \"quality\": $.quality,\r\n        \"oee\": $.oee,\r\n        \"hoursRecorded\": $.hoursRecorded,\r\n        \"hoursWithProduction\": $.hoursWithProduction,\r\n        \"schedules\": $.schedules\r\n      }\r\n    }\r\n  ]\r\n} : { \"payload\": [] }",
+            "nextNodes": [],
+            "mutation": "mutation UpsertOeeDaily($payload: [OeeDailyUpsertPayloadInput!]!) {\n  upsertOeeDaily(payload: $payload) {\n    id\n    workcenterId\n    periodDayAt\n    oee\n    availability\n    performance\n    quality\n    scheduledTime\n    unscheduledTime\n    totalUnits\n    goodUnits\n  }\n}"
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        }
+      ],
+      "version": "0.0.7"
+    },
+    "diagram": {
+      "id": "cml561mndpg51018lcmhuajom",
+      "offsetX": 73,
+      "offsetY": 128,
+      "zoom": 100,
+      "gridSize": 5,
+      "layers": [
+        {
+          "id": "992ef3ee-c7ab-432c-9eed-2c7d1bff7b67",
+          "type": "diagram-links",
+          "isSvg": true,
+          "transformed": true,
+          "models": {
+            "96cbae44-0bde-412d-acd5-9a00c56922aa": {
+              "points": [
+                {
+                  "id": "311b8511-54be-4ec6-b066-aad7f9587989",
+                  "type": "point",
+                  "x": 309,
+                  "y": 89.39
+                },
+                {
+                  "id": "00a13b09-b119-404c-aaa1-567049ee8665",
+                  "type": "point",
+                  "x": 394.33,
+                  "y": 219.39
+                }
+              ],
+              "id": "96cbae44-0bde-412d-acd5-9a00c56922aa",
+              "type": "default",
+              "selected": false,
+              "source": "2077884e-b869-4fcf-9fd3-2f455a90a66b",
+              "sourcePort": "cmkshasf701pe356o97en6dpg",
+              "target": "c2d53b0f-d693-4447-a38f-5c56030c7084",
+              "targetPort": "cmkshb6fd01po356o6tomeuv5",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "e5eb3953-ab97-47c5-b84a-e93e5cec1795": {
+              "points": [
+                {
+                  "id": "394bb560-9b3c-48cb-a6cd-3b11d8236671",
+                  "type": "point",
+                  "x": 314,
+                  "y": 204.39
+                },
+                {
+                  "id": "2539e23b-e15d-49c2-a3a9-a3fada250091",
+                  "type": "point",
+                  "x": 394.33,
+                  "y": 219.39
+                }
+              ],
+              "id": "e5eb3953-ab97-47c5-b84a-e93e5cec1795",
+              "type": "default",
+              "selected": false,
+              "source": "712f050c-dcf3-4421-a6b3-0737551e098a",
+              "sourcePort": "cmkshayj601pk356ogrv4hdqn",
+              "target": "c2d53b0f-d693-4447-a38f-5c56030c7084",
+              "targetPort": "cmkshb6fd01po356o6tomeuv5",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "1b1ec4c2-5c1f-42ea-be01-9fcb72205a13": {
+              "points": [
+                {
+                  "id": "562bfedb-fd49-4496-a9dd-03af79825ed8",
+                  "type": "point",
+                  "x": 671.07,
+                  "y": 219.39
+                },
+                {
+                  "id": "47a76ff3-843b-4bed-be50-d597494d239f",
+                  "type": "point",
+                  "x": 434.33,
+                  "y": 319.39
+                }
+              ],
+              "id": "1b1ec4c2-5c1f-42ea-be01-9fcb72205a13",
+              "type": "default",
+              "selected": false,
+              "source": "c2d53b0f-d693-4447-a38f-5c56030c7084",
+              "sourcePort": "cmkshb6fd01pq356oww9303fc",
+              "target": "2c12d43a-a94b-4c6a-96fd-9fd0d3e47974",
+              "targetPort": "cml499bku00b2356r1ftb38dj",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "66620810-5f7b-42cf-b05c-1e9ebd95a9c4": {
+              "points": [
+                {
+                  "id": "0c2f2a6f-44ee-42f5-a39d-38a11166f085",
+                  "type": "point",
+                  "x": 589,
+                  "y": 319.39
+                },
+                {
+                  "id": "0dc41ec2-7e7d-4162-be67-6e1d6a205afa",
+                  "type": "point",
+                  "x": 501.32,
+                  "y": 421.09
+                }
+              ],
+              "id": "66620810-5f7b-42cf-b05c-1e9ebd95a9c4",
+              "type": "default",
+              "selected": false,
+              "source": "2c12d43a-a94b-4c6a-96fd-9fd0d3e47974",
+              "sourcePort": "cml499bku00b4356r5ju8p80v",
+              "target": "0497c7c2-9f9a-49c2-b048-4af0d3cefb78",
+              "targetPort": "cml49aouw00bo356r6brrx4ry",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "e50f2479-3a01-4b5d-ae97-93bbb5ac78d4": {
+              "points": [
+                {
+                  "id": "9f6df296-ba48-430b-a872-2e47196af54c",
+                  "type": "point",
+                  "x": 656,
+                  "y": 421.09
+                },
+                {
+                  "id": "e447ce2a-3456-435d-b36e-6b50e7762b7d",
+                  "type": "point",
+                  "x": 674.33,
+                  "y": 489.39
+                }
+              ],
+              "id": "e50f2479-3a01-4b5d-ae97-93bbb5ac78d4",
+              "type": "default",
+              "selected": false,
+              "source": "0497c7c2-9f9a-49c2-b048-4af0d3cefb78",
+              "sourcePort": "cml49aouw00bq356rmiqlix5s",
+              "target": "88ba31c7-4bcd-4d05-aaff-af6454286a18",
+              "targetPort": "cml4a2ivx00mr356rsk43lewe",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "47d5f99b-dc79-4a66-9d62-bdc02dfe0416": {
+              "points": [
+                {
+                  "id": "5a2df90f-0265-48e9-99ed-1df85b2ca1f5",
+                  "type": "point",
+                  "x": 1004,
+                  "y": 554.39
+                },
+                {
+                  "id": "d730f351-4e1c-4875-b0d5-dc1361603f9d",
+                  "type": "point",
+                  "x": 874.33,
+                  "y": 674.39
+                }
+              ],
+              "id": "47d5f99b-dc79-4a66-9d62-bdc02dfe0416",
+              "type": "default",
+              "selected": false,
+              "source": "addd0ca2-994c-418f-ab42-7d2801af9e64",
+              "sourcePort": "cml4abkvj00tu356r94znngse",
+              "target": "a81029a8-c50f-4dff-a778-0a3174c5f66e",
+              "targetPort": "cml49bcw300cf356rryfjkoj2",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "7bce1e69-393f-444a-b903-f7b1eeffe4eb": {
+              "points": [
+                {
+                  "id": "eabe4884-516f-4939-a13d-b4f8d0a723c6",
+                  "type": "point",
+                  "x": 1029,
+                  "y": 674.39
+                },
+                {
+                  "id": "9c68672f-3fdb-4bef-88f9-5897d48061e7",
+                  "type": "point",
+                  "x": 969.33,
+                  "y": 749.39
+                }
+              ],
+              "id": "7bce1e69-393f-444a-b903-f7b1eeffe4eb",
+              "type": "default",
+              "selected": false,
+              "source": "a81029a8-c50f-4dff-a778-0a3174c5f66e",
+              "sourcePort": "cml49bcw300ch356rr56gihg3",
+              "target": "1956decd-edd0-4d77-81ec-1342598c8291",
+              "targetPort": "cml4acz68010s356rljickdi1",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "c0ab3162-1f30-46e1-85b7-73332a7b5437": {
+              "points": [
+                {
+                  "id": "9b9d6366-7996-4dc3-af12-319fc442eda9",
+                  "type": "point",
+                  "x": 829,
+                  "y": 489.39
+                },
+                {
+                  "id": "672c2e43-8d96-4168-aaa3-6a6f8ab64cd0",
+                  "type": "point",
+                  "x": 849.33,
+                  "y": 554.39
+                }
+              ],
+              "id": "c0ab3162-1f30-46e1-85b7-73332a7b5437",
+              "type": "default",
+              "selected": false,
+              "source": "88ba31c7-4bcd-4d05-aaff-af6454286a18",
+              "sourcePort": "cml4a2ivx00mt356r5cmjrsh4",
+              "target": "addd0ca2-994c-418f-ab42-7d2801af9e64",
+              "targetPort": "cml4abkvj00ts356r34hbo6c6",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "9f561b8e-632e-4565-b5dc-d7769e8130a8": {
+              "points": [
+                {
+                  "id": "5b03302f-aed5-4060-947c-856652c71027",
+                  "type": "point",
+                  "x": 1124,
+                  "y": 749.39
+                },
+                {
+                  "id": "29e31169-193d-4e70-bbb1-cffc422b0429",
+                  "type": "point",
+                  "x": 1089.33,
+                  "y": 859.39
+                }
+              ],
+              "id": "9f561b8e-632e-4565-b5dc-d7769e8130a8",
+              "type": "default",
+              "selected": false,
+              "source": "1956decd-edd0-4d77-81ec-1342598c8291",
+              "sourcePort": "cml4acz68010u356rmx13v762",
+              "target": "f95f0e19-9528-4ac8-acf3-0f41745704ba",
+              "targetPort": "cml4e3g0k04mw356rt0xbfx6r",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            }
+          }
+        },
+        {
+          "id": "41cd7204-843c-4477-9bae-90c9012a7a9e",
+          "type": "diagram-nodes",
+          "isSvg": false,
+          "transformed": true,
+          "models": {
+            "2077884e-b869-4fcf-9fd3-2f455a90a66b": {
+              "id": "2077884e-b869-4fcf-9fd3-2f455a90a66b",
+              "type": "debugSource",
+              "selected": false,
+              "x": 155,
+              "y": 50,
+              "ports": [
+                {
+                  "id": "cmkshasf701pe356o97en6dpg",
+                  "type": "default",
+                  "x": 301.34,
+                  "y": 81.73,
+                  "name": "cmkshasf701pf356ol4uhdg6h",
+                  "parentNode": "2077884e-b869-4fcf-9fd3-2f455a90a66b",
+                  "links": [
+                    "96cbae44-0bde-412d-acd5-9a00c56922aa"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "payload": [],
+                "context": {},
+                "nextNodes": [
+                  "c2d53b0f-d693-4447-a38f-5c56030c7084"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Source"
+            },
+            "712f050c-dcf3-4421-a6b3-0737551e098a": {
+              "id": "712f050c-dcf3-4421-a6b3-0737551e098a",
+              "type": "schedule",
+              "selected": false,
+              "x": 160,
+              "y": 165,
+              "ports": [
+                {
+                  "id": "cmkshayj601pk356ogrv4hdqn",
+                  "type": "default",
+                  "x": 306.34,
+                  "y": 196.73,
+                  "name": "cmkshayj601pl356or3yumiu1",
+                  "parentNode": "712f050c-dcf3-4421-a6b3-0737551e098a",
+                  "links": [
+                    "e5eb3953-ab97-47c5-b84a-e93e5cec1795"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Payload",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "configure": "Open Schedule Editor",
+                "nextNodes": [
+                  "c2d53b0f-d693-4447-a38f-5c56030c7084"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Schedule"
+            },
+            "c2d53b0f-d693-4447-a38f-5c56030c7084": {
+              "id": "c2d53b0f-d693-4447-a38f-5c56030c7084",
+              "type": "query",
+              "selected": true,
+              "x": 395,
+              "y": 180,
+              "ports": [
+                {
+                  "id": "cmkshb6fd01po356o6tomeuv5",
+                  "type": "default",
+                  "x": 386.67,
+                  "y": 211.73,
+                  "name": "cmkshb6fd01pp356o8uk0v2nl",
+                  "parentNode": "c2d53b0f-d693-4447-a38f-5c56030c7084",
+                  "links": [
+                    "96cbae44-0bde-412d-acd5-9a00c56922aa",
+                    "e5eb3953-ab97-47c5-b84a-e93e5cec1795"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkshb6fd01pq356oww9303fc",
+                  "type": "default",
+                  "x": 663.41,
+                  "y": 211.73,
+                  "name": "cmkshb6fd01pr356o2ihkoyna",
+                  "parentNode": "c2d53b0f-d693-4447-a38f-5c56030c7084",
+                  "links": [
+                    "1b1ec4c2-5c1f-42ea-be01-9fcb72205a13"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "application",
+                "nextNodes": [
+                  "2c12d43a-a94b-4c6a-96fd-9fd0d3e47974"
+                ],
+                "query": "query GetTimezoneAndWorkcenters {\r\n  setting(where: { id: { _eq: \"TimeZone\" } }) {\r\n    edges {\r\n      node {\r\n        defaultValue\r\n      }\r\n    }\r\n  }\r\n  \r\n  workcenter(\r\n    where: {\r\n      scheduleGroupId: { _isNull: false }\r\n      isActive: { _eq: true }\r\n\r\n    }\r\n    first: 1000\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        code\r\n        name\r\n        scheduleGroupId\r\n        currentWorkcenterHistoryId\r\n      }\r\n    }\r\n  }\r\n}",
+                "variablesTransform": "[]"
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Get Tenant Timezone & active workcenters"
+            },
+            "2c12d43a-a94b-4c6a-96fd-9fd0d3e47974": {
+              "id": "2c12d43a-a94b-4c6a-96fd-9fd0d3e47974",
+              "type": "javascriptTransform",
+              "selected": false,
+              "x": 435,
+              "y": 280,
+              "ports": [
+                {
+                  "id": "cml499bku00b2356r1ftb38dj",
+                  "type": "default",
+                  "x": 426.67,
+                  "y": 311.73,
+                  "name": "cml499bku00b3356rvcf2vhwv",
+                  "parentNode": "2c12d43a-a94b-4c6a-96fd-9fd0d3e47974",
+                  "links": [
+                    "1b1ec4c2-5c1f-42ea-be01-9fcb72205a13"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml499bku00b4356r5ju8p80v",
+                  "type": "default",
+                  "x": 581.34,
+                  "y": 311.73,
+                  "name": "cml499bku00b5356rwssyhqaz",
+                  "parentNode": "2c12d43a-a94b-4c6a-96fd-9fd0d3e47974",
+                  "links": [
+                    "66620810-5f7b-42cf-b05c-1e9ebd95a9c4"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "'use strict';\r\n\r\n// Extract timezone from query result\r\nconst settingEdges = $.setting?.edges || [];\r\nlet timezone = null;\r\n\r\nif (settingEdges.length > 0 && settingEdges[0].node?.defaultValue) {\r\n  timezone = settingEdges[0].node.defaultValue;\r\n  console.log('Using configured timezone: ' + timezone);\r\n} else {\r\n  timezone = $momentTzGuess();\r\n  console.log('No timezone configured, using guess: ' + timezone);\r\n}\r\n\r\n// Extract workcenters\r\nconst workcenters = $.workcenter?.edges?.map(e => e.node) || [];\r\n\r\nconsole.log('Found ' + workcenters.length + ' active workcenters with schedules');\r\n\r\n// Calculate today's boundaries in local timezone\r\nconst now = $moment().tz(timezone);\r\nconst todayStart = now.clone().startOf('day');\r\nconst todayEnd = now.clone();\r\n\r\n// Calculate yesterday's boundaries\r\nconst yesterdayStart = now.clone().subtract(1, 'day').startOf('day');\r\nconst yesterdayEnd = now.clone().subtract(1, 'day').endOf('day');\r\n\r\n// Determine if we should calculate yesterday (first 5 minutes of new day)\r\nconst minutesIntoDay = now.diff(todayStart, 'minutes');\r\nconst shouldCalculateYesterday = minutesIntoDay < 20;\r\n\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\nconsole.log('OEE Daily Real-time Aggregation - Boundaries Calculated');\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\nconsole.log('Timezone: ' + timezone);\r\nconsole.log('Current Time (local): ' + now.format('YYYY-MM-DD HH:mm:ss'));\r\nconsole.log('Minutes into day: ' + minutesIntoDay);\r\nconsole.log('Should calculate yesterday: ' + shouldCalculateYesterday);\r\nconsole.log('---');\r\nconsole.log('TODAY:');\r\nconsole.log('  Date: ' + todayStart.format('YYYY-MM-DD'));\r\nconsole.log('  Period (local): ' + todayStart.format('YYYY-MM-DD HH:mm:ss') + ' to ' + todayEnd.format('YYYY-MM-DD HH:mm:ss'));\r\n\r\nif (shouldCalculateYesterday) {\r\n  console.log('---');\r\n  console.log('YESTERDAY (final calculation):');\r\n  console.log('  Date: ' + yesterdayStart.format('YYYY-MM-DD'));\r\n  console.log('  Period (local): ' + yesterdayStart.format('YYYY-MM-DD HH:mm:ss') + ' to ' + yesterdayEnd.format('YYYY-MM-DD HH:mm:ss'));\r\n}\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\n\r\n// Build array of periods to calculate\r\nconst periods = [\r\n  {\r\n    name: 'today',\r\n    date: todayStart.format('YYYY-MM-DD'),\r\n    startLocal: todayStart.toISOString(),\r\n    endLocal: todayEnd.toISOString(),\r\n    startUTC: todayStart.clone().utc().toISOString(),\r\n    endUTC: todayEnd.clone().utc().toISOString()\r\n  }\r\n];\r\n\r\n// Add yesterday if within grace period\r\nif (shouldCalculateYesterday) {\r\n  periods.push({\r\n    name: 'yesterday',\r\n    date: yesterdayStart.format('YYYY-MM-DD'),\r\n    startLocal: yesterdayStart.toISOString(),\r\n    endLocal: yesterdayEnd.toISOString(),\r\n    startUTC: yesterdayStart.clone().utc().toISOString(),\r\n    endUTC: yesterdayEnd.clone().utc().toISOString()\r\n  });\r\n}\r\n\r\n// Return data for context\r\nreturn {\r\n  timezone: timezone,\r\n  workcenters: workcenters,\r\n  workcenterCount: workcenters.length,\r\n  periods: periods,\r\n  shouldCalculateYesterday: shouldCalculateYesterday\r\n};",
+                "nextNodes": [
+                  "0497c7c2-9f9a-49c2-b048-4af0d3cefb78"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "JavaScript"
+            },
+            "0497c7c2-9f9a-49c2-b048-4af0d3cefb78": {
+              "id": "0497c7c2-9f9a-49c2-b048-4af0d3cefb78",
+              "type": "setContext",
+              "selected": false,
+              "x": 502,
+              "y": 381.7,
+              "ports": [
+                {
+                  "id": "cml49aouw00bo356r6brrx4ry",
+                  "type": "default",
+                  "x": 493.66,
+                  "y": 413.42,
+                  "name": "cml49aouw00bp356rxrzcn31p",
+                  "parentNode": "0497c7c2-9f9a-49c2-b048-4af0d3cefb78",
+                  "links": [
+                    "66620810-5f7b-42cf-b05c-1e9ebd95a9c4"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml49aouw00bq356rmiqlix5s",
+                  "type": "default",
+                  "x": 648.33,
+                  "y": 413.42,
+                  "name": "cml49aouw00br356rrt29ylpd",
+                  "parentNode": "0497c7c2-9f9a-49c2-b048-4af0d3cefb78",
+                  "links": [
+                    "e50f2479-3a01-4b5d-ae97-93bbb5ac78d4"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "{\r\n  \"timezone\": $.timezone,\r\n  \"queryMetadata\": $.periods ~> $map(function($period) {\r\n    $.workcenters ~> $map(function($wc) {\r\n      {\r\n        \"workcenterId\": $wc.id,\r\n        \"workcenterCode\": $wc.code,\r\n        \"workcenterName\": $wc.name,\r\n        \"todayStart\": $period.startUTC,\r\n        \"todayEnd\": $period.endUTC,\r\n        \"todayDate\": $period.date,\r\n        \"periodName\": $period.name\r\n      }\r\n    })\r\n  }) ~> $reduce($append, [])\r\n}",
+                "nextNodes": [
+                  "88ba31c7-4bcd-4d05-aaff-af6454286a18"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Set Context"
+            },
+            "a81029a8-c50f-4dff-a778-0a3174c5f66e": {
+              "id": "a81029a8-c50f-4dff-a778-0a3174c5f66e",
+              "type": "query",
+              "selected": false,
+              "x": 875,
+              "y": 635,
+              "ports": [
+                {
+                  "id": "cml49bcw300cf356rryfjkoj2",
+                  "type": "default",
+                  "x": 866.67,
+                  "y": 666.73,
+                  "name": "cml49bcw300cg356rxpjm8iyx",
+                  "parentNode": "a81029a8-c50f-4dff-a778-0a3174c5f66e",
+                  "links": [
+                    "47d5f99b-dc79-4a66-9d62-bdc02dfe0416"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml49bcw300ch356rr56gihg3",
+                  "type": "default",
+                  "x": 1021.34,
+                  "y": 666.73,
+                  "name": "cml49bcw300ci356royi7x2kq",
+                  "parentNode": "a81029a8-c50f-4dff-a778-0a3174c5f66e",
+                  "links": [
+                    "7bce1e69-393f-444a-b903-f7b1eeffe4eb"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "application",
+                "variablesTransform": "$",
+                "query": "query GetWorkcenterData(\r\n  $workcenterId: String!\r\n  $todayStart: DateTime!\r\n  $todayEnd: DateTime!\r\n) {\r\n  # Return the period identifiers for tracking\r\n  _meta: __type(name: \"Query\") {\r\n    name\r\n    \r\n  }\r\n  \r\n  # Get workcenter details for code\r\n  workcenter(where: { id: { _eq: $workcenterId } }) {\r\n    edges {\r\n      node {\r\n        id\r\n        code\r\n        name\r\n      }\r\n    }\r\n  }\r\n  \r\n  # Get all WorkcenterHistory for this workcenter that overlaps with period\r\n  workcenterHistory(\r\n    where: {\r\n      workcenterId: { _eq: $workcenterId }\r\n      _and: [\r\n        {\r\n          occurAt: { _lt: $todayEnd }\r\n        }\r\n        {\r\n          _or: [\r\n            { endAt: { _gte: $todayStart } }\r\n            { endAt: { _isNull: true } }\r\n          ]\r\n        }\r\n      ]\r\n    }\r\n    first: 10000\r\n    orderBy: { field: occurAt, direction: asc }\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        workcenterId\r\n        occurAt\r\n        endAt\r\n        duration(format: milliseconds)\r\n        scheduleId\r\n        modeId\r\n        mode {\r\n          id\r\n          name\r\n          countAsProductionTime\r\n          countAsDowntime\r\n          countAsPlannedDowntime\r\n        }\r\n      }\r\n    }\r\n  }\r\n  \r\n  # Get ProductionLog for this workcenter created during period\r\n  productionLog(\r\n    where: {\r\n      workcenterId: { _eq: $workcenterId }\r\n      occurAt: { _gte: $todayStart, _lte: $todayEnd }\r\n    }\r\n    first: 10000\r\n    orderBy: { field: occurAt, direction: asc }\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        workcenterId\r\n        occurAt\r\n        quantityGood\r\n        quantityScrap\r\n        cycleTime\r\n        productId\r\n        product {\r\n          standardCycleTime\r\n          idealCycleTime(format: milliseconds)\r\n        }\r\n      }\r\n    }\r\n  }\r\n}",
+                "nextNodes": [
+                  "1956decd-edd0-4d77-81ec-1342598c8291"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Query"
+            },
+            "88ba31c7-4bcd-4d05-aaff-af6454286a18": {
+              "id": "88ba31c7-4bcd-4d05-aaff-af6454286a18",
+              "type": "transform",
+              "selected": false,
+              "x": 675,
+              "y": 450,
+              "ports": [
+                {
+                  "id": "cml4a2ivx00mr356rsk43lewe",
+                  "type": "default",
+                  "x": 666.67,
+                  "y": 481.73,
+                  "name": "cml4a2ivx00ms356rnb04kll2",
+                  "parentNode": "88ba31c7-4bcd-4d05-aaff-af6454286a18",
+                  "links": [
+                    "e50f2479-3a01-4b5d-ae97-93bbb5ac78d4"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml4a2ivx00mt356r5cmjrsh4",
+                  "type": "default",
+                  "x": 821.34,
+                  "y": 481.73,
+                  "name": "cml4a2ivx00mu356ry8g15n01",
+                  "parentNode": "88ba31c7-4bcd-4d05-aaff-af6454286a18",
+                  "links": [
+                    "c0ab3162-1f30-46e1-85b7-73332a7b5437"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "addd0ca2-994c-418f-ab42-7d2801af9e64"
+                ],
+                "transform": "$state.context.queryMetadata"
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "JSONata"
+            },
+            "addd0ca2-994c-418f-ab42-7d2801af9e64": {
+              "id": "addd0ca2-994c-418f-ab42-7d2801af9e64",
+              "type": "broadcast",
+              "selected": false,
+              "x": 850,
+              "y": 515,
+              "ports": [
+                {
+                  "id": "cml4abkvj00ts356r34hbo6c6",
+                  "type": "default",
+                  "x": 841.67,
+                  "y": 546.73,
+                  "name": "cml4abkvj00tt356remdc2d0e",
+                  "parentNode": "addd0ca2-994c-418f-ab42-7d2801af9e64",
+                  "links": [
+                    "c0ab3162-1f30-46e1-85b7-73332a7b5437"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml4abkvj00tu356r94znngse",
+                  "type": "default",
+                  "x": 996.34,
+                  "y": 546.73,
+                  "name": "cml4abkvj00tv356rhwnfumd2",
+                  "parentNode": "addd0ca2-994c-418f-ab42-7d2801af9e64",
+                  "links": [
+                    "47d5f99b-dc79-4a66-9d62-bdc02dfe0416"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "a81029a8-c50f-4dff-a778-0a3174c5f66e"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Broadcast"
+            },
+            "1956decd-edd0-4d77-81ec-1342598c8291": {
+              "id": "1956decd-edd0-4d77-81ec-1342598c8291",
+              "type": "javascriptTransform",
+              "selected": false,
+              "x": 970,
+              "y": 710,
+              "ports": [
+                {
+                  "id": "cml4acz68010s356rljickdi1",
+                  "type": "default",
+                  "x": 961.67,
+                  "y": 741.73,
+                  "name": "cml4acz68010t356r6qsxo0do",
+                  "parentNode": "1956decd-edd0-4d77-81ec-1342598c8291",
+                  "links": [
+                    "7bce1e69-393f-444a-b903-f7b1eeffe4eb"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml4acz68010u356rmx13v762",
+                  "type": "default",
+                  "x": 1116.34,
+                  "y": 741.73,
+                  "name": "cml4acz68010v356rj00820ev",
+                  "parentNode": "1956decd-edd0-4d77-81ec-1342598c8291",
+                  "links": [
+                    "9f561b8e-632e-4565-b5dc-d7769e8130a8"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "f95f0e19-9528-4ac8-acf3-0f41745704ba"
+                ],
+                "transform": "'use strict';\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// OEE DAILY REAL-TIME AGGREGATION - ISO 22400-2 COMPLIANT\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// \r\n// TIME CLASSIFICATION LOGIC:\r\n// 1. If scheduleId = null → unscheduledTime (off-shift, not in OEE)\r\n// 2. If scheduleId exists → scheduledTime, then classify by mode:\r\n//    - countAsProduction → operatingTime\r\n//    - countAsPlannedDowntime → plannedDowntime\r\n//    - countAsDowntime → unplannedDowntime\r\n//    - else → idleTime\r\n//\r\n// ISO 22400-2 FORMULAS:\r\n// - Planned Production Time = Scheduled Time - Planned Downtime\r\n// - Availability = (PPT - Unplanned Downtime) / PPT\r\n// - Performance = Ideal Cycle Time / Operating Time\r\n// - Quality = Good Qty / Produced Qty\r\n// - OEE = A × P × Q\r\n//\r\n// ═══════════════════════════════════════════════════════════════════════\r\n\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\nconsole.log('OEE DAILY AGGREGATION - ISO 22400-2');\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\n\r\n// Get context data\r\nconst timezone = $state.context.timezone;\r\nconst queryMetadata = $state.context.queryMetadata || [];\r\n\r\nconsole.log('Timezone: ' + timezone);\r\nconsole.log('Query Metadata Items: ' + queryMetadata.length);\r\n\r\n// Input is array of query results (broadcast sends one at a time)\r\nconst results = Array.isArray($) ? $ : [$];\r\nconsole.log('Query Results: ' + results.length);\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\n\r\n// Validate context\r\nif (!timezone || queryMetadata.length === 0) {\r\n  console.error('ERROR: Missing required context data (timezone or queryMetadata)');\r\n  return [];\r\n}\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// HELPER FUNCTIONS\r\n// ═══════════════════════════════════════════════════════════════════════\r\n\r\n// Null-safe number conversion\r\nfunction num(val) {\r\n  if (val === null || val === undefined) return 0;\r\n  const n = Number(val);\r\n  return isNaN(n) ? 0 : n;\r\n}\r\n\r\n// Convert duration to milliseconds\r\nfunction toMs(val) {\r\n  if (!val) return 0;\r\n  if (typeof val === 'number') return val;\r\n  if (typeof val === 'string') {\r\n    try {\r\n      return $momentDuration(val).asMilliseconds();\r\n    } catch (e) {\r\n      console.warn('Cannot parse duration: ' + val);\r\n      return 0;\r\n    }\r\n  }\r\n  return 0;\r\n}\r\n\r\n// Get product ideal cycle time: coalesce(idealCycleTime, standardCycleTime * 1000, 0)\r\nfunction getIdealCycleTimeMs(product) {\r\n  if (!product) return 0;\r\n  \r\n  // Try idealCycleTime first (Duration in ms)\r\n  if (product.idealCycleTime) {\r\n    const ms = toMs(product.idealCycleTime);\r\n    if (ms > 0) return ms;\r\n  }\r\n  \r\n  // Try standardCycleTime (Float in seconds) - convert to ms\r\n  if (product.standardCycleTime && product.standardCycleTime > 0) {\r\n    return product.standardCycleTime * 1000;\r\n  }\r\n  \r\n  return 0;\r\n}\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// PROCESS EACH QUERY RESULT\r\n// ═══════════════════════════════════════════════════════════════════════\r\n\r\nconst oeeDailyRecords = [];\r\nlet processedCount = 0;\r\nlet skippedCount = 0;\r\n\r\nresults.forEach(function(result, idx) {\r\n  \r\n  console.log('──────────────────────────────────────────────────────────');\r\n  console.log('Processing Result #' + idx);\r\n  \r\n  // ───────────────────────────────────────────────────────────────────\r\n  // EXTRACT WORKCENTER INFO FROM QUERY RESULTS\r\n  // ───────────────────────────────────────────────────────────────────\r\n  \r\n  const workcenterNode = result.workcenter?.edges?.[0]?.node;\r\n  if (!workcenterNode) {\r\n    console.warn('  ⚠ No workcenter data in query result, skipping');\r\n    skippedCount++;\r\n    return;\r\n  }\r\n  \r\n  const queryWorkcenterId = workcenterNode.id;\r\n  const queryWorkcenterCode = workcenterNode.code;\r\n  const queryWorkcenterName = workcenterNode.name;\r\n  \r\n  console.log('  Query Workcenter: ' + queryWorkcenterId);\r\n  \r\n  // ───────────────────────────────────────────────────────────────────\r\n  // FIND MATCHING METADATA BY WORKCENTER ID\r\n  // ───────────────────────────────────────────────────────────────────\r\n  \r\n  const metadata = queryMetadata.find(function(m) {\r\n    return m.workcenterId === queryWorkcenterId;\r\n  });\r\n  \r\n  if (!metadata) {\r\n    console.warn('  ⚠ No metadata found for workcenter: ' + queryWorkcenterId);\r\n    console.warn('  Available metadata workcenter IDs: ' + queryMetadata.slice(0, 5).map(function(m) { return m.workcenterId; }).join(', ') + '...');\r\n    skippedCount++;\r\n    return;\r\n  }\r\n  \r\n  // Extract period information from metadata\r\n  const periodDate = metadata.todayDate;\r\n  const periodStart = metadata.todayStart;\r\n  const periodEnd = metadata.todayEnd;\r\n  const periodName = metadata.periodName;\r\n  \r\n  // Use query data for workcenter info (with metadata as fallback)\r\n  const workcenterId = queryWorkcenterId;\r\n  const workcenterCode = queryWorkcenterCode || metadata.workcenterCode || workcenterId;\r\n  const workcenterName = queryWorkcenterName || metadata.workcenterName || '';\r\n  \r\n  // Validate required fields\r\n  if (!workcenterId || !periodDate || !periodStart || !periodEnd) {\r\n    console.warn('  ⚠ Missing required fields, skipping');\r\n    console.warn('    workcenterId: ' + workcenterId);\r\n    console.warn('    periodDate: ' + periodDate);\r\n    skippedCount++;\r\n    return;\r\n  }\r\n  \r\n  console.log('  Workcenter: ' + workcenterCode + ' (' + workcenterId + ')');\r\n  if (workcenterName) {\r\n    console.log('  Name: ' + workcenterName);\r\n  }\r\n  console.log('  Period: ' + periodName + ' (' + periodDate + ')');\r\n  \r\n  // Create moment objects for period boundaries\r\n  const periodStartMoment = $moment(periodStart).utc();\r\n  const periodEndMoment = $moment(periodEnd).utc();\r\n  \r\n  console.log('  Range: ' + periodStartMoment.format('MM-DD HH:mm') + ' to ' + periodEndMoment.format('MM-DD HH:mm'));\r\n  \r\n  // ───────────────────────────────────────────────────────────────────\r\n  // EXTRACT QUERY RESULTS\r\n  // ───────────────────────────────────────────────────────────────────\r\n  \r\n  const historyRecords = (result.workcenterHistory?.edges || []).map(function(e) { return e.node; });\r\n  const productionLogs = (result.productionLog?.edges || []).map(function(e) { return e.node; });\r\n  \r\n  console.log('  History Records: ' + historyRecords.length);\r\n  console.log('  Production Logs: ' + productionLogs.length);\r\n  \r\n  // ───────────────────────────────────────────────────────────────────\r\n  // CALCULATE TIME METRICS FROM WORKCENTER HISTORY\r\n  // ───────────────────────────────────────────────────────────────────\r\n  \r\n  // Time classification buckets\r\n  let scheduledTimeMs = 0;        // Time WITH scheduleId\r\n  let unscheduledTimeMs = 0;      // Time WITHOUT scheduleId (off-shift, excluded from OEE)\r\n  let operatingTimeMs = 0;        // Production time (ISO: Operating Time)\r\n  let plannedDowntimeMs = 0;      // Scheduled breaks/maintenance (within scheduled time)\r\n  let unplannedDowntimeMs = 0;    // Unscheduled stops/failures (within scheduled time)\r\n  let idleTimeMs = 0;             // Minor stops, speed loss (within scheduled time)\r\n  \r\n  const schedulesUsed = new Set();\r\n  \r\n  historyRecords.forEach(function(record) {\r\n    \r\n    // Validate record has mode\r\n    if (!record.mode) {\r\n      console.warn('    ⚠ Skipping history record without mode: ' + record.id);\r\n      return;\r\n    }\r\n    \r\n    // Determine effective start and end times\r\n    const occurAt = $moment(record.occurAt).utc();\r\n    \r\n    let endAt;\r\n    if (record.endAt === null || record.endAt === undefined) {\r\n      // Active record (still in progress) - use period end\r\n      endAt = periodEndMoment.clone();\r\n    } else {\r\n      endAt = $moment(record.endAt).utc();\r\n    }\r\n    \r\n    // Clip to period boundaries\r\n    const effectiveStart = $momentMax([occurAt, periodStartMoment]);\r\n    const effectiveEnd = $momentMin([endAt, periodEndMoment]);\r\n    \r\n    // Calculate duration within this period\r\n    const durationMs = effectiveEnd.diff(effectiveStart, 'milliseconds');\r\n    \r\n    // Skip if no overlap with period\r\n    if (durationMs <= 0) {\r\n      return;\r\n    }\r\n    \r\n    // ═══════════════════════════════════════════════════════════════════\r\n    // TIME CLASSIFICATION LOGIC\r\n    // ═══════════════════════════════════════════════════════════════════\r\n    \r\n    const hasSchedule = record.scheduleId && record.scheduleId !== null && record.scheduleId !== '';\r\n    const mode = record.mode;\r\n    \r\n    if (!hasSchedule) {\r\n      // ─────────────────────────────────────────────────────────────────\r\n      // NO SCHEDULE = UNSCHEDULED TIME (OFF-SHIFT)\r\n      // ─────────────────────────────────────────────────────────────────\r\n      // Excluded from OEE calculation\r\n      // Mode flags are ignored when there's no schedule\r\n      unscheduledTimeMs += durationMs;\r\n      \r\n    } else {\r\n      // ─────────────────────────────────────────────────────────────────\r\n      // HAS SCHEDULE = SCHEDULED TIME\r\n      // ─────────────────────────────────────────────────────────────────\r\n      // Included in OEE calculation\r\n      // Classify by mode flags\r\n      \r\n      scheduledTimeMs += durationMs;\r\n      schedulesUsed.add(record.scheduleId);\r\n      \r\n      // Classify within scheduled time by mode flags (ISO 22400-2)\r\n      if (mode.countAsProduction || mode.countAsProductionTime) {\r\n        // Operating Time: Machine running and producing\r\n        operatingTimeMs += durationMs;\r\n        \r\n      } else if (mode.countAsPlannedDowntime) {\r\n        // Planned Downtime: Scheduled breaks, maintenance, changeovers\r\n        plannedDowntimeMs += durationMs;\r\n        \r\n      } else if (mode.countAsDowntime) {\r\n        // Unplanned Downtime: Breakdowns, failures\r\n        unplannedDowntimeMs += durationMs;\r\n        \r\n      } else {\r\n        // Idle Time: Minor stops, speed loss, unclassified\r\n        idleTimeMs += durationMs;\r\n      }\r\n    }\r\n  });\r\n  \r\n  console.log('  Time Classification (hours):');\r\n  console.log('    Scheduled: ' + (scheduledTimeMs / 3600000).toFixed(2) + 'h');\r\n  console.log('    Unscheduled: ' + (unscheduledTimeMs / 3600000).toFixed(2) + 'h');\r\n  console.log('    └─ Operating: ' + (operatingTimeMs / 3600000).toFixed(2) + 'h');\r\n  console.log('    └─ Planned DT: ' + (plannedDowntimeMs / 3600000).toFixed(2) + 'h');\r\n  console.log('    └─ Unplanned DT: ' + (unplannedDowntimeMs / 3600000).toFixed(2) + 'h');\r\n  console.log('    └─ Idle: ' + (idleTimeMs / 3600000).toFixed(2) + 'h');\r\n  \r\n  // ───────────────────────────────────────────────────────────────────\r\n  // CALCULATE PRODUCTION METRICS FROM PRODUCTION LOG\r\n  // ───────────────────────────────────────────────────────────────────\r\n  \r\n  let producedQty = 0;           // ISO: PQ (Produced Quantity)\r\n  let goodQty = 0;               // ISO: GQ (Good Quantity)\r\n  let scrapQty = 0;              // Scrap/Reject quantity\r\n  let actualCycleTimeMs = 0;     // Total actual time spent producing\r\n  let idealCycleTimeMs = 0;      // Total ideal time (theoretical minimum)\r\n  \r\n  productionLogs.forEach(function(log) {\r\n    \r\n    const good = num(log.quantityGood);\r\n    const scrap = num(log.quantityScrap);\r\n    const qty = good + scrap;\r\n    \r\n    producedQty += qty;\r\n    goodQty += good;\r\n    scrapQty += scrap;\r\n    \r\n    // Actual cycle time from log (in seconds, convert to ms)\r\n    if (log.cycleTime && qty > 0) {\r\n      actualCycleTimeMs += log.cycleTime * 1000 * qty;\r\n    }\r\n    \r\n    // Ideal cycle time from product\r\n    if (log.product && qty > 0) {\r\n      const idealPerUnit = getIdealCycleTimeMs(log.product);\r\n      idealCycleTimeMs += idealPerUnit * qty;\r\n    }\r\n  });\r\n  \r\n  console.log('  Production Metrics:');\r\n  console.log('    Produced: ' + producedQty + ' units');\r\n  console.log('    Good: ' + goodQty + ' units');\r\n  console.log('    Scrap: ' + scrapQty + ' units');\r\n  \r\n  // ───────────────────────────────────────────────────────────────────\r\n  // CALCULATE ISO 22400-2 OEE METRICS\r\n  // ───────────────────────────────────────────────────────────────────\r\n  \r\n  // ISO 22400-2 Formula 1: Planned Production Time (PBT)\r\n  // PBT = Scheduled Time - Planned Downtime\r\n  const plannedProductionTimeMs = Math.max(0, scheduledTimeMs - plannedDowntimeMs);\r\n  \r\n  // Total downtime (for reporting)\r\n  const totalDowntimeMs = plannedDowntimeMs + unplannedDowntimeMs;\r\n  \r\n  // ISO 22400-2 Formula 2: Availability\r\n  // A = (Planned Production Time - Unplanned Downtime) / Planned Production Time\r\n  let availability = 0;\r\n  if (plannedProductionTimeMs > 0) {\r\n    const availableTimeMs = Math.max(0, plannedProductionTimeMs - unplannedDowntimeMs);\r\n    availability = availableTimeMs / plannedProductionTimeMs;\r\n    availability = Math.max(0, Math.min(1, availability)); // Clamp to [0,1]\r\n  }\r\n  \r\n  // ISO 22400-2 Formula 3: Performance\r\n  // P = (Ideal Cycle Time × Produced Quantity) / Operating Time\r\n  let performance = 0;\r\n  if (operatingTimeMs > 0 && idealCycleTimeMs > 0) {\r\n    performance = idealCycleTimeMs / operatingTimeMs;\r\n    performance = Math.max(0, Math.min(1, performance)); // Clamp to [0,1]\r\n  }\r\n  \r\n  // ISO 22400-2 Formula 4: Quality\r\n  // Q = Good Quantity / Produced Quantity\r\n  let quality = 1; // Default 100% if no production (no defects created)\r\n  if (producedQty > 0) {\r\n    quality = goodQty / producedQty;\r\n    quality = Math.max(0, Math.min(1, quality)); // Clamp to [0,1]\r\n  }\r\n  \r\n  // ISO 22400-2 Formula 5: OEE\r\n  // OEE = Availability × Performance × Quality\r\n  const oee = availability * performance * quality;\r\n  \r\n  console.log('  OEE Metrics:');\r\n  console.log('    Availability: ' + (availability * 100).toFixed(1) + '%');\r\n  console.log('    Performance: ' + (performance * 100).toFixed(1) + '%');\r\n  console.log('    Quality: ' + (quality * 100).toFixed(1) + '%');\r\n  console.log('    OEE: ' + (oee * 100).toFixed(1) + '%');\r\n  \r\n  // ───────────────────────────────────────────────────────────────────\r\n  // CALCULATE DERIVED METRICS\r\n  // ───────────────────────────────────────────────────────────────────\r\n  \r\n  // Ideal units (how many could have been produced in operating time)\r\n  const avgIdealCycleTime = producedQty > 0 ? idealCycleTimeMs / producedQty : 0;\r\n  const idealUnits = (avgIdealCycleTime > 0 && operatingTimeMs > 0) \r\n    ? operatingTimeMs / avgIdealCycleTime \r\n    : 0;\r\n  \r\n  // Average actual cycle time per unit\r\n  const avgActualCycleTime = producedQty > 0 ? actualCycleTimeMs / producedQty : 0;\r\n  \r\n  // Build schedules metadata\r\n  const schedules = {\r\n    scheduleIds: Array.from(schedulesUsed),\r\n    primaryScheduleId: Array.from(schedulesUsed)[0] || null\r\n  };\r\n  \r\n  // Hours metrics\r\n  const hoursRecorded = Math.round(scheduledTimeMs / 3600000);\r\n  const hoursWithProduction = productionLogs.length > 0 ? 1 : 0;\r\n  \r\n  // ───────────────────────────────────────────────────────────────────\r\n  // CREATE OEEDAILY RECORD\r\n  // ───────────────────────────────────────────────────────────────────\r\n  \r\n  const recordId = workcenterCode + '-' + periodDate;\r\n  \r\n  const record = {\r\n    // Identity\r\n    id: recordId,\r\n    workcenterId: workcenterId,\r\n    \r\n    // Period\r\n    periodStartAt: periodStart,\r\n    periodEndAt: periodEnd,\r\n    periodDayAt: periodDate,\r\n    \r\n    // Quantities\r\n    totalUnits: producedQty,\r\n    goodUnits: goodQty,\r\n    scrapUnits: scrapQty,\r\n    idealUnits: Math.round(idealUnits * 100) / 100,\r\n    \r\n    // Time Durations (all in milliseconds, all positive)\r\n    scheduledTime: Math.max(0, Math.round(scheduledTimeMs)),\r\n    unscheduledTime: Math.max(0, Math.round(unscheduledTimeMs)),\r\n    runMinutes: Math.max(0, Math.round(operatingTimeMs)),\r\n    plannedProductionTime: Math.max(0, Math.round(plannedProductionTimeMs)),\r\n    actualProductionTime: Math.max(0, Math.round(operatingTimeMs)),\r\n    idleTime: Math.max(0, Math.round(idleTimeMs)),\r\n    downtimeTotal: Math.max(0, Math.round(totalDowntimeMs)),\r\n    downtimeUnplanned: Math.max(0, Math.round(unplannedDowntimeMs)),\r\n    downtimePlanned: Math.max(0, Math.round(plannedDowntimeMs)),\r\n    actualCycleTime: Math.max(0, Math.round(actualCycleTimeMs)),\r\n    idealCycleTime: Math.max(0, Math.round(idealCycleTimeMs)),\r\n    averageActualCycleTime: Math.max(0, Math.round(avgActualCycleTime)),\r\n    \r\n    // OEE Metrics (0-1 range, 4 decimal places)\r\n    availability: Math.round(availability * 10000) / 10000,\r\n    performance: Math.round(performance * 10000) / 10000,\r\n    quality: Math.round(quality * 10000) / 10000,\r\n    oee: Math.round(oee * 10000) / 10000,\r\n    \r\n    // Metadata\r\n    hoursRecorded: hoursRecorded,\r\n    hoursWithProduction: hoursWithProduction,\r\n    schedules: schedules\r\n  };\r\n  \r\n  oeeDailyRecords.push(record);\r\n  processedCount++;\r\n  console.log('  ✓ Created record: ' + recordId);\r\n});\r\n\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\nconsole.log('SUMMARY:');\r\nconsole.log('  Processed: ' + processedCount + ' records');\r\nconsole.log('  Skipped: ' + skippedCount + ' records');\r\nconsole.log('  Total OeeDaily records: ' + oeeDailyRecords.length);\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\n\r\nreturn oeeDailyRecords.length > 0 ? oeeDailyRecords : [];"
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "JavaScript"
+            },
+            "f95f0e19-9528-4ac8-acf3-0f41745704ba": {
+              "id": "f95f0e19-9528-4ac8-acf3-0f41745704ba",
+              "type": "mutate",
+              "selected": false,
+              "x": 1090,
+              "y": 820,
+              "ports": [
+                {
+                  "id": "cml4e3g0k04mw356rt0xbfx6r",
+                  "type": "default",
+                  "x": 1081.67,
+                  "y": 851.73,
+                  "name": "cml4e3g0l04mx356rhnfyeacc",
+                  "parentNode": "f95f0e19-9528-4ac8-acf3-0f41745704ba",
+                  "links": [
+                    "9f561b8e-632e-4565-b5dc-d7769e8130a8"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml4e3g0l04my356rkmi3umws",
+                  "type": "default",
+                  "x": 1306.9,
+                  "y": 851.73,
+                  "name": "cml4e3g0l04mz356r5u1b8uyt",
+                  "parentNode": "f95f0e19-9528-4ac8-acf3-0f41745704ba",
+                  "links": [],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "Application",
+                "variablesTransform": "$ ? {\r\n  \"payload\": [\r\n    {\r\n      \"where\": {\r\n        \"id\": $.id\r\n      },\r\n      \"create\": {\r\n        \"id\": $.id,\r\n        \"workcenterId\": $.workcenterId,\r\n        \"periodStartAt\": $.periodStartAt,\r\n        \"periodEndAt\": $.periodEndAt,\r\n        \"periodDayAt\": $.periodDayAt,\r\n        \"totalUnits\": $.totalUnits,\r\n        \"goodUnits\": $.goodUnits,\r\n        \"scrapUnits\": $.scrapUnits,\r\n        \"idealUnits\": $.idealUnits,\r\n        \"scheduledTime\": $.scheduledTime,\r\n        \"unscheduledTime\": $.unscheduledTime,\r\n        \"runMinutes\": $.runMinutes,\r\n        \"plannedProductionTime\": $.plannedProductionTime,\r\n        \"actualProductionTime\": $.actualProductionTime,\r\n        \"idleTime\": $.idleTime,\r\n        \"downtimeTotal\": $.downtimeTotal,\r\n        \"downtimeUnplanned\": $.downtimeUnplanned,\r\n        \"downtimePlanned\": $.downtimePlanned,\r\n        \"actualCycleTime\": $.actualCycleTime,\r\n        \"idealCycleTime\": $.idealCycleTime,\r\n        \"averageActualCycleTime\": $.averageActualCycleTime,\r\n        \"availability\": $.availability,\r\n        \"performance\": $.performance,\r\n        \"quality\": $.quality,\r\n        \"oee\": $.oee,\r\n        \"hoursRecorded\": $.hoursRecorded,\r\n        \"hoursWithProduction\": $.hoursWithProduction,\r\n        \"schedules\": $.schedules\r\n      },\r\n      \"update\": {\r\n        \"workcenterId\": $.workcenterId,\r\n        \"periodStartAt\": $.periodStartAt,\r\n        \"periodEndAt\": $.periodEndAt,\r\n        \"periodDayAt\": $.periodDayAt,\r\n        \"totalUnits\": $.totalUnits,\r\n        \"goodUnits\": $.goodUnits,\r\n        \"scrapUnits\": $.scrapUnits,\r\n        \"idealUnits\": $.idealUnits,\r\n        \"scheduledTime\": $.scheduledTime,\r\n        \"unscheduledTime\": $.unscheduledTime,\r\n        \"runMinutes\": $.runMinutes,\r\n        \"plannedProductionTime\": $.plannedProductionTime,\r\n        \"actualProductionTime\": $.actualProductionTime,\r\n        \"idleTime\": $.idleTime,\r\n        \"downtimeTotal\": $.downtimeTotal,\r\n        \"downtimeUnplanned\": $.downtimeUnplanned,\r\n        \"downtimePlanned\": $.downtimePlanned,\r\n        \"actualCycleTime\": $.actualCycleTime,\r\n        \"idealCycleTime\": $.idealCycleTime,\r\n        \"averageActualCycleTime\": $.averageActualCycleTime,\r\n        \"availability\": $.availability,\r\n        \"performance\": $.performance,\r\n        \"quality\": $.quality,\r\n        \"oee\": $.oee,\r\n        \"hoursRecorded\": $.hoursRecorded,\r\n        \"hoursWithProduction\": $.hoursWithProduction,\r\n        \"schedules\": $.schedules\r\n      }\r\n    }\r\n  ]\r\n} : { \"payload\": [] }",
+                "nextNodes": [],
+                "mutation": "mutation UpsertOeeDaily($payload: [OeeDailyUpsertPayloadInput!]!) {\n  upsertOeeDaily(payload: $payload) {\n    id\n    workcenterId\n    periodDayAt\n    oee\n    availability\n    performance\n    quality\n    scheduledTime\n    unscheduledTime\n    totalUnits\n    goodUnits\n  }\n}"
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Mutate OEE Daily Records Upsert"
+            }
+          }
+        }
+      ],
+      "name": "OEE Daily Aggregation Flow",
+      "type": "System",
+      "version": "0.0.7",
+      "walkthrough": {
+        "steps": []
+      }
+    }
+  }
+}

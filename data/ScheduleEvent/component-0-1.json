@@ -1,0 +1,37 @@
+{
+  "api": "application",
+  "modelName": "ScheduleEvent",
+  "payload": [
+    {
+      "id": "cmk00kowx2c6n016cdi743spl",
+      "label": "DailyFirst",
+      "rrule": "DTSTART:20260104T060000Z\nRRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR",
+      "duration": "PT8H",
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmk00l4l32pdm017jc80ihnry",
+      "label": "DailySecond",
+      "rrule": "DTSTART:20260104T140000Z\nRRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR",
+      "duration": "PT8H",
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmk00masw2c8a016c4srm02z0",
+      "label": "DailyThird",
+      "rrule": "DTSTART:20260104T220000Z\nRRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=SU,MO,TU,WE,TH,FR",
+      "duration": "PT8H",
+      "scheduleId": "third",
+      "_customFields": {
+        "_externalId": null
+      }
+    }
+  ],
+  "metadata": {}
+}

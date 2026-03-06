@@ -1,0 +1,2457 @@
+{
+  "header": {
+    "id": "workcenter",
+    "name": "Workcenter",
+    "description": "The Workcenter screen provides centralized management of manufacturing work centers within the industrial operations hierarchy. Work centers represent discrete production stations where manufacturing operations are performed, serving as the primary link between physical assets, production lines, and manufacturing cells.\n\n**Key Features:**\n\n- **Hierarchical Location Mapping**: Associates work centers with production lines and manufacturing cells for organizational clarity\n- **ISA-101 State Management**: Tracks operational modes (Production, Idle, Disabled) and states (Running, Stopped, Held, Blocked, Starved, Faulted) following ISA-101 HMI standards\n- **Work Order Integration**: Displays current work order assignments for active production tracking\n- **Real-time Status Visibility**: Color-coded mode and state indicators provide at-a-glance operational status\n\n**Filter Capabilities:**\n\n- Workcenter code (partial match)\n- Cell assignment\n- Line assignment\n- Operational mode\n- Active/Inactive status\n- Advanced GraphQL filtering\n\n**CRUD Operations:**\n\n- Create new work centers with cell/line assignments\n- View detailed work center configuration\n- Edit work center properties and assignments\n- Duplicate existing work centers\n- Deactivate work centers (soft delete)\n- Delete work centers (with referential integrity protection)\n\n**Data Model**: `Workcenter` **Module**: Machine Data Application **Group**: Machine Telemetry Site Application",
+    "active": true,
+    "edgeScreen": false,
+    "forceFullscreen": false,
+    "moduleId": "machineDataApp",
+    "substitutesScreenId": null,
+    "isWidget": false
+  },
+  "version": {
+    "id": "cmlgm9jdc174x014e18071xvk",
+    "number": "0.0.14",
+    "description": "",
+    "screenId": "workcenter",
+    "design": {
+      "components": [
+        {
+          "name": "Workcenters",
+          "tabTitle": "Workcenters",
+          "type": "canvas",
+          "props": {
+            "design": {
+              "ROOT": {
+                "type": {
+                  "resolvedName": "Screen"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexDirection": "column",
+                  "flexWrap": false,
+                  "alignItems": "stretch",
+                  "justifyContent": "flex-start",
+                  "width": "100%",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "flowsDelay": 0,
+                  "removeOuterMargin": true,
+                  "background": "paper"
+                },
+                "displayName": "Screen",
+                "custom": {
+                  "elementName": "Screen",
+                  "elementCounts": {
+                    "Container": 16,
+                    "Action": 4,
+                    "Resizable Panel": 1,
+                    "Form": 1,
+                    "Select": 1,
+                    "GraphQL Where Input": 1,
+                    "Table": 1,
+                    "Table Column": 15,
+                    "Text": 2,
+                    "Custom Column": 1,
+                    "Options": 2
+                  },
+                  "module": {
+                    "id": "machineDataApp",
+                    "group": {
+                      "id": "machineTelemetrySiteApplication"
+                    }
+                  },
+                  "dataModel": "Workcenter",
+                  "template": "master"
+                },
+                "parent": null,
+                "hidden": false,
+                "nodes": [
+                  "ContainerOuter"
+                ],
+                "linkedNodes": {}
+              },
+              "ContainerOuter": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": true,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "0px",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "ContainerOuter"
+                },
+                "parent": "ROOT",
+                "hidden": false,
+                "nodes": [
+                  "ResizableFilterPanel",
+                  "ContainerBody"
+                ],
+                "linkedNodes": {}
+              },
+              "ContainerBody": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "0px",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0.5px solid #5b30df"
+                  },
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "ContainerBody"
+                },
+                "parent": "ContainerOuter",
+                "hidden": false,
+                "nodes": [
+                  "TopActionBar",
+                  "BrandBandSeparator",
+                  "WorkcenterTable"
+                ],
+                "linkedNodes": {}
+              },
+              "ResizableFilterPanel": {
+                "type": {
+                  "resolvedName": "ResizablePanelLayout"
+                },
+                "isCanvas": true,
+                "props": {
+                  "handle": "right",
+                  "toggleHotkey": "",
+                  "defaultSize": 320,
+                  "axis": false,
+                  "minSize": 0,
+                  "maxSize": 320
+                },
+                "displayName": "Resizable Panel",
+                "custom": {
+                  "elementName": "ResizableFilterPanel"
+                },
+                "parent": "ContainerOuter",
+                "hidden": false,
+                "nodes": [
+                  "ContainerFilterOuter"
+                ],
+                "linkedNodes": {}
+              },
+              "ContainerFilterOuter": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": true,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "ContainerFilterOuter"
+                },
+                "parent": "ResizableFilterPanel",
+                "hidden": false,
+                "nodes": [
+                  "FilterPanelHeader",
+                  "FormFilterPanel"
+                ],
+                "linkedNodes": {}
+              },
+              "FilterPanelHeader": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "40px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0px undefined ",
+                    "borderBottom": "0px none "
+                  },
+                  "justifyItems": "start",
+                  "style": {},
+                  "background": "light",
+                  "customBackground": "#f0f0f0"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "FilterPanelHeader"
+                },
+                "parent": "ContainerFilterOuter",
+                "hidden": false,
+                "nodes": [
+                  "FilterPanelHeaderInner",
+                  "FilterBrandSeparator"
+                ],
+                "linkedNodes": {}
+              },
+              "FilterPanelHeaderInner": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 4,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "space-between",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "35px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0px undefined ",
+                    "borderBottom": "undefinedpx none "
+                  },
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "FilterPanelHeaderInner"
+                },
+                "parent": "FilterPanelHeader",
+                "hidden": false,
+                "nodes": [
+                  "FilterPanelTitle",
+                  "FilterSearchContainer"
+                ],
+                "linkedNodes": {}
+              },
+              "FilterPanelTitle": {
+                "type": {
+                  "resolvedName": "RichText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "width": "180px",
+                  "height": "40px",
+                  "content": {
+                    "blocks": [
+                      {
+                        "key": "filterPanelTitle",
+                        "text": "Workcenter Filters",
+                        "type": "unstyled",
+                        "depth": 0,
+                        "inlineStyleRanges": [
+                          {
+                            "offset": 0,
+                            "length": 18,
+                            "style": "fontfamily-Roboto"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 18,
+                            "style": "fontsize-14"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 18,
+                            "style": "color-rgb(44,130,201)"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 18,
+                            "style": "BOLD"
+                          }
+                        ],
+                        "entityRanges": [],
+                        "data": {}
+                      }
+                    ],
+                    "entityMap": {}
+                  }
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "FilterPanelTitle"
+                },
+                "parent": "FilterPanelHeaderInner",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "FilterSearchContainer": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "center",
+                  "width": "30px",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "FilterSearchContainer"
+                },
+                "parent": "FilterPanelHeaderInner",
+                "hidden": false,
+                "nodes": [
+                  "ActionSearch"
+                ],
+                "linkedNodes": {}
+              },
+              "ActionSearch": {
+                "type": {
+                  "resolvedName": "ActionButton"
+                },
+                "isCanvas": false,
+                "props": {
+                  "margin": 0,
+                  "buttonColor": "primary",
+                  "icon": {
+                    "icon": "magnifying-glass",
+                    "color": "info",
+                    "variant": "regular",
+                    "size": "icon"
+                  },
+                  "width": "24px",
+                  "height": "24px",
+                  "disabled": false,
+                  "hidden": false,
+                  "useIconButton": true,
+                  "disableHover": false,
+                  "disableRipple": false,
+                  "action": [
+                    {
+                      "type": "transformation",
+                      "remote": false,
+                      "transformation": "$components.WorkcenterTable.fn.search()"
+                    }
+                  ],
+                  "title": "Search Workcenters"
+                },
+                "displayName": "Action",
+                "custom": {
+                  "elementName": "ActionSearch"
+                },
+                "parent": "FilterSearchContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "FilterBrandSeparator": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "4px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {
+                    "background-image": "linear-gradient(90deg, #39005a,#5b30df, #03caaf)"
+                  }
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "FilterBrandSeparator"
+                },
+                "parent": "FilterPanelHeader",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "FormFilterPanel": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "isCanvas": true,
+                "props": {
+                  "query": {
+                    "api": "Application",
+                    "query": null,
+                    "dataPath": "edges[0]",
+                    "dataTransform": {
+                      "transform": null,
+                      "remote": true
+                    },
+                    "dataSubscription": {
+                      "enabled": false
+                    },
+                    "autoLoad": false,
+                    "parameters": "{\n  \"filter\": {\n    \"id\": {\n      \"_eq\": id\n    }\n  },\n  \"first\": 1\n}",
+                    "fields": [
+                      "id"
+                    ],
+                    "disableDataChangeIndicator": false,
+                    "dataChangeIndicatorSize": "normal",
+                    "model": "Workcenter"
+                  },
+                  "blockNavigationWhenDirty": false,
+                  "enableConfirmOnDataChanged": false,
+                  "description": "Use filters to narrow down workcenter records."
+                },
+                "displayName": "Form",
+                "custom": {
+                  "elementName": "FormFilterPanel"
+                },
+                "parent": "ContainerFilterOuter",
+                "hidden": false,
+                "nodes": [
+                  "FilterFormContainer"
+                ],
+                "linkedNodes": {}
+              },
+              "FilterFormContainer": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "0px",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {},
+                  "data": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "FilterFormContainer"
+                },
+                "parent": "FormFilterPanel",
+                "hidden": false,
+                "nodes": [
+                  "TextInputCode",
+                  "SelectCell",
+                  "SelectLine",
+                  "OptionsMode",
+                  "OptionsActiveStatus",
+                  "GraphQLWhereInput"
+                ],
+                "linkedNodes": {}
+              },
+              "OptionsActiveStatus": {
+                "type": {
+                  "resolvedName": "OptionsInput"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "options",
+                  "label": "Status",
+                  "multiselect": false,
+                  "isClearable": true,
+                  "selectAll": false,
+                  "searchPredicate": "contains",
+                  "stateTracking": "id",
+                  "optionLimit": 10,
+                  "optionLimitFlex": 5,
+                  "description": "Filter by active/inactive status.",
+                  "formElement": "FormFilterPanel",
+                  "variant": "filled",
+                  "disabled": false,
+                  "options": [
+                    {
+                      "id": true,
+                      "label": "Active"
+                    },
+                    {
+                      "id": false,
+                      "label": "Inactive"
+                    }
+                  ],
+                  "target": {
+                    "dataPath": "isActive._eq"
+                  },
+                  "dataPath": "isActive",
+                  "labelPath": "label",
+                  "field": "isActive"
+                },
+                "displayName": "Options",
+                "custom": {
+                  "elementName": "OptionsActiveStatus"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "GraphQLWhereInput": {
+                "type": {
+                  "resolvedName": "WrappedGraphQLPredicate"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "graphqlWhere",
+                  "dataPath": "predicate",
+                  "target": {
+                    "dataPath": "_and.0"
+                  },
+                  "formElement": "FormFilterPanel",
+                  "label": "Advanced Filter",
+                  "disabled": false,
+                  "description": "Advanced GraphQL where clause for complex filtering."
+                },
+                "displayName": "GraphQL Where Input",
+                "custom": {
+                  "elementName": "GraphQLWhereInput"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TopActionBar": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "35px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0px undefined ",
+                    "borderBottom": "0px none "
+                  },
+                  "justifyItems": "start",
+                  "style": {},
+                  "background": "light",
+                  "customBackground": "#f0f0f0"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "TopActionBar"
+                },
+                "parent": "ContainerBody",
+                "hidden": false,
+                "nodes": [
+                  "ContainerActionsStandard",
+                  "ContainerActionsCustom"
+                ],
+                "linkedNodes": {}
+              },
+              "ContainerActionsStandard": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 12,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "space-between",
+                  "alignItems": "center",
+                  "width": "80px",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0px undefined ",
+                    "borderRight": "0px none "
+                  },
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "ContainerActionsStandard"
+                },
+                "parent": "TopActionBar",
+                "hidden": false,
+                "nodes": [
+                  "ActionCreateWorkcenter"
+                ],
+                "linkedNodes": {}
+              },
+              "ContainerActionsCustom": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 12,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "center",
+                  "width": "200px",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0px undefined ",
+                    "borderRight": "undefinedpx none "
+                  },
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "ContainerActionsCustom"
+                },
+                "parent": "TopActionBar",
+                "hidden": false,
+                "nodes": [
+                  "ActionRefresh"
+                ],
+                "linkedNodes": {}
+              },
+              "BrandBandSeparator": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "4px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {
+                    "background-image": "linear-gradient(90deg, #39005a,#5b30df, #03caaf)"
+                  }
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "BrandBandSeparator"
+                },
+                "parent": "ContainerBody",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ActionRefresh": {
+                "type": {
+                  "resolvedName": "ActionButton"
+                },
+                "isCanvas": false,
+                "props": {
+                  "margin": 0,
+                  "buttonColor": "primary",
+                  "icon": {
+                    "icon": "arrows-rotate",
+                    "color": "secondary",
+                    "variant": "regular",
+                    "size": "icon"
+                  },
+                  "width": "40px",
+                  "height": "30px",
+                  "disabled": false,
+                  "hidden": false,
+                  "useIconButton": true,
+                  "disableHover": false,
+                  "disableRipple": false,
+                  "action": [
+                    {
+                      "type": "transformation",
+                      "remote": false,
+                      "transformation": "$components.WorkcenterTable.fn.search()"
+                    }
+                  ],
+                  "title": "Refresh Data",
+                  "customTextSize": 10,
+                  "customIconSize": 0
+                },
+                "displayName": "Action",
+                "custom": {
+                  "editor": {
+                    "category": "Buttons",
+                    "description": "Refresh table data.",
+                    "color": "#9c5a94",
+                    "elementName": "Refresh Button",
+                    "icon": "arrows-rotate",
+                    "requiresTable": true
+                  },
+                  "elementName": "ActionRefresh"
+                },
+                "parent": "ContainerActionsCustom",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnActions": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": " ",
+                  "format": "menu",
+                  "sortable": false,
+                  "dataPath": "actions",
+                  "width": "50px",
+                  "flows": [],
+                  "actions": [
+                    {
+                      "text": "OEE Dashboard",
+                      "icon": {
+                        "icon": "gauge",
+                        "color": "inherit",
+                        "variant": "light",
+                        "size": "small"
+                      },
+                      "action": [
+                        {
+                          "type": "navigation",
+                          "navigationType": "New Webpage",
+                          "newWindow": true,
+                          "target": {
+                            "__transform": "\"/machineTelemetrySiteApplication/machineDataApp/workcenterOeeDashboard\" & \"?\" & \"wcId=\" & rowData.id"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "text": "Reliability Dashboard",
+                      "icon": {
+                        "icon": "screwdriver-wrench",
+                        "color": "inherit",
+                        "variant": "light",
+                        "size": "small"
+                      },
+                      "action": [
+                        {
+                          "type": "navigation",
+                          "navigationType": "New Webpage",
+                          "target": {
+                            "__transform": "\"/machineTelemetrySiteApplication/machineDataApp/workcenterReliabilityDashboard\" & \"?\" & \"wcId=\" & rowData.id"
+                          },
+                          "newWindow": true
+                        }
+                      ]
+                    },
+                    {
+                      "text": "View Details",
+                      "icon": {
+                        "icon": "eye",
+                        "color": "info",
+                        "variant": "regular",
+                        "size": "small"
+                      },
+                      "action": [
+                        {
+                          "type": "query",
+                          "api": "Application",
+                          "query": "query GetWorkcenter($where: WorkcenterWhereInput) {\n  query: workcenter(where: $where) {\n    edges {\n      node {\n        id\n        name\n        isActive\n        code\n        description\n        cellId\n        cell {\n          id\n          code\n          name\n        }\n        currentWorkOrderId\n        currentWorkOrder {\n          id\n          code\n        }\n        lineId\n        line {\n          id\n          code\n          name\n        }\n        createdAt\n        createdByUser {\n          id\n          firstName\n          lastName\n        }\n      }\n    }\n  }\n}",
+                          "transforms": {
+                            "pre": "{ \"where\": { \"id\": { \"_eq\": data.id } } }",
+                            "post": "data.query.edges[0].node"
+                          },
+                          "target": {
+                            "__transform": ""
+                          }
+                        },
+                        {
+                          "type": "form",
+                          "submitIcon": "check",
+                          "submitLabel": "Close",
+                          "title": {
+                            "__transform": "\"View Workcenter: \" & data.code"
+                          },
+                          "transforms": {
+                            "pre": "data"
+                          },
+                          "fields": [
+                            {
+                              "label": "Code",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "field": "code",
+                              "dataPath": "code",
+                              "target": {
+                                "dataPath": "code"
+                              },
+                              "query": {
+                                "fields": []
+                              }
+                            },
+                            {
+                              "label": "Name",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "field": "name",
+                              "dataPath": "name",
+                              "target": {
+                                "dataPath": "name"
+                              },
+                              "query": {
+                                "fields": []
+                              }
+                            },
+                            {
+                              "label": "Description",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "field": "description",
+                              "dataPath": "description",
+                              "target": {
+                                "dataPath": "description"
+                              },
+                              "query": {
+                                "fields": []
+                              }
+                            },
+                            {
+                              "label": "Cell",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "field": "cell",
+                              "dataPath": "cell.code",
+                              "target": {
+                                "dataPath": "cell"
+                              },
+                              "data": {
+                                "__transform": "data.cell ? data.cell.code & ' - ' & data.cell.name : '-'"
+                              },
+                              "query": {
+                                "fields": []
+                              }
+                            },
+                            {
+                              "label": "Line",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "field": "line",
+                              "dataPath": "line.code",
+                              "target": {
+                                "dataPath": "line"
+                              },
+                              "data": {
+                                "__transform": "data.line ? data.line.code & ' - ' & data.line.name : '-'"
+                              },
+                              "query": {
+                                "fields": []
+                              }
+                            },
+                            {
+                              "label": "Current Work Order",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "field": "currentWorkOrder",
+                              "dataPath": "currentWorkOrder.code",
+                              "target": {
+                                "dataPath": "currentWorkOrder"
+                              },
+                              "data": {
+                                "__transform": "data.currentWorkOrder ? data.currentWorkOrder.code : '-'"
+                              },
+                              "query": {
+                                "fields": []
+                              }
+                            },
+                            {
+                              "label": "Active",
+                              "element": "Switch",
+                              "type": "switch",
+                              "dataPath": "isActive",
+                              "field": "isActive",
+                              "target": {
+                                "dataPath": "isActive"
+                              },
+                              "disabled": true,
+                              "query": {
+                                "fields": []
+                              }
+                            },
+                            {
+                              "label": "Created At",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "format": "datetime",
+                              "formatString": "MM/DD/YYYY h:mm A",
+                              "timeZone": "setting",
+                              "field": "createdAt",
+                              "dataPath": "createdAt",
+                              "target": {
+                                "dataPath": "createdAt"
+                              },
+                              "query": {
+                                "fields": []
+                              }
+                            },
+                            {
+                              "label": "Created By",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "field": "createdByUser",
+                              "dataPath": "createdByUser.firstName",
+                              "target": {
+                                "dataPath": "createdByUser"
+                              },
+                              "data": {
+                                "__transform": "data.createdByUser ? data.createdByUser.firstName & ' ' & data.createdByUser.lastName : '-'"
+                              },
+                              "query": {
+                                "fields": []
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "text": "Edit",
+                      "icon": {
+                        "icon": "pencil",
+                        "color": "warning",
+                        "variant": "regular",
+                        "size": "small"
+                      },
+                      "action": [
+                        {
+                          "type": "query",
+                          "api": "Application",
+                          "query": "query GetWorkcenter($where: WorkcenterWhereInput) {\n  query: workcenter(where: $where) {\n    edges {\n      node {\n        id\n        name\n        isActive\n        code\n        description\n        scheduleGroupId\n        scheduleGroup {\n          code\n          name\n        }\n        cellId\n        cell {\n          id\n          code\n          name\n        }\n        currentWorkOrderId\n        currentWorkOrder {\n          id\n          code\n        }\n        lineId\n        line {\n          id\n          code\n          name\n        }\n        createdAt\n        createdByUser {\n          id\n          firstName\n          lastName\n        }\n      }\n    }\n  }\n}",
+                          "transforms": {
+                            "pre": "{ \"where\": { \"id\": { \"_eq\": data.id } } }",
+                            "post": "data.query.edges[0].node"
+                          }
+                        },
+                        {
+                          "type": "form",
+                          "submitIcon": {
+                            "icon": "save",
+                            "color": "inherit",
+                            "variant": "light",
+                            "size": "icon"
+                          },
+                          "title": {
+                            "__transform": "\"Edit Workcenter: \" & data.code"
+                          },
+                          "transforms": {
+                            "pre": "data"
+                          },
+                          "fields": [
+                            {
+                              "label": "Code",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "field": "code",
+                              "dataPath": "code",
+                              "target": {
+                                "dataPath": "code"
+                              },
+                              "query": {
+                                "fields": []
+                              }
+                            },
+                            {
+                              "label": "Name",
+                              "dataPath": "name",
+                              "field": "name",
+                              "element": "TextInput",
+                              "type": "text",
+                              "validation": {
+                                "required": true
+                              }
+                            },
+                            {
+                              "label": "Description",
+                              "dataPath": "description",
+                              "field": "description",
+                              "element": "TextInput",
+                              "type": "text",
+                              "validation": {
+                                "required": false
+                              }
+                            },
+                            {
+                              "label": "Schedule",
+                              "dataPath": "scheduleGroup",
+                              "field": "Schedule",
+                              "element": "SelectInput",
+                              "type": "select",
+                              "api": "Application",
+                              "dataModel": "ScheduleGroup",
+                              "labelField": "code",
+                              "labelPath": "code",
+                              "additionalFields": [
+                                "code",
+                                "name"
+                              ],
+                              "selectFields": [
+                                "code",
+                                "name"
+                              ],
+                              "target": {
+                                "dataPath": "scheduleGroupId"
+                              },
+                              "validation": {
+                                "required": true
+                              }
+                            },
+                            {
+                              "label": "Cell",
+                              "dataPath": "cell",
+                              "field": "cell",
+                              "element": "SelectInput",
+                              "type": "select",
+                              "api": "Application",
+                              "dataModel": "Cell",
+                              "labelField": "code",
+                              "labelPath": "code",
+                              "additionalFields": [
+                                "code",
+                                "name"
+                              ],
+                              "selectFields": [
+                                "code",
+                                "name"
+                              ],
+                              "target": {
+                                "dataPath": "cellId"
+                              },
+                              "validation": {
+                                "required": false
+                              }
+                            },
+                            {
+                              "label": "Line",
+                              "dataPath": "line",
+                              "field": "line",
+                              "element": "SelectInput",
+                              "type": "select",
+                              "api": "Application",
+                              "dataModel": "Line",
+                              "labelField": "code",
+                              "labelPath": "code",
+                              "additionalFields": [
+                                "code",
+                                "name"
+                              ],
+                              "selectFields": [
+                                "code",
+                                "name"
+                              ],
+                              "target": {
+                                "dataPath": "lineId"
+                              },
+                              "validation": {
+                                "required": false
+                              }
+                            },
+                            {
+                              "label": "Active",
+                              "dataPath": "isActive",
+                              "field": "isActive",
+                              "element": "Switch",
+                              "type": "switch",
+                              "validation": {
+                                "required": false
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "mutation",
+                          "api": "Application",
+                          "mutation": "mutation UpdateWorkcenter($payload: [WorkcenterUpdatePayloadInput!]!) {\n  mutation: updateWorkcenter(payload: $payload) {\n    id\n    code\n  }\n}",
+                          "transforms": {
+                            "pre": "{\n  \"payload\": rowData.{\n    \"where\": {\n      \"id\": id\n    },\n    \"update\": $$.data\n  }\n}"
+                          },
+                          "message": {
+                            "__transform": "\"Workcenter \" & rowData.code & \" updated.\""
+                          }
+                        },
+                        {
+                          "type": "transformation",
+                          "remote": false,
+                          "transformation": "$components.WorkcenterTable.fn.search()"
+                        }
+                      ]
+                    },
+                    {
+                      "text": "Duplicate",
+                      "icon": {
+                        "icon": "copy",
+                        "color": "primary",
+                        "variant": "regular",
+                        "size": "small"
+                      },
+                      "action": [
+                        {
+                          "type": "query",
+                          "api": "Application",
+                          "query": "query GetWorkcenter($where: WorkcenterWhereInput) {\n  query: workcenter(where: $where) {\n    edges {\n      node {\n        id\n        name\n        isActive\n        code\n        description\n        scheduleGroupId\n        scheduleGroup {\n          id\n          code\n          name\n        }\n        cellId\n        cell {\n          id\n          code\n          name\n        }\n        lineId\n        line {\n          id\n          code\n          name\n        }\n      }\n    }\n  }\n}",
+                          "transforms": {
+                            "pre": "{ \"where\": { \"id\": { \"_eq\": data.id } } }",
+                            "post": "data.query.edges[0].node"
+                          },
+                          "message": {
+                            "__transform": ""
+                          }
+                        },
+                        {
+                          "type": "form",
+                          "submitIcon": {
+                            "icon": "copy",
+                            "color": "inherit",
+                            "variant": "light",
+                            "size": "icon"
+                          },
+                          "title": {
+                            "__transform": "\"Duplicate Workcenter: \" & data.code"
+                          },
+                          "transforms": {
+                            "pre": "data ~> |$|{\"code\": code & \"-COPY\"}|"
+                          },
+                          "fields": [
+                            {
+                              "label": "New Code",
+                              "dataPath": "code",
+                              "field": "code",
+                              "element": "TextInput",
+                              "type": "text",
+                              "validation": {
+                                "required": true
+                              }
+                            },
+                            {
+                              "label": "Name",
+                              "dataPath": "name",
+                              "field": "name",
+                              "element": "TextInput",
+                              "type": "text",
+                              "validation": {
+                                "required": true
+                              }
+                            },
+                            {
+                              "label": "Description",
+                              "dataPath": "description",
+                              "field": "description",
+                              "element": "TextInput",
+                              "type": "text",
+                              "validation": {
+                                "required": false
+                              }
+                            },
+                            {
+                              "label": "Cell",
+                              "dataPath": "cell",
+                              "field": "cell",
+                              "element": "SelectInput",
+                              "type": "select",
+                              "api": "Application",
+                              "dataModel": "Cell",
+                              "labelField": "code",
+                              "labelPath": "code",
+                              "additionalFields": [
+                                "code",
+                                "name"
+                              ],
+                              "selectFields": [
+                                "code",
+                                "name"
+                              ],
+                              "target": {
+                                "dataPath": "cellId"
+                              },
+                              "validation": {
+                                "required": false
+                              }
+                            },
+                            {
+                              "label": "Line",
+                              "dataPath": "line",
+                              "field": "line",
+                              "element": "SelectInput",
+                              "type": "select",
+                              "api": "Application",
+                              "dataModel": "Line",
+                              "labelField": "code",
+                              "labelPath": "code",
+                              "additionalFields": [
+                                "code",
+                                "name"
+                              ],
+                              "selectFields": [
+                                "code",
+                                "name"
+                              ],
+                              "target": {
+                                "dataPath": "lineId"
+                              },
+                              "validation": {
+                                "required": false
+                              }
+                            },
+                            {
+                              "label": "Schedule Group",
+                              "dataPath": "scheduleGroup",
+                              "field": "scheduleGroup",
+                              "element": "SelectInput",
+                              "type": "select",
+                              "api": "Application",
+                              "dataModel": "ScheduleGroup",
+                              "labelField": "code",
+                              "labelPath": "code",
+                              "additionalFields": [
+                                "code",
+                                "name"
+                              ],
+                              "selectFields": [
+                                "code",
+                                "name"
+                              ],
+                              "target": {
+                                "dataPath": "scheduleGroupId"
+                              },
+                              "validation": {
+                                "required": true
+                              }
+                            },
+                            {
+                              "label": "Active",
+                              "dataPath": "isActive",
+                              "field": "isActive",
+                              "element": "Switch",
+                              "type": "switch",
+                              "validation": {
+                                "required": false
+                              }
+                            }
+                          ],
+                          "message": {
+                            "__transform": ""
+                          }
+                        },
+                        {
+                          "type": "mutation",
+                          "api": "Application",
+                          "mutation": "mutation CreateWorkcenter($payload: [WorkcenterCreatePayloadInput!]!) {\n  mutation: createWorkcenter(payload: $payload) {\n    id\n    code\n  }\n}",
+                          "transforms": {
+                            "pre": "{\n  \"payload\": {\n    \"create\": {\n      \"code\": $$.data.code,\n      \"name\": $$.data.name,\n      \"description\": $$.data.description,\n      \"cellId\": $$.data.cellId,\n      \"lineId\": $$.data.lineId,\n      \"scheduleGroupId\": $$.data.scheduleGroupId,\n      \"currentModeId\": $$.data.currentModeId,\n      \"currentStateId\": $$.data.currentStateId,\n      \"isActive\": $$.data.isActive\n    }\n  }\n}"
+                          },
+                          "message": {
+                            "__transform": "\"Workcenter \" & data.mutation[0].code & \" created.\""
+                          }
+                        },
+                        {
+                          "type": "transformation",
+                          "remote": false,
+                          "transformation": "$components.WorkcenterTable.fn.search()"
+                        }
+                      ]
+                    },
+                    {
+                      "text": "Toggle Status",
+                      "icon": {
+                        "icon": "slider",
+                        "color": "error",
+                        "variant": "regular",
+                        "size": "small"
+                      },
+                      "action": [
+                        {
+                          "type": "confirmation",
+                          "buttonColor": {
+                            "__transform": "rowData.isActive = true ? \"error\" : \"success\"",
+                            "__dynamicFields": {
+                              "payload": null,
+                              "context": []
+                            },
+                            "__cacheKey": "",
+                            "__remote": false
+                          },
+                          "submitIcon": {
+                            "icon": "check",
+                            "color": "inherit",
+                            "variant": "duotone",
+                            "size": "icon"
+                          },
+                          "message": {
+                            "__transform": "rowData.isActive = true ? \"Deactivate Workcenter '\" & rowData.code & \"'?\" : \"Activate Workcenter '\" & rowData.code & \"'?\""
+                          }
+                        },
+                        {
+                          "type": "mutation",
+                          "api": "Application",
+                          "model": "Workcenter",
+                          "mutationType": "update",
+                          "transforms": {
+                            "pre": "{\n  \"payload\": {\n    \"update\": {\n      \"isActive\": $not(rowData.isActive)\n    },\n    \"where\": {\n      \"id\": rowData.id\n    }\n  }\n}"
+                          },
+                          "message": {
+                            "__transform": "\"Workcenter '\" & rowData.code & \"' \" & (rowData.isActive ? \"deactivated\" : \"activated\") & \" successfully.\""
+                          },
+                          "mutation": "mutation UpdateWorkcenter($payload: [WorkcenterUpdatePayloadInput!]!) {\n  updateWorkcenter(payload: $payload) {\n    id\n  }\n}"
+                        },
+                        {
+                          "type": "transformation",
+                          "remote": false,
+                          "transformation": "$components.WorkcenterTable.fn.search()"
+                        }
+                      ]
+                    },
+                    {
+                      "text": "Delete",
+                      "icon": {
+                        "icon": "trash",
+                        "color": "error",
+                        "variant": "regular",
+                        "size": "small"
+                      },
+                      "action": [
+                        {
+                          "type": "confirmation",
+                          "buttonColor": "error",
+                          "submitIcon": {
+                            "icon": "trash",
+                            "color": "inherit",
+                            "variant": "light",
+                            "size": "icon"
+                          },
+                          "message": {
+                            "__transform": "\"Delete \" & data.code & \"?\""
+                          },
+                          "target": {
+                            "__transform": ""
+                          }
+                        },
+                        {
+                          "type": "mutation",
+                          "api": "Application",
+                          "mutation": "mutation DeleteWorkcenter($payload: [WorkcenterDeletePayloadInput!]!) {\n  mutation: deleteWorkcenter(payload: $payload) {\n    id\n    code\n  }\n}",
+                          "transforms": {
+                            "pre": "{\n  \"payload\": data.{\n    \"where\": {\n      \"id\": id\n    }\n  }\n}"
+                          },
+                          "message": {
+                            "__transform": "\"Workcenter \" & rowData.code & \" deleted.\""
+                          },
+                          "errorMessage": {
+                            "__transform": "data.message ? data.message : \"Unable to delete workcenter.\""
+                          }
+                        },
+                        {
+                          "type": "transformation",
+                          "remote": false,
+                          "transformation": "$components.WorkcenterTable.fn.search()"
+                        }
+                      ]
+                    }
+                  ],
+                  "sortAsNumber": false,
+                  "editable": false,
+                  "query": {
+                    "fields": []
+                  },
+                  "menuIcon": "ellipsis-v",
+                  "iconSize": "small",
+                  "isFlow": false,
+                  "style": {
+                    "alignItems": "center",
+                    "justifyContent": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnActions"
+                },
+                "parent": "WorkcenterTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnCode": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Code",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "code",
+                  "width": "150px",
+                  "query": {
+                    "fields": [
+                      "code"
+                    ]
+                  },
+                  "sortAsNumber": false,
+                  "editable": false,
+                  "description": "**`code`** (`String!`)\nUnique product identifier.\n\n- Must be unique across all products.\n- Format: `{FAMILY}-{TYPE}-{SEQ}` (e.g., BRK-PAD-001).\n- Used in work orders and production logs."
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnCode"
+                },
+                "parent": "WorkcenterTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnName": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Name",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "name",
+                  "width": "250px",
+                  "query": {
+                    "fields": [
+                      "name"
+                    ]
+                  },
+                  "sortAsNumber": false,
+                  "editable": false,
+                  "description": "**`name`** (`String!`)\nDescriptive product name.\n\n- Displayed in selection lists and reports.\n- Should be human-readable and descriptive."
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnName"
+                },
+                "parent": "WorkcenterTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnActive": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Status",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "activeDisplay",
+                  "width": "100px",
+                  "query": {
+                    "fields": [
+                      "isActive"
+                    ]
+                  },
+                  "sortAsNumber": false,
+                  "editable": false,
+                  "description": "**`isActive`** (`Boolean`)\nProduct active status.\n\n**Color Coding:**\n• 🟢 **Active** (Green) - Available for production\n• 🔴 **Inactive** (Red) - Not available\n\nInactive products cannot be selected for new work orders.",
+                  "style": {
+                    "__transform": "{\n  \"color\": data.activeColor\n}",
+                    "__dynamicFields": {
+                      "payload": null,
+                      "context": []
+                    },
+                    "__cacheKey": "",
+                    "__remote": false
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnActive"
+                },
+                "parent": "WorkcenterTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnCreatedAt": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Created At",
+                  "format": "datetime",
+                  "sortable": true,
+                  "formatString": "MM/DD/YYYY h:mm A",
+                  "dataPath": "createdAt",
+                  "width": "180px",
+                  "query": {
+                    "fields": [
+                      "createdAt"
+                    ]
+                  },
+                  "sortAsNumber": false,
+                  "editable": false,
+                  "timeZone": "setting",
+                  "description": "**`createdAt`** (`DateTime!`)\nRecord creation timestamp.\n\n- Auto-generated when product is created.\n- Used for audit trails."
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnCreatedAt"
+                },
+                "parent": "WorkcenterTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnCreatedBy": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Created By",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "createdByDisplay",
+                  "width": "150px",
+                  "query": {
+                    "fields": [
+                      "createdByUser.id",
+                      "createdByUser.firstName",
+                      "createdByUser.lastName"
+                    ]
+                  },
+                  "sortAsNumber": false,
+                  "editable": false,
+                  "description": "**`createdByUser`** (`User!`)\nUser who created this product.\n\n- Auto-populated from logged-in user.\n- Displays full name."
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnCreatedBy"
+                },
+                "parent": "WorkcenterTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TextInputCode": {
+                "type": {
+                  "resolvedName": "TextInput"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "text",
+                  "label": "Workcenter Code",
+                  "variant": "standard",
+                  "formElement": "FormFilterPanel",
+                  "disabled": false,
+                  "description": "Filter by workcenter code.",
+                  "target": {
+                    "dataPath": "code._contains"
+                  },
+                  "dataPath": "code",
+                  "field": "code"
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "TextInputCode"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "SelectCell": {
+                "type": {
+                  "resolvedName": "SelectInput"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "select",
+                  "label": "Cell",
+                  "dialogMode": "never",
+                  "multiselect": true,
+                  "isClearable": true,
+                  "selectAll": true,
+                  "searchPredicate": "contains",
+                  "api": "Application",
+                  "stateTracking": "full",
+                  "optionLimit": 20,
+                  "optionLimitFlex": 10,
+                  "alwaysReloadOptions": false,
+                  "description": "Filter by manufacturing cell.",
+                  "target": {
+                    "dataPath": "cellId._in"
+                  },
+                  "dataPath": "cell",
+                  "formElement": "FormFilterPanel",
+                  "variant": "filled",
+                  "disabled": false,
+                  "query": {
+                    "api": "Application",
+                    "model": "Cell",
+                    "dataPath": "edges",
+                    "fields": [
+                      "cell.id",
+                      "cell.code",
+                      "cell.name"
+                    ],
+                    "parameters": "{\n  \"orderBy\": {\n    \"name\": \"ASC\"\n  }\n}"
+                  },
+                  "optionLabelPath": "code",
+                  "optionValuePath": "id",
+                  "optionSecondaryLabelPath": "name",
+                  "field": "cell",
+                  "predicate": "_in",
+                  "labelPath": "code",
+                  "orderByField": "code",
+                  "dataModel": "Cell",
+                  "selectFields": [
+                    "code",
+                    "name"
+                  ],
+                  "additionalFields": [
+                    "name"
+                  ],
+                  "orderByDirection": "asc"
+                },
+                "displayName": "Select",
+                "custom": {
+                  "elementName": "SelectCell"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "OptionsMode": {
+                "type": {
+                  "resolvedName": "OptionsInput"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "options",
+                  "label": "Current Mode",
+                  "multiselect": true,
+                  "isClearable": true,
+                  "selectAll": true,
+                  "searchPredicate": "contains",
+                  "stateTracking": "id",
+                  "optionLimit": 10,
+                  "optionLimitFlex": 5,
+                  "description": "Filter by ISA-101 operational mode.",
+                  "formElement": "FormFilterPanel",
+                  "variant": "filled",
+                  "disabled": false,
+                  "options": [
+                    {
+                      "id": "Production",
+                      "label": "Production"
+                    },
+                    {
+                      "id": "idle",
+                      "label": "Idle"
+                    },
+                    {
+                      "id": "disabled",
+                      "label": "Disabled"
+                    }
+                  ],
+                  "target": {
+                    "dataPath": "currentModeId._in"
+                  },
+                  "dataPath": "currentModeId",
+                  "labelPath": "label",
+                  "field": "currentModeId"
+                },
+                "displayName": "Options",
+                "custom": {
+                  "elementName": "OptionsMode"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "WorkcenterTable": {
+                "type": {
+                  "resolvedName": "Table"
+                },
+                "isCanvas": true,
+                "props": {
+                  "margin": 0,
+                  "width": "100%",
+                  "height": "0px",
+                  "flexGrow": true,
+                  "query": {
+                    "api": "Application",
+                    "query": null,
+                    "dataPath": "edges",
+                    "dataTransform": {
+                      "transform": "[edges.node~>|$|{\n  \"createdByDisplay\": createdByUser != null ? createdByUser.firstName & ' ' & createdByUser.lastName : \"\",\n  \"activeColor\": isActive = true ? \"#2e7d32\" : \"#d32f2f\",\n  \"activeDisplay\": isActive = true ? \"Active\" : \"Inactive\",\n  \"modeColor\": currentModeId != null ? (\n    currentModeId = \"Production\" ? \"#2e7d32\" : (currentModeId = \"idle\" ? \"#ed6c02\" : (currentModeId = \"disabled\" ? \"#d32f2f\" : \"#757575\"))\n  ) : \"#757575\",\n  \"stateColor\": currentStateId != null ? (\n    currentStateId = \"running\" ? \"#2e7d32\" : (currentStateId = \"stopped\" ? \"#757575\" : (currentStateId = \"held\" ? \"#ed6c02\" : (currentStateId = \"blocked\" ? \"#d32f2f\" : (currentStateId = \"starved\" ? \"#ed6c02\" : (currentStateId = \"faulted\" ? \"#d32f2f\" : \"#757575\")))))\n  ) : \"#757575\"\n}|]",
+                      "remote": true
+                    },
+                    "dataSubscription": {
+                      "enabled": false
+                    },
+                    "autoLoad": true,
+                    "fields": [
+                      "id",
+                      "code",
+                      "name",
+                      "description",
+                      "cell.id",
+                      "cell.code",
+                      "cell.name",
+                      "line.id",
+                      "line.code",
+                      "line.name",
+                      "currentWorkcenterHistoryId",
+                      "currentWorkOrder.id",
+                      "currentWorkOrder.code",
+                      "isActive",
+                      "createdAt",
+                      "createdByUser.id",
+                      "createdByUser.firstName",
+                      "createdByUser.lastName",
+                      "createdByUser.email",
+                      "products.total"
+                    ],
+                    "disableDataChangeIndicator": false,
+                    "selectedDataChangeIndicator": null,
+                    "model": "Workcenter",
+                    "readPreference": "primaryPreferred",
+                    "parameters": "{\n  \"orderBy\": [\n    {\n      \"field\": \"code\",\n      \"direction\": \"asc\"\n    }\n  ]\n}"
+                  },
+                  "selectable": "none",
+                  "showToolPanels": true,
+                  "showStatusBar": true,
+                  "enableGrouping": true,
+                  "enableCharts": true,
+                  "showColumnMenu": true,
+                  "enableRowDragging": false,
+                  "disableColumnDragging": false,
+                  "disableDragLeaveHidesColumns": false,
+                  "masterDetail": false,
+                  "hideTableHeader": false,
+                  "description": "Workcenter master data.",
+                  "rowMultiSelectWithClick": false,
+                  "defaultSort": [
+                    {
+                      "field": "TableColumnCode",
+                      "direction": "asc"
+                    }
+                  ],
+                  "limitToOneActiveDetail": false,
+                  "filterFormName": "FormFilterPanel"
+                },
+                "displayName": "Table",
+                "custom": {
+                  "elementName": "WorkcenterTable"
+                },
+                "parent": "ContainerBody",
+                "hidden": false,
+                "nodes": [
+                  "TableColumnActions",
+                  "TableColumnCode",
+                  "TableColumnName",
+                  "TableColumnCell",
+                  "TableColumnLine",
+                  "TableColumnWorkOrder",
+                  "TableColumnActive",
+                  "48x1lLX2g1",
+                  "TableColumnCreatedAt",
+                  "TableColumnCreatedBy"
+                ],
+                "linkedNodes": {}
+              },
+              "TableColumnCell": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Cell",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "cell.code",
+                  "width": "120px",
+                  "query": {
+                    "fields": [
+                      "cell.code"
+                    ]
+                  },
+                  "sortAsNumber": false,
+                  "editable": false,
+                  "description": "Manufacturing cell.",
+                  "field": "cell.code"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnCell"
+                },
+                "parent": "WorkcenterTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnLine": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Line",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "line.code",
+                  "width": "120px",
+                  "query": {
+                    "fields": [
+                      "line.code"
+                    ]
+                  },
+                  "sortAsNumber": false,
+                  "editable": false,
+                  "description": "Production line.",
+                  "field": "line.code"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnLine"
+                },
+                "parent": "WorkcenterTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnWorkOrder": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Work Order",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "currentWorkOrder.code",
+                  "width": "130px",
+                  "query": {
+                    "fields": [
+                      "currentWorkOrder.code",
+                      "currentWorkOrder.status"
+                    ]
+                  },
+                  "sortAsNumber": false,
+                  "editable": false,
+                  "description": "Current work order.",
+                  "field": "currentWorkOrder.code"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnWorkOrder"
+                },
+                "parent": "WorkcenterTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ActionCreateWorkcenter": {
+                "type": {
+                  "resolvedName": "ActionButton"
+                },
+                "isCanvas": false,
+                "props": {
+                  "margin": 0,
+                  "buttonColor": "primary",
+                  "icon": {
+                    "icon": "plus",
+                    "color": "success",
+                    "variant": "regular",
+                    "size": "icon"
+                  },
+                  "width": "40px",
+                  "height": "30px",
+                  "disabled": false,
+                  "hidden": false,
+                  "useIconButton": true,
+                  "disableHover": false,
+                  "disableRipple": false,
+                  "action": [
+                    {
+                      "type": "form",
+                      "submitIcon": "plus",
+                      "title": "Create New Workcenter",
+                      "fields": [
+                        {
+                          "label": "Code",
+                          "dataPath": "code",
+                          "field": "code",
+                          "element": "TextInput",
+                          "type": "text",
+                          "validation": {
+                            "required": true
+                          }
+                        },
+                        {
+                          "label": "Name",
+                          "dataPath": "name",
+                          "field": "name",
+                          "element": "TextInput",
+                          "type": "text",
+                          "validation": {
+                            "required": true
+                          }
+                        },
+                        {
+                          "label": "Description",
+                          "dataPath": "description",
+                          "field": "description",
+                          "element": "TextInput",
+                          "type": "text",
+                          "validation": {
+                            "required": false
+                          }
+                        },
+                        {
+                          "label": "Schedule",
+                          "dataPath": "scheduleGroupId",
+                          "field": "Schedule",
+                          "element": "SelectInput",
+                          "type": "select",
+                          "api": "Application",
+                          "dataModel": "ScheduleGroup",
+                          "labelField": "code",
+                          "labelPath": "code",
+                          "additionalFields": [
+                            "code",
+                            "name"
+                          ],
+                          "selectFields": [
+                            "code",
+                            "name"
+                          ],
+                          "target": {
+                            "dataPath": "scheduleGroupId"
+                          },
+                          "validation": {
+                            "required": true
+                          }
+                        },
+                        {
+                          "label": "Cell",
+                          "dataPath": "cell",
+                          "field": "cell",
+                          "element": "SelectInput",
+                          "type": "select",
+                          "api": "Application",
+                          "dataModel": "Cell",
+                          "labelField": "code",
+                          "labelPath": "code",
+                          "additionalFields": [
+                            "code",
+                            "name"
+                          ],
+                          "selectFields": [
+                            "code",
+                            "name"
+                          ],
+                          "target": {
+                            "dataPath": "cellId"
+                          },
+                          "validation": {
+                            "required": false
+                          }
+                        },
+                        {
+                          "label": "Line",
+                          "dataPath": "line",
+                          "field": "line",
+                          "element": "SelectInput",
+                          "type": "select",
+                          "api": "Application",
+                          "dataModel": "Line",
+                          "labelField": "code",
+                          "labelPath": "code",
+                          "additionalFields": [
+                            "code",
+                            "name"
+                          ],
+                          "selectFields": [
+                            "code",
+                            "name"
+                          ],
+                          "target": {
+                            "dataPath": "lineId"
+                          },
+                          "validation": {
+                            "required": false
+                          }
+                        },
+                        {
+                          "label": "Active",
+                          "dataPath": "isActive",
+                          "field": "isActive",
+                          "element": "Switch",
+                          "type": "switch",
+                          "validation": {
+                            "required": false
+                          },
+                          "defaultValue": true
+                        }
+                      ]
+                    },
+                    {
+                      "type": "mutation",
+                      "api": "Application",
+                      "mutation": "mutation CreateWorkcenter($payload: [WorkcenterCreatePayloadInput!]!) {\n  mutation: createWorkcenter(payload: $payload) {\n    id\n    code\n  }\n}",
+                      "transforms": {
+                        "pre": "{\n  \"payload\": {\n    \"create\": data\n  }\n}"
+                      },
+                      "message": {
+                        "__transform": "\"Workcenter \" & data.mutation[0].code & \" created.\""
+                      }
+                    },
+                    {
+                      "type": "transformation",
+                      "remote": false,
+                      "transformation": "$components.WorkcenterTable.fn.search()"
+                    }
+                  ],
+                  "title": "Create New Workcenter",
+                  "customTextSize": 10,
+                  "customIconSize": 0
+                },
+                "displayName": "Action",
+                "custom": {
+                  "editor": {
+                    "category": "Buttons",
+                    "description": "Create new product.",
+                    "color": "#9c5a94",
+                    "elementName": "Create Product",
+                    "icon": "plus",
+                    "requiresTable": true
+                  },
+                  "elementName": "ActionCreateWorkcenter"
+                },
+                "parent": "ContainerActionsStandard",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "SelectLine": {
+                "type": {
+                  "resolvedName": "SelectInput"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "select",
+                  "label": "Line",
+                  "dialogMode": "never",
+                  "multiselect": true,
+                  "isClearable": true,
+                  "selectAll": true,
+                  "searchPredicate": "contains",
+                  "api": "Application",
+                  "stateTracking": "full",
+                  "optionLimit": 20,
+                  "optionLimitFlex": 10,
+                  "alwaysReloadOptions": false,
+                  "description": "Filter by production line.",
+                  "target": {
+                    "dataPath": "lineId._in"
+                  },
+                  "dataPath": "line",
+                  "formElement": "FormFilterPanel",
+                  "variant": "filled",
+                  "disabled": false,
+                  "query": {
+                    "api": "Application",
+                    "model": "Line",
+                    "dataPath": "edges",
+                    "fields": [
+                      "line.id",
+                      "line.code",
+                      "line.name"
+                    ],
+                    "parameters": "{\n  \"orderBy\": {\n    \"name\": \"ASC\"\n  }\n}"
+                  },
+                  "optionLabelPath": "code",
+                  "optionValuePath": "id",
+                  "optionSecondaryLabelPath": "name",
+                  "field": "line",
+                  "predicate": "_in",
+                  "labelPath": "code",
+                  "orderByField": "code",
+                  "dataModel": "Line",
+                  "selectFields": [
+                    "code",
+                    "name"
+                  ],
+                  "additionalFields": [
+                    "name"
+                  ],
+                  "orderByDirection": "asc"
+                },
+                "displayName": "Select",
+                "custom": {
+                  "elementName": "SelectLine"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "48x1lLX2g1": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Schedule Group",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "scheduleGroup.code",
+                  "description": "A unique human readable identifier for the Schedule Group.",
+                  "query": {
+                    "fields": [
+                      "scheduleGroup.id",
+                      "scheduleGroup.code"
+                    ]
+                  },
+                  "field": "scheduleGroup.code"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn15"
+                },
+                "parent": "WorkcenterTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "routes": [
+    {
+      "id": "cmk4jvoy80h95017nbju4ff44",
+      "title": "Workcenter",
+      "path": "/machineTelemetrySiteApplication/machineDataApp/workcenters",
+      "moduleId": "machineDataApp",
+      "screenId": "workcenter",
+      "isMenuAccessible": true,
+      "submenu": ""
+    }
+  ]
+}

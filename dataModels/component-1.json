@@ -1,0 +1,237 @@
+{
+  "header": {
+    "id": "alarmState",
+    "name": "AlarmState",
+    "description": "Represents a predefined state or condition for alarms in the system. Alarm states define how alarms are categorized, displayed, and prioritized for operational and safety workflows.\n\n**Typical Use Cases**\n\n- Define standard alarm states for machine telemetry (e.g., Active, Acknowledged, Cleared).\n- Control alarm visibility and usability in dashboards.\n- Apply sort order for consistent UI presentation.",
+    "dataModelKindId": "reference",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cmjzxa3u321ql016cf01rbuke",
+    "number": "3",
+    "dataModelId": "alarmState",
+    "modelDefinition": {
+      "name": "AlarmState",
+      "metadata": {
+        "mfgx": {
+          "module": {
+            "id": "machineDataApp",
+            "group": {
+              "id": "machineTelemetrySiteApplication"
+            }
+          },
+          "exposed": true,
+          "mutable": true,
+          "mutations": {
+            "create": true,
+            "update": true,
+            "del": true
+          },
+          "dataChangeCapture": {
+            "exposed": true,
+            "retentionDays": 120
+          },
+          "customFields": {
+            "exposed": true
+          },
+          "editor": {
+            "autosort": true
+          },
+          "labelField": "code",
+          "triggers": {
+            "create": "$ ~> | $ | { \"id\": code } |"
+          }
+        },
+        "mongo": {
+          "collection": "alarmState"
+        },
+        "graphql": {
+          "type": "Object"
+        }
+      },
+      "kind": "Reference",
+      "fields": [
+        {
+          "name": "id",
+          "type": "ID!",
+          "description": "The immutable, primary unique identifier for the AlarmState record.\n\n- This means the `id` value is set equal to the `code` value during creation.**Behavior:** Automatically derived from the `code` field using the function:`$ ~> | $ | { \"id\": code }`\n\n- **Usage:** Used for queries, filters, and as a unique key in related models.\n- **Example:** If `code = \"ACTIVE\"`, then `id = \"ACTIVE\"`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": false
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": true
+          }
+        },
+        {
+          "name": "code",
+          "type": "String!",
+          "description": "**`code`** (`String!`)\nA unique, human-readable code for the AlarmState.\n\n- **Behavior:** Required at creation; can be updated.\n- **Usage:** Serves as the label field for UI and integrations.\n- **Example:** `ACTIVE`, `ACKNOWLEDGED`, `CLEARED`.\n- **Constraint:** Must be unique within the tenant.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": true
+          }
+        },
+        {
+          "name": "sortOrder",
+          "type": "Int!",
+          "description": "**`sortOrder`** (`Int!`)\nNumeric value that determines the display order of AlarmStates in lists or UI components.\n\n- **Default:** `1`.\n- **Usage:** Lower values appear first in sorted lists.\n- **Example:** `1` for Active, `2` for Acknowledged.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": "1"
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "usable",
+          "type": "Boolean!",
+          "description": "**`usable`** (`Boolean!`)\nIndicates whether the AlarmState is available for use in the system.\n\n- **Default:** `true`.\n- **Behavior:** When `false`, the state is hidden or disabled in workflows.\n- **Example:** `true` (usable), `false` (disabled).",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": true
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "name",
+          "type": "String!",
+          "description": "**`name`** (`String!`)\nDescriptive name of the AlarmState for display and reporting purposes.\n\n- **Example:** `Active`, `Acknowledged`, `Cleared`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "alarms",
+          "description": "**`alarms`** (`[Alarm!]!`)\nCollection of alarms associated with this AlarmState.\n\n- **Behavior:**Relation enforced via `AlarmState.id → Alarm.alarmStateId`.\nIncluded in queries and mutations for nested operations.\n- **Usage:** Enables grouping alarms by state for dashboards and workflows.\n- **Example:** `[ { id: \"...\", code: \"ALM-001\", description: \"High Temperature\" }, ... ]`.",
+          "type": "[Alarm!]!",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "fields": {
+                  "from": "id",
+                  "to": "alarmStateId"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        }
+      ],
+      "description": "Represents a predefined state or condition for alarms in the system. Alarm states define how alarms are categorized, displayed, and prioritized for operational and safety workflows.\n\n**Typical Use Cases**\n\n- Define standard alarm states for machine telemetry (e.g., Active, Acknowledged, Cleared).\n- Control alarm visibility and usability in dashboards.\n- Apply sort order for consistent UI presentation."
+    },
+    "dataModelTypeId": "setup"
+  },
+  "migration": "$",
+  "migrations": [
+    {
+      "dataModelVersionId": "cmjzxa3u321ql016cf01rbuke",
+      "dataModelVersion": {
+        "number": "3"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmjzx45iz2gl5017jeuyq2tb8",
+      "dataModelVersion": {
+        "number": "2"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmjzwrzf02gdn017jhp4hghl4",
+      "dataModelVersion": {
+        "number": "1"
+      },
+      "mappingExpression": "$"
+    }
+  ]
+}

@@ -1,0 +1,316 @@
+{
+  "header": {
+    "id": "alarmsDeleteAllAlarms",
+    "name": "Alarms - Delete All Alarms",
+    "description": "",
+    "active": true,
+    "substitutesDataFlowId": null,
+    "dataFlowTypeId": "System",
+    "logLevelId": "Info",
+    "mcpToolConfiguration": null,
+    "moduleId": "machineDataApp",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cmlgn7kyd1qyh015p3x4i33h8",
+    "number": "0.0.1",
+    "description": "",
+    "dataFlowId": "alarmsDeleteAllAlarms",
+    "flow": {
+      "id": "cmlgn7kyd1qyh015p3x4i33h8",
+      "name": "Alarms - Delete All Alarms",
+      "type": "System",
+      "nodes": [
+        {
+          "id": "78c9394e-21fe-4537-a05d-d479ae3b9705",
+          "name": "Query - All Alarms",
+          "type": "query",
+          "data": {
+            "api": "application",
+            "variablesTransform": "{\r\n  \"payload\": $.alarm.edges.node.{\r\n    \"where\": { \"id\": id }\r\n  }\r\n}",
+            "query": "query Alarm($where: AlarmWhereInput, $orderBy: [AlarmOrderByInput!], $first: Int, $after: String) {\n  alarm(where: $where, orderBy: $orderBy, first: $first, after: $after) {\n    edges {\n      node {\n        id\n        alarmStateId\n      }\n    }\n    \n  }\n}",
+            "nextNodes": [
+              "f05dbb99-b43d-4b1b-a853-818657e40194"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "f05dbb99-b43d-4b1b-a853-818657e40194",
+          "name": "Delete Everything (warning!!)",
+          "type": "mutate",
+          "data": {
+            "api": "Application",
+            "variablesTransform": "{\r\n  \"payload\": $.alarm.edges.node.{\r\n    \"where\": { \"id\": id }\r\n  }\r\n}",
+            "mutation": "mutation DeleteAlarm($payload: [AlarmDeletePayloadInput!]!) {\n  deleteAlarm(payload: $payload) {\n    id\n  }\n}",
+            "nextNodes": []
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        }
+      ],
+      "version": "0.0.1"
+    },
+    "diagram": {
+      "id": "cmlgn7kyd1qyh015p3x4i33h8",
+      "offsetX": 0,
+      "offsetY": 0,
+      "zoom": 100,
+      "gridSize": 5,
+      "layers": [
+        {
+          "id": "4f4a93ae-ac4e-4969-a805-8332698e8c45",
+          "type": "diagram-links",
+          "isSvg": true,
+          "transformed": true,
+          "models": {
+            "5c509faf-5d73-4beb-8289-ce1d805e4f88": {
+              "points": [
+                {
+                  "id": "aca8cf13-813a-40f7-b537-d2905a0ff0c7",
+                  "type": "point",
+                  "x": 528,
+                  "y": 264.73
+                },
+                {
+                  "id": "ce602eab-e4b2-4a90-8fd2-1002e4b78ea2",
+                  "type": "point",
+                  "x": 584,
+                  "y": 314.73
+                }
+              ],
+              "id": "5c509faf-5d73-4beb-8289-ce1d805e4f88",
+              "type": "default",
+              "source": "89f70d42-0fdc-4cfd-b86f-b305a83af7ae",
+              "sourcePort": "cmlgn79uq0091356rrd12020k",
+              "target": "78c9394e-21fe-4537-a05d-d479ae3b9705",
+              "targetPort": "cmlgn79ur009b356r1khxhq7m",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "5228733e-90fd-48fd-bd6e-467e8f375140": {
+              "points": [
+                {
+                  "id": "840d69f2-be29-4237-bf42-c8a3ec2f19f4",
+                  "type": "point",
+                  "x": 738,
+                  "y": 314.73
+                },
+                {
+                  "id": "f672bdd4-e03d-41cc-b588-9341a375561c",
+                  "type": "point",
+                  "x": 844,
+                  "y": 314.73
+                }
+              ],
+              "id": "5228733e-90fd-48fd-bd6e-467e8f375140",
+              "type": "default",
+              "source": "78c9394e-21fe-4537-a05d-d479ae3b9705",
+              "sourcePort": "cmlgn79ur009d356rgbtl6nod",
+              "target": "f05dbb99-b43d-4b1b-a853-818657e40194",
+              "targetPort": "cmlgn79ur009n356rja1kudf3",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            }
+          }
+        },
+        {
+          "id": "9a74e553-cf5a-494c-b09a-7dda12e2f8a9",
+          "type": "diagram-nodes",
+          "isSvg": false,
+          "transformed": true,
+          "models": {
+            "89f70d42-0fdc-4cfd-b86f-b305a83af7ae": {
+              "id": "89f70d42-0fdc-4cfd-b86f-b305a83af7ae",
+              "type": "debugSource",
+              "selected": true,
+              "x": 374,
+              "y": 225,
+              "ports": [
+                {
+                  "id": "cmlgn79uq0091356rrd12020k",
+                  "type": "default",
+                  "x": 520,
+                  "y": 256.73,
+                  "name": "cmlgn79uq0092356rlq5mwb5q",
+                  "parentNode": "89f70d42-0fdc-4cfd-b86f-b305a83af7ae",
+                  "links": [
+                    "5c509faf-5d73-4beb-8289-ce1d805e4f88"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "payload": {},
+                "context": {},
+                "nextNodes": [
+                  "78c9394e-21fe-4537-a05d-d479ae3b9705"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Source"
+            },
+            "78c9394e-21fe-4537-a05d-d479ae3b9705": {
+              "id": "78c9394e-21fe-4537-a05d-d479ae3b9705",
+              "type": "query",
+              "selected": true,
+              "x": 584,
+              "y": 275,
+              "ports": [
+                {
+                  "id": "cmlgn79ur009b356r1khxhq7m",
+                  "type": "default",
+                  "x": 576,
+                  "y": 306.73,
+                  "name": "cmlgn79ur009c356rkt1oxriz",
+                  "parentNode": "78c9394e-21fe-4537-a05d-d479ae3b9705",
+                  "links": [
+                    "5c509faf-5d73-4beb-8289-ce1d805e4f88"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmlgn79ur009d356rgbtl6nod",
+                  "type": "default",
+                  "x": 730,
+                  "y": 306.73,
+                  "name": "cmlgn79ur009e356r449tcyod",
+                  "parentNode": "78c9394e-21fe-4537-a05d-d479ae3b9705",
+                  "links": [
+                    "5228733e-90fd-48fd-bd6e-467e8f375140"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "application",
+                "variablesTransform": "{\r\n  \"payload\": $.alarm.edges.node.{\r\n    \"where\": { \"id\": id }\r\n  }\r\n}",
+                "query": "query Alarm($where: AlarmWhereInput, $orderBy: [AlarmOrderByInput!], $first: Int, $after: String) {\n  alarm(where: $where, orderBy: $orderBy, first: $first, after: $after) {\n    edges {\n      node {\n        id\n        alarmStateId\n      }\n    }\n    \n  }\n}",
+                "nextNodes": [
+                  "f05dbb99-b43d-4b1b-a853-818657e40194"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Query - All Alarms"
+            },
+            "f05dbb99-b43d-4b1b-a853-818657e40194": {
+              "id": "f05dbb99-b43d-4b1b-a853-818657e40194",
+              "type": "mutate",
+              "selected": true,
+              "x": 844,
+              "y": 275,
+              "ports": [
+                {
+                  "id": "cmlgn79ur009n356rja1kudf3",
+                  "type": "default",
+                  "x": 836,
+                  "y": 306.73,
+                  "name": "cmlgn79ur009o356rxasuj8cw",
+                  "parentNode": "f05dbb99-b43d-4b1b-a853-818657e40194",
+                  "links": [
+                    "5228733e-90fd-48fd-bd6e-467e8f375140"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmlgn79ur009p356rmc8bnfgx",
+                  "type": "default",
+                  "x": 1035.79,
+                  "y": 306.73,
+                  "name": "cmlgn79ur009q356rntiwuy4c",
+                  "parentNode": "f05dbb99-b43d-4b1b-a853-818657e40194",
+                  "links": [],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "Application",
+                "variablesTransform": "{\r\n  \"payload\": $.alarm.edges.node.{\r\n    \"where\": { \"id\": id }\r\n  }\r\n}",
+                "mutation": "mutation DeleteAlarm($payload: [AlarmDeletePayloadInput!]!) {\n  deleteAlarm(payload: $payload) {\n    id\n  }\n}",
+                "nextNodes": []
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Delete Everything (warning!!)"
+            }
+          }
+        }
+      ],
+      "name": "Alarms - Delete All Alarms",
+      "type": "System",
+      "version": "0.0.1",
+      "walkthrough": {
+        "steps": []
+      }
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "api": "application",
+  "modelName": "ScheduleGroupExceptionEvent",
+  "payload": [
+    {
+      "id": "cmkh2ub0mgflj01487s0udqt0",
+      "label": "Go Home Early",
+      "rrule": "DTSTART:20260117T040000Z\nRRULE:FREQ=WEEKLY;UNTIL=20260117T161200Z;INTERVAL=1",
+      "duration": "PT2H",
+      "scheduleGroupId": "basic",
+      "_customFields": {
+        "_externalId": null
+      }
+    }
+  ],
+  "metadata": {}
+}

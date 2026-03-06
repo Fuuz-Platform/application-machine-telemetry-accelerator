@@ -1,0 +1,259 @@
+{
+  "api": "application",
+  "modelName": "DataFlowScheduleFrequency",
+  "payload": [
+    {
+      "id": "cmkcsdvyw214k016f3j72frr7",
+      "name": "5 Minute Frequency",
+      "active": true,
+      "valid": true,
+      "lastExecution": "2026-02-10T21:46:19.656Z",
+      "payload": null,
+      "status": {
+        "message": "Successfully ran schedule",
+        "info": {
+          "id": "cron_cmlgjl0dm000901vu24d32tvr",
+          "typeName": "cron",
+          "config": {
+            "cronString": "*/5 * * * *",
+            "timezone": "America/Detroit"
+          }
+        }
+      },
+      "config": {
+        "cronString": "*/5 * * * *",
+        "timezone": "America/Detroit"
+      },
+      "dataFlowScheduleId": "cmkcsddgj214d016f2ej38gfh",
+      "scheduleTypeId": "cron",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmkcsg64h215m016f6oys6fgp",
+      "name": "Hourly Frequency - Raw Aggregation",
+      "active": true,
+      "valid": true,
+      "lastExecution": "2026-02-10T21:04:45.214Z",
+      "payload": null,
+      "status": {
+        "message": "Successfully ran schedule",
+        "info": {
+          "id": "cron_cmlgjl0dn000a01vuen5d7o3m",
+          "typeName": "cron",
+          "config": {
+            "timezone": "America/Detroit",
+            "cronString": "0 */1 * * *"
+          }
+        }
+      },
+      "config": {
+        "timezone": "America/Detroit",
+        "cronString": "0 */1 * * *"
+      },
+      "dataFlowScheduleId": "cmkcser5hpikp016h0qz30bi8",
+      "scheduleTypeId": "cron",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmkcskowz2171016f8nzp55zh",
+      "name": "Hourly History Updates",
+      "active": true,
+      "valid": true,
+      "lastExecution": "2026-02-10T21:45:13.740Z",
+      "payload": null,
+      "status": {
+        "message": "Successfully ran schedule",
+        "info": {
+          "id": "cron_cmlgjl0do000b01vu3kcs55is",
+          "typeName": "cron",
+          "config": {
+            "cronString": "*/7 * * * *",
+            "timezone": "America/Detroit"
+          }
+        }
+      },
+      "config": {
+        "cronString": "*/7 * * * *",
+        "timezone": "America/Detroit"
+      },
+      "dataFlowScheduleId": "cmkcsjk37pim0016hdfmg454y",
+      "scheduleTypeId": "cron",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmkd108pray6c0164281c4f3p",
+      "name": "Create Weekly Sunday for the Week",
+      "active": true,
+      "valid": true,
+      "lastExecution": "2026-02-09T04:01:40.452Z",
+      "payload": null,
+      "status": {
+        "message": "Successfully ran schedule",
+        "info": {
+          "id": "cron_cmldxdun5000c01z0emgp5bwj",
+          "typeName": "cron",
+          "config": {
+            "cronString": "0 23 * * 7,2",
+            "timezone": "America/Detroit"
+          }
+        }
+      },
+      "config": {
+        "cronString": "0 23 * * 7,2",
+        "timezone": "America/Detroit"
+      },
+      "dataFlowScheduleId": "cmkd0zdoda5g201642ddve86d",
+      "scheduleTypeId": "cron",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmkd50pi0v99q016have6ek3k",
+      "name": "Production daily",
+      "active": true,
+      "valid": true,
+      "lastExecution": "2026-02-10T21:42:48.897Z",
+      "payload": null,
+      "status": {
+        "message": "Successfully ran schedule",
+        "info": {
+          "id": "cron_cmlgjl0dp000d01vuazg5e12h",
+          "typeName": "cron",
+          "config": {
+            "cronString": "*/6 * * * *",
+            "timezone": "America/Detroit"
+          }
+        }
+      },
+      "config": {
+        "cronString": "*/6 * * * *",
+        "timezone": "America/Detroit"
+      },
+      "dataFlowScheduleId": "cmkd4zltpu51u016h7krh0jar",
+      "scheduleTypeId": "cron",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmkeketrtjark016o8vd4cvr9",
+      "name": "Hourly to Daily ",
+      "active": true,
+      "valid": true,
+      "lastExecution": "2026-02-10T07:00:59.272Z",
+      "payload": null,
+      "status": {
+        "message": "Successfully ran schedule",
+        "info": {
+          "id": "cron_cmlfhcf04000e01vt4jv34lmj",
+          "typeName": "cron",
+          "config": {
+            "cronString": "0 2 */1 * *",
+            "timezone": "America/Detroit"
+          }
+        }
+      },
+      "config": {
+        "cronString": "0 2 */1 * *",
+        "timezone": "America/Detroit"
+      },
+      "dataFlowScheduleId": "cmkeke2kdjsrz016gfj9kezym",
+      "scheduleTypeId": "cron",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmknak35cfsa5015mdo2wfzk3",
+      "name": "Run Nightly",
+      "active": true,
+      "valid": true,
+      "lastExecution": "2026-02-10T04:04:48.280Z",
+      "payload": null,
+      "status": {
+        "message": "Successfully ran schedule",
+        "info": {
+          "id": "cron_cmlfhcf05000f01vtf0zvh34t",
+          "typeName": "cron",
+          "config": {
+            "cronString": "0 23 */1 * *",
+            "timezone": "America/Detroit"
+          }
+        }
+      },
+      "config": {
+        "cronString": "0 23 */1 * *",
+        "timezone": "America/Detroit"
+      },
+      "dataFlowScheduleId": "cmknaj42tfj79015mc3qj7k16",
+      "scheduleTypeId": "cron",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmksjv7m2k2ab016a426z21js",
+      "name": "OEE Daily Aggregation",
+      "active": true,
+      "valid": true,
+      "lastExecution": "2026-02-10T21:46:57.513Z",
+      "payload": null,
+      "status": {
+        "message": "Successfully ran schedule",
+        "info": {
+          "id": "cron_cmlgjl0dr000g01vuct8o5xca",
+          "typeName": "cron",
+          "config": {
+            "cronString": "*/5 * * * *",
+            "timezone": "America/Detroit"
+          }
+        }
+      },
+      "config": {
+        "cronString": "*/5 * * * *",
+        "timezone": "America/Detroit"
+      },
+      "dataFlowScheduleId": "cmksjudjxhu37017na93h7uw3",
+      "scheduleTypeId": "cron",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml8ioovhb1n80182b9jegxtn",
+      "name": "Oee Hourly Flow - complete recalc",
+      "active": true,
+      "valid": true,
+      "lastExecution": "2026-02-10T21:07:00.877Z",
+      "payload": null,
+      "status": {
+        "message": "Successfully ran schedule",
+        "info": {
+          "id": "cron_cmlgjl0fg000h01vudfrceu00",
+          "typeName": "cron",
+          "config": {
+            "cronString": "5 16 */1 * *",
+            "timezone": "America/Detroit"
+          }
+        }
+      },
+      "config": {
+        "cronString": "5 16 */1 * *",
+        "timezone": "America/Detroit"
+      },
+      "dataFlowScheduleId": "cml8inqflbfjf018l97sof8cu",
+      "scheduleTypeId": "cron",
+      "_customFields": {
+        "_externalId": null
+      }
+    }
+  ],
+  "metadata": {}
+}

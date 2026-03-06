@@ -1,0 +1,23 @@
+{
+  "header": {
+    "id": "oeeTimeBoundaryScript",
+    "name": "OEE Time Boundary Script",
+    "description": "",
+    "substitutesSavedTransformId": null,
+    "active": true,
+    "deprecated": false,
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cmlb1qwcp002k356rns1zzm6k",
+    "number": "0.0.6",
+    "description": null,
+    "savedTransformId": "oeeTimeBoundaryScript",
+    "scriptLanguageId": "JavaScript",
+    "transform": "const workcenterId = $.wcId || \"wc-vmc-c1\";\r\nconst tz = $.tz || $momentTzGuess();\r\nconst weeksForTrend = $.weeks || 12;\r\n\r\nconst now = $moment().tz(tz);\r\nconst nowUtc = now.format('YYYY-MM-DDTHH:mm:ss.SSSZ');\r\n\r\nconst currentHourStart = $moment(now).startOf('hour').format('YYYY-MM-DDTHH:mm:ss.SSSZ');\r\nconst currentHourEnd = $moment(now).startOf('hour').add(1, 'hour').format('YYYY-MM-DDTHH:mm:ss.SSSZ');\r\n\r\nconst window24hStart = $moment(now).subtract(24, 'hours').format('YYYY-MM-DDTHH:mm:ss.SSSZ');\r\nconst window30dStart = $moment(now).subtract(30, 'days').toISOString();\r\nconst window60dStart = $moment(now).subtract(60, 'days').toISOString();\r\nconst window90dStart = $moment(now).subtract(90, 'days').toISOString();\r\n\r\nconst dayStart = $moment(now).startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZ');\r\nconst dayEnd = $moment(now).endOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZ');\r\n\r\n// Weekly boundaries for trend chart (most recent week first)\r\nconst weeklyBoundaries = [];\r\nfor (let i = 0; i < weeksForTrend; i++) {\r\n  const weekEnd = $moment(now).subtract(i, 'weeks').endOf('week');\r\n  const weekStart = $moment(now).subtract(i, 'weeks').startOf('week');\r\n  \r\n  weeklyBoundaries.push({\r\n    weekIndex: i,\r\n    weekLabel: weekStart.format('MMM D'),\r\n    start: weekStart.toISOString(),\r\n    end: weekEnd.toISOString()\r\n  });\r\n}\r\n\r\n// Reverse to chronological order (oldest first) for charting\r\nconst weeklyBoundariesChronological = [...weeklyBoundaries].reverse();\r\n\r\n// Workcenter lookup\r\nconst wcQuery = await $query({\r\n  statement: `query GetWorkcenter($wcId: String!) {\r\n    workcenter(where: { id: { _eq: $wcId } }) {\r\n      edges { node { id code name scheduleGroupId } }\r\n    }\r\n  }`,\r\n  variables: { wcId: workcenterId }\r\n});\r\n\r\nconst workcenter = wcQuery?.workcenter?.edges?.[0]?.node || null;\r\nconst scheduleGroupId = workcenter?.scheduleGroupId || null;\r\n\r\n// Current shift from schedule group\r\nlet currentSchedule = null;\r\nlet shiftStart = null;\r\nlet shiftEnd = null;\r\n\r\nif (scheduleGroupId) {\r\n  const sg = await $scheduleGroup(scheduleGroupId);\r\n  const currentSchedules = await sg.getCurrentSchedules(now, now, { inclusive: true });\r\n  currentSchedule = currentSchedules?.[0] || null;\r\n  \r\n  if (currentSchedule?.range) {\r\n    shiftStart = currentSchedule.range.start;\r\n    shiftEnd = currentSchedule.range.end;\r\n  }\r\n}\r\n\r\nreturn {\r\n  workcenterId,\r\n  timezone: tz,\r\n  workcenter,\r\n  currentSchedule: currentSchedule ? {\r\n    scheduleId: currentSchedule.scheduleId,\r\n    shiftStart: shiftStart,\r\n    shiftEnd: shiftEnd,\r\n    exception: currentSchedule.exception\r\n  } : null,\r\n  boundaries: {\r\n    now: nowUtc,\r\n    currentHourStart,\r\n    currentHourEnd,\r\n    window24hStart,\r\n    window90dStart,\r\n    window60dStart,\r\n    window30dStart,\r\n    dayStart,\r\n    dayEnd,\r\n    shiftStart,\r\n    shiftEnd,\r\n    weeklyBoundaries: weeklyBoundariesChronological\r\n  }\r\n};",
+    "inputSchema": {},
+    "outputSchema": {}
+  }
+}

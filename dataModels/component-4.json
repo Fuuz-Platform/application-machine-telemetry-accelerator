@@ -1,0 +1,277 @@
+{
+  "header": {
+    "id": "cell",
+    "name": "Cell",
+    "description": "Represents the smallest operational unit in the manufacturing hierarchy, such as a work cell, station, machine, or robotic unit. Cells capture real-time operational states, production counts, and quality metrics at the most granular level.\n\n**Typical Use Cases**\n\n- Monitor machine or station status (Run, Idle, Down, Setup).\n- Collect production counts and reject rates for OEE calculations.\n- Associate sensors, tags, and telemetry data for real-time visibility.\n- Link to jobs and operators for execution tracking.",
+    "dataModelKindId": "reference",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cmk5kpaos01w90180fc7qd7mn",
+    "number": "5",
+    "dataModelId": "cell",
+    "modelDefinition": {
+      "name": "Cell",
+      "metadata": {
+        "mfgx": {
+          "module": {
+            "id": "machineDataApp",
+            "group": {
+              "id": "machineTelemetrySiteApplication"
+            }
+          },
+          "exposed": true,
+          "mutable": true,
+          "mutations": {
+            "create": true,
+            "update": true,
+            "del": true
+          },
+          "dataChangeCapture": {
+            "exposed": false,
+            "retentionDays": 120
+          },
+          "customFields": {
+            "exposed": true
+          },
+          "editor": {
+            "autosort": true
+          }
+        },
+        "mongo": {
+          "collection": "cell"
+        },
+        "graphql": {
+          "type": "Object"
+        }
+      },
+      "kind": "Reference",
+      "fields": [
+        {
+          "name": "id",
+          "type": "ID!",
+          "description": "**`id`** (`ID!`)\nThe immutable, primary unique identifier for the Cell record.\n\n- **Behavior:** Required on creation; cannot be updated.\n- **Usage:** Used for queries, filters, and as a foreign key in related models.\n- **Example:** `\"c1d2e3f4-5678-90gh-ijkl-345678901234\"`",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": false
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": true
+          }
+        },
+        {
+          "name": "isActive",
+          "type": "Boolean!",
+          "description": "**`isActive`** (`Boolean!`)\nIndicates whether the Cell is active for scheduling, telemetry, and reporting.\n\n- **Default:** `true`.\n- **Behavior:** When `false`, new operations should be blocked; historical data remains accessible.\n- **Example:** `true` (operational), `false` (inactive).",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": true
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "code",
+          "type": "String!",
+          "description": "**`code`** (`String!`)\nA unique, human-readable code for the Cell within its parent Line.\n\n- **Behavior:** Required at creation; can be updated.\n- **Usage:** Serves as the label field for UI and integrations.\n- **Example:** `C01`, `STATION-01`.\n- **Constraint:** Must be unique within the Line.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": true
+          }
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "description": "**`name`** (`String`)\nDescriptive name of the Cell for display and reporting purposes.\n\n- **Example:** `Welding Station 1`, `Inspection Cell A`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "lineId",
+          "type": "ID!",
+          "description": "**`lineId`** (`ID!`)\nForeign key linking the Cell to its parent Line.\n\n- **Behavior:** Required; ensures hierarchical integrity.\n- **Usage:** Used in queries and mutations to associate the Cell with a Line.\n- **Example:** `\"b2c3d4e5-6789-01fg-hijk-234567890abc\"`",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "line",
+          "description": "**`line`** (`Line!`)\nThe related Line object for this Cell.\n\n- **Behavior:**Relation enforced via `lineId → Line.id`.\nDeletion of the Line is prevented if Cells exist.\n\n- **Usage:** Enables nested queries and mutations for hierarchical data.\n- **Example:** `{ id: \"...\", code: \"L01\", name: \"Assembly Line 1\" }`",
+          "type": "Line!",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "deletionReferenceBehavior": "prevent",
+                "fields": {
+                  "from": "lineId",
+                  "to": "id"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "assets",
+          "description": "",
+          "type": "[Asset!]!",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "fields": {
+                  "from": "id",
+                  "to": "cellId"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        }
+      ],
+      "description": "Represents the smallest operational unit in the manufacturing hierarchy, such as a work cell, station, machine, or robotic unit. Cells capture real-time operational states, production counts, and quality metrics at the most granular level.\n\n**Typical Use Cases**\n\n- Monitor machine or station status (Run, Idle, Down, Setup).\n- Collect production counts and reject rates for OEE calculations.\n- Associate sensors, tags, and telemetry data for real-time visibility.\n- Link to jobs and operators for execution tracking."
+    },
+    "dataModelTypeId": "master"
+  },
+  "migration": "$",
+  "migrations": [
+    {
+      "dataModelVersionId": "cmk5kpaos01w90180fc7qd7mn",
+      "dataModelVersion": {
+        "number": "5"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmk1bx6nz56w2017j9ppwfmhq",
+      "dataModelVersion": {
+        "number": "4"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmjzuvkxl20aj016cbtk4ft0w",
+      "dataModelVersion": {
+        "number": "3"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmjzter3d1zgv016c3p9b7kb4",
+      "dataModelVersion": {
+        "number": "2"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmjzt8pwj1zdn016c68298234",
+      "dataModelVersion": {
+        "number": "1"
+      },
+      "mappingExpression": "$"
+    }
+  ]
+}

@@ -1,0 +1,997 @@
+{
+  "header": {
+    "id": "createAlarmOnTelemetryRawAnomolyDataChange",
+    "name": "Create Alarm on TelemetryRaw Anomoly Data Change",
+    "description": "",
+    "active": true,
+    "substitutesDataFlowId": null,
+    "dataFlowTypeId": "System",
+    "logLevelId": "Debug",
+    "mcpToolConfiguration": null,
+    "moduleId": "machineDataApp",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cmlgn3ihu1fap01471fh41t0p",
+    "number": "0.0.7",
+    "description": "Updated to prevent triggering alarm, if value is not outside the deadband range",
+    "dataFlowId": "createAlarmOnTelemetryRawAnomolyDataChange",
+    "flow": {
+      "id": "cmlgn3ihu1fap01471fh41t0p",
+      "name": "Create Alarm on TelemetryRaw Anomoly Data Change",
+      "type": "System",
+      "nodes": [
+        {
+          "id": "93f57cc8-c3a8-4f42-a20c-549aa742e8f6",
+          "name": "Data Changes",
+          "type": "dataChanges",
+          "data": {
+            "api": "Application",
+            "type": "TelemetryRaw",
+            "operations": [
+              "Create"
+            ],
+            "nextNodes": [
+              "b7d3b912-1c44-4e77-a4a6-9662c86d560c"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "b7d3b912-1c44-4e77-a4a6-9662c86d560c",
+          "name": "Accept",
+          "type": "when",
+          "data": {
+            "nextNodes": [
+              "c421bbb8-c0da-447e-9c36-cf882158abaa"
+            ],
+            "transform": "($.value.after.qualityCode = \"16\" \r\nor \r\n$.value.after.qualityCode = \"64\"\r\nor\r\n$.value.after.quality = \"Bad\")"
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "553a54f9-e1c0-45e9-af98-5d12512542f4",
+          "name": "Query DataPoint - for Anomaly only",
+          "type": "query",
+          "data": {
+            "api": "application",
+            "variablesTransform": "{\r\n    \"where\": {\r\n      \"id\": {\r\n        \"_eq\": $.value.after.dataPointId\r\n      }\r\n    }\r\n  }",
+            "query": "query DataPoint($where: DataPointWhereInput, $orderBy: [DataPointOrderByInput!], $first: Int, $after: String, $dataPointId: String) {\n  dataPoint(where: $where, orderBy: $orderBy, first: $first, after: $after) {\n    edges {\n      node {\n        id\n        code\n        frequency\n        precision\n        deadband\n        lowerLimit\n        lowerWarning\n        scaleFactor\n        setPoint\n        tolerance\n        upperLimit\n        upperWarning\n        alarmEnabled\n        enabled\n        historize\n        isCritical\n        isOnChange\n        alarmPriority\n        category\n        dataType\n        description\n        displayName\n        name\n        asset {\n          id\n          code\n        }\n        unit {\n          id\n          code\n        }\n      }\n    }\n  }\n  \n  activeAlarms: alarm(\n    where: {\n      dataPointId: { _eq: $dataPointId }\n      clearedAt: { _isNull: true }\n    }\n    orderBy: [{ field: triggeredAt, direction: desc }]\n    first: 10\n  ) {\n    edges {\n      node {\n        id\n        code\n        alarmStateId\n        alarmState {\n          id\n          code\n        }\n        limitType\n        limitValue\n        \n        triggerValue\n        triggeredAt\n        acknowledgedAt\n      }\n    }\n  }\n}",
+            "nextNodes": [
+              "677675f3-d1e9-4565-b80e-52ddd4908da1"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "c421bbb8-c0da-447e-9c36-cf882158abaa",
+          "name": "Set Context",
+          "type": "setContext",
+          "data": {
+            "transform": "{\r\n  \"rawData\": $\r\n}",
+            "nextNodes": [
+              "553a54f9-e1c0-45e9-af98-5d12512542f4"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "677675f3-d1e9-4565-b80e-52ddd4908da1",
+          "name": "JavaScript",
+          "type": "javascriptTransform",
+          "data": {
+            "nextNodes": [
+              "f4640832-9e9e-45f3-a728-af7639598ee5"
+            ],
+            "transform": "// ============================================\r\n// Alarm Evaluation & Payload Generation\r\n// ============================================\r\n\r\n// Inputs\r\nconst telemetry = $state.context.rawData.value.after;  // Full telemetry record from subscription\r\nconst dpData = $.dataPoint.edges[0]?.node;\r\nconst activeAlarms = $.activeAlarms?.edges?.map(e => e.node) || [];\r\n\r\n// 1. Validate DataPoint exists\r\nif (!dpData) {\r\n  return {\r\n    skip: true,\r\n    reason: `DataPoint ${telemetry.dataPointId} not found in query results`\r\n  };\r\n}\r\n\r\n// 2. Check if alarmEnabled\r\nif (!dpData.alarmEnabled) {\r\n  return {\r\n    skip: true,\r\n    reason: `Alarms disabled for DataPoint ${dpData.code}`\r\n  };\r\n}\r\n\r\n// 3. Extract critical values\r\nconst value = telemetry.value;\r\nconst qualityCode = telemetry.qualityCode;\r\nconst deadband = dpData.deadband || 0;\r\n\r\n// 4. Check active alarms - if exists, evaluate deadband from previous trigger\r\nif (activeAlarms.length > 0) {\r\n  const latestAlarm = activeAlarms[0]; // Already sorted desc by triggeredAt\r\n  const previousValue = latestAlarm.triggerValue;\r\n  const valueDelta = Math.abs(value - previousValue);\r\n  \r\n  // If change is within deadband, skip creating new alarm\r\n  if (valueDelta <= deadband) {\r\n    return {\r\n      skip: true,\r\n      reason: `Value change (${valueDelta.toFixed(2)}) within deadband (${deadband}) of active alarm ${latestAlarm.code}`,\r\n      activeAlarmId: latestAlarm.id,\r\n      activeAlarmCode: latestAlarm.code,\r\n      previousValue: previousValue,\r\n      newValue: value,\r\n      delta: valueDelta\r\n    };\r\n  }\r\n}\r\n\r\n// 5. Determine alarm condition with deadband checking\r\nlet limitType = null;\r\nlet limitValue = null;\r\nlet deviation = null;\r\n\r\n// Quality is already BAD (16) or UNCERTAIN (64) per Accept node\r\n// Now determine WHY it's bad - which limit was violated?\r\n\r\n// Priority 1: Check critical limits (alarms)\r\nif (dpData.upperLimit != null && value > (dpData.upperLimit + deadband)) {\r\n  limitType = 'HighLimit';\r\n  limitValue = dpData.upperLimit;\r\n  deviation = value - dpData.upperLimit;\r\n}\r\nelse if (dpData.lowerLimit != null && value < (dpData.lowerLimit - deadband)) {\r\n  limitType = 'LowLimit';\r\n  limitValue = dpData.lowerLimit;\r\n  deviation = dpData.lowerLimit - value;\r\n}\r\n// Priority 2: Check warning limits\r\nelse if (dpData.upperWarning != null && value > (dpData.upperWarning + deadband)) {\r\n  limitType = 'HighWarning';\r\n  limitValue = dpData.upperWarning;\r\n  deviation = value - dpData.upperWarning;\r\n}\r\nelse if (dpData.lowerWarning != null && value < (dpData.lowerWarning - deadband)) {\r\n  limitType = 'LowWarning';\r\n  limitValue = dpData.lowerWarning;\r\n  deviation = dpData.lowerWarning - value;\r\n}\r\n// Priority 3: Check setPoint tolerance deviation\r\nelse if (dpData.setPoint != null && dpData.tolerance != null) {\r\n  const setPointDeviation = Math.abs(value - dpData.setPoint);\r\n  if (setPointDeviation > (dpData.tolerance + deadband)) {\r\n    limitType = 'Deviation';\r\n    limitValue = dpData.setPoint;\r\n    deviation = setPointDeviation;\r\n  }\r\n}\r\n\r\n// No limit violation found\r\nif (!limitType) {\r\n  return {\r\n    skip: true,\r\n    reason: `Value ${value} within all limits for ${dpData.code}`\r\n  };\r\n}\r\n\r\n// 6. Build Alarm creation payload\r\nreturn {\r\n  dataPointId: dpData.id,\r\n  limitType: limitType,\r\n  limitValue: limitValue,\r\n  triggerValue: value,\r\n  deviation: deviation,\r\n  triggeredAt: telemetry.recordedAt || new Date().toISOString(),\r\n  alarmStateId: 'ACTIVE',\r\n  notes: `${limitType} alarm triggered for ${dpData.displayName} (${dpData.code})`,\r\n  customFields: {\r\n    telemetrySnapshot: telemetry,\r\n    assetCode: dpData.asset?.code,\r\n    assetId: dpData.asset?.id,\r\n    unitCode: dpData.unit?.code,\r\n    dataPointCode: dpData.code,\r\n    dataPointName: dpData.displayName,\r\n    category: dpData.category,\r\n    qualityCode: qualityCode,\r\n    isCritical: dpData.isCritical,\r\n    alarmPriority: dpData.alarmPriority\r\n  }\r\n};"
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "f4640832-9e9e-45f3-a728-af7639598ee5",
+          "name": "Create Alarm",
+          "type": "mutate",
+          "data": {
+            "api": "Application",
+            "variablesTransform": "{\r\n  \"payload\": $.skip = true ? [] : [{\r\n    \"create\": {\r\n      \"dataPointId\": $.dataPointId,\r\n      \"limitType\": $.limitType,\r\n      \"limitValue\": $.limitValue,\r\n      \"triggerValue\": $.triggerValue,\r\n      \"deviation\": $.deviation,\r\n      \"triggeredAt\": $.triggeredAt,\r\n      \"alarmStateId\": $.alarmStateId,\r\n      \"notes\": $.notes,\r\n      \"customFields\": $._customFields,\r\n      \"telemetryRawData\": $state.context.rawData.value.after\r\n    }\r\n  }]\r\n}",
+            "mutation": "mutation CreateAlarm($payload: [AlarmCreatePayloadInput!]!) {\n  createAlarm(payload: $payload) {\n    id\n    telemetryRawData\n  }\n}",
+            "nextNodes": [
+              "f74eef83-1406-459e-8a6a-340b62db80ba"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "f74eef83-1406-459e-8a6a-340b62db80ba",
+          "name": "Response",
+          "type": "response",
+          "data": {
+            "responseTransform": "$",
+            "nextNodes": []
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        }
+      ],
+      "version": "0.0.7"
+    },
+    "diagram": {
+      "id": "cmlgn3ihu1fap01471fh41t0p",
+      "offsetX": -538.32,
+      "offsetY": 193.04,
+      "zoom": 107.92,
+      "gridSize": 5,
+      "layers": [
+        {
+          "id": "063be6f7-91f6-4a42-aa18-b6ee233c530b",
+          "type": "diagram-links",
+          "isSvg": true,
+          "transformed": true,
+          "models": {
+            "6c6d7a61-67e1-4708-9a26-1ec2c8f4e151": {
+              "points": [
+                {
+                  "id": "8fed7a2e-ebcd-4106-8447-185507d8f2a7",
+                  "type": "point",
+                  "x": 449,
+                  "y": 189.73
+                },
+                {
+                  "id": "7398a728-5971-4583-b334-d9c155654576",
+                  "type": "point",
+                  "x": 510,
+                  "y": 224.73
+                }
+              ],
+              "id": "6c6d7a61-67e1-4708-9a26-1ec2c8f4e151",
+              "type": "default",
+              "selected": false,
+              "source": "93f57cc8-c3a8-4f42-a20c-549aa742e8f6",
+              "sourcePort": "cml567f720214356rg8jillu6",
+              "target": "b7d3b912-1c44-4e77-a4a6-9662c86d560c",
+              "targetPort": "cml568q6s023b356rxv568sk4",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "a9ea7876-711d-4c5b-9c04-976a0d5aff16": {
+              "points": [
+                {
+                  "id": "5aa636ec-491d-4c25-8a3e-bb062d185fc4",
+                  "type": "point",
+                  "x": 664,
+                  "y": 224.73
+                },
+                {
+                  "id": "4d13267e-015c-480f-87c0-190553fc1b51",
+                  "type": "point",
+                  "x": 720,
+                  "y": 224.73
+                }
+              ],
+              "id": "a9ea7876-711d-4c5b-9c04-976a0d5aff16",
+              "type": "default",
+              "selected": false,
+              "source": "b7d3b912-1c44-4e77-a4a6-9662c86d560c",
+              "sourcePort": "cml568q6t023d356r58icjvul",
+              "target": "c421bbb8-c0da-447e-9c36-cf882158abaa",
+              "targetPort": "cml5eq75302gg356r4sx012c0",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "9fb65931-e04c-4c8d-b1ad-809a712415e5": {
+              "points": [
+                {
+                  "id": "e24cfb91-3c70-4ddc-8aa4-b41bc5d4be02",
+                  "type": "point",
+                  "x": 874,
+                  "y": 224.73
+                },
+                {
+                  "id": "5d8e5d22-7aee-4456-b97c-d4400c5c054f",
+                  "type": "point",
+                  "x": 935,
+                  "y": 224.73
+                }
+              ],
+              "id": "9fb65931-e04c-4c8d-b1ad-809a712415e5",
+              "type": "default",
+              "selected": false,
+              "source": "c421bbb8-c0da-447e-9c36-cf882158abaa",
+              "sourcePort": "cml5eq75302gi356r4n5id39e",
+              "target": "553a54f9-e1c0-45e9-af98-5d12512542f4",
+              "targetPort": "cml5ehnww028x356rgz4pugss",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "127643ff-d3ac-4e2a-9c48-dc9d0f2477c0": {
+              "points": [
+                {
+                  "id": "64f6b87b-44ad-4f7b-930a-0050074e5b18",
+                  "type": "point",
+                  "x": 419.93,
+                  "y": 399.73
+                },
+                {
+                  "id": "e72f7fde-ac44-4784-b1b4-cf81816345e1",
+                  "type": "point",
+                  "x": 510,
+                  "y": 224.73
+                }
+              ],
+              "id": "127643ff-d3ac-4e2a-9c48-dc9d0f2477c0",
+              "type": "default",
+              "selected": false,
+              "source": "94a45536-4e60-45b2-97db-fd245e0c42b5",
+              "sourcePort": "cml5ernac02is356ra9t0rout",
+              "target": "b7d3b912-1c44-4e77-a4a6-9662c86d560c",
+              "targetPort": "cml568q6s023b356rxv568sk4",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "5225ec42-940f-4685-b3f3-eeca2aca1b4e": {
+              "points": [
+                {
+                  "id": "39fb6d2a-f32c-49eb-9301-ff341f459136",
+                  "type": "point",
+                  "x": 1169.29,
+                  "y": 224.73
+                },
+                {
+                  "id": "64fc3e2d-414b-438d-92c6-4d274eca7f33",
+                  "type": "point",
+                  "x": 1275,
+                  "y": 264.73
+                }
+              ],
+              "id": "5225ec42-940f-4685-b3f3-eeca2aca1b4e",
+              "type": "default",
+              "selected": false,
+              "source": "553a54f9-e1c0-45e9-af98-5d12512542f4",
+              "sourcePort": "cml5ehnww028z356r6sbnz4cf",
+              "target": "677675f3-d1e9-4565-b80e-52ddd4908da1",
+              "targetPort": "cml5euy3102lg356ryc8eq1wo",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "41bfa390-e18d-423d-8f53-0d8db327a2ad": {
+              "points": [
+                {
+                  "id": "b458e797-a283-4e5f-be9e-ad0fab0619e7",
+                  "type": "point",
+                  "x": 1429,
+                  "y": 264.73
+                },
+                {
+                  "id": "e3d3ab1d-c500-4703-9c12-0d973d458be1",
+                  "type": "point",
+                  "x": 1485,
+                  "y": 264.73
+                }
+              ],
+              "id": "41bfa390-e18d-423d-8f53-0d8db327a2ad",
+              "type": "default",
+              "selected": false,
+              "source": "677675f3-d1e9-4565-b80e-52ddd4908da1",
+              "sourcePort": "cml5euy3102li356r5hnfxeyv",
+              "target": "f4640832-9e9e-45f3-a728-af7639598ee5",
+              "targetPort": "cml5ev1to02lm356rl1tsxmmn",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "fb508713-ff64-4185-8875-a5ba8b0713eb": {
+              "points": [
+                {
+                  "id": "27e924f9-a5e0-4c80-b650-abe5f19e22b7",
+                  "type": "point",
+                  "x": 1044,
+                  "y": 349.73
+                },
+                {
+                  "id": "6794a472-7096-43e8-ab6d-a0748ab0d899",
+                  "type": "point",
+                  "x": 1275,
+                  "y": 264.73
+                }
+              ],
+              "id": "fb508713-ff64-4185-8875-a5ba8b0713eb",
+              "type": "default",
+              "selected": false,
+              "source": "d7e24b29-534b-44bc-acc2-a61737f62012",
+              "sourcePort": "cml5f6axm02nt356rssgqgc7g",
+              "target": "677675f3-d1e9-4565-b80e-52ddd4908da1",
+              "targetPort": "cml5euy3102lg356ryc8eq1wo",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "a5108f05-03e7-4fd0-be96-15c0c3f2c79f": {
+              "points": [
+                {
+                  "id": "a999304e-0bb0-48cf-a4c1-9c8247059522",
+                  "type": "point",
+                  "x": 1639,
+                  "y": 264.73
+                },
+                {
+                  "id": "c76037bf-3fb0-4261-ae96-b0082a2bbc6e",
+                  "type": "point",
+                  "x": 1695,
+                  "y": 264.73
+                }
+              ],
+              "id": "a5108f05-03e7-4fd0-be96-15c0c3f2c79f",
+              "type": "default",
+              "selected": false,
+              "source": "f4640832-9e9e-45f3-a728-af7639598ee5",
+              "sourcePort": "cml5ev1to02lo356r50390b7y",
+              "target": "f74eef83-1406-459e-8a6a-340b62db80ba",
+              "targetPort": "cmlbhfy9m00iu356rvrdyxjd5",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            }
+          }
+        },
+        {
+          "id": "3382ce1c-7b6c-4084-be5b-6af318912f8e",
+          "type": "diagram-nodes",
+          "isSvg": false,
+          "transformed": true,
+          "models": {
+            "93f57cc8-c3a8-4f42-a20c-549aa742e8f6": {
+              "id": "93f57cc8-c3a8-4f42-a20c-549aa742e8f6",
+              "type": "dataChanges",
+              "selected": false,
+              "x": 295,
+              "y": 150,
+              "ports": [
+                {
+                  "id": "cml567f720214356rg8jillu6",
+                  "type": "default",
+                  "x": 441,
+                  "y": 181.73,
+                  "name": "cml567f720215356rz2zg5x8b",
+                  "parentNode": "93f57cc8-c3a8-4f42-a20c-549aa742e8f6",
+                  "links": [
+                    "6c6d7a61-67e1-4708-9a26-1ec2c8f4e151"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Message",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "Application",
+                "type": "TelemetryRaw",
+                "operations": [
+                  "Create"
+                ],
+                "nextNodes": [
+                  "b7d3b912-1c44-4e77-a4a6-9662c86d560c"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Data Changes"
+            },
+            "b7d3b912-1c44-4e77-a4a6-9662c86d560c": {
+              "id": "b7d3b912-1c44-4e77-a4a6-9662c86d560c",
+              "type": "when",
+              "selected": false,
+              "x": 510,
+              "y": 185,
+              "ports": [
+                {
+                  "id": "cml568q6s023b356rxv568sk4",
+                  "type": "default",
+                  "x": 502,
+                  "y": 216.73,
+                  "name": "cml568q6s023c356rq7slx36x",
+                  "parentNode": "b7d3b912-1c44-4e77-a4a6-9662c86d560c",
+                  "links": [
+                    "6c6d7a61-67e1-4708-9a26-1ec2c8f4e151",
+                    "127643ff-d3ac-4e2a-9c48-dc9d0f2477c0"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml568q6t023d356r58icjvul",
+                  "type": "default",
+                  "x": 656,
+                  "y": 216.73,
+                  "name": "cml568q6t023e356r1zbd80dk",
+                  "parentNode": "b7d3b912-1c44-4e77-a4a6-9662c86d560c",
+                  "links": [
+                    "a9ea7876-711d-4c5b-9c04-976a0d5aff16"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "c421bbb8-c0da-447e-9c36-cf882158abaa"
+                ],
+                "transform": "($.value.after.qualityCode = \"16\" \r\nor \r\n$.value.after.qualityCode = \"64\"\r\nor\r\n$.value.after.quality = \"Bad\")"
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Accept"
+            },
+            "553a54f9-e1c0-45e9-af98-5d12512542f4": {
+              "id": "553a54f9-e1c0-45e9-af98-5d12512542f4",
+              "type": "query",
+              "selected": false,
+              "x": 935,
+              "y": 185,
+              "ports": [
+                {
+                  "id": "cml5ehnww028x356rgz4pugss",
+                  "type": "default",
+                  "x": 927,
+                  "y": 216.73,
+                  "name": "cml5ehnww028y356rkxpqe4dj",
+                  "parentNode": "553a54f9-e1c0-45e9-af98-5d12512542f4",
+                  "links": [
+                    "9fb65931-e04c-4c8d-b1ad-809a712415e5"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml5ehnww028z356r6sbnz4cf",
+                  "type": "default",
+                  "x": 1161.29,
+                  "y": 216.73,
+                  "name": "cml5ehnww0290356r0motw59v",
+                  "parentNode": "553a54f9-e1c0-45e9-af98-5d12512542f4",
+                  "links": [
+                    "5225ec42-940f-4685-b3f3-eeca2aca1b4e"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "application",
+                "variablesTransform": "{\r\n    \"where\": {\r\n      \"id\": {\r\n        \"_eq\": $.value.after.dataPointId\r\n      }\r\n    }\r\n  }",
+                "query": "query DataPoint($where: DataPointWhereInput, $orderBy: [DataPointOrderByInput!], $first: Int, $after: String, $dataPointId: String) {\n  dataPoint(where: $where, orderBy: $orderBy, first: $first, after: $after) {\n    edges {\n      node {\n        id\n        code\n        frequency\n        precision\n        deadband\n        lowerLimit\n        lowerWarning\n        scaleFactor\n        setPoint\n        tolerance\n        upperLimit\n        upperWarning\n        alarmEnabled\n        enabled\n        historize\n        isCritical\n        isOnChange\n        alarmPriority\n        category\n        dataType\n        description\n        displayName\n        name\n        asset {\n          id\n          code\n        }\n        unit {\n          id\n          code\n        }\n      }\n    }\n  }\n  \n  activeAlarms: alarm(\n    where: {\n      dataPointId: { _eq: $dataPointId }\n      clearedAt: { _isNull: true }\n    }\n    orderBy: [{ field: triggeredAt, direction: desc }]\n    first: 10\n  ) {\n    edges {\n      node {\n        id\n        code\n        alarmStateId\n        alarmState {\n          id\n          code\n        }\n        limitType\n        limitValue\n        \n        triggerValue\n        triggeredAt\n        acknowledgedAt\n      }\n    }\n  }\n}",
+                "nextNodes": [
+                  "677675f3-d1e9-4565-b80e-52ddd4908da1"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Query DataPoint - for Anomaly only"
+            },
+            "c421bbb8-c0da-447e-9c36-cf882158abaa": {
+              "id": "c421bbb8-c0da-447e-9c36-cf882158abaa",
+              "type": "setContext",
+              "selected": false,
+              "x": 720,
+              "y": 185,
+              "ports": [
+                {
+                  "id": "cml5eq75302gg356r4sx012c0",
+                  "type": "default",
+                  "x": 712,
+                  "y": 216.73,
+                  "name": "cml5eq75302gh356r0wgtt6oq",
+                  "parentNode": "c421bbb8-c0da-447e-9c36-cf882158abaa",
+                  "links": [
+                    "a9ea7876-711d-4c5b-9c04-976a0d5aff16"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml5eq75302gi356r4n5id39e",
+                  "type": "default",
+                  "x": 866,
+                  "y": 216.73,
+                  "name": "cml5eq75302gj356rt21kklpf",
+                  "parentNode": "c421bbb8-c0da-447e-9c36-cf882158abaa",
+                  "links": [
+                    "9fb65931-e04c-4c8d-b1ad-809a712415e5"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "{\r\n  \"rawData\": $\r\n}",
+                "nextNodes": [
+                  "553a54f9-e1c0-45e9-af98-5d12512542f4"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Set Context"
+            },
+            "94a45536-4e60-45b2-97db-fd245e0c42b5": {
+              "id": "94a45536-4e60-45b2-97db-fd245e0c42b5",
+              "type": "debugDataChange",
+              "selected": false,
+              "x": 265,
+              "y": 360,
+              "ports": [
+                {
+                  "id": "cml5ernac02is356ra9t0rout",
+                  "type": "default",
+                  "x": 411.93,
+                  "y": 391.73,
+                  "name": "cml5ernac02it356rfzf5k7mi",
+                  "parentNode": "94a45536-4e60-45b2-97db-fd245e0c42b5",
+                  "links": [
+                    "127643ff-d3ac-4e2a-9c48-dc9d0f2477c0"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "Application",
+                "beforeData": null,
+                "afterData": {
+                  "value": 19.32,
+                  "recordedAt": "2026-02-02T11:35:35.000Z",
+                  "dataPointId": "DP-01208",
+                  "isAgg": false,
+                  "quality": "Bad",
+                  "qualityCode": "16",
+                  "id": "cml5ef65dm04401707cfacema",
+                  "createdByUserId": "DataFlows",
+                  "createdAt": "2026-02-02T16:43:12.481Z",
+                  "updatedByUserId": "DataFlows",
+                  "updatedAt": "2026-02-02T16:43:12.481Z",
+                  "_id": "cml5ef65dm04401707cfacema"
+                },
+                "operation": "Create",
+                "type": "TelemetryRaw",
+                "nextNodes": [
+                  "b7d3b912-1c44-4e77-a4a6-9662c86d560c"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Data Change Source"
+            },
+            "677675f3-d1e9-4565-b80e-52ddd4908da1": {
+              "id": "677675f3-d1e9-4565-b80e-52ddd4908da1",
+              "type": "javascriptTransform",
+              "selected": true,
+              "x": 1275,
+              "y": 225,
+              "ports": [
+                {
+                  "id": "cml5euy3102lg356ryc8eq1wo",
+                  "type": "default",
+                  "x": 1267,
+                  "y": 256.73,
+                  "name": "cml5euy3102lh356rv993n0lq",
+                  "parentNode": "677675f3-d1e9-4565-b80e-52ddd4908da1",
+                  "links": [
+                    "5225ec42-940f-4685-b3f3-eeca2aca1b4e",
+                    "fb508713-ff64-4185-8875-a5ba8b0713eb"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml5euy3102li356r5hnfxeyv",
+                  "type": "default",
+                  "x": 1421,
+                  "y": 256.73,
+                  "name": "cml5euy3102lj356r6fb65fn4",
+                  "parentNode": "677675f3-d1e9-4565-b80e-52ddd4908da1",
+                  "links": [
+                    "41bfa390-e18d-423d-8f53-0d8db327a2ad"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "f4640832-9e9e-45f3-a728-af7639598ee5"
+                ],
+                "transform": "// ============================================\r\n// Alarm Evaluation & Payload Generation\r\n// ============================================\r\n\r\n// Inputs\r\nconst telemetry = $state.context.rawData.value.after;  // Full telemetry record from subscription\r\nconst dpData = $.dataPoint.edges[0]?.node;\r\nconst activeAlarms = $.activeAlarms?.edges?.map(e => e.node) || [];\r\n\r\n// 1. Validate DataPoint exists\r\nif (!dpData) {\r\n  return {\r\n    skip: true,\r\n    reason: `DataPoint ${telemetry.dataPointId} not found in query results`\r\n  };\r\n}\r\n\r\n// 2. Check if alarmEnabled\r\nif (!dpData.alarmEnabled) {\r\n  return {\r\n    skip: true,\r\n    reason: `Alarms disabled for DataPoint ${dpData.code}`\r\n  };\r\n}\r\n\r\n// 3. Extract critical values\r\nconst value = telemetry.value;\r\nconst qualityCode = telemetry.qualityCode;\r\nconst deadband = dpData.deadband || 0;\r\n\r\n// 4. Check active alarms - if exists, evaluate deadband from previous trigger\r\nif (activeAlarms.length > 0) {\r\n  const latestAlarm = activeAlarms[0]; // Already sorted desc by triggeredAt\r\n  const previousValue = latestAlarm.triggerValue;\r\n  const valueDelta = Math.abs(value - previousValue);\r\n  \r\n  // If change is within deadband, skip creating new alarm\r\n  if (valueDelta <= deadband) {\r\n    return {\r\n      skip: true,\r\n      reason: `Value change (${valueDelta.toFixed(2)}) within deadband (${deadband}) of active alarm ${latestAlarm.code}`,\r\n      activeAlarmId: latestAlarm.id,\r\n      activeAlarmCode: latestAlarm.code,\r\n      previousValue: previousValue,\r\n      newValue: value,\r\n      delta: valueDelta\r\n    };\r\n  }\r\n}\r\n\r\n// 5. Determine alarm condition with deadband checking\r\nlet limitType = null;\r\nlet limitValue = null;\r\nlet deviation = null;\r\n\r\n// Quality is already BAD (16) or UNCERTAIN (64) per Accept node\r\n// Now determine WHY it's bad - which limit was violated?\r\n\r\n// Priority 1: Check critical limits (alarms)\r\nif (dpData.upperLimit != null && value > (dpData.upperLimit + deadband)) {\r\n  limitType = 'HighLimit';\r\n  limitValue = dpData.upperLimit;\r\n  deviation = value - dpData.upperLimit;\r\n}\r\nelse if (dpData.lowerLimit != null && value < (dpData.lowerLimit - deadband)) {\r\n  limitType = 'LowLimit';\r\n  limitValue = dpData.lowerLimit;\r\n  deviation = dpData.lowerLimit - value;\r\n}\r\n// Priority 2: Check warning limits\r\nelse if (dpData.upperWarning != null && value > (dpData.upperWarning + deadband)) {\r\n  limitType = 'HighWarning';\r\n  limitValue = dpData.upperWarning;\r\n  deviation = value - dpData.upperWarning;\r\n}\r\nelse if (dpData.lowerWarning != null && value < (dpData.lowerWarning - deadband)) {\r\n  limitType = 'LowWarning';\r\n  limitValue = dpData.lowerWarning;\r\n  deviation = dpData.lowerWarning - value;\r\n}\r\n// Priority 3: Check setPoint tolerance deviation\r\nelse if (dpData.setPoint != null && dpData.tolerance != null) {\r\n  const setPointDeviation = Math.abs(value - dpData.setPoint);\r\n  if (setPointDeviation > (dpData.tolerance + deadband)) {\r\n    limitType = 'Deviation';\r\n    limitValue = dpData.setPoint;\r\n    deviation = setPointDeviation;\r\n  }\r\n}\r\n\r\n// No limit violation found\r\nif (!limitType) {\r\n  return {\r\n    skip: true,\r\n    reason: `Value ${value} within all limits for ${dpData.code}`\r\n  };\r\n}\r\n\r\n// 6. Build Alarm creation payload\r\nreturn {\r\n  dataPointId: dpData.id,\r\n  limitType: limitType,\r\n  limitValue: limitValue,\r\n  triggerValue: value,\r\n  deviation: deviation,\r\n  triggeredAt: telemetry.recordedAt || new Date().toISOString(),\r\n  alarmStateId: 'ACTIVE',\r\n  notes: `${limitType} alarm triggered for ${dpData.displayName} (${dpData.code})`,\r\n  customFields: {\r\n    telemetrySnapshot: telemetry,\r\n    assetCode: dpData.asset?.code,\r\n    assetId: dpData.asset?.id,\r\n    unitCode: dpData.unit?.code,\r\n    dataPointCode: dpData.code,\r\n    dataPointName: dpData.displayName,\r\n    category: dpData.category,\r\n    qualityCode: qualityCode,\r\n    isCritical: dpData.isCritical,\r\n    alarmPriority: dpData.alarmPriority\r\n  }\r\n};"
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "JavaScript"
+            },
+            "f4640832-9e9e-45f3-a728-af7639598ee5": {
+              "id": "f4640832-9e9e-45f3-a728-af7639598ee5",
+              "type": "mutate",
+              "selected": false,
+              "x": 1485,
+              "y": 225,
+              "ports": [
+                {
+                  "id": "cml5ev1to02lm356rl1tsxmmn",
+                  "type": "default",
+                  "x": 1477,
+                  "y": 256.73,
+                  "name": "cml5ev1to02ln356rjvln6ggl",
+                  "parentNode": "f4640832-9e9e-45f3-a728-af7639598ee5",
+                  "links": [
+                    "41bfa390-e18d-423d-8f53-0d8db327a2ad"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml5ev1to02lo356r50390b7y",
+                  "type": "default",
+                  "x": 1631,
+                  "y": 256.73,
+                  "name": "cml5ev1to02lp356rh85dn0s8",
+                  "parentNode": "f4640832-9e9e-45f3-a728-af7639598ee5",
+                  "links": [
+                    "a5108f05-03e7-4fd0-be96-15c0c3f2c79f"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "Application",
+                "variablesTransform": "{\r\n  \"payload\": $.skip = true ? [] : [{\r\n    \"create\": {\r\n      \"dataPointId\": $.dataPointId,\r\n      \"limitType\": $.limitType,\r\n      \"limitValue\": $.limitValue,\r\n      \"triggerValue\": $.triggerValue,\r\n      \"deviation\": $.deviation,\r\n      \"triggeredAt\": $.triggeredAt,\r\n      \"alarmStateId\": $.alarmStateId,\r\n      \"notes\": $.notes,\r\n      \"customFields\": $._customFields,\r\n      \"telemetryRawData\": $state.context.rawData.value.after\r\n    }\r\n  }]\r\n}",
+                "mutation": "mutation CreateAlarm($payload: [AlarmCreatePayloadInput!]!) {\n  createAlarm(payload: $payload) {\n    id\n    telemetryRawData\n  }\n}",
+                "nextNodes": [
+                  "f74eef83-1406-459e-8a6a-340b62db80ba"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Create Alarm"
+            },
+            "d7e24b29-534b-44bc-acc2-a61737f62012": {
+              "id": "d7e24b29-534b-44bc-acc2-a61737f62012",
+              "type": "debugSource",
+              "selected": false,
+              "x": 890,
+              "y": 310,
+              "ports": [
+                {
+                  "id": "cml5f6axm02nt356rssgqgc7g",
+                  "type": "default",
+                  "x": 1036,
+                  "y": 341.73,
+                  "name": "cml5f6axm02nu356rvt2ih6ri",
+                  "parentNode": "d7e24b29-534b-44bc-acc2-a61737f62012",
+                  "links": [
+                    "fb508713-ff64-4185-8875-a5ba8b0713eb"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "payload": {
+                  "dataPoint": {
+                    "edges": [
+                      {
+                        "node": {
+                          "id": "DP-01208",
+                          "code": "DP-01208",
+                          "frequency": 5000,
+                          "precision": 2,
+                          "deadband": 0.2,
+                          "lowerLimit": 5,
+                          "lowerWarning": 5.5,
+                          "scaleFactor": 1,
+                          "setPoint": 20,
+                          "tolerance": 1,
+                          "upperLimit": 40,
+                          "upperWarning": 36,
+                          "alarmEnabled": true,
+                          "enabled": true,
+                          "historize": true,
+                          "isCritical": false,
+                          "isOnChange": false,
+                          "alarmPriority": "Warning",
+                          "category": "FlowRate",
+                          "dataType": "float",
+                          "description": "Coolant Flow for Horizontal Machining Center 77",
+                          "displayName": "Coolant Flow",
+                          "name": "ASSET-0077.CoolantFlow",
+                          "asset": {
+                            "id": "ASSET-0077",
+                            "code": "ASSET-0077"
+                          },
+                          "unit": {
+                            "id": "Lmin",
+                            "code": "L/min"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "context": {
+                  "rawData": {
+                    "headers": {
+                      "userId": "ckzzmdqs8000y0jwx2o5qhwmi",
+                      "tenantId": "fuuzOverflow",
+                      "apiKeyId": "null"
+                    },
+                    "topic": "mfgx.tenant.fuuzOverflow.dataChange.application.telemetryRaw.update",
+                    "value": {
+                      "collection": "telemetryRaw",
+                      "operation": "update",
+                      "before": null,
+                      "after": {
+                        "value": 19.32,
+                        "recordedAt": "2026-02-02T11:35:35.000Z",
+                        "dataPointId": "DP-01208",
+                        "isAgg": false,
+                        "quality": "Bad",
+                        "qualityCode": "16",
+                        "id": "cml5ef65dm04401707cfacema",
+                        "createdByUserId": "DataFlows",
+                        "createdAt": "2026-02-02T16:43:12.481Z",
+                        "updatedByUserId": "DataFlows",
+                        "updatedAt": "2026-02-02T16:43:12.481Z",
+                        "_id": "cml5ef65dm04401707cfacema"
+                      }
+                    }
+                  }
+                },
+                "nextNodes": [
+                  "677675f3-d1e9-4565-b80e-52ddd4908da1"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Source"
+            },
+            "f74eef83-1406-459e-8a6a-340b62db80ba": {
+              "id": "f74eef83-1406-459e-8a6a-340b62db80ba",
+              "type": "response",
+              "selected": false,
+              "x": 1695,
+              "y": 225,
+              "ports": [
+                {
+                  "id": "cmlbhfy9m00iu356rvrdyxjd5",
+                  "type": "default",
+                  "x": 1687,
+                  "y": 256.73,
+                  "name": "cmlbhfy9m00iv356rdj1ifupu",
+                  "parentNode": "f74eef83-1406-459e-8a6a-340b62db80ba",
+                  "links": [
+                    "a5108f05-03e7-4fd0-be96-15c0c3f2c79f"
+                  ],
+                  "in": true,
+                  "fieldLabel": "Response"
+                },
+                {
+                  "id": "cmlbhfy9m00iw356rq4jcp5qa",
+                  "type": "default",
+                  "x": 1841,
+                  "y": 256.73,
+                  "name": "cmlbhfy9m00ix356rb539ex71",
+                  "parentNode": "f74eef83-1406-459e-8a6a-340b62db80ba",
+                  "links": [],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "responseTransform": "$",
+                "nextNodes": []
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Response"
+            }
+          }
+        }
+      ],
+      "name": "Create Alarm on TelemetryRaw Anomoly Data Change",
+      "type": "System",
+      "version": "0.0.7",
+      "walkthrough": {
+        "steps": []
+      }
+    }
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "api": "application",
+  "modelName": "Mode",
+  "payload": [
+    {
+      "id": "cleaning",
+      "code": "CLEAN",
+      "name": "Cleaning/CIP",
+      "countAsDowntime": false,
+      "countAsProductionTime": true,
+      "oeeImpact": "performance",
+      "usable": true
+    },
+    {
+      "id": "disabled",
+      "code": "DOWN",
+      "name": "Disabled/Down",
+      "countAsDowntime": true,
+      "countAsProductionTime": true,
+      "oeeImpact": "availability",
+      "usable": true
+    },
+    {
+      "id": "engineering",
+      "code": "ENG",
+      "name": "Engineering",
+      "countAsDowntime": false,
+      "countAsProductionTime": false,
+      "oeeImpact": "none",
+      "usable": true
+    },
+    {
+      "id": "idle",
+      "code": "IDLE",
+      "name": "Idle",
+      "countAsDowntime": false,
+      "countAsProductionTime": true,
+      "oeeImpact": "performance",
+      "usable": true
+    },
+    {
+      "id": "maintenance",
+      "code": "MAINT",
+      "name": "Planned Maintenance",
+      "countAsDowntime": false,
+      "countAsProductionTime": false,
+      "oeeImpact": "none",
+      "usable": true
+    },
+    {
+      "id": "no-schedule",
+      "code": "NOSCHED",
+      "name": "No Schedule",
+      "countAsDowntime": false,
+      "countAsProductionTime": false,
+      "oeeImpact": "none",
+      "usable": true
+    },
+    {
+      "id": "production",
+      "code": "PROD",
+      "name": "Production",
+      "countAsDowntime": false,
+      "countAsProductionTime": true,
+      "oeeImpact": "none",
+      "usable": true
+    },
+    {
+      "id": "setup",
+      "code": "SETUP",
+      "name": "Setup/Changeover",
+      "countAsDowntime": false,
+      "countAsProductionTime": true,
+      "oeeImpact": "performance",
+      "usable": true
+    }
+  ],
+  "metadata": {}
+}

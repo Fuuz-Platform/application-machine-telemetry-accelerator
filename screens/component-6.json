@@ -1,0 +1,1745 @@
+{
+  "header": {
+    "id": "telemetryDataHourlyAggretion",
+    "name": "Telemetry Data Hourly Aggregation",
+    "description": "",
+    "active": true,
+    "edgeScreen": false,
+    "forceFullscreen": false,
+    "moduleId": "machineDataApp",
+    "substitutesScreenId": null,
+    "isWidget": false
+  },
+  "version": {
+    "id": "cml5tz5afvfg301705dgkdoor",
+    "number": "0.0.5",
+    "description": "",
+    "screenId": "telemetryDataHourlyAggretion",
+    "design": {
+      "components": [
+        {
+          "name": "Telemetry Hourly History",
+          "tabTitle": "Telemetry Hourly",
+          "type": "canvas",
+          "props": {
+            "design": {
+              "ROOT": {
+                "type": {
+                  "resolvedName": "Screen"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexDirection": "column",
+                  "flexWrap": false,
+                  "alignItems": "stretch",
+                  "justifyContent": "flex-start",
+                  "width": "100%",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "flowsDelay": 0,
+                  "removeOuterMargin": true,
+                  "background": "paper"
+                },
+                "displayName": "Screen",
+                "custom": {
+                  "elementName": "Screen",
+                  "elementCounts": {
+                    "Container": 11,
+                    "Action": 2,
+                    "Resizable Panel": 1,
+                    "Form": 1,
+                    "Select": 3,
+                    "Date Range": 1,
+                    "GraphQL Where Input": 1,
+                    "Table": 1,
+                    "Table Column": 27,
+                    "RichText": 1
+                  },
+                  "module": {
+                    "id": "machineDataApp",
+                    "group": {
+                      "id": "machineTelemetrySiteApplication"
+                    }
+                  },
+                  "dataModel": "TelemetryHourly",
+                  "template": "history"
+                },
+                "parent": null,
+                "hidden": false,
+                "nodes": [
+                  "ContainerOuter"
+                ],
+                "linkedNodes": {}
+              },
+              "ContainerOuter": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": true,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "0px",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "ContainerOuter"
+                },
+                "parent": "ROOT",
+                "hidden": false,
+                "nodes": [
+                  "ResizableFilterPanel",
+                  "ContainerBody"
+                ],
+                "linkedNodes": {}
+              },
+              "ContainerBody": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "0px",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0.5px solid #5b30df"
+                  },
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "ContainerBody"
+                },
+                "parent": "ContainerOuter",
+                "hidden": false,
+                "nodes": [
+                  "TopActionBar",
+                  "BrandBandSeparator",
+                  "TelemetryHourlyTable"
+                ],
+                "linkedNodes": {}
+              },
+              "ResizableFilterPanel": {
+                "type": {
+                  "resolvedName": "ResizablePanelLayout"
+                },
+                "isCanvas": true,
+                "props": {
+                  "handle": "right",
+                  "toggleHotkey": "",
+                  "defaultSize": 320,
+                  "axis": false,
+                  "minSize": 0,
+                  "maxSize": 320
+                },
+                "displayName": "Resizable Panel",
+                "custom": {
+                  "elementName": "ResizableFilterPanel"
+                },
+                "parent": "ContainerOuter",
+                "hidden": false,
+                "nodes": [
+                  "ContainerFilterOuter"
+                ],
+                "linkedNodes": {}
+              },
+              "ContainerFilterOuter": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": true,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "ContainerFilterOuter"
+                },
+                "parent": "ResizableFilterPanel",
+                "hidden": false,
+                "nodes": [
+                  "FilterPanelHeader",
+                  "FormFilterPanel"
+                ],
+                "linkedNodes": {}
+              },
+              "FormFilterPanel": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "isCanvas": true,
+                "props": {
+                  "query": {
+                    "api": "Application",
+                    "query": null,
+                    "dataPath": "edges[0]",
+                    "dataTransform": {
+                      "transform": null,
+                      "remote": true
+                    },
+                    "dataSubscription": {
+                      "enabled": false
+                    },
+                    "autoLoad": false,
+                    "parameters": "{\n  \"filter\": {\n    \"id\": {\n      \"_eq\": id\n    }\n  },\n  \"first\": 1\n}",
+                    "fields": [
+                      "id"
+                    ],
+                    "disableDataChangeIndicator": false,
+                    "dataChangeIndicatorSize": "normal",
+                    "model": "TelemetryHourly"
+                  },
+                  "blockNavigationWhenDirty": false,
+                  "enableConfirmOnDataChanged": false,
+                  "description": "Represents hourly aggregated telemetry statistics for a DataPoint, including summary metrics like average, min, max, percentiles, and quality counts. Used for trend analysis, reporting, and performance dashboards.\n\n**Typical Use Cases**\n\n- Summarize raw telemetry into hourly intervals for analytics.\n- Support time-based reporting and KPI calculations.\n- Reduce storage overhead compared to raw telemetry while retaining essential insights."
+                },
+                "displayName": "Form",
+                "custom": {
+                  "elementName": "FormFilterPanel"
+                },
+                "parent": "ContainerFilterOuter",
+                "hidden": false,
+                "nodes": [
+                  "FilterFormContainer"
+                ],
+                "linkedNodes": {}
+              },
+              "FilterFormContainer": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "0px",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {},
+                  "data": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "FilterFormContainer"
+                },
+                "parent": "FormFilterPanel",
+                "hidden": false,
+                "nodes": [
+                  "FAmutT1Ovf",
+                  "SelectDataPoint",
+                  "DateRangePeriodAt",
+                  "GraphQLAdvancedFilter"
+                ],
+                "linkedNodes": {}
+              },
+              "GraphQLAdvancedFilter": {
+                "type": {
+                  "resolvedName": "WrappedGraphQLPredicate"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "graphqlWhere",
+                  "dataPath": "predicate",
+                  "target": {
+                    "dataPath": "_and.0"
+                  },
+                  "formElement": "FormFilterPanel",
+                  "label": "Advanced Filter",
+                  "disabled": false,
+                  "description": "Advanced GraphQL where clause for complex filtering."
+                },
+                "displayName": "GraphQL Where Input",
+                "custom": {
+                  "elementName": "GraphQLAdvancedFilter"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TopActionBar": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "35px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0px undefined ",
+                    "borderBottom": "0px none "
+                  },
+                  "justifyItems": "start",
+                  "style": {},
+                  "background": "light",
+                  "customBackground": "#f0f0f0"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "TopActionBar"
+                },
+                "parent": "ContainerBody",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "FilterPanelHeader": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "40px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0px undefined ",
+                    "borderBottom": "0px none "
+                  },
+                  "justifyItems": "start",
+                  "style": {},
+                  "background": "light",
+                  "customBackground": "#f0f0f0"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "FilterPanelHeader"
+                },
+                "parent": "ContainerFilterOuter",
+                "hidden": false,
+                "nodes": [
+                  "FilterPanelHeaderInner",
+                  "FilterBrandSeparator"
+                ],
+                "linkedNodes": {}
+              },
+              "FilterPanelHeaderInner": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 4,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "space-between",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "35px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0px undefined ",
+                    "borderBottom": "undefinedpx none "
+                  },
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "FilterPanelHeaderInner"
+                },
+                "parent": "FilterPanelHeader",
+                "hidden": false,
+                "nodes": [
+                  "FilterPanelTitle",
+                  "FilterSearchContainer"
+                ],
+                "linkedNodes": {}
+              },
+              "FilterPanelTitle": {
+                "type": {
+                  "resolvedName": "RichText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "width": "180px",
+                  "height": "40px",
+                  "content": {
+                    "blocks": [
+                      {
+                        "key": "filterPanelTitle",
+                        "text": "Telemetry Hourly Filters",
+                        "type": "unstyled",
+                        "depth": 0,
+                        "inlineStyleRanges": [
+                          {
+                            "offset": 0,
+                            "length": 24,
+                            "style": "fontfamily-Roboto"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 24,
+                            "style": "fontsize-14"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 24,
+                            "style": "color-rgb(44,130,201)"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 24,
+                            "style": "BOLD"
+                          }
+                        ],
+                        "entityRanges": [],
+                        "data": {}
+                      }
+                    ],
+                    "entityMap": {}
+                  }
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "FilterPanelTitle"
+                },
+                "parent": "FilterPanelHeaderInner",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "FilterSearchContainer": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "center",
+                  "width": "30px",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "FilterSearchContainer"
+                },
+                "parent": "FilterPanelHeaderInner",
+                "hidden": false,
+                "nodes": [
+                  "ActionSearch"
+                ],
+                "linkedNodes": {}
+              },
+              "ActionSearch": {
+                "type": {
+                  "resolvedName": "ActionButton"
+                },
+                "isCanvas": false,
+                "props": {
+                  "margin": 0,
+                  "buttonColor": "primary",
+                  "icon": {
+                    "icon": "magnifying-glass",
+                    "color": "info",
+                    "variant": "regular",
+                    "size": "icon"
+                  },
+                  "width": "24px",
+                  "height": "24px",
+                  "disabled": false,
+                  "hidden": false,
+                  "useIconButton": true,
+                  "disableHover": false,
+                  "disableRipple": false,
+                  "action": [
+                    {
+                      "type": "transformation",
+                      "transformation": "$components.TelemetryHourlyTable.fn.search()",
+                      "remote": false
+                    }
+                  ],
+                  "title": "Search Using Filters"
+                },
+                "displayName": "Action",
+                "custom": {
+                  "elementName": "ActionSearch"
+                },
+                "parent": "FilterSearchContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "FilterBrandSeparator": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "4px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {
+                    "background-image": "linear-gradient(90deg, #39005a,#5b30df, #03caaf)"
+                  }
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "FilterBrandSeparator"
+                },
+                "parent": "FilterPanelHeader",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "BrandBandSeparator": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "4px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {
+                    "background-image": "linear-gradient(90deg, #39005a,#5b30df, #03caaf)"
+                  }
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "BrandBandSeparator"
+                },
+                "parent": "ContainerBody",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TelemetryHourlyTable": {
+                "type": {
+                  "resolvedName": "Table"
+                },
+                "isCanvas": true,
+                "props": {
+                  "margin": 0,
+                  "width": "100%",
+                  "height": "0px",
+                  "flexGrow": true,
+                  "query": {
+                    "api": "Application",
+                    "query": null,
+                    "dataPath": "edges",
+                    "dataTransform": {
+                      "remote": true
+                    },
+                    "dataSubscription": {
+                      "enabled": false
+                    },
+                    "autoLoad": true,
+                    "fields": [
+                      "id",
+                      "periodAt",
+                      "count",
+                      "countGood",
+                      "countBad",
+                      "countTrue",
+                      "countFalse",
+                      "pctTrue",
+                      "avg",
+                      "min",
+                      "max",
+                      "first",
+                      "last",
+                      "p50",
+                      "p25",
+                      "p75",
+                      "std",
+                      "sum",
+                      "distinctCount",
+                      "modeValue",
+                      "modeCount",
+                      "dataPoint.id",
+                      "dataPoint.code",
+                      "dataPoint.name",
+                      "dataPoint.displayName",
+                      "dataPoint.category",
+                      "dataPoint.dataType",
+                      "dataPoint.asset.id",
+                      "dataPoint.asset.code",
+                      "dataPoint.asset.name"
+                    ],
+                    "disableDataChangeIndicator": false,
+                    "selectedDataChangeIndicator": "refresh",
+                    "model": "TelemetryHourly",
+                    "readPreference": "primaryPreferred",
+                    "parameters": "{\r\n  \"orderBy\": [\r\n    {\r\n      \"field\": \"periodAt\",\r\n      \"direction\": \"desc\"\r\n    }\r\n  ]\r\n}"
+                  },
+                  "selectable": "none",
+                  "showToolPanels": true,
+                  "showStatusBar": true,
+                  "enableGrouping": true,
+                  "enableCharts": true,
+                  "showColumnMenu": true,
+                  "enableRowDragging": false,
+                  "disableColumnDragging": false,
+                  "disableDragLeaveHidesColumns": false,
+                  "masterDetail": false,
+                  "hideTableHeader": false,
+                  "description": "TelemetryHourly aggregated records showing count, avg, min, max, and percentiles.",
+                  "rowMultiSelectWithClick": false,
+                  "defaultSort": [
+                    {
+                      "field": "TableColumnPeriodAt",
+                      "direction": "desc"
+                    }
+                  ],
+                  "limitToOneActiveDetail": false,
+                  "filterFormName": "FormFilterPanel"
+                },
+                "displayName": "Table",
+                "custom": {
+                  "elementName": "TelemetryHourlyTable"
+                },
+                "parent": "ContainerBody",
+                "hidden": false,
+                "nodes": [
+                  "TableColumnPeriodAt",
+                  "_xuuKg_DLD",
+                  "TableColumnDataPoint",
+                  "WgZEfwTftl",
+                  "TableColumnCategory",
+                  "TableColumnCount",
+                  "TableColumnAvg",
+                  "TableColumnMin",
+                  "TableColumnMax",
+                  "m_UMk2SIic",
+                  "rcoMdjsPv-",
+                  "TableColumnP50",
+                  "S3aJJvYD-G",
+                  "A9Uih_3AFr",
+                  "TableColumnStd",
+                  "TableColumnSum",
+                  "TableColumnCountGood",
+                  "TableColumnCountBad",
+                  "lHizFs7aKQ",
+                  "FMsXyUyWtm",
+                  "TableColumnPctTrue",
+                  "TableColumnModeValue",
+                  "YHiqTDZJqe",
+                  "Jh7pjuRDRD",
+                  "olnKM4E1Ck",
+                  "Hi0XCQYfL1",
+                  "H0d6aOO2V1"
+                ],
+                "linkedNodes": {}
+              },
+              "TableColumnPeriodAt": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Period",
+                  "format": "datetime",
+                  "sortable": true,
+                  "dataPath": "periodAt",
+                  "description": "Timestamp of the aggregation period.",
+                  "query": {},
+                  "field": "periodAt",
+                  "width": "180px",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "showColumnSuppressMenu": false,
+                  "timeZone": "setting"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnPeriodAt"
+                },
+                "parent": "TelemetryHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnDataPoint": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Data Point",
+                  "format": "text",
+                  "sortable": false,
+                  "dataPath": "dataPoint.displayName",
+                  "description": "**`displayName`** (`String`)\nFriendly name for UI display.",
+                  "query": {},
+                  "field": "dataPoint.displayName",
+                  "width": "250px",
+                  "editable": false,
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnDataPoint"
+                },
+                "parent": "TelemetryHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnCategory": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Category",
+                  "format": "text",
+                  "sortable": false,
+                  "dataPath": "dataPoint.category",
+                  "description": "Data point category.",
+                  "query": {
+                    "fields": [
+                      "dataPoint.category"
+                    ]
+                  },
+                  "field": "dataPoint.category",
+                  "editable": false,
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnCategory"
+                },
+                "parent": "TelemetryHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnCount": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Count",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "count",
+                  "description": "Total observations in the period.",
+                  "query": {},
+                  "field": "count",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "sortAsNumber": true,
+                  "formatString": "0,0"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnCount"
+                },
+                "parent": "TelemetryHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnAvg": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Average",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "avg",
+                  "description": "Average value.",
+                  "query": {},
+                  "field": "avg",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "sortAsNumber": true,
+                  "formatString": "0,0.00"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnAvg"
+                },
+                "parent": "TelemetryHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnMin": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Min",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "min",
+                  "description": "Minimum value.",
+                  "query": {},
+                  "field": "min",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "sortAsNumber": true,
+                  "formatString": "0,0.00"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnMin"
+                },
+                "parent": "TelemetryHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnMax": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Max",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "max",
+                  "description": "Maximum value.",
+                  "query": {},
+                  "field": "max",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "sortAsNumber": true,
+                  "formatString": "0,0.00"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnMax"
+                },
+                "parent": "TelemetryHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnP50": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Median (p50)",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "p50",
+                  "description": "50th percentile (median).",
+                  "query": {},
+                  "field": "p50",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "sortAsNumber": true,
+                  "formatString": "0,0.00"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnP50"
+                },
+                "parent": "TelemetryHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnStd": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Std Dev",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "std",
+                  "description": "Standard deviation.",
+                  "query": {},
+                  "field": "std",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "sortAsNumber": true,
+                  "formatString": "0,0.00"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnStd"
+                },
+                "parent": "TelemetryHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnSum": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Sum",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "sum",
+                  "description": "Sum of values.",
+                  "query": {},
+                  "field": "sum",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "sortAsNumber": true,
+                  "formatString": "0,0.00"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnSum"
+                },
+                "parent": "TelemetryHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnCountGood": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Good Quality",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "countGood",
+                  "description": "Count of good quality readings.",
+                  "query": {},
+                  "field": "countGood",
+                  "style": {
+                    "alignItems": "center",
+                    "color": "#2e7d32"
+                  },
+                  "sortAsNumber": true,
+                  "formatString": "0,0"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnCountGood"
+                },
+                "parent": "TelemetryHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnCountBad": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Bad Quality",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "countBad",
+                  "description": "Count of bad quality readings.",
+                  "query": {},
+                  "field": "countBad",
+                  "style": {
+                    "alignItems": "center",
+                    "color": "#d32f2f"
+                  },
+                  "sortAsNumber": true,
+                  "formatString": "0,0"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnCountBad"
+                },
+                "parent": "TelemetryHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnPctTrue": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "% True",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "pctTrue",
+                  "description": "Percentage of true boolean values.",
+                  "query": {},
+                  "field": "pctTrue",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "sortAsNumber": true,
+                  "formatString": "0.00%"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnPctTrue"
+                },
+                "parent": "TelemetryHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnModeValue": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Mode Value",
+                  "format": "text",
+                  "sortable": false,
+                  "dataPath": "modeValue",
+                  "description": "Most frequently occurring value.",
+                  "query": {},
+                  "field": "modeValue",
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnModeValue"
+                },
+                "parent": "TelemetryHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "SelectDataPoint": {
+                "type": {
+                  "resolvedName": "SelectInput"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "select",
+                  "label": "Data Point",
+                  "dialogMode": "never",
+                  "multiselect": true,
+                  "isClearable": true,
+                  "selectAll": true,
+                  "searchPredicate": "contains",
+                  "api": "Application",
+                  "stateTracking": "full",
+                  "optionLimit": 20,
+                  "optionLimitFlex": 10,
+                  "alwaysReloadOptions": false,
+                  "target": {
+                    "dataPath": "dataPointId._in"
+                  },
+                  "dataPath": "dataPoint",
+                  "formElement": "FormFilterPanel",
+                  "variant": "filled",
+                  "disabled": false,
+                  "description": "Filter by one or more data points. Multi-select enabled.",
+                  "query": {
+                    "api": "Application",
+                    "model": "DataPoint",
+                    "dataPath": "edges",
+                    "fields": [
+                      "dataPoint.id",
+                      "dataPoint.code",
+                      "dataPoint.name",
+                      "dataPoint.displayName",
+                      "dataPoint.asset.code",
+                      "dataPoint.asset.name"
+                    ],
+                    "parameters": "{\n  \"orderBy\": {\n    \"code\": \"ASC\"\n  }\n}"
+                  },
+                  "optionLabelPath": "code",
+                  "optionValuePath": "id",
+                  "optionSecondaryLabelPath": "name",
+                  "field": "dataPoint",
+                  "labelPath": "code",
+                  "orderByField": "code",
+                  "dataModel": "DataPoint",
+                  "selectFields": [
+                    "code",
+                    "name",
+                    "displayName",
+                    "asset.code",
+                    "asset.name"
+                  ],
+                  "additionalFields": [],
+                  "orderByDirection": "asc",
+                  "predicate": "_in"
+                },
+                "displayName": "Select",
+                "custom": {
+                  "elementName": "SelectDataPoint"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "DateRangePeriodAt": {
+                "type": {
+                  "resolvedName": "DateRangeInput"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "datetimeRange",
+                  "label": "Period Range",
+                  "target": {
+                    "dataPath": "periodAt"
+                  },
+                  "dataPath": "periodAt",
+                  "formElement": "FormFilterPanel",
+                  "disabled": false,
+                  "description": "**`periodAt`** (`DateTime!`)\nStart timestamp of the hour bucket.\n\n- Used to identify the aggregation period.",
+                  "field": "periodAt"
+                },
+                "displayName": "Date Range",
+                "custom": {
+                  "elementName": "DateRangePeriodAt"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "_xuuKg_DLD": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Asset Code",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "dataPoint.asset.code",
+                  "description": "**`code`** (`String!`)\nA unique, human-readable code for the Asset.\n\n- **Behavior:** Required at creation; can be updated.\n- **Usage:** Serves as the label field for UI and integrations.\n- Uses a sequence value: \"ASSET-\" with a number and 0 padding of 3",
+                  "query": {
+                    "fields": [
+                      "dataPoint.asset.id",
+                      "dataPoint.asset.code"
+                    ]
+                  },
+                  "field": "dataPoint.asset.code",
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn15"
+                },
+                "parent": "TelemetryHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "FAmutT1Ovf": {
+                "type": {
+                  "resolvedName": "SelectInput"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "select",
+                  "label": "Asset",
+                  "dialogMode": "never",
+                  "multiselect": true,
+                  "isClearable": true,
+                  "selectAll": true,
+                  "searchPredicate": "contains",
+                  "api": "Application",
+                  "stateTracking": "full",
+                  "optionLimit": 20,
+                  "optionLimitFlex": 10,
+                  "alwaysReloadOptions": false,
+                  "target": {
+                    "dataPath": "dataPoint.assetId._in"
+                  },
+                  "dataPath": "dataPoint.asset",
+                  "formElement": "FormFilterPanel",
+                  "variant": "filled",
+                  "disabled": false,
+                  "query": {
+                    "api": "Application",
+                    "model": "DataPoint",
+                    "dataPath": "edges",
+                    "fields": [
+                      "dataPoint.asset.id",
+                      "dataPoint.asset.code"
+                    ],
+                    "parameters": "{\n  \"orderBy\": {\n    \"code\": \"ASC\"\n  }\n}"
+                  },
+                  "optionLabelPath": "code",
+                  "optionValuePath": "id",
+                  "optionSecondaryLabelPath": "name",
+                  "field": "dataPoint.asset",
+                  "labelPath": "code",
+                  "orderByField": "code",
+                  "dataModel": "Asset",
+                  "selectFields": [
+                    "code",
+                    "name"
+                  ],
+                  "additionalFields": [],
+                  "orderByDirection": "asc",
+                  "predicate": "_in"
+                },
+                "displayName": "Select",
+                "custom": {
+                  "elementName": "Select2"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "WgZEfwTftl": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Data Type",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "dataPoint.dataType",
+                  "description": "**`dataType`** (`String!`)\nData type of the value.\n\n- **Default:** `float`.\n- **Example:** `int`, `boolean`, `string`.",
+                  "query": {},
+                  "field": "dataPoint.dataType",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "showColumnSuppressMenu": true
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn16"
+                },
+                "parent": "TelemetryHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "YHiqTDZJqe": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Lower Limit",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "dataPoint.lowerLimit",
+                  "description": "**`lowerLimit`** (`Float`)\nMinimum acceptable value for the DataPoint.\n\n- **Default:** `0`.\n- **Usage:** Used for validation and alarms.",
+                  "query": {},
+                  "field": "dataPoint.lowerLimit",
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn17"
+                },
+                "parent": "TelemetryHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "Jh7pjuRDRD": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Lower Warning",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "dataPoint.lowerWarning",
+                  "description": "**`lowerWarning`** (`Float`)\nWarning threshold below normal operating range.\n\n- **Default:** `0`.",
+                  "query": {},
+                  "field": "dataPoint.lowerWarning",
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn18"
+                },
+                "parent": "TelemetryHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "olnKM4E1Ck": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Set Point",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "dataPoint.setPoint",
+                  "description": "**`setPoint`** (`Float`)\nTarget value for control or monitoring purposes.",
+                  "query": {},
+                  "field": "dataPoint.setPoint",
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn19"
+                },
+                "parent": "TelemetryHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "Hi0XCQYfL1": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Upper Limit",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "dataPoint.upperLimit",
+                  "description": "**`upperLimit`** (`Float`)\nMaximum acceptable value for the DataPoint.\n\n- **Usage:** Used for validation and alarms.",
+                  "query": {},
+                  "field": "dataPoint.upperLimit",
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn20"
+                },
+                "parent": "TelemetryHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "H0d6aOO2V1": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Upper Warning",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "dataPoint.upperWarning",
+                  "description": "**`upperWarning`** (`Float`)\nWarning threshold above normal operating range.",
+                  "query": {},
+                  "field": "dataPoint.upperWarning",
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn21"
+                },
+                "parent": "TelemetryHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "lHizFs7aKQ": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Count False",
+                  "format": "integer",
+                  "sortable": true,
+                  "dataPath": "countFalse",
+                  "description": "",
+                  "query": {},
+                  "field": "countFalse",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "editable": false,
+                  "sortAsNumber": false,
+                  "showColumnSuppressMenu": true
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn22"
+                },
+                "parent": "TelemetryHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "FMsXyUyWtm": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Count True",
+                  "format": "integer",
+                  "sortable": true,
+                  "dataPath": "countTrue",
+                  "description": "",
+                  "query": {},
+                  "field": "countTrue",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "editable": false,
+                  "sortAsNumber": false,
+                  "showColumnSuppressMenu": true
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn23"
+                },
+                "parent": "TelemetryHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "S3aJJvYD-G": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "P 75",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "p75",
+                  "description": "**`p05`**, **`p25`**, **`p50`**, **`p75`**, **`p95`** (`Float`)\n\nPercentile values for distribution analysis:\n\n- `p05`: 5th percentile\n- `p25`: 25th percentile\n- `p50`: Median\n- `p75`: 75th percentile\n- `p95`: 95th percentile\n- Default: `0.0`.",
+                  "query": {},
+                  "field": "p75"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn24"
+                },
+                "parent": "TelemetryHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "A9Uih_3AFr": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "P 95",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "p95",
+                  "description": "**`p05`**, **`p25`**, **`p50`**, **`p75`**, **`p95`** (`Float`)\n\nPercentile values for distribution analysis:\n\n- `p05`: 5th percentile\n- `p25`: 25th percentile\n- `p50`: Median\n- `p75`: 75th percentile\n- `p95`: 95th percentile\n- Default: `0.0`.",
+                  "query": {},
+                  "field": "p95"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn25"
+                },
+                "parent": "TelemetryHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "rcoMdjsPv-": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "P 25",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "p25",
+                  "description": "**`p05`**, **`p25`**, **`p50`**, **`p75`**, **`p95`** (`Float`) \n\nPercentile values for distribution analysis:\n\n- `p05`: 5th percentile\n- `p25`: 25th percentile\n- `p50`: Median\n- `p75`: 75th percentile\n- `p95`: 95th percentile\n- Default: `0.0`.",
+                  "query": {},
+                  "field": "p25"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn26"
+                },
+                "parent": "TelemetryHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "m_UMk2SIic": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "P 05",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "p05",
+                  "description": "**`p05`**, **`p25`**, **`p50`**, **`p75`**, **`p95`** (`Float`)\nPercentile values for distribution analysis:\n\n- `p05`: 5th percentile\n- `p25`: 25th percentile\n- `p50`: Median\n- `p75`: 75th percentile\n- `p95`: 95th percentile\n- Default: `0.0`.",
+                  "query": {},
+                  "field": "p05"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn27"
+                },
+                "parent": "TelemetryHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "routes": [
+    {
+      "id": "cmkeh1fmrnkih016p14gw8585",
+      "title": "Telemetry Data Hourly Aggretion",
+      "path": "/machineTelemetrySiteApplication/machineDataApp/telemetryHourlies",
+      "moduleId": "machineDataApp",
+      "screenId": "telemetryDataHourlyAggretion",
+      "isMenuAccessible": true,
+      "submenu": ""
+    }
+  ]
+}

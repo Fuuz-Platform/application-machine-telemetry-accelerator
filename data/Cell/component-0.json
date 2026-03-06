@@ -1,0 +1,367 @@
+{
+  "api": "application",
+  "modelName": "Cell",
+  "payload": [
+    {
+      "id": "cmmk01grpn00lfmmlpo4",
+      "isActive": true,
+      "code": "HP-C1",
+      "name": "Heavy Press Cell 1",
+      "lineId": "cmmk01grpn00lfm48nad",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfmna0xc",
+      "isActive": true,
+      "code": "HP-C2",
+      "name": "Heavy Press Cell 2",
+      "lineId": "cmmk01grpn00lfm48nad",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfmow2g5",
+      "isActive": true,
+      "code": "PD-C1",
+      "name": "Progressive Die Cell 1",
+      "lineId": "cmmk01grpn00lfm5byii",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfmpq25i",
+      "isActive": true,
+      "code": "PD-C2",
+      "name": "Progressive Die Cell 2",
+      "lineId": "cmmk01grpn00lfm5byii",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfmqkkz3",
+      "isActive": true,
+      "code": "HMC-C1",
+      "name": "Horizontal Machining Cell 1",
+      "lineId": "cmmk01grpn00lfm6h6ys",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfmrmm58",
+      "isActive": true,
+      "code": "HMC-C2",
+      "name": "Horizontal Machining Cell 2",
+      "lineId": "cmmk01grpn00lfm6h6ys",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfms982x",
+      "isActive": true,
+      "code": "VMC-C1",
+      "name": "Vertical Machining Cell 1",
+      "lineId": "cmmk01grpn00lfm71mrj",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfmtjlrm",
+      "isActive": true,
+      "code": "VMC-C2",
+      "name": "Vertical Machining Cell 2",
+      "lineId": "cmmk01grpn00lfm71mrj",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfmup69n",
+      "isActive": true,
+      "code": "WLD-C1",
+      "name": "Weld Cell 1",
+      "lineId": "cmmk01grpn00lfm8ridv",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfmvpael",
+      "isActive": true,
+      "code": "WLD-C2",
+      "name": "Weld Cell 2",
+      "lineId": "cmmk01grpn00lfm8ridv",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfmw05p8",
+      "isActive": true,
+      "code": "FA-C1",
+      "name": "Final Assembly Cell 1",
+      "lineId": "cmmk01grpn00lfm9p4u1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfmxt7q8",
+      "isActive": true,
+      "code": "FA-C2",
+      "name": "Final Assembly Cell 2",
+      "lineId": "cmmk01grpn00lfm9p4u1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfmybmfp",
+      "isActive": true,
+      "code": "BR-C1",
+      "name": "Batch Reactor Cell 1",
+      "lineId": "cmmk01grpn00lfman9ns",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfmz34h5",
+      "isActive": true,
+      "code": "BR-C2",
+      "name": "Batch Reactor Cell 2",
+      "lineId": "cmmk01grpn00lfman9ns",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfn00yde",
+      "isActive": true,
+      "code": "CR-C1",
+      "name": "Continuous Reactor Cell 1",
+      "lineId": "cmmk01grpn00lfmbfr0h",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfn1x0to",
+      "isActive": true,
+      "code": "CR-C2",
+      "name": "Continuous Reactor Cell 2",
+      "lineId": "cmmk01grpn00lfmbfr0h",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfn2a2fd",
+      "isActive": true,
+      "code": "DST-C1",
+      "name": "Distillation Cell 1",
+      "lineId": "cmmk01grpn00lfmckx2d",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfn374g7",
+      "isActive": true,
+      "code": "DST-C2",
+      "name": "Distillation Cell 2",
+      "lineId": "cmmk01grpn00lfmckx2d",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfn4urob",
+      "isActive": true,
+      "code": "FLT-C1",
+      "name": "Filtration Cell 1",
+      "lineId": "cmmk01grpn00lfmdhmjv",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfn52rwc",
+      "isActive": true,
+      "code": "FLT-C2",
+      "name": "Filtration Cell 2",
+      "lineId": "cmmk01grpn00lfmdhmjv",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfn6dr13",
+      "isActive": true,
+      "code": "HEX-C1",
+      "name": "Heat Exchange Cell 1",
+      "lineId": "cmmk01grpn00lfmei9zv",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfn7f4m6",
+      "isActive": true,
+      "code": "HEX-C2",
+      "name": "Heat Exchange Cell 2",
+      "lineId": "cmmk01grpn00lfmei9zv",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfn8860w",
+      "isActive": true,
+      "code": "PMP-C1",
+      "name": "Pumping Cell 1",
+      "lineId": "cmmk01grpn00lfmfogul",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfn9ri8e",
+      "isActive": true,
+      "code": "PMP-C2",
+      "name": "Pumping Cell 2",
+      "lineId": "cmmk01grpn00lfmfogul",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfna82py",
+      "isActive": true,
+      "code": "BMX-C1",
+      "name": "Batch Mixing Cell 1",
+      "lineId": "cmmk01grpn00lfmggxm4",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfnbxmlc",
+      "isActive": true,
+      "code": "BMX-C2",
+      "name": "Batch Mixing Cell 2",
+      "lineId": "cmmk01grpn00lfmggxm4",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfnc3nm4",
+      "isActive": true,
+      "code": "CBL-C1",
+      "name": "Continuous Blending Cell 1",
+      "lineId": "cmmk01grpn00lfmh8n3e",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfndzi69",
+      "isActive": true,
+      "code": "CBL-C2",
+      "name": "Continuous Blending Cell 2",
+      "lineId": "cmmk01grpn00lfmh8n3e",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfne6vn3",
+      "isActive": true,
+      "code": "FIL-C1",
+      "name": "Filling Cell 1",
+      "lineId": "cmmk01grpn00lfmij7hf",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfnf2drq",
+      "isActive": true,
+      "code": "FIL-C2",
+      "name": "Filling Cell 2",
+      "lineId": "cmmk01grpn00lfmij7hf",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfngin0l",
+      "isActive": true,
+      "code": "CRT-C1",
+      "name": "Cartoning Cell 1",
+      "lineId": "cmmk01grpn00lfmj7l9d",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfnhfoe9",
+      "isActive": true,
+      "code": "CRT-C2",
+      "name": "Cartoning Cell 2",
+      "lineId": "cmmk01grpn00lfmj7l9d",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfniv44p",
+      "isActive": true,
+      "code": "CIP-M1",
+      "name": "CIP Main Cell 1",
+      "lineId": "cmmk01grpn00lfmk51tf",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfnjbzx2",
+      "isActive": true,
+      "code": "CIP-M2",
+      "name": "CIP Main Cell 2",
+      "lineId": "cmmk01grpn00lfmk51tf",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfnkawer",
+      "isActive": true,
+      "code": "CIP-S1",
+      "name": "CIP Secondary Cell 1",
+      "lineId": "cmmk01grpn00lfmldk2g",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfnlgf62",
+      "isActive": true,
+      "code": "CIP-S2",
+      "name": "CIP Secondary Cell 2",
+      "lineId": "cmmk01grpn00lfmldk2g",
+      "_customFields": {
+        "_externalId": null
+      }
+    }
+  ],
+  "metadata": {}
+}

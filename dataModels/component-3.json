@@ -1,0 +1,780 @@
+{
+  "header": {
+    "id": "asset",
+    "name": "Asset",
+    "description": "Represents a physical or logical piece of equipment, machine, or device within the manufacturing hierarchy. Assets are linked to Lines and Cells and include telemetry, maintenance schedules, and operational metadata. The model now supports linking to a **DeviceDriver** for integration and communication configuration.\n\n**Typical Use Cases**\n\n- Track machine details (manufacturer, model, serial number).\n- Associate assets with Lines and Cells for production visibility.\n- Manage preventive maintenance schedules (PM dates).\n- Capture telemetry and data points for performance monitoring.\n- Link to DeviceDriver for IoT and protocol-specific connectivity.",
+    "dataModelKindId": "reference",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cmk8pbzhc0ci10199d5azdc5g",
+    "number": "7",
+    "dataModelId": "asset",
+    "modelDefinition": {
+      "name": "Asset",
+      "metadata": {
+        "mfgx": {
+          "module": {
+            "id": "machineDataApp",
+            "group": {
+              "id": "machineTelemetrySiteApplication"
+            }
+          },
+          "exposed": true,
+          "mutable": true,
+          "mutations": {
+            "create": true,
+            "update": true,
+            "del": true
+          },
+          "dataChangeCapture": {
+            "exposed": true,
+            "retentionDays": 120
+          },
+          "customFields": {
+            "exposed": true
+          },
+          "labelField": "code",
+          "editor": {
+            "autosort": true
+          }
+        },
+        "mongo": {
+          "collection": "asset"
+        },
+        "graphql": {
+          "type": "Object"
+        }
+      },
+      "kind": "Reference",
+      "fields": [
+        {
+          "name": "id",
+          "type": "ID!",
+          "description": "**`id`** (`ID!`)\nThe immutable, primary unique identifier for the Asset record.\n\n- **Behavior:** Required on creation; cannot be updated.\n- **Usage:** Used for queries, filters, and as a foreign key in related models.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": false
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "dataChangeCapture": {
+                "include": true
+              }
+            },
+            "unique": true
+          }
+        },
+        {
+          "name": "code",
+          "type": "String!",
+          "description": "**`code`** (`String!`)\nA unique, human-readable code for the Asset.\n\n- **Behavior:** Required at creation; can be updated.\n- **Usage:** Serves as the label field for UI and integrations.\n- Uses a sequence value: \"ASSET-\" with a number and 0 padding of 3",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "sequence": {
+                "id": "assetCode"
+              },
+              "dataChangeCapture": {
+                "include": true
+              }
+            },
+            "unique": true
+          }
+        },
+        {
+          "name": "connectionString",
+          "type": "String",
+          "description": "**`connectionString`** (`String`)\nConnection details for integrating the Asset with IoT or MES systems.\n\n- **Example:** `opc.tcp://192.168.1.10:4840`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "dataChangeCapture": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "criticality",
+          "type": "String",
+          "description": "**`criticality`** (`String`)\nIndicates the importance or risk level of the Asset.\n\n- **Example:** `High`, `Medium`, `Low`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "dataChangeCapture": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "manufacturer",
+          "type": "String",
+          "description": "**`manufacturer`** (`String`)\nThe manufacturer of the Asset.\n\n- **Example:** `ABB`, `Fanuc`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "dataChangeCapture": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "model",
+          "type": "String",
+          "description": "**`model`** (`String`)\nThe model identifier provided by the manufacturer.\n\n- **Example:** `IRB 6700`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "dataChangeCapture": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "description": "**`name`** (`String`)\nDescriptive name of the Asset for display and reporting purposes.\n\n- **Example:** `Welding Robot`, `Conveyor Belt`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "dataChangeCapture": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "responsibleTeam",
+          "type": "String",
+          "description": "**`responsibleTeam`** (`String`)\nThe team responsible for maintaining or operating the Asset.\n\n- **Example:** `Maintenance`, `Production`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "dataChangeCapture": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "serialNumber",
+          "type": "String",
+          "description": "**`serialNumber`** (`String`)\nUnique serial number assigned by the manufacturer.\n\n- **Example:** `SN123456789`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "dataChangeCapture": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "status",
+          "type": "String",
+          "description": "**`status`** (`String`)\nCurrent operational status of the Asset.\n\n- **Example:** `Active`, `Inactive`, `Under Maintenance`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "dataChangeCapture": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "subType",
+          "type": "String",
+          "description": "**`subType`** (`String`)\nMore specific classification within the type.\n\n- **Example:** `Welding`, `Inspection`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "dataChangeCapture": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "type",
+          "type": "String",
+          "description": "**`type`** (`String`)\nHigh-level classification of the Asset.\n\n- **Example:** `Machine`, `Robot`, `Sensor`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "dataChangeCapture": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "installedAt",
+          "type": "Date",
+          "description": "**`installedAt`** (`Date`)\nDate when the Asset was installed.\n\n- **Example:** `2024-05-10`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "dataChangeCapture": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "lastPmAt",
+          "type": "Date",
+          "description": "**`lastPmAt`** (`Date`)\nDate of the last preventive maintenance performed.\n\n- **Example:** `2025-12-15`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "dataChangeCapture": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "nextPmAt",
+          "type": "Date",
+          "description": "**`nextPmAt`** (`Date`)\nScheduled date for the next preventive maintenance.\n\n- **Example:** `2026-03-01`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "dataChangeCapture": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "cellId",
+          "type": "ID",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "dataChangeCapture": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "cell",
+          "description": "",
+          "type": "Cell",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "deletionReferenceBehavior": "prevent",
+                "fields": {
+                  "from": "cellId",
+                  "to": "id"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "deviceDriverId",
+          "type": "ID",
+          "description": "**`deviceDriver`** (`DeviceDriver!`)\nLink to the DeviceDriver configuration for this Asset.\n\n- **Purpose:** Defines protocol, communication settings, and driver logic for IoT integration.\n- **Example:** `{ id: \"...\", name: \"OPC UA Driver\", version: \"1.2.0\" }`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "dataChangeCapture": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "deviceDriver",
+          "description": "**`dataPoints`** (`[DataPoint!]!`)\nCollection of telemetry data points associated with the Asset.\n\n- **Usage:** For IoT and real-time monitoring.\n- **Example:** `[ { id: \"...\", tag: \"Temperature\", value: 75 }, ... ]`.",
+          "type": "DeviceDriver",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "deletionReferenceBehavior": "prevent",
+                "fields": {
+                  "from": "deviceDriverId",
+                  "to": "id"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "lineId",
+          "type": "ID",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "dataChangeCapture": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "line",
+          "description": "",
+          "type": "Line",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "deletionReferenceBehavior": "prevent",
+                "fields": {
+                  "from": "lineId",
+                  "to": "id"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "workcenterId",
+          "type": "ID",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "dataChangeCapture": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "workcenter",
+          "description": "",
+          "type": "Workcenter",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "deletionReferenceBehavior": "cascade",
+                "fields": {
+                  "from": "workcenterId",
+                  "to": "id"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "dataPoints",
+          "description": "**`dataPoints`** (`[DataPoint!]!`)\nCollection of telemetry data points associated with the Asset.\n\n- **Usage:** For IoT and real-time monitoring.\n- **Example:** `[ { id: \"...\", tag: \"Temperature\", value: 75 }, ... ]`.",
+          "type": "[DataPoint!]!",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "fields": {
+                  "from": "id",
+                  "to": "assetId"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        }
+      ],
+      "description": "Represents a physical or logical piece of equipment, machine, or device within the manufacturing hierarchy. Assets are linked to Lines and Cells and include telemetry, maintenance schedules, and operational metadata. The model now supports linking to a **DeviceDriver** for integration and communication configuration.\n\n**Typical Use Cases**\n\n- Track machine details (manufacturer, model, serial number).\n- Associate assets with Lines and Cells for production visibility.\n- Manage preventive maintenance schedules (PM dates).\n- Capture telemetry and data points for performance monitoring.\n- Link to DeviceDriver for IoT and protocol-specific connectivity."
+    },
+    "dataModelTypeId": "master"
+  },
+  "migration": "$",
+  "migrations": [
+    {
+      "dataModelVersionId": "cmk8pbzhc0ci10199d5azdc5g",
+      "dataModelVersion": {
+        "number": "7"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmk8p9sj30cg001994s1x7xdg",
+      "dataModelVersion": {
+        "number": "6"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmk8p6z380cds0199gmtv31vn",
+      "dataModelVersion": {
+        "number": "5"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmk5kpfm4023j017c61ii2i44",
+      "dataModelVersion": {
+        "number": "4"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmk1bxdc856wd017j46arh2wl",
+      "dataModelVersion": {
+        "number": "3"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmjzuvxq420b8016c29h02nwj",
+      "dataModelVersion": {
+        "number": "2"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmjzu2qll1zw7016cdh7lbmvx",
+      "dataModelVersion": {
+        "number": "1"
+      },
+      "mappingExpression": "$"
+    }
+  ]
+}

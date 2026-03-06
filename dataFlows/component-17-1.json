@@ -1,0 +1,940 @@
+{
+  "header": {
+    "id": "reliabilityDashboardWebFlow",
+    "name": "Reliability Dashboard - Web Flow",
+    "description": "",
+    "active": true,
+    "substitutesDataFlowId": null,
+    "dataFlowTypeId": "Screen",
+    "logLevelId": "Info",
+    "mcpToolConfiguration": null,
+    "moduleId": "machineDataApp",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cmlbc8ojk9fr601as56ttcrfr",
+    "number": "0.0.13",
+    "description": "",
+    "dataFlowId": "reliabilityDashboardWebFlow",
+    "flow": {
+      "id": "cmlbc8ojk9fr601as56ttcrfr",
+      "name": "Reliability Dashboard - Web Flow",
+      "type": "Screen",
+      "nodes": [
+        {
+          "id": "700bb3ff-ae78-485d-9468-f2eae5575410",
+          "name": "Request",
+          "type": "request",
+          "data": {
+            "nextNodes": [
+              "4a7fee80-5409-410c-b414-9d0a6c8d06a1"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "d21ea82c-c40f-467d-acd0-b232aaaf2d85",
+          "name": "Response",
+          "type": "response",
+          "data": {
+            "nextNodes": []
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "26a02d92-b3e7-4b18-884d-125efb135751",
+          "name": "Set Context",
+          "type": "setContext",
+          "data": {
+            "nextNodes": [
+              "25c07351-a4ad-425a-9c61-dba05a46e72e"
+            ],
+            "transform": "{\r\n  \"boundary\": $\r\n}"
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "25c07351-a4ad-425a-9c61-dba05a46e72e",
+          "name": "Query",
+          "type": "query",
+          "data": {
+            "api": "application",
+            "variablesTransform": "{\r\n  \"workcenterId\": $.workcenter.id,\r\n  \"windowStart\": $.boundaries.weeklyBoundaries[0].start,\r\n  \"windowEnd\": $.boundaries.now,\r\n  \"timezone\": $.timezone\r\n}",
+            "nextNodes": [
+              "843591b2-042f-440a-a52f-2d72c41e29c2"
+            ],
+            "query": "query ReliabilityRawData(\r\n  $workcenterId: String!\r\n  $windowStart: DateTime!\r\n  $windowEnd: DateTime!\r\n) {\r\n  # Operating time records\r\n  operatingTime: workcenterHistory(\r\n    where: {\r\n      workcenterId: { _eq: $workcenterId }\r\n      mode: { countAsProductionTime: { _eq: true } }\r\n      _or: [\r\n        { occurAt: { _gte: $windowStart, _lte: $windowEnd } }\r\n        { endAt: { _gte: $windowStart, _lte: $windowEnd } }\r\n        { _and: [\r\n          { occurAt: { _lt: $windowStart } }\r\n          { endAt: { _gt: $windowEnd } }\r\n        ]}\r\n        { _and: [\r\n          { occurAt: { _lt: $windowStart } }\r\n          { endAt: { _isNull: true } }\r\n        ]}\r\n      ]\r\n    }\r\n    orderBy: [{ field: occurAt, direction: asc }]\r\n    first: 50000\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        occurAt\r\n        endAt\r\n        runTime\r\n        unplannedDowntime\r\n        plannedDowntime\r\n        modeId\r\n        mode {\r\n          countAsDowntime\r\n          code\r\n          name\r\n          countAsPlannedDowntime\r\n        }\r\n        state {\r\n          isFault\r\n           code\r\n           name\r\n        }\r\n        event {\r\n           name\r\n           code\r\n           eventCategory{\r\n             name\r\n             code\r\n           }\r\n        }\r\n      }\r\n    }\r\n  }\r\n  \r\n  # Fault records\r\n  faults: workcenterHistory(\r\n    where: {\r\n      workcenterId: { _eq: $workcenterId }\r\n      state: { isFault: { _eq: true } }\r\n      _or: [\r\n        { occurAt: { _gte: $windowStart, _lte: $windowEnd } }\r\n        { endAt: { _gte: $windowStart, _lte: $windowEnd } }\r\n        { _and: [\r\n          { occurAt: { _lt: $windowStart } }\r\n          { endAt: { _gt: $windowEnd } }\r\n        ]}\r\n        { _and: [\r\n          { occurAt: { _lt: $windowStart } }\r\n          { endAt: { _isNull: true } }\r\n        ]}\r\n      ]\r\n    }\r\n    orderBy: [{ field: occurAt, direction: asc }]\r\n    first: 50000\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        occurAt\r\n        endAt\r\n        runTime\r\n        plannedDowntime\r\n        unplannedDowntime\r\n        modeId\r\n         mode {\r\n          countAsDowntime\r\n          countAsPlannedDowntime\r\n          countAsProductionTime\r\n         }\r\n        stateId\r\n        state {\r\n          isFault\r\n        }\r\n                event {\r\n           name\r\n           code\r\n           eventCategory{\r\n             name\r\n             code\r\n           }\r\n        }\r\n      }\r\n    }\r\n  }\r\n}"
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "bc4bfd56-b466-4eaa-96fa-1e3ae0a1ab7d",
+          "name": "OEE Time Boundaries Javascript Remote",
+          "type": "savedTransformV2",
+          "data": {
+            "transformScriptLanguage": "JavaScript",
+            "requestTransform": "$",
+            "responseTransform": "$",
+            "enableAdvancedConfiguration": false,
+            "nextNodes": [
+              "26a02d92-b3e7-4b18-884d-125efb135751"
+            ],
+            "transformId": {
+              "id": "oeeTimeBoundaryScript",
+              "label": "OEE Time Boundary Script",
+              "name": "OEE Time Boundary Script",
+              "scriptLanguageId": "JavaScript"
+            }
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "843591b2-042f-440a-a52f-2d72c41e29c2",
+          "name": "JavaScript",
+          "type": "javascriptTransform",
+          "data": {
+            "transform": "const n = (v) => v || 0;\r\nconst msToHours = (ms) => ms / 3600000;\r\nconst formatDuration = (ms) => {\r\n  if (ms == null || ms === 0) return \"0m\";\r\n  const hours = Math.floor(ms / 3600000);\r\n  const mins = Math.floor((ms % 3600000) / 60000);\r\n  return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;\r\n};\r\nconst safeToFixed = (val, decimals = 2) => {\r\n  const num = Number(val);\r\n  if (num !== num || num === Infinity || num === -Infinity) return \"0\";\r\n  return num.toFixed(decimals);\r\n};\r\n\r\n\r\n\r\nconst formatPctChange = (change) => {\r\n  if (change == null) return \"N/A\";\r\n  const sign = change >= 0 ? \"+\" : \"\";\r\n  return sign + (change * 100).toFixed(1) + \"%\";\r\n};\r\n\r\n// Target thresholds\r\nconst MTTR_TARGET_MS = 2 * 3600000;\r\nconst MTTR_TARGET_HOURS = 2;\r\n\r\n// Get inputs\r\nconst weeklyBoundaries = $state.context.boundary?.boundaries?.weeklyBoundaries || [];\r\nconst nowMs = $moment($state.context.boundary?.boundaries?.now || new Date()).valueOf();\r\n\r\n// Extract raw records - handle both array and edges wrapper\r\nconst extractRecords = (data) => {\r\n  if (!data) return [];\r\n  if (Array.isArray(data)) return data.map(e => e.node);\r\n  if (data.edges) return data.edges.map(e => e.node);\r\n  return [];\r\n};\r\n\r\nconst operatingRecords = extractRecords($.operatingTime);\r\nconst faultRecords = extractRecords($.faults);\r\n\r\n// Apportion a record's duration across weekly buckets\r\nconst apportionToWeeks = (record, boundaries, now) => {\r\n  const occurAt = $moment(record.occurAt).valueOf();\r\n  const endAt = record.endAt ? $moment(record.endAt).valueOf() : now;\r\n  \r\n  const results = [];\r\n  \r\n  boundaries.forEach(week => {\r\n    const weekStart = $moment(week.start).valueOf();\r\n    const weekEnd = $moment(week.end).valueOf();\r\n    \r\n    // Check overlap\r\n    if (occurAt < weekEnd && endAt > weekStart) {\r\n      const overlapStart = Math.max(occurAt, weekStart);\r\n      const overlapEnd = Math.min(endAt, weekEnd);\r\n      const durationMs = Math.max(0, overlapEnd - overlapStart);\r\n      \r\n      if (durationMs > 0) {\r\n        results.push({\r\n          weekStart: week.start,\r\n          weekLabel: week.weekLabel,\r\n          durationMs\r\n        });\r\n      }\r\n    }\r\n  });\r\n\r\n\r\n  \r\n  return results;\r\n};\r\n\r\n// Determine which week a fault started in (for counting)\r\nconst getFaultStartWeek = (record, boundaries) => {\r\n  const occurAt = $moment(record.occurAt).valueOf();\r\n  \r\n  for (let i = 0; i < boundaries.length; i++) {\r\n    const week = boundaries[i];\r\n    const weekStart = $moment(week.start).valueOf();\r\n    const weekEnd = $moment(week.end).valueOf();\r\n    \r\n    if (occurAt >= weekStart && occurAt < weekEnd) {\r\n      return week.start;\r\n    }\r\n  }\r\n  return null;\r\n};\r\n\r\n// Initialize weekly buckets\r\nconst weeklyData = {};\r\nweeklyBoundaries.forEach(week => {\r\n  weeklyData[week.start] = {\r\n    weekStart: week.start,\r\n    weekLabel: week.weekLabel,\r\n    operatingTimeMs: 0,\r\n    faultCount: 0,\r\n    repairTimeMs: 0,\r\n    unplannedDowntimeMs: 0,\r\n    plannedDowntimeMs: 0,\r\n    faultReasons: {}  // Track reasons: { \"Event Name\": durationMs }\r\n  };\r\n});\r\n\r\n// Apportion operating time across weeks\r\noperatingRecords.forEach(record => {\r\n  const apportioned = apportionToWeeks(record, weeklyBoundaries, nowMs);\r\n  apportioned.forEach(a => {\r\n    if (weeklyData[a.weekStart]) {\r\n      weeklyData[a.weekStart].operatingTimeMs += a.durationMs;\r\n    }\r\n  });\r\n});\r\n\r\n// Process faults: count in start week, apportion repair time\r\nfaultRecords.forEach(record => {\r\n  const startWeek = getFaultStartWeek(record, weeklyBoundaries);\r\n  if (startWeek && weeklyData[startWeek]) {\r\n    weeklyData[startWeek].faultCount += 1;\r\n  }\r\n  \r\n  const reasonKey = record.event?.name || 'Unknown';\r\n  \r\n  const apportioned = apportionToWeeks(record, weeklyBoundaries, nowMs);\r\n  apportioned.forEach(a => {\r\n    if (weeklyData[a.weekStart]) {\r\n      weeklyData[a.weekStart].repairTimeMs += a.durationMs;\r\n      weeklyData[a.weekStart].unplannedDowntimeMs += a.durationMs;\r\n      \r\n      // Track by reason\r\n      if (!weeklyData[a.weekStart].faultReasons[reasonKey]) {\r\n        weeklyData[a.weekStart].faultReasons[reasonKey] = 0;\r\n      }\r\n      weeklyData[a.weekStart].faultReasons[reasonKey] += a.durationMs;\r\n    }\r\n  });\r\n});\r\nconst plannedRecords = extractRecords($.plannedDowntime);\r\n\r\n// Process planned downtime\r\nplannedRecords.forEach(record => {\r\n  const apportioned = apportionToWeeks(record, weeklyBoundaries, nowMs);\r\n  apportioned.forEach(a => {\r\n    if (weeklyData[a.weekStart]) {\r\n      weeklyData[a.weekStart].plannedDowntimeMs += a.durationMs;\r\n    }\r\n  });\r\n});\r\n\r\n\r\n// Build tooltips\r\nconst buildUnplannedTooltip = (faultReasons, unplannedMs) => {\r\n  const sorted = Object.entries(faultReasons)\r\n    .sort((a, b) => b[1] - a[1])\r\n    .slice(0, 5);\r\n  \r\n  let tooltip = `<b>Unplanned:</b> ${formatDuration(unplannedMs)}`;\r\n  if (sorted.length > 0) {\r\n    tooltip += '<br/><b>Top Reasons:</b>';\r\n    sorted.forEach(([reason, ms]) => {\r\n      tooltip += `<br/>• ${reason}: ${formatDuration(ms)}`;\r\n    });\r\n  }\r\n  return tooltip;\r\n};\r\n\r\nconst buildPlannedTooltip = (plannedMs) => {\r\n  return `<b>Planned:</b> ${formatDuration(plannedMs)}`;\r\n};\r\n\r\n// Convert to sorted array\r\nconst allWeeks = Object.keys(weeklyData).sort();\r\nconst weeklyMetrics = allWeeks.map(weekStart => {\r\n  const w = weeklyData[weekStart];\r\n  \r\n  const mtbfMs = w.faultCount > 0 ? w.operatingTimeMs / w.faultCount : null;\r\n  const mttrMs = w.faultCount > 0 ? w.repairTimeMs / w.faultCount : null;\r\n  \r\n  return {\r\n    weekStart: w.weekStart,\r\n    weekLabel: w.weekLabel,\r\n    operatingTimeMs: w.operatingTimeMs,\r\n    unplannedTooltip: buildUnplannedTooltip(w.faultReasons, w.unplannedDowntimeMs),\r\nplannedTooltip: buildPlannedTooltip(w.plannedDowntimeMs),\r\n    faultCount: w.faultCount,\r\n    repairTimeMs: w.repairTimeMs,\r\n    faultReasons: w.faultReasons,\r\n   unplannedTooltip: buildUnplannedTooltip(w.faultReasons, w.unplannedDowntimeMs),\r\nplannedTooltip: buildPlannedTooltip(w.plannedDowntimeMs),\r\n    mtbfMs,\r\n    mtbfHours: mtbfMs != null ? msToHours(mtbfMs) : null,\r\n    mtbfFormatted: formatDuration(mtbfMs),\r\n    mttrMs,\r\n    mttrHours: mttrMs != null ? msToHours(mttrMs) : null,\r\n    mttrFormatted: formatDuration(mttrMs),\r\n    mttrOnTarget: mttrMs != null ? mttrMs <= MTTR_TARGET_MS : null,\r\n    unplannedDowntimeMs: w.unplannedDowntimeMs,\r\n    plannedDowntimeMs: w.plannedDowntimeMs,\r\n    totalDowntimeMs: w.unplannedDowntimeMs + w.plannedDowntimeMs\r\n  };\r\n});\r\n\r\n// Period calculations\r\nconst calcPeriodMetrics = (weeks) => {\r\n  const t = weeks.reduce((acc, w) => ({\r\n    operatingTimeMs: acc.operatingTimeMs + w.operatingTimeMs,\r\n    faultCount: acc.faultCount + w.faultCount,\r\n    repairTimeMs: acc.repairTimeMs + w.repairTimeMs\r\n  }), { operatingTimeMs: 0, faultCount: 0, repairTimeMs: 0 });\r\n  \r\n  const mtbf = t.faultCount > 0 ? t.operatingTimeMs / t.faultCount : 0;\r\n  const mttr = t.faultCount > 0 ? t.repairTimeMs / t.faultCount : 0;\r\n  \r\n  return {\r\n    mtbf,\r\n    mtbfFormatted: formatDuration(mtbf),\r\n    mttr,\r\n    mttrFormatted: formatDuration(mttr),\r\n    faultCount: t.faultCount,\r\n    operatingTimeMs: t.operatingTimeMs,\r\n    operatingTime: formatDuration(t.operatingTimeMs),\r\n    repairTimeMs: t.repairTimeMs,\r\n    repairTime: formatDuration(t.repairTimeMs)\r\n  };\r\n};\r\n\r\n\r\n\r\nconst currentWeeks = weeklyMetrics.slice(-4);\r\nconst priorWeeks = weeklyMetrics.slice(-8, -4);\r\nconst baselineWeeks = weeklyMetrics.slice(-12, -8);\r\n\r\nconst currentMetrics = calcPeriodMetrics(currentWeeks);\r\nconst priorMetrics = calcPeriodMetrics(priorWeeks);\r\nconst baselineMetrics = calcPeriodMetrics(baselineWeeks);\r\nconst overallMetrics = calcPeriodMetrics(weeklyMetrics);\r\n\r\n// Trend calculations\r\nconst mtbfChangeVsPrior = (priorMetrics.mtbf > 0 && currentMetrics.mtbf > 0)\r\n  ? (currentMetrics.mtbf - priorMetrics.mtbf) / priorMetrics.mtbf\r\n  : null;\r\n\r\nconst mttrChangeVsPrior = (priorMetrics.mttr > 0 && currentMetrics.mttr > 0)\r\n  ? (currentMetrics.mttr - priorMetrics.mttr) / priorMetrics.mttr\r\n  : null;\r\n\r\nconst getMtbfTrend = (change) => {\r\n  if (change == null) return \"unknown\";\r\n  if (change > 0.1) return \"improving\";\r\n  if (change < -0.1) return \"degrading\";\r\n  return \"stable\";\r\n};\r\n\r\nconst getMttrTrend = (change) => {\r\n  if (change == null) return \"unknown\";\r\n  if (change < -0.1) return \"improving\";\r\n  if (change > 0.1) return \"degrading\";\r\n  return \"stable\";\r\n};\r\n\r\nconst mtbfTrend = getMtbfTrend(mtbfChangeVsPrior);\r\nconst mttrTrend = getMttrTrend(mttrChangeVsPrior);\r\n\r\nconst reliability = {\r\n  current: {\r\n    ...currentMetrics,\r\n    periodLabel: \"Last 30 days\",\r\n    periodDays: 30\r\n  },\r\n  prior: {\r\n    ...priorMetrics,\r\n    periodLabel: \"30-60 days ago\",\r\n    periodDays: 30\r\n  },\r\n  baseline: {\r\n    ...baselineMetrics,\r\n    periodLabel: \"60-90 days ago\",\r\n    periodDays: 30\r\n  },\r\n  overall: {\r\n    ...overallMetrics,\r\n    periodLabel: \"Last 90 days\",\r\n    periodDays: 90\r\n  },\r\n  trend: {\r\n    mtbfChangeVsPrior,\r\n    mtbfChangeFormatted: formatPctChange(mtbfChangeVsPrior),\r\n    mtbfTrend,\r\n    mttrChangeVsPrior,\r\n    mttrChangeFormatted: formatPctChange(mttrChangeVsPrior),\r\n    mttrTrend\r\n  },\r\n  summary: {\r\n    mtbf: currentMetrics.mtbf,\r\n    mtbfFormatted: currentMetrics.mtbfFormatted,\r\n    mtbfTrendIcon: mtbfTrend === \"improving\" ? \"▲\" : mtbfTrend === \"degrading\" ? \"▼\" : \"→\",\r\n    mtbfTrendLabel: formatPctChange(mtbfChangeVsPrior) + \" vs prior 30d\",\r\n    mttr: currentMetrics.mttr,\r\n    mttrFormatted: currentMetrics.mttrFormatted,\r\n    mttrTrendIcon: mttrTrend === \"improving\" ? \"▼\" : mttrTrend === \"degrading\" ? \"▲\" : \"→\",\r\n    mttrTrendLabel: formatPctChange(mttrChangeVsPrior) + \" vs prior 30d\"\r\n  }\r\n};\r\n\r\n// Chart categories\r\nconst categories = [{\r\n  category: weeklyMetrics.map(w => ({ label: w.weekLabel }))\r\n}];\r\n\r\n// MTBF Trend Chart\r\nconst mtbfTrendChart = {\r\n  chart: {\r\n    caption: \"MTBF Trend\",\r\n    subcaption: \"Weekly - Last 12 Weeks\",\r\n    xAxisName: \"Week\",\r\n    yAxisName: \"Hours\",\r\n    theme: \"fusion\",\r\n    showValues: \"0\",\r\n    connectNullData: \"1\",\r\n    drawCrossLine: \"1\"\r\n  },\r\n  categories: categories,\r\n  dataset: [\r\n    {\r\n      seriesname: \"MTBF\",\r\n      color: \"#2E86AB\",\r\n      data: weeklyMetrics.map(w => ({\r\n        value: w.mtbfHours != null ? w.mtbfHours.toFixed(2) : null\r\n      }))\r\n    }\r\n  ]\r\n};\r\n\r\n// MTTR Trend Chart\r\nconst mttrTrendChart = {\r\n  chart: {\r\n    caption: \"MTTR Trend\",\r\n    subcaption: \"Weekly - Last 12 Weeks\",\r\n    xAxisName: \"Week\",\r\n    yAxisName: \"Hours\",\r\n    theme: \"fusion\",\r\n    showValues: \"0\",\r\n    connectNullData: \"1\",\r\n    drawCrossLine: \"1\"\r\n  },\r\n  categories: categories,\r\n  dataset: [\r\n    {\r\n      seriesname: \"MTTR\",\r\n      color: \"#A23B72\",\r\n      data: weeklyMetrics.map(w => ({\r\n        value: w.mttrHours != null ? w.mttrHours.toFixed(2) : null\r\n      }))\r\n    },\r\n    {\r\n      seriesname: \"Target\",\r\n      renderAs: \"line\",\r\n      dashed: \"1\",\r\n      color: \"#FF5733\",\r\n      showValues: \"0\",\r\n      data: weeklyMetrics.map(() => ({ value: MTTR_TARGET_HOURS.toFixed(2) }))\r\n    }\r\n  ]\r\n};\r\n\r\n// Fault Count Chart\r\nconst faultCountChart = {\r\n  chart: {\r\n    caption: \"Weekly Fault Count\",\r\n    xAxisName: \"Week\",\r\n    yAxisName: \"Faults\",\r\n    theme: \"fusion\",\r\n    showValues: \"1\"\r\n  },\r\n  data: weeklyMetrics.map(w => ({\r\n    label: w.weekLabel,\r\n    value: w.faultCount\r\n  }))\r\n};\r\n\r\n// Downtime Chart\r\nconst downtimeChart = {\r\n  chart: {\r\n    caption: \"Weekly Downtime\",\r\n    xAxisName: \"Week\",\r\n    yAxisName: \"Hours\",\r\n    theme: \"fusion\",\r\n    showValues: \"0\",\r\n    plotToolText: \"$tooltext\"\r\n  },\r\n  categories: categories,\r\ndataset: [\r\n  {\r\n    seriesname: \"Unplanned\",\r\n    color: \"#E74C3C\",\r\n    data: weeklyMetrics.map(w => ({\r\n      value: msToHours(w.unplannedDowntimeMs).toFixed(2),\r\n      tooltext: w.unplannedTooltip\r\n    }))\r\n  },\r\n  {\r\n    seriesname: \"Planned\",\r\n    color: \"#3498DB\",\r\n    data: weeklyMetrics.map(w => ({\r\n      value: msToHours(w.plannedDowntimeMs).toFixed(2),\r\n      tooltext: w.plannedTooltip\r\n    }))\r\n  }\r\n]};\r\n\r\n// MTBF Bullet Chart\r\nconst mtbfUpperLimit = Math.max(\r\n  msToHours(currentMetrics.mtbf) || 0,\r\n  msToHours(priorMetrics.mtbf) || 0,\r\n  msToHours(baselineMetrics.mtbf) || 0,\r\n  1\r\n) * 1.2;\r\n\r\nconst mtbfBulletChart = {\r\n  chart: {\r\n    caption: \"MTBF\",\r\n    subcaption: \"Current vs Prior Periods\",\r\n    lowerLimit: \"0\",\r\n    upperLimit: safeToFixed(mtbfUpperLimit),\r\n    numberSuffix: \" hrs\",\r\n    theme: \"fusion\"\r\n  },\r\n  colorRange: {\r\n    color: [\r\n      { minValue: \"0\", maxValue: safeToFixed(mtbfUpperLimit * 0.33), code: \"#F2726F\", label: \"Poor\" },\r\n      { minValue: safeToFixed(mtbfUpperLimit * 0.33), maxValue: safeToFixed(mtbfUpperLimit * 0.67), code: \"#FFC533\", label: \"Average\" },\r\n      { minValue: safeToFixed(mtbfUpperLimit * 0.67), maxValue: safeToFixed(mtbfUpperLimit), code: \"#62B58F\", label: \"Good\" }\r\n    ]\r\n  },\r\n  value: safeToFixed(msToHours(currentMetrics.mtbf)),\r\n  target: safeToFixed(msToHours(priorMetrics.mtbf))\r\n};\r\n\r\n// MTTR Bullet Chart\r\nconst mttrUpperLimit = Math.max(\r\n  msToHours(currentMetrics.mttr) || 0,\r\n  msToHours(priorMetrics.mttr) || 0,\r\n  MTTR_TARGET_HOURS,\r\n  1\r\n) * 1.2;\r\n\r\nconst mttrBulletChart = {\r\n  chart: {\r\n    caption: \"MTTR\",\r\n    subcaption: \"Current vs Target\",\r\n    lowerLimit: \"0\",\r\n    upperLimit: safeToFixed(mttrUpperLimit),\r\n    numberSuffix: \" hrs\",\r\n    theme: \"fusion\"\r\n  },\r\n  colorRange: {\r\n    color: [\r\n      { minValue: \"0\", maxValue: safeToFixed(MTTR_TARGET_HOURS), code: \"#62B58F\", label: \"On Target\" },\r\n      { minValue: safeToFixed(MTTR_TARGET_HOURS), maxValue: safeToFixed(MTTR_TARGET_HOURS * 1.5), code: \"#FFC533\", label: \"Warning\" },\r\n      { minValue: safeToFixed(MTTR_TARGET_HOURS * 1.5), maxValue: safeToFixed(mttrUpperLimit), code: \"#F2726F\", label: \"Critical\" }\r\n    ]\r\n  },\r\n  value: safeToFixed(msToHours(currentMetrics.mttr)),\r\n  target: safeToFixed(MTTR_TARGET_HOURS)\r\n};\r\n\r\nreturn {\r\n  workcenter: {\r\n    id: $state.context.boundary?.workcenter?.id,\r\n    code: $state.context.boundary?.workcenter?.code,\r\n    name: $state.context.boundary?.workcenter?.name\r\n  },\r\n  lastRefresh: $state.context.boundary?.boundaries?.now,\r\n  lastRefreshFormatted: $moment($state.context.boundary?.boundaries?.now).format('MMM D, YYYY h:mm A'),\r\n  reliability,\r\n  weeklyMetrics,\r\ncharts: {\r\n  mtbfTrend: mtbfTrendChart,\r\n  mttrTrend: mttrTrendChart,\r\n  faultCount: faultCountChart,\r\n  downtime: downtimeChart,\r\n  mtbfBullet: mtbfBulletChart,\r\n  mttrBullet: mttrBulletChart\r\n},\r\n  config: {\r\n    mttrTargetMs: MTTR_TARGET_MS,\r\n    mttrTargetHours: MTTR_TARGET_HOURS,\r\n    weekCount: weeklyMetrics.length\r\n  }\r\n};",
+            "nextNodes": [
+              "39d84eb1-fdab-42fc-b2af-2160c7c5c79f"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": true,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "4a7fee80-5409-410c-b414-9d0a6c8d06a1",
+          "name": "Get Dashboard Runtime properties",
+          "type": "transform",
+          "data": {
+            "nextNodes": [
+              "bc4bfd56-b466-4eaa-96fa-1e3ae0a1ab7d"
+            ],
+            "transform": "{\r\n  \"wcId\":  $coalesce([$metadata.querystring.wcId, $components.Screen.context.workcenterId, \"wc-vmc-c1\"]),\r\n  \"all\": $.all ? $.all : \"false\",\r\n  \"tz\": $coalesce([$metadata.settings.TimeZone, $momentTzGuess()])\r\n    }"
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "39d84eb1-fdab-42fc-b2af-2160c7c5c79f",
+          "name": "JSONata",
+          "type": "transform",
+          "data": {
+            "nextNodes": [
+              "d21ea82c-c40f-467d-acd0-b232aaaf2d85"
+            ],
+            "transform": "($data:= $;\r\n$components.Screen.fn.setContext($data))"
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        }
+      ],
+      "version": "0.0.12"
+    },
+    "diagram": {
+      "id": "cmlbc8ojk9fr601as56ttcrfr",
+      "offsetX": -906,
+      "offsetY": 154,
+      "zoom": 100,
+      "gridSize": 5,
+      "layers": [
+        {
+          "id": "6ca97d2b-626d-4dca-b43f-f146c8b3d540",
+          "type": "diagram-links",
+          "isSvg": true,
+          "transformed": true,
+          "models": {
+            "211f0309-4fdb-4e91-ba98-32cebf552818": {
+              "points": [
+                {
+                  "id": "9496cb12-a506-48d9-a207-2c8b9d1db950",
+                  "type": "point",
+                  "x": 508,
+                  "y": 208.73
+                },
+                {
+                  "id": "3a71e611-d31b-493f-8ae3-3bde99f93051",
+                  "type": "point",
+                  "x": 564,
+                  "y": 263.73
+                }
+              ],
+              "id": "211f0309-4fdb-4e91-ba98-32cebf552818",
+              "type": "default",
+              "source": "3b0a127e-a362-4380-a6e2-42ea3718b50a",
+              "sourcePort": "cmlb1n5ym00m9356rc3ed3u8h",
+              "target": "4a7fee80-5409-410c-b414-9d0a6c8d06a1",
+              "targetPort": "cmlb1n5yq00od356rfknus6qf",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "e00e72c6-e461-42de-a5dd-6866ce7ea305": {
+              "points": [
+                {
+                  "id": "214a9eeb-8c48-4d74-b846-697287f570a2",
+                  "type": "point",
+                  "x": 528,
+                  "y": 388.73
+                },
+                {
+                  "id": "553c471d-dd17-4179-ba36-a53fae5707ba",
+                  "type": "point",
+                  "x": 564,
+                  "y": 263.73
+                }
+              ],
+              "id": "e00e72c6-e461-42de-a5dd-6866ce7ea305",
+              "type": "default",
+              "source": "700bb3ff-ae78-485d-9468-f2eae5575410",
+              "sourcePort": "cmlb1n5ym00mf356rcjc4840i",
+              "target": "4a7fee80-5409-410c-b414-9d0a6c8d06a1",
+              "targetPort": "cmlb1n5yq00od356rfknus6qf",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "a6eb14b6-0973-44ed-99e6-bf0ed2f5c53f": {
+              "points": [
+                {
+                  "id": "5983fbd9-b3d5-442d-ba73-361c91ac8926",
+                  "type": "point",
+                  "x": 1198,
+                  "y": 378.73
+                },
+                {
+                  "id": "08205a39-63ca-4cf5-90cc-dbf633080a43",
+                  "type": "point",
+                  "x": 1270,
+                  "y": 379.73
+                }
+              ],
+              "id": "a6eb14b6-0973-44ed-99e6-bf0ed2f5c53f",
+              "type": "default",
+              "source": "26a02d92-b3e7-4b18-884d-125efb135751",
+              "sourcePort": "cmlb1n5yn00n3356ryydz1lvd",
+              "target": "25c07351-a4ad-425a-9c61-dba05a46e72e",
+              "targetPort": "cmlb1n5yo00nd356rmk8s1zt5",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "02025c34-3c92-4f0b-a9a9-c99333ac6442": {
+              "points": [
+                {
+                  "id": "fa9cf9a9-2e58-428f-ba89-031ef980db95",
+                  "type": "point",
+                  "x": 1424,
+                  "y": 379.73
+                },
+                {
+                  "id": "20b8578c-b534-4150-968b-24921114e39d",
+                  "type": "point",
+                  "x": 1485,
+                  "y": 379.73
+                }
+              ],
+              "id": "02025c34-3c92-4f0b-a9a9-c99333ac6442",
+              "type": "default",
+              "source": "25c07351-a4ad-425a-9c61-dba05a46e72e",
+              "sourcePort": "cmlb1n5yo00nf356rmfxcg2cs",
+              "target": "843591b2-042f-440a-a52f-2d72c41e29c2",
+              "targetPort": "cmlb1n5yp00o1356rgnmf6pqh",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "634049e7-ffc0-452d-bfc1-521ae2175bfd": {
+              "points": [
+                {
+                  "id": "3e78b5dc-cea0-400b-9383-e9eacbc10108",
+                  "type": "point",
+                  "x": 1020.41,
+                  "y": 373.73
+                },
+                {
+                  "id": "6ac9d2de-4657-4f42-9b87-7d7b5cb4fe45",
+                  "type": "point",
+                  "x": 1044,
+                  "y": 378.73
+                }
+              ],
+              "id": "634049e7-ffc0-452d-bfc1-521ae2175bfd",
+              "type": "default",
+              "source": "bc4bfd56-b466-4eaa-96fa-1e3ae0a1ab7d",
+              "sourcePort": "cmlb1n5yo00nr356rb13ox5jq",
+              "target": "26a02d92-b3e7-4b18-884d-125efb135751",
+              "targetPort": "cmlb1n5yn00n1356r7i97qaub",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "3ad4b288-079d-4627-ade5-3ee9bad1e77b": {
+              "points": [
+                {
+                  "id": "b8d72c4e-7974-459b-85ef-5104558fd89e",
+                  "type": "point",
+                  "x": 1639,
+                  "y": 379.73
+                },
+                {
+                  "id": "af98e6ac-cbd7-44d9-98f0-6761eefe835f",
+                  "type": "point",
+                  "x": 1695,
+                  "y": 379.73
+                }
+              ],
+              "id": "3ad4b288-079d-4627-ade5-3ee9bad1e77b",
+              "type": "default",
+              "source": "843591b2-042f-440a-a52f-2d72c41e29c2",
+              "sourcePort": "cmlb1n5yp00o3356r23v57qnf",
+              "target": "39d84eb1-fdab-42fc-b2af-2160c7c5c79f",
+              "targetPort": "cmlb1n5yq00op356r07kwrgy5",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "cf9d932b-8f87-46b0-846c-a53bd9be51ac": {
+              "points": [
+                {
+                  "id": "3f89d92a-91c4-4fed-ba8e-f697b5457516",
+                  "type": "point",
+                  "x": 796.17,
+                  "y": 263.73
+                },
+                {
+                  "id": "9312c4c2-36cb-4463-b7a7-977879056226",
+                  "type": "point",
+                  "x": 754,
+                  "y": 373.73
+                }
+              ],
+              "id": "cf9d932b-8f87-46b0-846c-a53bd9be51ac",
+              "type": "default",
+              "source": "4a7fee80-5409-410c-b414-9d0a6c8d06a1",
+              "sourcePort": "cmlb1n5yq00of356r9u8jrq0f",
+              "target": "bc4bfd56-b466-4eaa-96fa-1e3ae0a1ab7d",
+              "targetPort": "cmlb1n5yo00np356rd8x9jc5e",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "64cc6f26-f0c3-47c2-9031-3a1b666112d9": {
+              "points": [
+                {
+                  "id": "093acd48-ac09-48f7-aa12-0ed36182ac7d",
+                  "type": "point",
+                  "x": 1849,
+                  "y": 379.73
+                },
+                {
+                  "id": "853e56a8-88d3-46fe-aca4-99df723cf956",
+                  "type": "point",
+                  "x": 1910,
+                  "y": 379.73
+                }
+              ],
+              "id": "64cc6f26-f0c3-47c2-9031-3a1b666112d9",
+              "type": "default",
+              "source": "39d84eb1-fdab-42fc-b2af-2160c7c5c79f",
+              "sourcePort": "cmlb1n5yq00or356r4rq1y7oe",
+              "target": "d21ea82c-c40f-467d-acd0-b232aaaf2d85",
+              "targetPort": "cmlb1n5yn00mp356rxdt8jtc7",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            }
+          }
+        },
+        {
+          "id": "af373acf-8fc1-471d-97d9-c87ad0f093bb",
+          "type": "diagram-nodes",
+          "isSvg": false,
+          "transformed": true,
+          "models": {
+            "3b0a127e-a362-4380-a6e2-42ea3718b50a": {
+              "id": "3b0a127e-a362-4380-a6e2-42ea3718b50a",
+              "type": "debugSource",
+              "selected": false,
+              "x": 354,
+              "y": 169,
+              "ports": [
+                {
+                  "id": "cmlb1n5ym00m9356rc3ed3u8h",
+                  "type": "default",
+                  "x": 500,
+                  "y": 200.73,
+                  "name": "cmlb1n5ym00ma356rqv5zix99",
+                  "parentNode": "3b0a127e-a362-4380-a6e2-42ea3718b50a",
+                  "links": [
+                    "211f0309-4fdb-4e91-ba98-32cebf552818"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "payload": null,
+                "context": {},
+                "nextNodes": [
+                  "4a7fee80-5409-410c-b414-9d0a6c8d06a1"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Source"
+            },
+            "700bb3ff-ae78-485d-9468-f2eae5575410": {
+              "id": "700bb3ff-ae78-485d-9468-f2eae5575410",
+              "type": "request",
+              "selected": false,
+              "x": 374,
+              "y": 349,
+              "ports": [
+                {
+                  "id": "cmlb1n5ym00mf356rcjc4840i",
+                  "type": "default",
+                  "x": 520,
+                  "y": 380.73,
+                  "name": "cmlb1n5ym00mg356rt0jmfxfx",
+                  "parentNode": "700bb3ff-ae78-485d-9468-f2eae5575410",
+                  "links": [
+                    "e00e72c6-e461-42de-a5dd-6866ce7ea305"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Payload",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "4a7fee80-5409-410c-b414-9d0a6c8d06a1"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Request"
+            },
+            "d21ea82c-c40f-467d-acd0-b232aaaf2d85": {
+              "id": "d21ea82c-c40f-467d-acd0-b232aaaf2d85",
+              "type": "response",
+              "selected": false,
+              "x": 1910,
+              "y": 340,
+              "ports": [
+                {
+                  "id": "cmlb1n5yn00mp356rxdt8jtc7",
+                  "type": "default",
+                  "x": 1902,
+                  "y": 371.73,
+                  "name": "cmlb1n5yn00mq356rptn5lujh",
+                  "parentNode": "d21ea82c-c40f-467d-acd0-b232aaaf2d85",
+                  "links": [
+                    "64cc6f26-f0c3-47c2-9031-3a1b666112d9"
+                  ],
+                  "in": true,
+                  "fieldLabel": "Response"
+                },
+                {
+                  "id": "cmlb1n5yn00mr356rc9ur9xio",
+                  "type": "default",
+                  "x": 2056,
+                  "y": 371.73,
+                  "name": "cmlb1n5yn00ms356rowvnal42",
+                  "parentNode": "d21ea82c-c40f-467d-acd0-b232aaaf2d85",
+                  "links": [],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": []
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Response"
+            },
+            "26a02d92-b3e7-4b18-884d-125efb135751": {
+              "id": "26a02d92-b3e7-4b18-884d-125efb135751",
+              "type": "setContext",
+              "selected": false,
+              "x": 1044,
+              "y": 339,
+              "ports": [
+                {
+                  "id": "cmlb1n5yn00n1356r7i97qaub",
+                  "type": "default",
+                  "x": 1036,
+                  "y": 370.73,
+                  "name": "cmlb1n5yn00n2356rx8ttwm7h",
+                  "parentNode": "26a02d92-b3e7-4b18-884d-125efb135751",
+                  "links": [
+                    "634049e7-ffc0-452d-bfc1-521ae2175bfd"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmlb1n5yn00n3356ryydz1lvd",
+                  "type": "default",
+                  "x": 1190,
+                  "y": 370.73,
+                  "name": "cmlb1n5yn00n4356run13ah4l",
+                  "parentNode": "26a02d92-b3e7-4b18-884d-125efb135751",
+                  "links": [
+                    "a6eb14b6-0973-44ed-99e6-bf0ed2f5c53f"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "25c07351-a4ad-425a-9c61-dba05a46e72e"
+                ],
+                "transform": "{\r\n  \"boundary\": $\r\n}"
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Set Context"
+            },
+            "25c07351-a4ad-425a-9c61-dba05a46e72e": {
+              "id": "25c07351-a4ad-425a-9c61-dba05a46e72e",
+              "type": "query",
+              "selected": false,
+              "x": 1270,
+              "y": 340,
+              "ports": [
+                {
+                  "id": "cmlb1n5yo00nd356rmk8s1zt5",
+                  "type": "default",
+                  "x": 1262,
+                  "y": 371.73,
+                  "name": "cmlb1n5yo00ne356rlj966hxm",
+                  "parentNode": "25c07351-a4ad-425a-9c61-dba05a46e72e",
+                  "links": [
+                    "a6eb14b6-0973-44ed-99e6-bf0ed2f5c53f"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmlb1n5yo00nf356rmfxcg2cs",
+                  "type": "default",
+                  "x": 1416,
+                  "y": 371.73,
+                  "name": "cmlb1n5yo00ng356rslsi98eg",
+                  "parentNode": "25c07351-a4ad-425a-9c61-dba05a46e72e",
+                  "links": [
+                    "02025c34-3c92-4f0b-a9a9-c99333ac6442"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "application",
+                "variablesTransform": "{\r\n  \"workcenterId\": $.workcenter.id,\r\n  \"windowStart\": $.boundaries.weeklyBoundaries[0].start,\r\n  \"windowEnd\": $.boundaries.now,\r\n  \"timezone\": $.timezone\r\n}",
+                "nextNodes": [
+                  "843591b2-042f-440a-a52f-2d72c41e29c2"
+                ],
+                "query": "query ReliabilityRawData(\r\n  $workcenterId: String!\r\n  $windowStart: DateTime!\r\n  $windowEnd: DateTime!\r\n) {\r\n  # Operating time records\r\n  operatingTime: workcenterHistory(\r\n    where: {\r\n      workcenterId: { _eq: $workcenterId }\r\n      mode: { countAsProductionTime: { _eq: true } }\r\n      _or: [\r\n        { occurAt: { _gte: $windowStart, _lte: $windowEnd } }\r\n        { endAt: { _gte: $windowStart, _lte: $windowEnd } }\r\n        { _and: [\r\n          { occurAt: { _lt: $windowStart } }\r\n          { endAt: { _gt: $windowEnd } }\r\n        ]}\r\n        { _and: [\r\n          { occurAt: { _lt: $windowStart } }\r\n          { endAt: { _isNull: true } }\r\n        ]}\r\n      ]\r\n    }\r\n    orderBy: [{ field: occurAt, direction: asc }]\r\n    first: 50000\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        occurAt\r\n        endAt\r\n        runTime\r\n        unplannedDowntime\r\n        plannedDowntime\r\n        modeId\r\n        mode {\r\n          countAsDowntime\r\n          code\r\n          name\r\n          countAsPlannedDowntime\r\n        }\r\n        state {\r\n          isFault\r\n           code\r\n           name\r\n        }\r\n        event {\r\n           name\r\n           code\r\n           eventCategory{\r\n             name\r\n             code\r\n           }\r\n        }\r\n      }\r\n    }\r\n  }\r\n  \r\n  # Fault records\r\n  faults: workcenterHistory(\r\n    where: {\r\n      workcenterId: { _eq: $workcenterId }\r\n      state: { isFault: { _eq: true } }\r\n      _or: [\r\n        { occurAt: { _gte: $windowStart, _lte: $windowEnd } }\r\n        { endAt: { _gte: $windowStart, _lte: $windowEnd } }\r\n        { _and: [\r\n          { occurAt: { _lt: $windowStart } }\r\n          { endAt: { _gt: $windowEnd } }\r\n        ]}\r\n        { _and: [\r\n          { occurAt: { _lt: $windowStart } }\r\n          { endAt: { _isNull: true } }\r\n        ]}\r\n      ]\r\n    }\r\n    orderBy: [{ field: occurAt, direction: asc }]\r\n    first: 50000\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        occurAt\r\n        endAt\r\n        runTime\r\n        plannedDowntime\r\n        unplannedDowntime\r\n        modeId\r\n         mode {\r\n          countAsDowntime\r\n          countAsPlannedDowntime\r\n          countAsProductionTime\r\n         }\r\n        stateId\r\n        state {\r\n          isFault\r\n        }\r\n                event {\r\n           name\r\n           code\r\n           eventCategory{\r\n             name\r\n             code\r\n           }\r\n        }\r\n      }\r\n    }\r\n  }\r\n}"
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Query"
+            },
+            "bc4bfd56-b466-4eaa-96fa-1e3ae0a1ab7d": {
+              "id": "bc4bfd56-b466-4eaa-96fa-1e3ae0a1ab7d",
+              "type": "savedTransformV2",
+              "selected": false,
+              "x": 754,
+              "y": 334,
+              "ports": [
+                {
+                  "id": "cmlb1n5yo00np356rd8x9jc5e",
+                  "type": "default",
+                  "x": 746,
+                  "y": 365.73,
+                  "name": "cmlb1n5yo00nq356r32j1m98u",
+                  "parentNode": "bc4bfd56-b466-4eaa-96fa-1e3ae0a1ab7d",
+                  "links": [
+                    "cf9d932b-8f87-46b0-846c-a53bd9be51ac"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmlb1n5yo00nr356rb13ox5jq",
+                  "type": "default",
+                  "x": 1012.41,
+                  "y": 365.73,
+                  "name": "cmlb1n5yo00ns356r15dde0p3",
+                  "parentNode": "bc4bfd56-b466-4eaa-96fa-1e3ae0a1ab7d",
+                  "links": [
+                    "634049e7-ffc0-452d-bfc1-521ae2175bfd"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transformScriptLanguage": "JavaScript",
+                "requestTransform": "$",
+                "responseTransform": "$",
+                "enableAdvancedConfiguration": false,
+                "nextNodes": [
+                  "26a02d92-b3e7-4b18-884d-125efb135751"
+                ],
+                "transformId": {
+                  "id": "oeeTimeBoundaryScript",
+                  "label": "OEE Time Boundary Script",
+                  "name": "OEE Time Boundary Script",
+                  "scriptLanguageId": "JavaScript"
+                }
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "OEE Time Boundaries Javascript Remote"
+            },
+            "843591b2-042f-440a-a52f-2d72c41e29c2": {
+              "id": "843591b2-042f-440a-a52f-2d72c41e29c2",
+              "type": "javascriptTransform",
+              "selected": true,
+              "x": 1485,
+              "y": 340,
+              "ports": [
+                {
+                  "id": "cmlb1n5yp00o1356rgnmf6pqh",
+                  "type": "default",
+                  "x": 1477,
+                  "y": 371.73,
+                  "name": "cmlb1n5yp00o2356rm7uajzaa",
+                  "parentNode": "843591b2-042f-440a-a52f-2d72c41e29c2",
+                  "links": [
+                    "02025c34-3c92-4f0b-a9a9-c99333ac6442"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmlb1n5yp00o3356r23v57qnf",
+                  "type": "default",
+                  "x": 1631,
+                  "y": 371.73,
+                  "name": "cmlb1n5yp00o4356rte3y2qx1",
+                  "parentNode": "843591b2-042f-440a-a52f-2d72c41e29c2",
+                  "links": [
+                    "3ad4b288-079d-4627-ade5-3ee9bad1e77b"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "const n = (v) => v || 0;\r\nconst msToHours = (ms) => ms / 3600000;\r\nconst formatDuration = (ms) => {\r\n  if (ms == null || ms === 0) return \"0m\";\r\n  const hours = Math.floor(ms / 3600000);\r\n  const mins = Math.floor((ms % 3600000) / 60000);\r\n  return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;\r\n};\r\nconst safeToFixed = (val, decimals = 2) => {\r\n  const num = Number(val);\r\n  if (num !== num || num === Infinity || num === -Infinity) return \"0\";\r\n  return num.toFixed(decimals);\r\n};\r\n\r\n\r\n\r\nconst formatPctChange = (change) => {\r\n  if (change == null) return \"N/A\";\r\n  const sign = change >= 0 ? \"+\" : \"\";\r\n  return sign + (change * 100).toFixed(1) + \"%\";\r\n};\r\n\r\n// Target thresholds\r\nconst MTTR_TARGET_MS = 2 * 3600000;\r\nconst MTTR_TARGET_HOURS = 2;\r\n\r\n// Get inputs\r\nconst weeklyBoundaries = $state.context.boundary?.boundaries?.weeklyBoundaries || [];\r\nconst nowMs = $moment($state.context.boundary?.boundaries?.now || new Date()).valueOf();\r\n\r\n// Extract raw records - handle both array and edges wrapper\r\nconst extractRecords = (data) => {\r\n  if (!data) return [];\r\n  if (Array.isArray(data)) return data.map(e => e.node);\r\n  if (data.edges) return data.edges.map(e => e.node);\r\n  return [];\r\n};\r\n\r\nconst operatingRecords = extractRecords($.operatingTime);\r\nconst faultRecords = extractRecords($.faults);\r\n\r\n// Apportion a record's duration across weekly buckets\r\nconst apportionToWeeks = (record, boundaries, now) => {\r\n  const occurAt = $moment(record.occurAt).valueOf();\r\n  const endAt = record.endAt ? $moment(record.endAt).valueOf() : now;\r\n  \r\n  const results = [];\r\n  \r\n  boundaries.forEach(week => {\r\n    const weekStart = $moment(week.start).valueOf();\r\n    const weekEnd = $moment(week.end).valueOf();\r\n    \r\n    // Check overlap\r\n    if (occurAt < weekEnd && endAt > weekStart) {\r\n      const overlapStart = Math.max(occurAt, weekStart);\r\n      const overlapEnd = Math.min(endAt, weekEnd);\r\n      const durationMs = Math.max(0, overlapEnd - overlapStart);\r\n      \r\n      if (durationMs > 0) {\r\n        results.push({\r\n          weekStart: week.start,\r\n          weekLabel: week.weekLabel,\r\n          durationMs\r\n        });\r\n      }\r\n    }\r\n  });\r\n\r\n\r\n  \r\n  return results;\r\n};\r\n\r\n// Determine which week a fault started in (for counting)\r\nconst getFaultStartWeek = (record, boundaries) => {\r\n  const occurAt = $moment(record.occurAt).valueOf();\r\n  \r\n  for (let i = 0; i < boundaries.length; i++) {\r\n    const week = boundaries[i];\r\n    const weekStart = $moment(week.start).valueOf();\r\n    const weekEnd = $moment(week.end).valueOf();\r\n    \r\n    if (occurAt >= weekStart && occurAt < weekEnd) {\r\n      return week.start;\r\n    }\r\n  }\r\n  return null;\r\n};\r\n\r\n// Initialize weekly buckets\r\nconst weeklyData = {};\r\nweeklyBoundaries.forEach(week => {\r\n  weeklyData[week.start] = {\r\n    weekStart: week.start,\r\n    weekLabel: week.weekLabel,\r\n    operatingTimeMs: 0,\r\n    faultCount: 0,\r\n    repairTimeMs: 0,\r\n    unplannedDowntimeMs: 0,\r\n    plannedDowntimeMs: 0,\r\n    faultReasons: {}  // Track reasons: { \"Event Name\": durationMs }\r\n  };\r\n});\r\n\r\n// Apportion operating time across weeks\r\noperatingRecords.forEach(record => {\r\n  const apportioned = apportionToWeeks(record, weeklyBoundaries, nowMs);\r\n  apportioned.forEach(a => {\r\n    if (weeklyData[a.weekStart]) {\r\n      weeklyData[a.weekStart].operatingTimeMs += a.durationMs;\r\n    }\r\n  });\r\n});\r\n\r\n// Process faults: count in start week, apportion repair time\r\nfaultRecords.forEach(record => {\r\n  const startWeek = getFaultStartWeek(record, weeklyBoundaries);\r\n  if (startWeek && weeklyData[startWeek]) {\r\n    weeklyData[startWeek].faultCount += 1;\r\n  }\r\n  \r\n  const reasonKey = record.event?.name || 'Unknown';\r\n  \r\n  const apportioned = apportionToWeeks(record, weeklyBoundaries, nowMs);\r\n  apportioned.forEach(a => {\r\n    if (weeklyData[a.weekStart]) {\r\n      weeklyData[a.weekStart].repairTimeMs += a.durationMs;\r\n      weeklyData[a.weekStart].unplannedDowntimeMs += a.durationMs;\r\n      \r\n      // Track by reason\r\n      if (!weeklyData[a.weekStart].faultReasons[reasonKey]) {\r\n        weeklyData[a.weekStart].faultReasons[reasonKey] = 0;\r\n      }\r\n      weeklyData[a.weekStart].faultReasons[reasonKey] += a.durationMs;\r\n    }\r\n  });\r\n});\r\nconst plannedRecords = extractRecords($.plannedDowntime);\r\n\r\n// Process planned downtime\r\nplannedRecords.forEach(record => {\r\n  const apportioned = apportionToWeeks(record, weeklyBoundaries, nowMs);\r\n  apportioned.forEach(a => {\r\n    if (weeklyData[a.weekStart]) {\r\n      weeklyData[a.weekStart].plannedDowntimeMs += a.durationMs;\r\n    }\r\n  });\r\n});\r\n\r\n\r\n// Build tooltips\r\nconst buildUnplannedTooltip = (faultReasons, unplannedMs) => {\r\n  const sorted = Object.entries(faultReasons)\r\n    .sort((a, b) => b[1] - a[1])\r\n    .slice(0, 5);\r\n  \r\n  let tooltip = `<b>Unplanned:</b> ${formatDuration(unplannedMs)}`;\r\n  if (sorted.length > 0) {\r\n    tooltip += '<br/><b>Top Reasons:</b>';\r\n    sorted.forEach(([reason, ms]) => {\r\n      tooltip += `<br/>• ${reason}: ${formatDuration(ms)}`;\r\n    });\r\n  }\r\n  return tooltip;\r\n};\r\n\r\nconst buildPlannedTooltip = (plannedMs) => {\r\n  return `<b>Planned:</b> ${formatDuration(plannedMs)}`;\r\n};\r\n\r\n// Convert to sorted array\r\nconst allWeeks = Object.keys(weeklyData).sort();\r\nconst weeklyMetrics = allWeeks.map(weekStart => {\r\n  const w = weeklyData[weekStart];\r\n  \r\n  const mtbfMs = w.faultCount > 0 ? w.operatingTimeMs / w.faultCount : null;\r\n  const mttrMs = w.faultCount > 0 ? w.repairTimeMs / w.faultCount : null;\r\n  \r\n  return {\r\n    weekStart: w.weekStart,\r\n    weekLabel: w.weekLabel,\r\n    operatingTimeMs: w.operatingTimeMs,\r\n    unplannedTooltip: buildUnplannedTooltip(w.faultReasons, w.unplannedDowntimeMs),\r\nplannedTooltip: buildPlannedTooltip(w.plannedDowntimeMs),\r\n    faultCount: w.faultCount,\r\n    repairTimeMs: w.repairTimeMs,\r\n    faultReasons: w.faultReasons,\r\n   unplannedTooltip: buildUnplannedTooltip(w.faultReasons, w.unplannedDowntimeMs),\r\nplannedTooltip: buildPlannedTooltip(w.plannedDowntimeMs),\r\n    mtbfMs,\r\n    mtbfHours: mtbfMs != null ? msToHours(mtbfMs) : null,\r\n    mtbfFormatted: formatDuration(mtbfMs),\r\n    mttrMs,\r\n    mttrHours: mttrMs != null ? msToHours(mttrMs) : null,\r\n    mttrFormatted: formatDuration(mttrMs),\r\n    mttrOnTarget: mttrMs != null ? mttrMs <= MTTR_TARGET_MS : null,\r\n    unplannedDowntimeMs: w.unplannedDowntimeMs,\r\n    plannedDowntimeMs: w.plannedDowntimeMs,\r\n    totalDowntimeMs: w.unplannedDowntimeMs + w.plannedDowntimeMs\r\n  };\r\n});\r\n\r\n// Period calculations\r\nconst calcPeriodMetrics = (weeks) => {\r\n  const t = weeks.reduce((acc, w) => ({\r\n    operatingTimeMs: acc.operatingTimeMs + w.operatingTimeMs,\r\n    faultCount: acc.faultCount + w.faultCount,\r\n    repairTimeMs: acc.repairTimeMs + w.repairTimeMs\r\n  }), { operatingTimeMs: 0, faultCount: 0, repairTimeMs: 0 });\r\n  \r\n  const mtbf = t.faultCount > 0 ? t.operatingTimeMs / t.faultCount : 0;\r\n  const mttr = t.faultCount > 0 ? t.repairTimeMs / t.faultCount : 0;\r\n  \r\n  return {\r\n    mtbf,\r\n    mtbfFormatted: formatDuration(mtbf),\r\n    mttr,\r\n    mttrFormatted: formatDuration(mttr),\r\n    faultCount: t.faultCount,\r\n    operatingTimeMs: t.operatingTimeMs,\r\n    operatingTime: formatDuration(t.operatingTimeMs),\r\n    repairTimeMs: t.repairTimeMs,\r\n    repairTime: formatDuration(t.repairTimeMs)\r\n  };\r\n};\r\n\r\n\r\n\r\nconst currentWeeks = weeklyMetrics.slice(-4);\r\nconst priorWeeks = weeklyMetrics.slice(-8, -4);\r\nconst baselineWeeks = weeklyMetrics.slice(-12, -8);\r\n\r\nconst currentMetrics = calcPeriodMetrics(currentWeeks);\r\nconst priorMetrics = calcPeriodMetrics(priorWeeks);\r\nconst baselineMetrics = calcPeriodMetrics(baselineWeeks);\r\nconst overallMetrics = calcPeriodMetrics(weeklyMetrics);\r\n\r\n// Trend calculations\r\nconst mtbfChangeVsPrior = (priorMetrics.mtbf > 0 && currentMetrics.mtbf > 0)\r\n  ? (currentMetrics.mtbf - priorMetrics.mtbf) / priorMetrics.mtbf\r\n  : null;\r\n\r\nconst mttrChangeVsPrior = (priorMetrics.mttr > 0 && currentMetrics.mttr > 0)\r\n  ? (currentMetrics.mttr - priorMetrics.mttr) / priorMetrics.mttr\r\n  : null;\r\n\r\nconst getMtbfTrend = (change) => {\r\n  if (change == null) return \"unknown\";\r\n  if (change > 0.1) return \"improving\";\r\n  if (change < -0.1) return \"degrading\";\r\n  return \"stable\";\r\n};\r\n\r\nconst getMttrTrend = (change) => {\r\n  if (change == null) return \"unknown\";\r\n  if (change < -0.1) return \"improving\";\r\n  if (change > 0.1) return \"degrading\";\r\n  return \"stable\";\r\n};\r\n\r\nconst mtbfTrend = getMtbfTrend(mtbfChangeVsPrior);\r\nconst mttrTrend = getMttrTrend(mttrChangeVsPrior);\r\n\r\nconst reliability = {\r\n  current: {\r\n    ...currentMetrics,\r\n    periodLabel: \"Last 30 days\",\r\n    periodDays: 30\r\n  },\r\n  prior: {\r\n    ...priorMetrics,\r\n    periodLabel: \"30-60 days ago\",\r\n    periodDays: 30\r\n  },\r\n  baseline: {\r\n    ...baselineMetrics,\r\n    periodLabel: \"60-90 days ago\",\r\n    periodDays: 30\r\n  },\r\n  overall: {\r\n    ...overallMetrics,\r\n    periodLabel: \"Last 90 days\",\r\n    periodDays: 90\r\n  },\r\n  trend: {\r\n    mtbfChangeVsPrior,\r\n    mtbfChangeFormatted: formatPctChange(mtbfChangeVsPrior),\r\n    mtbfTrend,\r\n    mttrChangeVsPrior,\r\n    mttrChangeFormatted: formatPctChange(mttrChangeVsPrior),\r\n    mttrTrend\r\n  },\r\n  summary: {\r\n    mtbf: currentMetrics.mtbf,\r\n    mtbfFormatted: currentMetrics.mtbfFormatted,\r\n    mtbfTrendIcon: mtbfTrend === \"improving\" ? \"▲\" : mtbfTrend === \"degrading\" ? \"▼\" : \"→\",\r\n    mtbfTrendLabel: formatPctChange(mtbfChangeVsPrior) + \" vs prior 30d\",\r\n    mttr: currentMetrics.mttr,\r\n    mttrFormatted: currentMetrics.mttrFormatted,\r\n    mttrTrendIcon: mttrTrend === \"improving\" ? \"▼\" : mttrTrend === \"degrading\" ? \"▲\" : \"→\",\r\n    mttrTrendLabel: formatPctChange(mttrChangeVsPrior) + \" vs prior 30d\"\r\n  }\r\n};\r\n\r\n// Chart categories\r\nconst categories = [{\r\n  category: weeklyMetrics.map(w => ({ label: w.weekLabel }))\r\n}];\r\n\r\n// MTBF Trend Chart\r\nconst mtbfTrendChart = {\r\n  chart: {\r\n    caption: \"MTBF Trend\",\r\n    subcaption: \"Weekly - Last 12 Weeks\",\r\n    xAxisName: \"Week\",\r\n    yAxisName: \"Hours\",\r\n    theme: \"fusion\",\r\n    showValues: \"0\",\r\n    connectNullData: \"1\",\r\n    drawCrossLine: \"1\"\r\n  },\r\n  categories: categories,\r\n  dataset: [\r\n    {\r\n      seriesname: \"MTBF\",\r\n      color: \"#2E86AB\",\r\n      data: weeklyMetrics.map(w => ({\r\n        value: w.mtbfHours != null ? w.mtbfHours.toFixed(2) : null\r\n      }))\r\n    }\r\n  ]\r\n};\r\n\r\n// MTTR Trend Chart\r\nconst mttrTrendChart = {\r\n  chart: {\r\n    caption: \"MTTR Trend\",\r\n    subcaption: \"Weekly - Last 12 Weeks\",\r\n    xAxisName: \"Week\",\r\n    yAxisName: \"Hours\",\r\n    theme: \"fusion\",\r\n    showValues: \"0\",\r\n    connectNullData: \"1\",\r\n    drawCrossLine: \"1\"\r\n  },\r\n  categories: categories,\r\n  dataset: [\r\n    {\r\n      seriesname: \"MTTR\",\r\n      color: \"#A23B72\",\r\n      data: weeklyMetrics.map(w => ({\r\n        value: w.mttrHours != null ? w.mttrHours.toFixed(2) : null\r\n      }))\r\n    },\r\n    {\r\n      seriesname: \"Target\",\r\n      renderAs: \"line\",\r\n      dashed: \"1\",\r\n      color: \"#FF5733\",\r\n      showValues: \"0\",\r\n      data: weeklyMetrics.map(() => ({ value: MTTR_TARGET_HOURS.toFixed(2) }))\r\n    }\r\n  ]\r\n};\r\n\r\n// Fault Count Chart\r\nconst faultCountChart = {\r\n  chart: {\r\n    caption: \"Weekly Fault Count\",\r\n    xAxisName: \"Week\",\r\n    yAxisName: \"Faults\",\r\n    theme: \"fusion\",\r\n    showValues: \"1\"\r\n  },\r\n  data: weeklyMetrics.map(w => ({\r\n    label: w.weekLabel,\r\n    value: w.faultCount\r\n  }))\r\n};\r\n\r\n// Downtime Chart\r\nconst downtimeChart = {\r\n  chart: {\r\n    caption: \"Weekly Downtime\",\r\n    xAxisName: \"Week\",\r\n    yAxisName: \"Hours\",\r\n    theme: \"fusion\",\r\n    showValues: \"0\",\r\n    plotToolText: \"$tooltext\"\r\n  },\r\n  categories: categories,\r\ndataset: [\r\n  {\r\n    seriesname: \"Unplanned\",\r\n    color: \"#E74C3C\",\r\n    data: weeklyMetrics.map(w => ({\r\n      value: msToHours(w.unplannedDowntimeMs).toFixed(2),\r\n      tooltext: w.unplannedTooltip\r\n    }))\r\n  },\r\n  {\r\n    seriesname: \"Planned\",\r\n    color: \"#3498DB\",\r\n    data: weeklyMetrics.map(w => ({\r\n      value: msToHours(w.plannedDowntimeMs).toFixed(2),\r\n      tooltext: w.plannedTooltip\r\n    }))\r\n  }\r\n]};\r\n\r\n// MTBF Bullet Chart\r\nconst mtbfUpperLimit = Math.max(\r\n  msToHours(currentMetrics.mtbf) || 0,\r\n  msToHours(priorMetrics.mtbf) || 0,\r\n  msToHours(baselineMetrics.mtbf) || 0,\r\n  1\r\n) * 1.2;\r\n\r\nconst mtbfBulletChart = {\r\n  chart: {\r\n    caption: \"MTBF\",\r\n    subcaption: \"Current vs Prior Periods\",\r\n    lowerLimit: \"0\",\r\n    upperLimit: safeToFixed(mtbfUpperLimit),\r\n    numberSuffix: \" hrs\",\r\n    theme: \"fusion\"\r\n  },\r\n  colorRange: {\r\n    color: [\r\n      { minValue: \"0\", maxValue: safeToFixed(mtbfUpperLimit * 0.33), code: \"#F2726F\", label: \"Poor\" },\r\n      { minValue: safeToFixed(mtbfUpperLimit * 0.33), maxValue: safeToFixed(mtbfUpperLimit * 0.67), code: \"#FFC533\", label: \"Average\" },\r\n      { minValue: safeToFixed(mtbfUpperLimit * 0.67), maxValue: safeToFixed(mtbfUpperLimit), code: \"#62B58F\", label: \"Good\" }\r\n    ]\r\n  },\r\n  value: safeToFixed(msToHours(currentMetrics.mtbf)),\r\n  target: safeToFixed(msToHours(priorMetrics.mtbf))\r\n};\r\n\r\n// MTTR Bullet Chart\r\nconst mttrUpperLimit = Math.max(\r\n  msToHours(currentMetrics.mttr) || 0,\r\n  msToHours(priorMetrics.mttr) || 0,\r\n  MTTR_TARGET_HOURS,\r\n  1\r\n) * 1.2;\r\n\r\nconst mttrBulletChart = {\r\n  chart: {\r\n    caption: \"MTTR\",\r\n    subcaption: \"Current vs Target\",\r\n    lowerLimit: \"0\",\r\n    upperLimit: safeToFixed(mttrUpperLimit),\r\n    numberSuffix: \" hrs\",\r\n    theme: \"fusion\"\r\n  },\r\n  colorRange: {\r\n    color: [\r\n      { minValue: \"0\", maxValue: safeToFixed(MTTR_TARGET_HOURS), code: \"#62B58F\", label: \"On Target\" },\r\n      { minValue: safeToFixed(MTTR_TARGET_HOURS), maxValue: safeToFixed(MTTR_TARGET_HOURS * 1.5), code: \"#FFC533\", label: \"Warning\" },\r\n      { minValue: safeToFixed(MTTR_TARGET_HOURS * 1.5), maxValue: safeToFixed(mttrUpperLimit), code: \"#F2726F\", label: \"Critical\" }\r\n    ]\r\n  },\r\n  value: safeToFixed(msToHours(currentMetrics.mttr)),\r\n  target: safeToFixed(MTTR_TARGET_HOURS)\r\n};\r\n\r\nreturn {\r\n  workcenter: {\r\n    id: $state.context.boundary?.workcenter?.id,\r\n    code: $state.context.boundary?.workcenter?.code,\r\n    name: $state.context.boundary?.workcenter?.name\r\n  },\r\n  lastRefresh: $state.context.boundary?.boundaries?.now,\r\n  lastRefreshFormatted: $moment($state.context.boundary?.boundaries?.now).format('MMM D, YYYY h:mm A'),\r\n  reliability,\r\n  weeklyMetrics,\r\ncharts: {\r\n  mtbfTrend: mtbfTrendChart,\r\n  mttrTrend: mttrTrendChart,\r\n  faultCount: faultCountChart,\r\n  downtime: downtimeChart,\r\n  mtbfBullet: mtbfBulletChart,\r\n  mttrBullet: mttrBulletChart\r\n},\r\n  config: {\r\n    mttrTargetMs: MTTR_TARGET_MS,\r\n    mttrTargetHours: MTTR_TARGET_HOURS,\r\n    weekCount: weeklyMetrics.length\r\n  }\r\n};",
+                "nextNodes": [
+                  "39d84eb1-fdab-42fc-b2af-2160c7c5c79f"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": true,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "JavaScript"
+            },
+            "4a7fee80-5409-410c-b414-9d0a6c8d06a1": {
+              "id": "4a7fee80-5409-410c-b414-9d0a6c8d06a1",
+              "type": "transform",
+              "selected": false,
+              "x": 564,
+              "y": 224,
+              "ports": [
+                {
+                  "id": "cmlb1n5yq00od356rfknus6qf",
+                  "type": "default",
+                  "x": 556,
+                  "y": 255.73,
+                  "name": "cmlb1n5yq00oe356r6xjijyp4",
+                  "parentNode": "4a7fee80-5409-410c-b414-9d0a6c8d06a1",
+                  "links": [
+                    "211f0309-4fdb-4e91-ba98-32cebf552818",
+                    "e00e72c6-e461-42de-a5dd-6866ce7ea305"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmlb1n5yq00of356r9u8jrq0f",
+                  "type": "default",
+                  "x": 788.17,
+                  "y": 255.73,
+                  "name": "cmlb1n5yq00og356r6gpx8vso",
+                  "parentNode": "4a7fee80-5409-410c-b414-9d0a6c8d06a1",
+                  "links": [
+                    "cf9d932b-8f87-46b0-846c-a53bd9be51ac"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "bc4bfd56-b466-4eaa-96fa-1e3ae0a1ab7d"
+                ],
+                "transform": "{\r\n  \"wcId\":  $coalesce([$metadata.querystring.wcId, $components.Screen.context.workcenterId, \"wc-vmc-c1\"]),\r\n  \"all\": $.all ? $.all : \"false\",\r\n  \"tz\": $coalesce([$metadata.settings.TimeZone, $momentTzGuess()])\r\n    }"
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Get Dashboard Runtime properties"
+            },
+            "39d84eb1-fdab-42fc-b2af-2160c7c5c79f": {
+              "id": "39d84eb1-fdab-42fc-b2af-2160c7c5c79f",
+              "type": "transform",
+              "selected": false,
+              "x": 1695,
+              "y": 340,
+              "ports": [
+                {
+                  "id": "cmlb1n5yq00op356r07kwrgy5",
+                  "type": "default",
+                  "x": 1687,
+                  "y": 371.73,
+                  "name": "cmlb1n5yq00oq356rokkvxafq",
+                  "parentNode": "39d84eb1-fdab-42fc-b2af-2160c7c5c79f",
+                  "links": [
+                    "3ad4b288-079d-4627-ade5-3ee9bad1e77b"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmlb1n5yq00or356r4rq1y7oe",
+                  "type": "default",
+                  "x": 1841,
+                  "y": 371.73,
+                  "name": "cmlb1n5yq00os356reddfq2wf",
+                  "parentNode": "39d84eb1-fdab-42fc-b2af-2160c7c5c79f",
+                  "links": [
+                    "64cc6f26-f0c3-47c2-9031-3a1b666112d9"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "d21ea82c-c40f-467d-acd0-b232aaaf2d85"
+                ],
+                "transform": "($data:= $;\r\n$components.Screen.fn.setContext($data))"
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "JSONata"
+            }
+          }
+        }
+      ],
+      "name": "Reliability Dashboard - Web Flow",
+      "type": "Screen",
+      "version": "0.0.12",
+      "walkthrough": {
+        "steps": []
+      }
+    }
+  }
+}

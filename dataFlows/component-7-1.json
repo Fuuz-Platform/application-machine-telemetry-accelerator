@@ -1,0 +1,2278 @@
+{
+  "header": {
+    "id": "telemetryGeneratorScheduler",
+    "name": "Telemetry Generator Scheduler IIoT Raw Data",
+    "description": "the main flow used to generate the batches of datapoints that then go to sub-flows to have raw data generated and stored in telemetryRaw, telemetryRawBool",
+    "active": true,
+    "substitutesDataFlowId": null,
+    "dataFlowTypeId": "System",
+    "logLevelId": "Info",
+    "mcpToolConfiguration": null,
+    "moduleId": "machineDataApp",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cmlcjipv24q03016u1h8whzrk",
+    "number": "0.0.16",
+    "description": "",
+    "dataFlowId": "telemetryGeneratorScheduler",
+    "flow": {
+      "id": "cmlcjipv24q03016u1h8whzrk",
+      "name": "Telemetry Generator Scheduler IIoT Raw Data",
+      "type": "System",
+      "nodes": [
+        {
+          "id": "22a20fdc-e79c-48ab-97be-69ecf2e857fc",
+          "name": "Schedule",
+          "type": "schedule",
+          "data": {
+            "configure": "Open Schedule Editor",
+            "nextNodes": [
+              "afbb3780-e137-4c8a-9bb5-5be5d5661bf6"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "afbb3780-e137-4c8a-9bb5-5be5d5661bf6",
+          "name": "GetDataPointsByType",
+          "type": "query",
+          "data": {
+            "api": "application",
+            "variablesTransform": "{}",
+            "query": "query GetDataPointsByType {\r\n  floatDataPoints: dataPoint(\r\n    where: {\r\n      historize: { _eq: true }\r\n      enabled: { _eq: true }\r\n      dataType: { _eq: \"float\" }\r\n      asset: { status: { _eq: \"Active\" } }\r\n    }\r\n    first: 10000\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        dataType\r\n        frequency\r\n        setPoint\r\n        upperLimit\r\n        lowerLimit\r\n        tolerance\r\n        precision\r\n      }\r\n    }\r\n  }\r\n  \r\n  integerDataPoints: dataPoint(\r\n    where: {\r\n      historize: { _eq: true }\r\n      enabled: { _eq: true }\r\n      dataType: { _eq: \"integer\" }\r\n      asset: { status: { _eq: \"Active\" } }\r\n    }\r\n    first: 10000\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        frequency\r\n        setPoint\r\n        upperLimit\r\n        lowerLimit\r\n        tolerance\r\n        precision\r\n      }\r\n    }\r\n  }\r\n  \r\n  booleanDataPoints: dataPoint(\r\n    where: {\r\n      historize: { _eq: true }\r\n      enabled: { _eq: true }\r\n      dataType: { _eq: \"boolean\" }\r\n      asset: { status: { _eq: \"Active\" } }\r\n    }\r\n    first: 10000\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        name\r\n        frequency\r\n      }\r\n    }\r\n  }\r\n  \r\n  stringDataPoints: dataPoint(\r\n    where: {\r\n      historize: { _eq: true }\r\n      enabled: { _eq: true }\r\n      dataType: { _eq: \"string\" }\r\n      asset: { status: { _eq: \"Active\" } }\r\n    }\r\n    first: 10000\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        frequency\r\n      }\r\n    }\r\n  }\r\n}",
+            "nextNodes": [
+              "ec2c4533-029b-4dc1-8890-b2e938cb7f5c"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "ec2c4533-029b-4dc1-8890-b2e938cb7f5c",
+          "name": "Calculate Window & Set Context",
+          "type": "javascriptTransform",
+          "data": {
+            "transform": "'use strict';\r\n\r\n/**\r\n * Calculate simple UTC 5-minute window for all datapoints\r\n * Window: (now - 5 minutes) to now\r\n */\r\n\r\nvar config = {\r\n  frequencySeconds: 300, // 5 minutes\r\n  anomaly: { enabled: true, probability: 0.02 }\r\n};\r\n\r\n// Calculate UTC window - subtract 5 minutes from now\r\nvar now = new Date();\r\nvar windowEnd = now.toISOString();\r\nvar windowStartMs = now.getTime() - (config.frequencySeconds * 1000);\r\nvar windowStart = new Date(windowStartMs).toISOString();\r\n\r\nconsole.log('=== TIME WINDOW (UTC) ===');\r\nconsole.log('Start: ' + windowStart);\r\nconsole.log('End:   ' + windowEnd);\r\nconsole.log('Duration: ' + config.frequencySeconds + ' seconds');\r\n\r\n// Pass through original query data + add window context\r\nreturn {\r\n  floatDataPoints: $.floatDataPoints,\r\n  integerDataPoints: $.integerDataPoints,\r\n  booleanDataPoints: $.booleanDataPoints,\r\n  stringDataPoints: $.stringDataPoints,\r\n  timezone: $.timezone,\r\n  window: {\r\n    start: windowStart,\r\n    end: windowEnd,\r\n    timezone: 'UTC',\r\n    anomalyEnabled: config.anomaly.enabled,\r\n    anomalyProb: config.anomaly.probability\r\n  }\r\n};",
+            "nextNodes": [
+              "5e61f422-5fb0-4415-a786-80a945a07cb3"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "5e61f422-5fb0-4415-a786-80a945a07cb3",
+          "name": "Merge Context",
+          "type": "mergeContext",
+          "data": {
+            "transform": "{\r\n  \"window\": $.window\r\n}",
+            "nextNodes": [
+              "ad97e759-fd6c-43c6-9898-29aeb5b8a0b7",
+              "ca0c44f3-853f-4c11-aee4-10c96b61dcfc",
+              "7c904a63-780d-4539-8549-2df53e2b6720"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "1a9205ce-3269-4156-9ac0-34cc21ca70c2",
+          "name": "Batch Numeric By Frequency",
+          "type": "javascriptTransform",
+          "data": {
+            "transform": "'use strict';\r\n\r\nvar TYPE_NUMBER = 0;\r\nvar input = $ || {};\r\nvar dataPoints = input.dataPoints || [];\r\nvar window = $state.context.window;\r\n\r\nconsole.log('Batching ' + dataPoints.length + ' numeric datapoints');\r\n\r\nif (!dataPoints || dataPoints.length === 0 || !window) {\r\n  return [];\r\n}\r\n\r\nvar byFreq = {};\r\n\r\nfor (var i = 0; i < dataPoints.length; i++) {\r\n  var dp = dataPoints[i];\r\n  \r\n  if (!dp || !dp.id) continue;\r\n  \r\n  var freq = dp.frequency || 5000;\r\n  \r\n  if (!byFreq[freq]) byFreq[freq] = [];\r\n  \r\n  byFreq[freq].push({\r\n    id: dp.id,\r\n    setPoint: dp.setPoint != null ? dp.setPoint : 0,\r\n    upperLimit: dp.upperLimit != null ? dp.upperLimit : 100,\r\n    lowerLimit: dp.lowerLimit != null ? dp.lowerLimit : 0,\r\n    tolerance: dp.tolerance != null ? dp.tolerance : 1,\r\n    precision: dp.precision != null ? dp.precision : 2\r\n  });\r\n}\r\n\r\nvar batches = [];\r\n\r\nfor (var freq in byFreq) {\r\n  if (!byFreq.hasOwnProperty(freq)) continue;\r\n  \r\n  var dps = byFreq[freq];\r\n  console.log('  Frequency ' + freq + 'ms: ' + dps.length + ' datapoints');\r\n  \r\n  batches.push({\r\n    type: TYPE_NUMBER,\r\n    frequency: parseInt(freq),\r\n    dataPoints: dps,\r\n    window: window\r\n  });\r\n}\r\n\r\nconsole.log('Created ' + batches.length + ' batches');\r\n\r\n// Return array directly, NOT wrapped in object\r\nreturn batches;",
+            "nextNodes": [
+              "3665213c-0c3a-4425-956f-18b07617ad1d"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "b59af77a-ea19-4286-ab36-240b4ee678c4",
+          "name": "Batch Boolean By Frequency",
+          "type": "javascriptTransform",
+          "data": {
+            "transform": "'use strict';\r\n\r\nvar TYPE_BOOLEAN = 1;\r\nvar input = $ || {};\r\nvar dataPoints = input.dataPoints || [];\r\nvar window = $state.context.window;\r\n\r\nconsole.log('=== BATCH BOOLEAN BY FREQUENCY ===');\r\nconsole.log('Input dataPoints length: ' + dataPoints.length);\r\n\r\nif (!dataPoints || dataPoints.length === 0) {\r\n  console.log('No datapoints - returning empty array');\r\n  return [];\r\n}\r\n\r\nif (!window) {\r\n  console.log('No window in context - returning empty array');\r\n  return [];\r\n}\r\n\r\n// Check structure\r\nvar firstItem = dataPoints[0];\r\nvar hasNodeWrapper = firstItem && firstItem.node;\r\nconsole.log('Has .node wrapper: ' + (hasNodeWrapper ? 'YES' : 'NO'));\r\n\r\nif (hasNodeWrapper && firstItem.node.id) {\r\n  console.log('First DP id: ' + firstItem.node.id);\r\n  console.log('First DP name: ' + (firstItem.node.name || 'MISSING'));\r\n}\r\n\r\nvar byFreq = {};\r\nvar processedCount = 0;\r\nvar skippedCount = 0;\r\n\r\nfor (var i = 0; i < dataPoints.length; i++) {\r\n  var item = dataPoints[i];\r\n  \r\n  // Extract node - handle both wrapped and flat structures\r\n  var dp = item.node ? item.node : item;\r\n  \r\n  if (!dp || !dp.id) {\r\n    console.log('  Item ' + i + ': SKIP - no id');\r\n    skippedCount++;\r\n    continue;\r\n  }\r\n  \r\n  var freq = dp.frequency || 5000;\r\n  \r\n  if (!byFreq[freq]) {\r\n    byFreq[freq] = [];\r\n    console.log('  Created frequency bucket: ' + freq + 'ms');\r\n  }\r\n  \r\n  byFreq[freq].push({\r\n    id: dp.id,\r\n    name: dp.name || ''\r\n  });\r\n  \r\n  processedCount++;\r\n}\r\n\r\nconsole.log('Processed: ' + processedCount + ' | Skipped: ' + skippedCount);\r\n\r\nvar batches = [];\r\n\r\nfor (var freq in byFreq) {\r\n  if (!byFreq.hasOwnProperty(freq)) continue;\r\n  \r\n  var dps = byFreq[freq];\r\n  console.log('  Frequency ' + freq + 'ms: ' + dps.length + ' datapoints');\r\n  \r\n  batches.push({\r\n    type: TYPE_BOOLEAN,\r\n    frequency: parseInt(freq),\r\n    dataPoints: dps,\r\n    window: window\r\n  });\r\n}\r\n\r\nconsole.log('Total batches created: ' + batches.length);\r\n\r\nreturn batches;",
+            "nextNodes": [
+              "9dbc56cd-8e5d-43c6-9344-3d17e6417ff8"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "bfe9391c-ceed-4725-9426-646ba25ec0d1",
+          "name": "Batch String By Frequency",
+          "type": "javascriptTransform",
+          "data": {
+            "transform": "'use strict';\r\n\r\nvar TYPE_STRING = 2;\r\nvar input = $ || {};\r\nvar dataPoints = input.dataPoints || [];\r\nvar window = $state.context.window;\r\n\r\nconsole.log('=== BATCH STRING BY FREQUENCY ===');\r\nconsole.log('Input dataPoints length: ' + dataPoints.length);\r\n\r\nif (!dataPoints || dataPoints.length === 0) {\r\n  console.log('No datapoints - returning empty array');\r\n  return [];\r\n}\r\n\r\nif (!window) {\r\n  console.log('No window in context - returning empty array');\r\n  return [];\r\n}\r\n\r\n// Check structure\r\nvar firstItem = dataPoints[0];\r\nvar hasNodeWrapper = firstItem && firstItem.node;\r\nconsole.log('Has .node wrapper: ' + (hasNodeWrapper ? 'YES' : 'NO'));\r\n\r\nif (hasNodeWrapper && firstItem.node.id) {\r\n  console.log('First DP id: ' + firstItem.node.id);\r\n  console.log('First DP name: ' + (firstItem.node.name || 'MISSING'));\r\n}\r\n\r\nvar byFreq = {};\r\nvar processedCount = 0;\r\nvar skippedCount = 0;\r\n\r\nfor (var i = 0; i < dataPoints.length; i++) {\r\n  var item = dataPoints[i];\r\n  \r\n  // Extract node - handle both wrapped and flat structures\r\n  var dp = item.node ? item.node : item;\r\n  \r\n  if (!dp || !dp.id) {\r\n    console.log('  Item ' + i + ': SKIP - no id');\r\n    skippedCount++;\r\n    continue;\r\n  }\r\n  \r\n  var freq = dp.frequency || 5000;\r\n  \r\n  if (!byFreq[freq]) {\r\n    byFreq[freq] = [];\r\n    console.log('  Created frequency bucket: ' + freq + 'ms');\r\n  }\r\n  \r\n  byFreq[freq].push({\r\n    id: dp.id,\r\n    name: dp.name || ''\r\n  });\r\n  \r\n  processedCount++;\r\n}\r\n\r\nconsole.log('Processed: ' + processedCount + ' | Skipped: ' + skippedCount);\r\n\r\nvar batches = [];\r\n\r\nfor (var freq in byFreq) {\r\n  if (!byFreq.hasOwnProperty(freq)) continue;\r\n  \r\n  var dps = byFreq[freq];\r\n  console.log('  Frequency ' + freq + 'ms: ' + dps.length + ' datapoints');\r\n  \r\n  batches.push({\r\n    type: TYPE_STRING,\r\n    frequency: parseInt(freq),\r\n    dataPoints: dps,\r\n    window: window\r\n  });\r\n}\r\n\r\nconsole.log('Total batches created: ' + batches.length);\r\n\r\nreturn batches;",
+            "nextNodes": [
+              "f3a527ae-4b11-4acc-812f-249110dada64"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "ad97e759-fd6c-43c6-9898-29aeb5b8a0b7",
+          "name": "ExtractNumeric",
+          "type": "filterArray",
+          "data": {
+            "inputTransform": "{\r\n  \"dataPoints\": $append(\r\n    $.floatDataPoints.edges.node,\r\n    $.integerDataPoints.edges.node\r\n  )\r\n}",
+            "outputTransform": "(\r\n  $chunkSize := 500;\r\n  $dataPoints := $.dataPoints;\r\n  $numChunks := $ceil($count($dataPoints) / $chunkSize);\r\n  \r\n  [0..$numChunks - 1] ~> $map(function($chunkIdx) {\r\n    {\r\n      \"dataPoints\": $dataPoints ~> $filter(function($dp, $idx) {\r\n        $idx >= ($chunkIdx * $chunkSize) and $idx < (($chunkIdx + 1) * $chunkSize)\r\n      })\r\n    }\r\n  })\r\n)",
+            "enableAdvancedConfiguration": true,
+            "filterTransform": "$",
+            "nextNodes": [
+              "ed8ba620-7548-44e4-8b0a-da37eaacb4cd"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "ca0c44f3-853f-4c11-aee4-10c96b61dcfc",
+          "name": "ExtractBoolean",
+          "type": "filterArray",
+          "data": {
+            "inputTransform": "{\r\n  \"dataPoints\": $.booleanDataPoints.edges\r\n}",
+            "outputTransform": "(\r\n  $chunkSize := 500;\r\n  $dataPoints := $.dataPoints;\r\n  $numChunks := $ceil($count($dataPoints) / $chunkSize);\r\n  \r\n  [0..$numChunks - 1] ~> $map(function($chunkIdx) {\r\n    {\r\n      \"dataPoints\": $dataPoints ~> $filter(function($dp, $idx) {\r\n        $idx >= ($chunkIdx * $chunkSize) and $idx < (($chunkIdx + 1) * $chunkSize)\r\n      })\r\n    }\r\n  })\r\n)",
+            "enableAdvancedConfiguration": true,
+            "filterTransform": "$",
+            "nextNodes": [
+              "135e48ea-9dcd-41f3-a19a-0d778ed09e3a"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "7c904a63-780d-4539-8549-2df53e2b6720",
+          "name": "ExtractString",
+          "type": "filterArray",
+          "data": {
+            "inputTransform": "{\r\n  \"dataPoints\": $.stringDataPoints.edges\r\n}",
+            "outputTransform": "(\r\n  $chunkSize := 500;\r\n  $dataPoints := $.dataPoints;\r\n  $numChunks := $ceil($count($dataPoints) / $chunkSize);\r\n  \r\n  [0..$numChunks - 1] ~> $map(function($chunkIdx) {\r\n    {\r\n      \"dataPoints\": $dataPoints ~> $filter(function($dp, $idx) {\r\n        $idx >= ($chunkIdx * $chunkSize) and $idx < (($chunkIdx + 1) * $chunkSize)\r\n      })\r\n    }\r\n  })\r\n)",
+            "enableAdvancedConfiguration": true,
+            "filterTransform": "$",
+            "nextNodes": [
+              "504ac41a-8530-4093-ae75-58883a9a83ed"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "ed8ba620-7548-44e4-8b0a-da37eaacb4cd",
+          "name": "Broadcast",
+          "type": "broadcast",
+          "data": {
+            "nextNodes": [
+              "1a9205ce-3269-4156-9ac0-34cc21ca70c2"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "135e48ea-9dcd-41f3-a19a-0d778ed09e3a",
+          "name": "Broadcast",
+          "type": "broadcast",
+          "data": {
+            "nextNodes": [
+              "b59af77a-ea19-4286-ab36-240b4ee678c4"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "504ac41a-8530-4093-ae75-58883a9a83ed",
+          "name": "Broadcast",
+          "type": "broadcast",
+          "data": {
+            "nextNodes": [
+              "bfe9391c-ceed-4725-9426-646ba25ec0d1"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "3665213c-0c3a-4425-956f-18b07617ad1d",
+          "name": "Generate Number Records",
+          "type": "javascriptTransform",
+          "data": {
+            "nextNodes": [
+              "ce7f9973-266a-4227-a7e8-31654fa3a4cb"
+            ],
+            "transform": "'use strict';\r\n\r\n/**\r\n * Generate numeric records for ALL batches with OPC UA quality codes\r\n * OUTPUT: First chunk only (max 1000 records)\r\n * \r\n * QUALITY DISTRIBUTION:\r\n *   - ~3% Bad (out of range - above upperLimit or below lowerLimit)\r\n *   - ~7% Uncertain (warning zone - between warning and limit)\r\n *   - ~90% Good (within normal range)\r\n * \r\n * GUARANTEES:\r\n *   - Every record has: dataPointId, recordedAt, value, quality, qualityCode\r\n *   - First 5 records are forced Bad for testing\r\n */\r\n\r\nvar batches = $ || [];\r\nvar CHUNK_SIZE = 1000;\r\nvar FORCE_BAD_PERCENT = 0.03;\r\nvar FORCE_WARNING_PERCENT = 0.07;\r\n\r\nconsole.log('=== GENERATE NUMERIC RECORDS ===');\r\nconsole.log('Batches: ' + batches.length);\r\n\r\nif (!Array.isArray(batches) || batches.length === 0) {\r\n  console.log('No batches to process');\r\n  return [];\r\n}\r\n\r\n// ============================================================\r\n// VALUE GENERATOR\r\n// ============================================================\r\nfunction generateValue(dp, timestamp, prevValue, anomalyEnabled, anomalyProb) {\r\n  var setPoint = dp.setPoint;\r\n  var upperLimit = dp.upperLimit;\r\n  var lowerLimit = dp.lowerLimit;\r\n  var upperWarning = dp.upperWarning;\r\n  var lowerWarning = dp.lowerWarning;\r\n\r\n  var hour = new Date(timestamp).getUTCHours();\r\n  var isWorkHours = hour >= 6 && hour <= 22;\r\n\r\n  var baseValue = setPoint != null ? setPoint : 50;\r\n  var range = (upperLimit != null && lowerLimit != null)\r\n    ? (upperLimit - lowerLimit) * 0.3\r\n    : 20;\r\n\r\n  var value;\r\n  var roll = Math.random();\r\n\r\n  // 3% chance: force out-of-range\r\n  if (roll < FORCE_BAD_PERCENT && upperLimit != null && lowerLimit != null) {\r\n    if (Math.random() < 0.5) {\r\n      value = upperLimit * (1.05 + Math.random() * 0.20);\r\n    } else {\r\n      value = lowerLimit * (0.75 + Math.random() * 0.20);\r\n    }\r\n  }\r\n  // 7% chance: force warning zone\r\n  else if (roll < (FORCE_BAD_PERCENT + FORCE_WARNING_PERCENT)) {\r\n    var hasUpper = upperWarning != null && upperLimit != null;\r\n    var hasLower = lowerWarning != null && lowerLimit != null;\r\n\r\n    if (hasUpper && hasLower) {\r\n      if (Math.random() < 0.5) {\r\n        value = upperWarning + (upperLimit - upperWarning) * (0.2 + Math.random() * 0.6);\r\n      } else {\r\n        value = lowerLimit + (lowerWarning - lowerLimit) * (0.2 + Math.random() * 0.6);\r\n      }\r\n    } else if (hasUpper) {\r\n      value = upperWarning + (upperLimit - upperWarning) * (0.2 + Math.random() * 0.6);\r\n    } else if (hasLower) {\r\n      value = lowerLimit + (lowerWarning - lowerLimit) * (0.2 + Math.random() * 0.6);\r\n    } else {\r\n      value = null; // fall through to normal\r\n    }\r\n  }\r\n\r\n  // 90% normal generation (or fallback)\r\n  if (value == null) {\r\n    if (prevValue == null) {\r\n      value = baseValue + (Math.random() - 0.5) * range * 0.5;\r\n    } else {\r\n      var drift = (Math.random() - 0.5) * range * 0.05;\r\n      value = prevValue + drift + (baseValue - prevValue) * 0.1;\r\n    }\r\n\r\n    if (isWorkHours) {\r\n      value += Math.sin(timestamp / 3600000 * Math.PI) * range * 0.2;\r\n    }\r\n\r\n    if (anomalyEnabled && Math.random() < anomalyProb) {\r\n      value += (Math.random() - 0.5) * range * 2;\r\n    }\r\n\r\n    if (upperLimit != null && value > upperLimit * 1.5) value = upperLimit * 1.5;\r\n    if (lowerLimit != null && value < lowerLimit * 0.5) value = lowerLimit * 0.5;\r\n  }\r\n\r\n  var precision = dp.precision != null ? dp.precision : 2;\r\n  var factor = Math.pow(10, precision);\r\n  return Math.round(value * factor) / factor;\r\n}\r\n\r\n// ============================================================\r\n// EVALUATE QUALITY (always returns quality + qualityCode)\r\n// ============================================================\r\nfunction evaluateQuality(value, dp) {\r\n  if (dp.upperLimit != null && value > dp.upperLimit) {\r\n    return { quality: \"Bad\", qualityCode: \"16\" };\r\n  }\r\n  if (dp.lowerLimit != null && value < dp.lowerLimit) {\r\n    return { quality: \"Bad\", qualityCode: \"16\" };\r\n  }\r\n  if (dp.upperWarning != null && value > dp.upperWarning) {\r\n    return { quality: \"Uncertain\", qualityCode: \"64\" };\r\n  }\r\n  if (dp.lowerWarning != null && value < dp.lowerWarning) {\r\n    return { quality: \"Uncertain\", qualityCode: \"64\" };\r\n  }\r\n  return { quality: \"Good\", qualityCode: \"192\" };\r\n}\r\n\r\n// ============================================================\r\n// GENERATE ALL RECORDS\r\n// ============================================================\r\nvar allRecords = [];\r\nvar totalRecordCount = 0;\r\nvar qualityStats = { good: 0, uncertain: 0, bad: 0 };\r\n\r\nfor (var b = 0; b < batches.length; b++) {\r\n  var batch = batches[b];\r\n  var dataPoints = batch.dataPoints || [];\r\n  var frequency = batch.frequency || 5000;\r\n  var win = batch.window || {};\r\n\r\n  var windowStartMs = new Date(win.start).getTime();\r\n  var windowEndMs = new Date(win.end).getTime();\r\n  var anomalyEnabled = win.anomalyEnabled !== false;\r\n  var anomalyProb = win.anomalyProb || 0.02;\r\n\r\n  if (isNaN(windowStartMs) || isNaN(windowEndMs)) {\r\n    console.log('Batch ' + b + ': Invalid window - skipping');\r\n    continue;\r\n  }\r\n  if (dataPoints.length === 0) {\r\n    console.log('Batch ' + b + ': No datapoints - skipping');\r\n    continue;\r\n  }\r\n\r\n  console.log('Batch ' + b + ': freq=' + frequency + 'ms, dps=' + dataPoints.length);\r\n\r\n  var dpStates = {};\r\n  for (var d = 0; d < dataPoints.length; d++) {\r\n    dpStates[dataPoints[d].id] = null;\r\n  }\r\n\r\n  var ts = windowStartMs;\r\n  var batchRecordCount = 0;\r\n\r\n  while (ts < windowEndMs) {\r\n    for (var d = 0; d < dataPoints.length; d++) {\r\n      var dp = dataPoints[d];\r\n\r\n      // Skip invalid datapoints\r\n      if (!dp.id) {\r\n        console.log('SKIPPED: datapoint missing id at batch ' + b + ' index ' + d);\r\n        continue;\r\n      }\r\n\r\n      // 1. Generate value\r\n      var value = generateValue(dp, ts, dpStates[dp.id], anomalyEnabled, anomalyProb);\r\n      dpStates[dp.id] = value;\r\n\r\n      // 2. Evaluate quality\r\n      var qResult = evaluateQuality(value, dp);\r\n\r\n      // 3. Track stats\r\n      if (qResult.quality === \"Bad\") qualityStats.bad++;\r\n      else if (qResult.quality === \"Uncertain\") qualityStats.uncertain++;\r\n      else qualityStats.good++;\r\n\r\n      // 4. Build complete record — all 5 fields always present\r\n      var record = {\r\n        dataPointId: dp.id,\r\n        recordedAt: new Date(ts).toISOString(),\r\n        value: value,\r\n        quality: qResult.quality,\r\n        qualityCode: qResult.qualityCode\r\n      };\r\n\r\n      allRecords.push(record);\r\n      batchRecordCount++;\r\n    }\r\n\r\n    ts += frequency;\r\n  }\r\n\r\n  console.log('  Generated ' + batchRecordCount + ' records');\r\n  totalRecordCount += batchRecordCount;\r\n}\r\n\r\nconsole.log('Total records: ' + totalRecordCount);\r\nconsole.log('Quality: Good=' + qualityStats.good + ', Uncertain=' + qualityStats.uncertain + ', Bad=' + qualityStats.bad);\r\n\r\n// ============================================================\r\n// FORCE FIRST 5 RECORDS BAD\r\n// ============================================================\r\nfor (var i = 0; i < Math.min(1, allRecords.length); i++) {\r\n  var original = allRecords[i].value;\r\n  allRecords[i].value = original * 10;\r\n  allRecords[i].quality = \"Bad\";\r\n  allRecords[i].qualityCode = \"16\";\r\n  console.log('FORCED BAD [' + i + ']: dpId=' + allRecords[i].dataPointId + ' original=' + original + ' forced=' + allRecords[i].value);\r\n}\r\n\r\n// ============================================================\r\n// CHUNK AND RETURN FLAT ARRAY\r\n// ============================================================\r\nif (allRecords.length === 0) {\r\n  console.log('No records generated');\r\n  return [];\r\n}\r\n\r\nvar firstChunk = allRecords.slice(0, CHUNK_SIZE);\r\n\r\nconsole.log('Returning ' + firstChunk.length + ' of ' + allRecords.length + ' records');\r\nconsole.log('=== END ===');\r\n\r\nreturn firstChunk;"
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "f3a527ae-4b11-4acc-812f-249110dada64",
+          "name": "Generate String Records",
+          "type": "javascriptTransform",
+          "data": {
+            "transform": "'use strict';\r\n\r\n/**\r\n * Generate string records for ALL batches with OPC UA quality codes\r\n * OUTPUT: First chunk only (max 1000 records)\r\n */\r\n\r\nvar batches = $ || [];\r\nvar CHUNK_SIZE = 1000;\r\n\r\nconsole.log('=== GENERATE STRING RECORDS (CHUNKED) ===');\r\nconsole.log('Number of batches: ' + batches.length);\r\n\r\nif (!Array.isArray(batches) || batches.length === 0) {\r\n  console.log('No batches to process');\r\n  return [];\r\n}\r\n\r\n// ============================================================\r\n// STATUS SETS\r\n// ============================================================\r\n\r\nvar statusSets = {\r\n  mode: ['Auto', 'Manual', 'Maintenance', 'Test'],\r\n  operational: ['Running', 'Idle', 'Stopped', 'Starting', 'Stopping'],\r\n  health: ['Normal', 'Warning', 'Alarm', 'Fault', 'Offline'],\r\n  process: ['Ready', 'Processing', 'Complete', 'Waiting', 'Error']\r\n};\r\n\r\n// ============================================================\r\n// STRING VALUE GENERATOR\r\n// ============================================================\r\n\r\nfunction generateValue(name, timestamp, prevValue, anomalyEnabled, anomalyProb) {\r\n  var nameLower = (name || '').toLowerCase();\r\n  var hour = new Date(timestamp).getUTCHours();\r\n  var isWorkHours = hour >= 6 && hour <= 22;\r\n  \r\n  var values;\r\n  var changeProb = 0.05;\r\n  \r\n  if (nameLower.indexOf('mode') >= 0) {\r\n    values = statusSets.mode;\r\n    changeProb = 0.02;\r\n  } else if (nameLower.indexOf('status') >= 0 || nameLower.indexOf('state') >= 0) {\r\n    values = statusSets.operational;\r\n    changeProb = isWorkHours ? 0.08 : 0.02;\r\n  } else if (nameLower.indexOf('health') >= 0 || nameLower.indexOf('condition') >= 0) {\r\n    values = statusSets.health;\r\n    changeProb = 0.03;\r\n  } else if (nameLower.indexOf('process') >= 0 || nameLower.indexOf('phase') >= 0) {\r\n    values = statusSets.process;\r\n    changeProb = isWorkHours ? 0.1 : 0.01;\r\n  } else {\r\n    values = statusSets.operational;\r\n  }\r\n  \r\n  var value;\r\n  var anomalyTriggered = false;\r\n  \r\n  if (prevValue == null || Math.random() < changeProb) {\r\n    if (isWorkHours && values === statusSets.operational) {\r\n      var r = Math.random();\r\n      if (r < 0.7) value = 'Running';\r\n      else if (r < 0.9) value = 'Idle';\r\n      else value = values[Math.floor(Math.random() * values.length)];\r\n    } else if (values === statusSets.health) {\r\n      var r = Math.random();\r\n      if (r < 0.85) value = 'Normal';\r\n      else if (r < 0.95) value = 'Warning';\r\n      else value = values[Math.floor(Math.random() * values.length)];\r\n    } else {\r\n      value = values[Math.floor(Math.random() * values.length)];\r\n    }\r\n  } else {\r\n    value = prevValue;\r\n  }\r\n  \r\n  if (anomalyEnabled && Math.random() < anomalyProb) {\r\n    if (values === statusSets.operational) {\r\n      value = Math.random() < 0.5 ? 'Stopped' : 'Error';\r\n    } else if (values === statusSets.health) {\r\n      value = 'Alarm';\r\n    } else if (values === statusSets.process) {\r\n      value = 'Error';\r\n    }\r\n    anomalyTriggered = true;\r\n  }\r\n  \r\n  return {\r\n    value: value,\r\n    anomalyTriggered: anomalyTriggered\r\n  };\r\n}\r\n\r\n// ============================================================\r\n// GENERATE ALL RECORDS\r\n// ============================================================\r\n\r\nvar allRecords = [];\r\nvar totalRecordCount = 0;\r\n\r\nfor (var b = 0; b < batches.length; b++) {\r\n  var batch = batches[b];\r\n  var dataPoints = batch.dataPoints || [];\r\n  var frequency = batch.frequency || 5000;\r\n  var window = batch.window || {};\r\n  \r\n  var windowStartMs = new Date(window.start).getTime();\r\n  var windowEndMs = new Date(window.end).getTime();\r\n  var anomalyEnabled = window.anomalyEnabled !== false;\r\n  var anomalyProb = window.anomalyProb || 0.02;\r\n  \r\n  if (isNaN(windowStartMs) || isNaN(windowEndMs)) {\r\n    console.log('Batch ' + b + ': Invalid window - skipping');\r\n    continue;\r\n  }\r\n  \r\n  if (dataPoints.length === 0) {\r\n    console.log('Batch ' + b + ': No datapoints - skipping');\r\n    continue;\r\n  }\r\n  \r\n  console.log('Batch ' + b + ': freq=' + frequency + 'ms, dps=' + dataPoints.length);\r\n  \r\n  var dpStates = {};\r\n  for (var d = 0; d < dataPoints.length; d++) {\r\n    dpStates[dataPoints[d].id] = null;\r\n  }\r\n  \r\n  var ts = windowStartMs;\r\n  var batchRecordCount = 0;\r\n  \r\n  while (ts < windowEndMs) {\r\n    for (var d = 0; d < dataPoints.length; d++) {\r\n      var dp = dataPoints[d];\r\n      var result = generateValue(dp.name, ts, dpStates[dp.id], anomalyEnabled, anomalyProb);\r\n      dpStates[dp.id] = result.value;\r\n      \r\n      // ============================================================\r\n      // OPC UA QUALITY CODE EVALUATION\r\n      // ============================================================\r\n      \r\n      var quality = null;\r\n      var qualityCode = null;\r\n      \r\n      // Mark fault/error/alarm states with quality codes\r\n      if (result.value === 'Alarm' || result.value === 'Fault' || result.value === 'Error' || result.value === 'Offline') {\r\n        quality = \"Bad\";\r\n        qualityCode = 16; // Bad - Sensor/Process Failure\r\n      } else if (result.value === 'Warning' || result.anomalyTriggered) {\r\n        quality = \"Uncertain\";\r\n        qualityCode = 64; // Uncertain\r\n      }\r\n      // else: Good quality (192) - we omit quality fields for normal readings\r\n      \r\n      // ============================================================\r\n      // BUILD RECORD\r\n      // ============================================================\r\n      \r\n      var record = {\r\n        dataPointId: dp.id,\r\n        recordedAt: new Date(ts).toISOString(),\r\n        valueString: result.value\r\n      };\r\n      \r\n      // Only include quality fields when NOT good\r\n      if (quality !== null) {\r\n        record.quality = quality;\r\n        record.qualityCode = qualityCode;\r\n      }\r\n      \r\n      allRecords.push(record);\r\n      batchRecordCount++;\r\n    }\r\n    \r\n    ts += frequency;\r\n  }\r\n  \r\n  console.log('  Generated ' + batchRecordCount + ' records');\r\n  totalRecordCount += batchRecordCount;\r\n}\r\n\r\nconsole.log('Total records generated: ' + totalRecordCount);\r\n\r\n// ============================================================\r\n// CHUNK RECORDS\r\n// ============================================================\r\n\r\nif (allRecords.length === 0) {\r\n  console.log('No records to chunk');\r\n  return [];\r\n}\r\n\r\nvar chunks = [];\r\n\r\nfor (var i = 0; i < allRecords.length; i += CHUNK_SIZE) {\r\n  var chunk = allRecords.slice(i, i + CHUNK_SIZE);\r\n  chunks.push(chunk);\r\n}\r\n\r\nconsole.log('Split into ' + chunks.length + ' chunks of max ' + CHUNK_SIZE + ' records');\r\nconsole.log('Returning first chunk only: ' + (chunks.length > 0 ? chunks[0].length : 0) + ' records');\r\nconsole.log('=== END GENERATE STRING ===');\r\n\r\nreturn chunks.length > 0 ? chunks[0] : [];",
+            "nextNodes": [
+              "ee709af3-9e0e-47a7-92db-7d17e777b95e"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "9dbc56cd-8e5d-43c6-9344-3d17e6417ff8",
+          "name": "Generate Boolean Records",
+          "type": "javascriptTransform",
+          "data": {
+            "transform": "'use strict';\r\n\r\n/**\r\n * Generate boolean records for ALL batches with OPC UA quality codes\r\n * OUTPUT: First chunk only (max 1000 records)\r\n */\r\n\r\nvar batches = $ || [];\r\nvar CHUNK_SIZE = 1000;\r\n\r\nconsole.log('=== GENERATE BOOLEAN RECORDS (CHUNKED) ===');\r\nconsole.log('Number of batches: ' + batches.length);\r\n\r\nif (!Array.isArray(batches) || batches.length === 0) {\r\n  console.log('No batches to process');\r\n  return [];\r\n}\r\n\r\n// ============================================================\r\n// BOOLEAN VALUE GENERATOR\r\n// ============================================================\r\n\r\nfunction generateValue(name, timestamp, prevValue, anomalyEnabled, anomalyProb) {\r\n  var nameLower = (name || '').toLowerCase();\r\n  var hour = new Date(timestamp).getUTCHours();\r\n  var isWorkHours = hour >= 6 && hour <= 22;\r\n  \r\n  var changeProb = 0.05;\r\n  var trueProb = 0.5;\r\n  var anomalyTriggered = false;\r\n  \r\n  if (nameLower.indexOf('running') >= 0 || nameLower.indexOf('active') >= 0) {\r\n    changeProb = isWorkHours ? 0.02 : 0.1;\r\n    trueProb = isWorkHours ? 0.85 : 0.2;\r\n  } else if (nameLower.indexOf('alarm') >= 0 || nameLower.indexOf('fault') >= 0) {\r\n    changeProb = 0.01;\r\n    trueProb = 0.05;\r\n  } else if (nameLower.indexOf('enabled') >= 0 || nameLower.indexOf('ready') >= 0) {\r\n    changeProb = 0.005;\r\n    trueProb = 0.9;\r\n  }\r\n  \r\n  var value;\r\n  \r\n  if (prevValue == null || Math.random() < changeProb) {\r\n    value = Math.random() < trueProb;\r\n  } else {\r\n    value = prevValue;\r\n  }\r\n  \r\n  if (anomalyEnabled && Math.random() < anomalyProb) {\r\n    value = !value;\r\n    anomalyTriggered = true;\r\n  }\r\n  \r\n  return {\r\n    value: value,\r\n    anomalyTriggered: anomalyTriggered\r\n  };\r\n}\r\n\r\n// ============================================================\r\n// GENERATE ALL RECORDS\r\n// ============================================================\r\n\r\nvar allRecords = [];\r\nvar totalRecordCount = 0;\r\n\r\nfor (var b = 0; b < batches.length; b++) {\r\n  var batch = batches[b];\r\n  var dataPoints = batch.dataPoints || [];\r\n  var frequency = batch.frequency || 5000;\r\n  var window = batch.window || {};\r\n  \r\n  var windowStartMs = new Date(window.start).getTime();\r\n  var windowEndMs = new Date(window.end).getTime();\r\n  var anomalyEnabled = window.anomalyEnabled !== false;\r\n  var anomalyProb = window.anomalyProb || 0.02;\r\n  \r\n  if (isNaN(windowStartMs) || isNaN(windowEndMs)) {\r\n    console.log('Batch ' + b + ': Invalid window - skipping');\r\n    continue;\r\n  }\r\n  \r\n  if (dataPoints.length === 0) {\r\n    console.log('Batch ' + b + ': No datapoints - skipping');\r\n    continue;\r\n  }\r\n  \r\n  console.log('Batch ' + b + ': freq=' + frequency + 'ms, dps=' + dataPoints.length);\r\n  \r\n  var dpStates = {};\r\n  for (var d = 0; d < dataPoints.length; d++) {\r\n    dpStates[dataPoints[d].id] = null;\r\n  }\r\n  \r\n  var ts = windowStartMs;\r\n  var batchRecordCount = 0;\r\n  \r\n  while (ts < windowEndMs) {\r\n    for (var d = 0; d < dataPoints.length; d++) {\r\n      var dp = dataPoints[d];\r\n      var result = generateValue(dp.name, ts, dpStates[dp.id], anomalyEnabled, anomalyProb);\r\n      dpStates[dp.id] = result.value;\r\n      \r\n      // ============================================================\r\n      // BUILD RECORD WITH QUALITY TRACKING\r\n      // ============================================================\r\n      \r\n      var record = {\r\n        dataPointId: dp.id,\r\n        recordedAt: new Date(ts).toISOString(),\r\n        valueBool: result.value\r\n      };\r\n      \r\n      // Mark anomaly-triggered state changes with quality code\r\n      if (result.anomalyTriggered) {\r\n        record.quality = \"Uncertain\";\r\n        record.qualityCode = 64; // Uncertain - Anomaly detected\r\n      }\r\n      \r\n      allRecords.push(record);\r\n      batchRecordCount++;\r\n    }\r\n    \r\n    ts += frequency;\r\n  }\r\n  \r\n  console.log('  Generated ' + batchRecordCount + ' records');\r\n  totalRecordCount += batchRecordCount;\r\n}\r\n\r\nconsole.log('Total records generated: ' + totalRecordCount);\r\n\r\n// ============================================================\r\n// CHUNK RECORDS\r\n// ============================================================\r\n\r\nif (allRecords.length === 0) {\r\n  console.log('No records to chunk');\r\n  return [];\r\n}\r\n\r\nvar chunks = [];\r\n\r\nfor (var i = 0; i < allRecords.length; i += CHUNK_SIZE) {\r\n  var chunk = allRecords.slice(i, i + CHUNK_SIZE);\r\n  chunks.push(chunk);\r\n}\r\n\r\nconsole.log('Split into ' + chunks.length + ' chunks of max ' + CHUNK_SIZE + ' records');\r\nconsole.log('Returning first chunk only: ' + (chunks.length > 0 ? chunks[0].length : 0) + ' records');\r\nconsole.log('=== END GENERATE BOOLEAN ===');\r\n\r\nreturn chunks.length > 0 ? chunks[0] : [];",
+            "nextNodes": [
+              "f864f124-086a-44b2-aaf9-7e90358613fb"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "ce7f9973-266a-4227-a7e8-31654fa3a4cb",
+          "name": "Create TelemetryRaw - Numeric Data",
+          "type": "mutate",
+          "data": {
+            "api": "Application",
+            "variablesTransform": "{\r\n  \"payload\": [$.{\r\n    \"create\": {\r\n      \"dataPointId\": dataPointId,\r\n      \"recordedAt\": recordedAt,\r\n      \"value\": value,\r\n      \"quality\": quality,\r\n      \"qualityCode\": qualityCode\r\n    }\r\n  }]\r\n}",
+            "mutation": "mutation CreateTelemetryRaw($payload: [TelemetryRawCreatePayloadInput!]!) {\n  createTelemetryRaw(payload: $payload) {\n    id\n  }\n}",
+            "nextNodes": [
+              "cb511f78-246b-4590-bded-bf2df5de7b08"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": true,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "f864f124-086a-44b2-aaf9-7e90358613fb",
+          "name": "Create TelemetryRaw - Boolean Data",
+          "type": "mutate",
+          "data": {
+            "api": "Application",
+            "variablesTransform": "$count($) > 0 ? {\r\n  \"payload\": [$.{\"create\": valueBool ? {\r\n    \"dataPointId\": dataPointId,\r\n    \"recordedAt\": recordedAt,\r\n    \"valueBool\": valueBool\r\n  } : {\r\n    \"dataPointId\": dataPointId,\r\n    \"recordedAt\": recordedAt\r\n  }}]\r\n} : {\r\n  \"payload\": []\r\n}",
+            "mutation": "mutation CreateTelemetryRawBool($payload: [TelemetryRawBoolCreatePayloadInput!]!) {\n  createTelemetryRawBool(payload: $payload) {\n    id\n  }\n}",
+            "nextNodes": [
+              "cb511f78-246b-4590-bded-bf2df5de7b08"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "ee709af3-9e0e-47a7-92db-7d17e777b95e",
+          "name": "Create TelemetryRaw - String Data",
+          "type": "mutate",
+          "data": {
+            "api": "Application",
+            "variablesTransform": "$count($) > 0 ? {\r\n  \"payload\": [$.{\"create\": {\r\n    \"dataPointId\": dataPointId,\r\n    \"recordedAt\": recordedAt,\r\n    \"valueString\": valueString\r\n  }}]\r\n} : {\r\n  \"payload\": []\r\n}",
+            "mutation": "mutation CreateTelemetryRawString($payload: [TelemetryRawStringCreatePayloadInput!]!) {\n  createTelemetryRawString(payload: $payload) {\n    id\n  }\n}",
+            "nextNodes": [
+              "cb511f78-246b-4590-bded-bf2df5de7b08"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "cb511f78-246b-4590-bded-bf2df5de7b08",
+          "name": "Response",
+          "type": "response",
+          "data": {
+            "responseTransform": "$",
+            "nextNodes": []
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        }
+      ],
+      "version": "0.0.15"
+    },
+    "diagram": {
+      "id": "cmlcjipv24q03016u1h8whzrk",
+      "offsetX": -887.95,
+      "offsetY": -9.17,
+      "zoom": 92.5,
+      "gridSize": 5,
+      "layers": [
+        {
+          "id": "164ce463-2abe-4f2b-9a92-071a60492371",
+          "type": "diagram-links",
+          "isSvg": true,
+          "transformed": true,
+          "models": {
+            "6fe51873-c4d2-4825-9bb4-c9ee47f272b2": {
+              "points": [
+                {
+                  "id": "7a916e81-36d5-4eb4-900f-98a43c625939",
+                  "type": "point",
+                  "x": 557.35,
+                  "y": 234.39
+                },
+                {
+                  "id": "f5076aee-b9bd-49ae-be08-74e8843c56e5",
+                  "type": "point",
+                  "x": 609.33,
+                  "y": 234.39
+                }
+              ],
+              "id": "6fe51873-c4d2-4825-9bb4-c9ee47f272b2",
+              "type": "default",
+              "selected": false,
+              "source": "afbb3780-e137-4c8a-9bb5-5be5d5661bf6",
+              "sourcePort": "cmkcng1x601bw356r83cuvmqm",
+              "target": "ec2c4533-029b-4dc1-8890-b2e938cb7f5c",
+              "targetPort": "cml574l6101h2356r5bku9p94",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "2ee8fdfc-109f-426a-b08b-bf3c49bd73c1": {
+              "points": [
+                {
+                  "id": "2b1ab8b8-675b-4b2d-9e7f-6d3d9d309234",
+                  "type": "point",
+                  "x": 828.67,
+                  "y": 234.39
+                },
+                {
+                  "id": "36c08409-44c8-4d21-92a8-735f9c72f325",
+                  "type": "point",
+                  "x": 314.33,
+                  "y": 359.39
+                }
+              ],
+              "id": "2ee8fdfc-109f-426a-b08b-bf3c49bd73c1",
+              "type": "default",
+              "selected": false,
+              "source": "ec2c4533-029b-4dc1-8890-b2e938cb7f5c",
+              "sourcePort": "cml574l6201h4356rsgvnnnzw",
+              "target": "5e61f422-5fb0-4415-a786-80a945a07cb3",
+              "targetPort": "cml575qbb01j7356r1ilx77wj",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "6226a4d8-4316-4c60-9513-2758ed4da265": {
+              "points": [
+                {
+                  "id": "eeb84f9d-7358-447a-8e07-02dc9d2d101d",
+                  "type": "point",
+                  "x": 469,
+                  "y": 359.39
+                },
+                {
+                  "id": "5828d9e2-42ee-48fc-8437-b7828aefb1c0",
+                  "type": "point",
+                  "x": 664.33,
+                  "y": 364.39
+                }
+              ],
+              "id": "6226a4d8-4316-4c60-9513-2758ed4da265",
+              "type": "default",
+              "selected": false,
+              "source": "5e61f422-5fb0-4415-a786-80a945a07cb3",
+              "sourcePort": "cml575qbb01j9356rcjyvkmov",
+              "target": "ad97e759-fd6c-43c6-9898-29aeb5b8a0b7",
+              "targetPort": "cml57df9901sb356r65lk2nuq",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "f51b72cf-117c-457f-8486-48bd89069923": {
+              "points": [
+                {
+                  "id": "50fb91f4-8f74-44db-88ec-152bab1298ac",
+                  "type": "point",
+                  "x": 469,
+                  "y": 359.39
+                },
+                {
+                  "id": "54d8e9be-b84c-471c-be61-3a9450a1233b",
+                  "type": "point",
+                  "x": 664.33,
+                  "y": 439.39
+                }
+              ],
+              "id": "f51b72cf-117c-457f-8486-48bd89069923",
+              "type": "default",
+              "selected": false,
+              "source": "5e61f422-5fb0-4415-a786-80a945a07cb3",
+              "sourcePort": "cml575qbb01j9356rcjyvkmov",
+              "target": "ca0c44f3-853f-4c11-aee4-10c96b61dcfc",
+              "targetPort": "cml57elbz01sv356rd9won4tt",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "0ee3bc46-c60e-4aa2-9260-f5be6f44b4a4": {
+              "points": [
+                {
+                  "id": "121ecee8-d6e8-4410-8fea-0b3e64aac156",
+                  "type": "point",
+                  "x": 469,
+                  "y": 359.39
+                },
+                {
+                  "id": "417e7770-608f-4a33-b8c5-6fba7977c5cf",
+                  "type": "point",
+                  "x": 664.33,
+                  "y": 514.39
+                }
+              ],
+              "id": "0ee3bc46-c60e-4aa2-9260-f5be6f44b4a4",
+              "type": "default",
+              "selected": false,
+              "source": "5e61f422-5fb0-4415-a786-80a945a07cb3",
+              "sourcePort": "cml575qbb01j9356rcjyvkmov",
+              "target": "7c904a63-780d-4539-8549-2df53e2b6720",
+              "targetPort": "cml57g9jn01ux356rf7sld7b0",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "7fd98bdd-e3c8-44c6-b558-e0abe3ee34ad": {
+              "points": [
+                {
+                  "id": "70ade10c-ccf8-430a-85ca-5fe486a1cf5f",
+                  "type": "point",
+                  "x": 819,
+                  "y": 364.39
+                },
+                {
+                  "id": "b9fb606d-74ad-41fa-91af-66de440dfdbd",
+                  "type": "point",
+                  "x": 864.33,
+                  "y": 364.39
+                }
+              ],
+              "id": "7fd98bdd-e3c8-44c6-b558-e0abe3ee34ad",
+              "type": "default",
+              "selected": false,
+              "source": "ad97e759-fd6c-43c6-9898-29aeb5b8a0b7",
+              "sourcePort": "cml57df9901sd356r1mbnzsqj",
+              "target": "ed8ba620-7548-44e4-8b0a-da37eaacb4cd",
+              "targetPort": "cml58k06o02pt356rn7rec1k8",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "e591b815-d579-4981-af34-af92b272290f": {
+              "points": [
+                {
+                  "id": "10db24f2-a951-4e1a-8a8d-9c6685d478d7",
+                  "type": "point",
+                  "x": 1019,
+                  "y": 364.39
+                },
+                {
+                  "id": "3dcce822-8814-4c0d-aa84-47ef962ab45c",
+                  "type": "point",
+                  "x": 1069.33,
+                  "y": 364.39
+                }
+              ],
+              "id": "e591b815-d579-4981-af34-af92b272290f",
+              "type": "default",
+              "selected": false,
+              "source": "ed8ba620-7548-44e4-8b0a-da37eaacb4cd",
+              "sourcePort": "cml58k06o02pv356rf5ro7i68",
+              "target": "1a9205ce-3269-4156-9ac0-34cc21ca70c2",
+              "targetPort": "cml579c4301n0356rsbpojsi9",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "166c896f-c95e-4d8d-994a-19d517ae940d": {
+              "points": [
+                {
+                  "id": "7b1f2611-672c-40b1-aaa7-e560e834a9e1",
+                  "type": "point",
+                  "x": 819,
+                  "y": 514.39
+                },
+                {
+                  "id": "447bdaed-3a0b-43b2-9fb9-8fa39ff7e678",
+                  "type": "point",
+                  "x": 869.33,
+                  "y": 514.39
+                }
+              ],
+              "id": "166c896f-c95e-4d8d-994a-19d517ae940d",
+              "type": "default",
+              "selected": false,
+              "source": "7c904a63-780d-4539-8549-2df53e2b6720",
+              "sourcePort": "cml57g9jn01uz356rn2lk1jsr",
+              "target": "504ac41a-8530-4093-ae75-58883a9a83ed",
+              "targetPort": "cml58x3sn035v356rlz7l35pg",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "bf368133-0487-4627-9ac8-b92e0413f98b": {
+              "points": [
+                {
+                  "id": "1ceea0d6-86a0-4772-be3b-d6b7a4df2c6c",
+                  "type": "point",
+                  "x": 1024,
+                  "y": 514.39
+                },
+                {
+                  "id": "3f34262e-d106-4fe9-822a-2b45f3720e79",
+                  "type": "point",
+                  "x": 1069.33,
+                  "y": 514.39
+                }
+              ],
+              "id": "bf368133-0487-4627-9ac8-b92e0413f98b",
+              "type": "default",
+              "selected": false,
+              "source": "504ac41a-8530-4093-ae75-58883a9a83ed",
+              "sourcePort": "cml58x3sn035x356rtou9n5s0",
+              "target": "bfe9391c-ceed-4725-9426-646ba25ec0d1",
+              "targetPort": "cml579y2l01ou356rmbe0fp9y",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "d313c513-1b19-4e5a-9031-efdc184cc283": {
+              "points": [
+                {
+                  "id": "6c686a92-fd13-4cd7-9790-281162b87b49",
+                  "type": "point",
+                  "x": 819,
+                  "y": 439.39
+                },
+                {
+                  "id": "6c3ff5cd-4df2-48d0-9d53-153e962fb610",
+                  "type": "point",
+                  "x": 864.33,
+                  "y": 439.39
+                }
+              ],
+              "id": "d313c513-1b19-4e5a-9031-efdc184cc283",
+              "type": "default",
+              "selected": false,
+              "source": "ca0c44f3-853f-4c11-aee4-10c96b61dcfc",
+              "sourcePort": "cml57elbz01sx356rq28iysd1",
+              "target": "135e48ea-9dcd-41f3-a19a-0d778ed09e3a",
+              "targetPort": "cml58x3me035j356riex00n6n",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "af66894e-34fd-4c72-ab31-a0628d1c1920": {
+              "points": [
+                {
+                  "id": "ea85d2f0-7f2c-417d-879f-9ebafb9cfcee",
+                  "type": "point",
+                  "x": 1019,
+                  "y": 439.39
+                },
+                {
+                  "id": "2e4fb1ee-f7ea-4717-90fd-bbb4fb1820ec",
+                  "type": "point",
+                  "x": 1069.33,
+                  "y": 439.39
+                }
+              ],
+              "id": "af66894e-34fd-4c72-ab31-a0628d1c1920",
+              "type": "default",
+              "selected": false,
+              "source": "135e48ea-9dcd-41f3-a19a-0d778ed09e3a",
+              "sourcePort": "cml58x3me035l356r1muu6mlw",
+              "target": "b59af77a-ea19-4286-ab36-240b4ee678c4",
+              "targetPort": "cml579sst01oc356r4lfbuye1",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "4a8f0016-0a2e-46a6-ba81-c000d07055f7": {
+              "points": [
+                {
+                  "id": "19d356f2-56aa-42e0-93ae-b7f63741148e",
+                  "type": "point",
+                  "x": 1270.66,
+                  "y": 364.39
+                },
+                {
+                  "id": "fda84566-10db-47a4-907d-27f79374edb1",
+                  "type": "point",
+                  "x": 1319.33,
+                  "y": 364.39
+                }
+              ],
+              "id": "4a8f0016-0a2e-46a6-ba81-c000d07055f7",
+              "type": "default",
+              "selected": false,
+              "source": "1a9205ce-3269-4156-9ac0-34cc21ca70c2",
+              "sourcePort": "cml579c4301n2356rwpl96hqa",
+              "target": "3665213c-0c3a-4425-956f-18b07617ad1d",
+              "targetPort": "cml58zuvt03ay356rdtd4h6wr",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "919729f6-87c8-41b3-8333-a95b70321d22": {
+              "points": [
+                {
+                  "id": "bcfc6566-49d7-4fa7-a12d-786f617bf1b4",
+                  "type": "point",
+                  "x": 1256.6,
+                  "y": 514.39
+                },
+                {
+                  "id": "7864e2de-5060-429d-a546-c0a7c73d9881",
+                  "type": "point",
+                  "x": 1319.33,
+                  "y": 514.39
+                }
+              ],
+              "id": "919729f6-87c8-41b3-8333-a95b70321d22",
+              "type": "default",
+              "selected": false,
+              "source": "bfe9391c-ceed-4725-9426-646ba25ec0d1",
+              "sourcePort": "cml579y2l01ow356rs2blv3yi",
+              "target": "f3a527ae-4b11-4acc-812f-249110dada64",
+              "targetPort": "cml59088z03b6356rn8dn9g3g",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "e3af941b-0fdd-490c-8d8c-f60b7002afdd": {
+              "points": [
+                {
+                  "id": "5427b32f-507d-47fd-8f0e-64e168d71749",
+                  "type": "point",
+                  "x": 1268.93,
+                  "y": 439.39
+                },
+                {
+                  "id": "a3b2ec6d-41f4-4c60-b1d4-058753924192",
+                  "type": "point",
+                  "x": 1319.33,
+                  "y": 439.39
+                }
+              ],
+              "id": "e3af941b-0fdd-490c-8d8c-f60b7002afdd",
+              "type": "default",
+              "selected": false,
+              "source": "b59af77a-ea19-4286-ab36-240b4ee678c4",
+              "sourcePort": "cml579sst01oe356ryjmopt7d",
+              "target": "9dbc56cd-8e5d-43c6-9344-3d17e6417ff8",
+              "targetPort": "cml591fxd03c6356r1rme2v0m",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "baa004df-e35a-4ae9-9e2a-49c56b530553": {
+              "points": [
+                {
+                  "id": "27f9872a-8a86-4ec6-abd4-84f77f490f0c",
+                  "type": "point",
+                  "x": 1794.16,
+                  "y": 364.39
+                },
+                {
+                  "id": "234489d7-87a6-47b9-ba43-61acd96cb0df",
+                  "type": "point",
+                  "x": 1839.33,
+                  "y": 449.39
+                }
+              ],
+              "id": "baa004df-e35a-4ae9-9e2a-49c56b530553",
+              "type": "default",
+              "selected": false,
+              "source": "ce7f9973-266a-4227-a7e8-31654fa3a4cb",
+              "sourcePort": "cml59dbef040h356rhllupyd3",
+              "target": "cb511f78-246b-4590-bded-bf2df5de7b08",
+              "targetPort": "cml59g9pa044r356rubrqvivn",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "f4e21398-8690-424b-bcda-3032b66cbcb1": {
+              "points": [
+                {
+                  "id": "1c6cf115-2b80-4b74-aa64-bc65a6c7c050",
+                  "type": "point",
+                  "x": 1792.43,
+                  "y": 439.39
+                },
+                {
+                  "id": "cac4500c-f9e6-4ce4-b23c-5a545ad20b82",
+                  "type": "point",
+                  "x": 1839.33,
+                  "y": 449.39
+                }
+              ],
+              "id": "f4e21398-8690-424b-bcda-3032b66cbcb1",
+              "type": "default",
+              "selected": false,
+              "source": "f864f124-086a-44b2-aaf9-7e90358613fb",
+              "sourcePort": "cml59dqbz0422356r8wzabxb2",
+              "target": "cb511f78-246b-4590-bded-bf2df5de7b08",
+              "targetPort": "cml59g9pa044r356rubrqvivn",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "bc585f74-5b40-43b4-b4ca-06460f18880a": {
+              "points": [
+                {
+                  "id": "04b02a6f-553b-483c-937c-dffe24279a15",
+                  "type": "point",
+                  "x": 1780.1,
+                  "y": 514.39
+                },
+                {
+                  "id": "9ce5ceef-ea05-48eb-bb9c-26caac2971e5",
+                  "type": "point",
+                  "x": 1839.33,
+                  "y": 449.39
+                }
+              ],
+              "id": "bc585f74-5b40-43b4-b4ca-06460f18880a",
+              "type": "default",
+              "selected": false,
+              "source": "ee709af3-9e0e-47a7-92db-7d17e777b95e",
+              "sourcePort": "cml59fbj5043l356rorcvlbcy",
+              "target": "cb511f78-246b-4590-bded-bf2df5de7b08",
+              "targetPort": "cml59g9pa044r356rubrqvivn",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "03d40ef6-5f38-48a8-b651-5c5d073cd4c3": {
+              "points": [
+                {
+                  "id": "9a651a1e-28d4-404d-8bba-d30393b5d261",
+                  "type": "point",
+                  "x": 1507.64,
+                  "y": 364.39
+                },
+                {
+                  "id": "e07be8ee-db29-4aca-a7e5-208b58e1d806",
+                  "type": "point",
+                  "x": 1549.33,
+                  "y": 364.39
+                }
+              ],
+              "id": "03d40ef6-5f38-48a8-b651-5c5d073cd4c3",
+              "type": "default",
+              "selected": false,
+              "source": "3665213c-0c3a-4425-956f-18b07617ad1d",
+              "sourcePort": "cml58zuvt03b0356rgnjhjr6h",
+              "target": "ce7f9973-266a-4227-a7e8-31654fa3a4cb",
+              "targetPort": "cml59dbef040f356ry7f4dld5",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "0402d2b4-ad0f-400d-8498-8e14ebe50e26": {
+              "points": [
+                {
+                  "id": "24f27811-85cc-4611-a6b2-bc8845afa9ad",
+                  "type": "point",
+                  "x": 1508.5,
+                  "y": 439.39
+                },
+                {
+                  "id": "e590d849-ff56-4208-8bb4-f53d24e9dc11",
+                  "type": "point",
+                  "x": 1549.33,
+                  "y": 439.39
+                }
+              ],
+              "id": "0402d2b4-ad0f-400d-8498-8e14ebe50e26",
+              "type": "default",
+              "selected": false,
+              "source": "9dbc56cd-8e5d-43c6-9344-3d17e6417ff8",
+              "sourcePort": "cml591fxd03c8356ri1flvxct",
+              "target": "f864f124-086a-44b2-aaf9-7e90358613fb",
+              "targetPort": "cml59dqbz0420356r5v8go28d",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "28862b41-3e41-4b77-958a-b503c27e36b9": {
+              "points": [
+                {
+                  "id": "509aaaad-39a5-453c-adb5-5b3c86d10046",
+                  "type": "point",
+                  "x": 1496.17,
+                  "y": 514.39
+                },
+                {
+                  "id": "e1a48d5e-19b9-4e5b-97af-8fca31f580ce",
+                  "type": "point",
+                  "x": 1549.33,
+                  "y": 514.39
+                }
+              ],
+              "id": "28862b41-3e41-4b77-958a-b503c27e36b9",
+              "type": "default",
+              "selected": false,
+              "source": "f3a527ae-4b11-4acc-812f-249110dada64",
+              "sourcePort": "cml59088z03b8356rmap4438w",
+              "target": "ee709af3-9e0e-47a7-92db-7d17e777b95e",
+              "targetPort": "cml59fbj5043j356rs89tw38c",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "66ce31df-dfcd-4309-b3ce-4e4084ac7510": {
+              "points": [
+                {
+                  "id": "270be514-846f-48cb-9c19-de2f7e4e0de0",
+                  "type": "point",
+                  "x": 249,
+                  "y": 319.39
+                },
+                {
+                  "id": "065ab49e-0463-4c18-8312-7e6ef538a323",
+                  "type": "point",
+                  "x": 394.33,
+                  "y": 234.39
+                }
+              ],
+              "id": "66ce31df-dfcd-4309-b3ce-4e4084ac7510",
+              "type": "default",
+              "selected": false,
+              "source": "22a20fdc-e79c-48ab-97be-69ecf2e857fc",
+              "sourcePort": "cmkcnbyu3016o356r739fxn0v",
+              "target": "afbb3780-e137-4c8a-9bb5-5be5d5661bf6",
+              "targetPort": "cmkcng1x601bu356rbnakyixv",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "f34a19d7-a045-4494-88a4-715ce41ef6ac": {
+              "points": [
+                {
+                  "id": "25abbd26-0636-467f-b283-5e21a38d898b",
+                  "type": "point",
+                  "x": 254,
+                  "y": 164.39
+                },
+                {
+                  "id": "ab41e6c6-0958-48da-beef-d471c0932279",
+                  "type": "point",
+                  "x": 394.33,
+                  "y": 234.39
+                }
+              ],
+              "id": "f34a19d7-a045-4494-88a4-715ce41ef6ac",
+              "type": "default",
+              "selected": false,
+              "source": "dd94f035-cdda-4675-8897-823b1283b56c",
+              "sourcePort": "cmkcnbu39016i356rp5rw5q25",
+              "target": "afbb3780-e137-4c8a-9bb5-5be5d5661bf6",
+              "targetPort": "cmkcng1x601bu356rbnakyixv",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            }
+          }
+        },
+        {
+          "id": "37a28032-5015-414e-a2a7-910325c71289",
+          "type": "diagram-nodes",
+          "isSvg": false,
+          "transformed": true,
+          "models": {
+            "dd94f035-cdda-4675-8897-823b1283b56c": {
+              "id": "dd94f035-cdda-4675-8897-823b1283b56c",
+              "type": "debugSource",
+              "selected": false,
+              "x": 100,
+              "y": 125,
+              "ports": [
+                {
+                  "id": "cmkcnbu39016i356rp5rw5q25",
+                  "type": "default",
+                  "x": 246.34,
+                  "y": 156.73,
+                  "name": "cmkcnbu39016j356rc58c6tcn",
+                  "parentNode": "dd94f035-cdda-4675-8897-823b1283b56c",
+                  "links": [
+                    "f34a19d7-a045-4494-88a4-715ce41ef6ac"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "payload": {},
+                "context": {},
+                "nextNodes": [
+                  "afbb3780-e137-4c8a-9bb5-5be5d5661bf6"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Source"
+            },
+            "22a20fdc-e79c-48ab-97be-69ecf2e857fc": {
+              "id": "22a20fdc-e79c-48ab-97be-69ecf2e857fc",
+              "type": "schedule",
+              "selected": false,
+              "x": 95,
+              "y": 280,
+              "ports": [
+                {
+                  "id": "cmkcnbyu3016o356r739fxn0v",
+                  "type": "default",
+                  "x": 241.34,
+                  "y": 311.73,
+                  "name": "cmkcnbyu3016p356rznh9juji",
+                  "parentNode": "22a20fdc-e79c-48ab-97be-69ecf2e857fc",
+                  "links": [
+                    "66ce31df-dfcd-4309-b3ce-4e4084ac7510"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Payload",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "configure": "Open Schedule Editor",
+                "nextNodes": [
+                  "afbb3780-e137-4c8a-9bb5-5be5d5661bf6"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Schedule"
+            },
+            "afbb3780-e137-4c8a-9bb5-5be5d5661bf6": {
+              "id": "afbb3780-e137-4c8a-9bb5-5be5d5661bf6",
+              "type": "query",
+              "selected": false,
+              "x": 395,
+              "y": 195,
+              "ports": [
+                {
+                  "id": "cmkcng1x601bu356rbnakyixv",
+                  "type": "default",
+                  "x": 386.67,
+                  "y": 226.73,
+                  "name": "cmkcng1x601bv356r2f2ali3g",
+                  "parentNode": "afbb3780-e137-4c8a-9bb5-5be5d5661bf6",
+                  "links": [
+                    "66ce31df-dfcd-4309-b3ce-4e4084ac7510",
+                    "f34a19d7-a045-4494-88a4-715ce41ef6ac"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkcng1x601bw356r83cuvmqm",
+                  "type": "default",
+                  "x": 549.69,
+                  "y": 226.73,
+                  "name": "cmkcng1x601bx356rh5r1zpzr",
+                  "parentNode": "afbb3780-e137-4c8a-9bb5-5be5d5661bf6",
+                  "links": [
+                    "6fe51873-c4d2-4825-9bb4-c9ee47f272b2"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "application",
+                "variablesTransform": "{}",
+                "query": "query GetDataPointsByType {\r\n  floatDataPoints: dataPoint(\r\n    where: {\r\n      historize: { _eq: true }\r\n      enabled: { _eq: true }\r\n      dataType: { _eq: \"float\" }\r\n      asset: { status: { _eq: \"Active\" } }\r\n    }\r\n    first: 10000\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        dataType\r\n        frequency\r\n        setPoint\r\n        upperLimit\r\n        lowerLimit\r\n        tolerance\r\n        precision\r\n      }\r\n    }\r\n  }\r\n  \r\n  integerDataPoints: dataPoint(\r\n    where: {\r\n      historize: { _eq: true }\r\n      enabled: { _eq: true }\r\n      dataType: { _eq: \"integer\" }\r\n      asset: { status: { _eq: \"Active\" } }\r\n    }\r\n    first: 10000\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        frequency\r\n        setPoint\r\n        upperLimit\r\n        lowerLimit\r\n        tolerance\r\n        precision\r\n      }\r\n    }\r\n  }\r\n  \r\n  booleanDataPoints: dataPoint(\r\n    where: {\r\n      historize: { _eq: true }\r\n      enabled: { _eq: true }\r\n      dataType: { _eq: \"boolean\" }\r\n      asset: { status: { _eq: \"Active\" } }\r\n    }\r\n    first: 10000\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        name\r\n        frequency\r\n      }\r\n    }\r\n  }\r\n  \r\n  stringDataPoints: dataPoint(\r\n    where: {\r\n      historize: { _eq: true }\r\n      enabled: { _eq: true }\r\n      dataType: { _eq: \"string\" }\r\n      asset: { status: { _eq: \"Active\" } }\r\n    }\r\n    first: 10000\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        frequency\r\n      }\r\n    }\r\n  }\r\n}",
+                "nextNodes": [
+                  "ec2c4533-029b-4dc1-8890-b2e938cb7f5c"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "GetDataPointsByType"
+            },
+            "ec2c4533-029b-4dc1-8890-b2e938cb7f5c": {
+              "id": "ec2c4533-029b-4dc1-8890-b2e938cb7f5c",
+              "type": "javascriptTransform",
+              "selected": false,
+              "x": 610,
+              "y": 195,
+              "ports": [
+                {
+                  "id": "cml574l6101h2356r5bku9p94",
+                  "type": "default",
+                  "x": 601.67,
+                  "y": 226.73,
+                  "name": "cml574l6201h3356r9okqlnds",
+                  "parentNode": "ec2c4533-029b-4dc1-8890-b2e938cb7f5c",
+                  "links": [
+                    "6fe51873-c4d2-4825-9bb4-c9ee47f272b2"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml574l6201h4356rsgvnnnzw",
+                  "type": "default",
+                  "x": 821,
+                  "y": 226.73,
+                  "name": "cml574l6201h5356r2zuqknbh",
+                  "parentNode": "ec2c4533-029b-4dc1-8890-b2e938cb7f5c",
+                  "links": [
+                    "2ee8fdfc-109f-426a-b08b-bf3c49bd73c1"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "'use strict';\r\n\r\n/**\r\n * Calculate simple UTC 5-minute window for all datapoints\r\n * Window: (now - 5 minutes) to now\r\n */\r\n\r\nvar config = {\r\n  frequencySeconds: 300, // 5 minutes\r\n  anomaly: { enabled: true, probability: 0.02 }\r\n};\r\n\r\n// Calculate UTC window - subtract 5 minutes from now\r\nvar now = new Date();\r\nvar windowEnd = now.toISOString();\r\nvar windowStartMs = now.getTime() - (config.frequencySeconds * 1000);\r\nvar windowStart = new Date(windowStartMs).toISOString();\r\n\r\nconsole.log('=== TIME WINDOW (UTC) ===');\r\nconsole.log('Start: ' + windowStart);\r\nconsole.log('End:   ' + windowEnd);\r\nconsole.log('Duration: ' + config.frequencySeconds + ' seconds');\r\n\r\n// Pass through original query data + add window context\r\nreturn {\r\n  floatDataPoints: $.floatDataPoints,\r\n  integerDataPoints: $.integerDataPoints,\r\n  booleanDataPoints: $.booleanDataPoints,\r\n  stringDataPoints: $.stringDataPoints,\r\n  timezone: $.timezone,\r\n  window: {\r\n    start: windowStart,\r\n    end: windowEnd,\r\n    timezone: 'UTC',\r\n    anomalyEnabled: config.anomaly.enabled,\r\n    anomalyProb: config.anomaly.probability\r\n  }\r\n};",
+                "nextNodes": [
+                  "5e61f422-5fb0-4415-a786-80a945a07cb3"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Calculate Window & Set Context"
+            },
+            "5e61f422-5fb0-4415-a786-80a945a07cb3": {
+              "id": "5e61f422-5fb0-4415-a786-80a945a07cb3",
+              "type": "mergeContext",
+              "selected": false,
+              "x": 315,
+              "y": 320,
+              "ports": [
+                {
+                  "id": "cml575qbb01j7356r1ilx77wj",
+                  "type": "default",
+                  "x": 306.67,
+                  "y": 351.73,
+                  "name": "cml575qbb01j8356rjcwlw25z",
+                  "parentNode": "5e61f422-5fb0-4415-a786-80a945a07cb3",
+                  "links": [
+                    "2ee8fdfc-109f-426a-b08b-bf3c49bd73c1"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml575qbb01j9356rcjyvkmov",
+                  "type": "default",
+                  "x": 461.34,
+                  "y": 351.73,
+                  "name": "cml575qbb01ja356rd7nveyud",
+                  "parentNode": "5e61f422-5fb0-4415-a786-80a945a07cb3",
+                  "links": [
+                    "6226a4d8-4316-4c60-9513-2758ed4da265",
+                    "f51b72cf-117c-457f-8486-48bd89069923",
+                    "0ee3bc46-c60e-4aa2-9260-f5be6f44b4a4"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "{\r\n  \"window\": $.window\r\n}",
+                "nextNodes": [
+                  "ad97e759-fd6c-43c6-9898-29aeb5b8a0b7",
+                  "ca0c44f3-853f-4c11-aee4-10c96b61dcfc",
+                  "7c904a63-780d-4539-8549-2df53e2b6720"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Merge Context"
+            },
+            "1a9205ce-3269-4156-9ac0-34cc21ca70c2": {
+              "id": "1a9205ce-3269-4156-9ac0-34cc21ca70c2",
+              "type": "javascriptTransform",
+              "selected": false,
+              "x": 1070,
+              "y": 325,
+              "ports": [
+                {
+                  "id": "cml579c4301n0356rsbpojsi9",
+                  "type": "default",
+                  "x": 1061.67,
+                  "y": 356.73,
+                  "name": "cml579c4301n1356r2lbey83x",
+                  "parentNode": "1a9205ce-3269-4156-9ac0-34cc21ca70c2",
+                  "links": [
+                    "e591b815-d579-4981-af34-af92b272290f"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml579c4301n2356rwpl96hqa",
+                  "type": "default",
+                  "x": 1262.99,
+                  "y": 356.73,
+                  "name": "cml579c4301n3356riov5893b",
+                  "parentNode": "1a9205ce-3269-4156-9ac0-34cc21ca70c2",
+                  "links": [
+                    "4a8f0016-0a2e-46a6-ba81-c000d07055f7"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "'use strict';\r\n\r\nvar TYPE_NUMBER = 0;\r\nvar input = $ || {};\r\nvar dataPoints = input.dataPoints || [];\r\nvar window = $state.context.window;\r\n\r\nconsole.log('Batching ' + dataPoints.length + ' numeric datapoints');\r\n\r\nif (!dataPoints || dataPoints.length === 0 || !window) {\r\n  return [];\r\n}\r\n\r\nvar byFreq = {};\r\n\r\nfor (var i = 0; i < dataPoints.length; i++) {\r\n  var dp = dataPoints[i];\r\n  \r\n  if (!dp || !dp.id) continue;\r\n  \r\n  var freq = dp.frequency || 5000;\r\n  \r\n  if (!byFreq[freq]) byFreq[freq] = [];\r\n  \r\n  byFreq[freq].push({\r\n    id: dp.id,\r\n    setPoint: dp.setPoint != null ? dp.setPoint : 0,\r\n    upperLimit: dp.upperLimit != null ? dp.upperLimit : 100,\r\n    lowerLimit: dp.lowerLimit != null ? dp.lowerLimit : 0,\r\n    tolerance: dp.tolerance != null ? dp.tolerance : 1,\r\n    precision: dp.precision != null ? dp.precision : 2\r\n  });\r\n}\r\n\r\nvar batches = [];\r\n\r\nfor (var freq in byFreq) {\r\n  if (!byFreq.hasOwnProperty(freq)) continue;\r\n  \r\n  var dps = byFreq[freq];\r\n  console.log('  Frequency ' + freq + 'ms: ' + dps.length + ' datapoints');\r\n  \r\n  batches.push({\r\n    type: TYPE_NUMBER,\r\n    frequency: parseInt(freq),\r\n    dataPoints: dps,\r\n    window: window\r\n  });\r\n}\r\n\r\nconsole.log('Created ' + batches.length + ' batches');\r\n\r\n// Return array directly, NOT wrapped in object\r\nreturn batches;",
+                "nextNodes": [
+                  "3665213c-0c3a-4425-956f-18b07617ad1d"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Batch Numeric By Frequency"
+            },
+            "b59af77a-ea19-4286-ab36-240b4ee678c4": {
+              "id": "b59af77a-ea19-4286-ab36-240b4ee678c4",
+              "type": "javascriptTransform",
+              "selected": false,
+              "x": 1070,
+              "y": 400,
+              "ports": [
+                {
+                  "id": "cml579sst01oc356r4lfbuye1",
+                  "type": "default",
+                  "x": 1061.67,
+                  "y": 431.73,
+                  "name": "cml579sst01od356rmhewtc4z",
+                  "parentNode": "b59af77a-ea19-4286-ab36-240b4ee678c4",
+                  "links": [
+                    "af66894e-34fd-4c72-ab31-a0628d1c1920"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml579sst01oe356ryjmopt7d",
+                  "type": "default",
+                  "x": 1261.26,
+                  "y": 431.73,
+                  "name": "cml579sst01of356rwss7470g",
+                  "parentNode": "b59af77a-ea19-4286-ab36-240b4ee678c4",
+                  "links": [
+                    "e3af941b-0fdd-490c-8d8c-f60b7002afdd"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "'use strict';\r\n\r\nvar TYPE_BOOLEAN = 1;\r\nvar input = $ || {};\r\nvar dataPoints = input.dataPoints || [];\r\nvar window = $state.context.window;\r\n\r\nconsole.log('=== BATCH BOOLEAN BY FREQUENCY ===');\r\nconsole.log('Input dataPoints length: ' + dataPoints.length);\r\n\r\nif (!dataPoints || dataPoints.length === 0) {\r\n  console.log('No datapoints - returning empty array');\r\n  return [];\r\n}\r\n\r\nif (!window) {\r\n  console.log('No window in context - returning empty array');\r\n  return [];\r\n}\r\n\r\n// Check structure\r\nvar firstItem = dataPoints[0];\r\nvar hasNodeWrapper = firstItem && firstItem.node;\r\nconsole.log('Has .node wrapper: ' + (hasNodeWrapper ? 'YES' : 'NO'));\r\n\r\nif (hasNodeWrapper && firstItem.node.id) {\r\n  console.log('First DP id: ' + firstItem.node.id);\r\n  console.log('First DP name: ' + (firstItem.node.name || 'MISSING'));\r\n}\r\n\r\nvar byFreq = {};\r\nvar processedCount = 0;\r\nvar skippedCount = 0;\r\n\r\nfor (var i = 0; i < dataPoints.length; i++) {\r\n  var item = dataPoints[i];\r\n  \r\n  // Extract node - handle both wrapped and flat structures\r\n  var dp = item.node ? item.node : item;\r\n  \r\n  if (!dp || !dp.id) {\r\n    console.log('  Item ' + i + ': SKIP - no id');\r\n    skippedCount++;\r\n    continue;\r\n  }\r\n  \r\n  var freq = dp.frequency || 5000;\r\n  \r\n  if (!byFreq[freq]) {\r\n    byFreq[freq] = [];\r\n    console.log('  Created frequency bucket: ' + freq + 'ms');\r\n  }\r\n  \r\n  byFreq[freq].push({\r\n    id: dp.id,\r\n    name: dp.name || ''\r\n  });\r\n  \r\n  processedCount++;\r\n}\r\n\r\nconsole.log('Processed: ' + processedCount + ' | Skipped: ' + skippedCount);\r\n\r\nvar batches = [];\r\n\r\nfor (var freq in byFreq) {\r\n  if (!byFreq.hasOwnProperty(freq)) continue;\r\n  \r\n  var dps = byFreq[freq];\r\n  console.log('  Frequency ' + freq + 'ms: ' + dps.length + ' datapoints');\r\n  \r\n  batches.push({\r\n    type: TYPE_BOOLEAN,\r\n    frequency: parseInt(freq),\r\n    dataPoints: dps,\r\n    window: window\r\n  });\r\n}\r\n\r\nconsole.log('Total batches created: ' + batches.length);\r\n\r\nreturn batches;",
+                "nextNodes": [
+                  "9dbc56cd-8e5d-43c6-9344-3d17e6417ff8"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Batch Boolean By Frequency"
+            },
+            "bfe9391c-ceed-4725-9426-646ba25ec0d1": {
+              "id": "bfe9391c-ceed-4725-9426-646ba25ec0d1",
+              "type": "javascriptTransform",
+              "selected": false,
+              "x": 1070,
+              "y": 475,
+              "ports": [
+                {
+                  "id": "cml579y2l01ou356rmbe0fp9y",
+                  "type": "default",
+                  "x": 1061.67,
+                  "y": 506.73,
+                  "name": "cml579y2l01ov356rutinrevp",
+                  "parentNode": "bfe9391c-ceed-4725-9426-646ba25ec0d1",
+                  "links": [
+                    "bf368133-0487-4627-9ac8-b92e0413f98b"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml579y2l01ow356rs2blv3yi",
+                  "type": "default",
+                  "x": 1248.93,
+                  "y": 506.73,
+                  "name": "cml579y2l01ox356rcu0a25vl",
+                  "parentNode": "bfe9391c-ceed-4725-9426-646ba25ec0d1",
+                  "links": [
+                    "919729f6-87c8-41b3-8333-a95b70321d22"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "'use strict';\r\n\r\nvar TYPE_STRING = 2;\r\nvar input = $ || {};\r\nvar dataPoints = input.dataPoints || [];\r\nvar window = $state.context.window;\r\n\r\nconsole.log('=== BATCH STRING BY FREQUENCY ===');\r\nconsole.log('Input dataPoints length: ' + dataPoints.length);\r\n\r\nif (!dataPoints || dataPoints.length === 0) {\r\n  console.log('No datapoints - returning empty array');\r\n  return [];\r\n}\r\n\r\nif (!window) {\r\n  console.log('No window in context - returning empty array');\r\n  return [];\r\n}\r\n\r\n// Check structure\r\nvar firstItem = dataPoints[0];\r\nvar hasNodeWrapper = firstItem && firstItem.node;\r\nconsole.log('Has .node wrapper: ' + (hasNodeWrapper ? 'YES' : 'NO'));\r\n\r\nif (hasNodeWrapper && firstItem.node.id) {\r\n  console.log('First DP id: ' + firstItem.node.id);\r\n  console.log('First DP name: ' + (firstItem.node.name || 'MISSING'));\r\n}\r\n\r\nvar byFreq = {};\r\nvar processedCount = 0;\r\nvar skippedCount = 0;\r\n\r\nfor (var i = 0; i < dataPoints.length; i++) {\r\n  var item = dataPoints[i];\r\n  \r\n  // Extract node - handle both wrapped and flat structures\r\n  var dp = item.node ? item.node : item;\r\n  \r\n  if (!dp || !dp.id) {\r\n    console.log('  Item ' + i + ': SKIP - no id');\r\n    skippedCount++;\r\n    continue;\r\n  }\r\n  \r\n  var freq = dp.frequency || 5000;\r\n  \r\n  if (!byFreq[freq]) {\r\n    byFreq[freq] = [];\r\n    console.log('  Created frequency bucket: ' + freq + 'ms');\r\n  }\r\n  \r\n  byFreq[freq].push({\r\n    id: dp.id,\r\n    name: dp.name || ''\r\n  });\r\n  \r\n  processedCount++;\r\n}\r\n\r\nconsole.log('Processed: ' + processedCount + ' | Skipped: ' + skippedCount);\r\n\r\nvar batches = [];\r\n\r\nfor (var freq in byFreq) {\r\n  if (!byFreq.hasOwnProperty(freq)) continue;\r\n  \r\n  var dps = byFreq[freq];\r\n  console.log('  Frequency ' + freq + 'ms: ' + dps.length + ' datapoints');\r\n  \r\n  batches.push({\r\n    type: TYPE_STRING,\r\n    frequency: parseInt(freq),\r\n    dataPoints: dps,\r\n    window: window\r\n  });\r\n}\r\n\r\nconsole.log('Total batches created: ' + batches.length);\r\n\r\nreturn batches;",
+                "nextNodes": [
+                  "f3a527ae-4b11-4acc-812f-249110dada64"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Batch String By Frequency"
+            },
+            "ad97e759-fd6c-43c6-9898-29aeb5b8a0b7": {
+              "id": "ad97e759-fd6c-43c6-9898-29aeb5b8a0b7",
+              "type": "filterArray",
+              "selected": false,
+              "x": 665,
+              "y": 325,
+              "ports": [
+                {
+                  "id": "cml57df9901sb356r65lk2nuq",
+                  "type": "default",
+                  "x": 656.67,
+                  "y": 356.73,
+                  "name": "cml57df9901sc356rn9ut85qu",
+                  "parentNode": "ad97e759-fd6c-43c6-9898-29aeb5b8a0b7",
+                  "links": [
+                    "6226a4d8-4316-4c60-9513-2758ed4da265"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml57df9901sd356r1mbnzsqj",
+                  "type": "default",
+                  "x": 811.34,
+                  "y": 356.73,
+                  "name": "cml57df9901se356rlmhqert3",
+                  "parentNode": "ad97e759-fd6c-43c6-9898-29aeb5b8a0b7",
+                  "links": [
+                    "7fd98bdd-e3c8-44c6-b558-e0abe3ee34ad"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "inputTransform": "{\r\n  \"dataPoints\": $append(\r\n    $.floatDataPoints.edges.node,\r\n    $.integerDataPoints.edges.node\r\n  )\r\n}",
+                "outputTransform": "(\r\n  $chunkSize := 500;\r\n  $dataPoints := $.dataPoints;\r\n  $numChunks := $ceil($count($dataPoints) / $chunkSize);\r\n  \r\n  [0..$numChunks - 1] ~> $map(function($chunkIdx) {\r\n    {\r\n      \"dataPoints\": $dataPoints ~> $filter(function($dp, $idx) {\r\n        $idx >= ($chunkIdx * $chunkSize) and $idx < (($chunkIdx + 1) * $chunkSize)\r\n      })\r\n    }\r\n  })\r\n)",
+                "enableAdvancedConfiguration": true,
+                "filterTransform": "$",
+                "nextNodes": [
+                  "ed8ba620-7548-44e4-8b0a-da37eaacb4cd"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "ExtractNumeric"
+            },
+            "ca0c44f3-853f-4c11-aee4-10c96b61dcfc": {
+              "id": "ca0c44f3-853f-4c11-aee4-10c96b61dcfc",
+              "type": "filterArray",
+              "selected": false,
+              "x": 665,
+              "y": 400,
+              "ports": [
+                {
+                  "id": "cml57elbz01sv356rd9won4tt",
+                  "type": "default",
+                  "x": 656.67,
+                  "y": 431.73,
+                  "name": "cml57elbz01sw356r5hy2eyhl",
+                  "parentNode": "ca0c44f3-853f-4c11-aee4-10c96b61dcfc",
+                  "links": [
+                    "f51b72cf-117c-457f-8486-48bd89069923"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml57elbz01sx356rq28iysd1",
+                  "type": "default",
+                  "x": 811.34,
+                  "y": 431.73,
+                  "name": "cml57elbz01sy356r793sxqnr",
+                  "parentNode": "ca0c44f3-853f-4c11-aee4-10c96b61dcfc",
+                  "links": [
+                    "d313c513-1b19-4e5a-9031-efdc184cc283"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "inputTransform": "{\r\n  \"dataPoints\": $.booleanDataPoints.edges\r\n}",
+                "outputTransform": "(\r\n  $chunkSize := 500;\r\n  $dataPoints := $.dataPoints;\r\n  $numChunks := $ceil($count($dataPoints) / $chunkSize);\r\n  \r\n  [0..$numChunks - 1] ~> $map(function($chunkIdx) {\r\n    {\r\n      \"dataPoints\": $dataPoints ~> $filter(function($dp, $idx) {\r\n        $idx >= ($chunkIdx * $chunkSize) and $idx < (($chunkIdx + 1) * $chunkSize)\r\n      })\r\n    }\r\n  })\r\n)",
+                "enableAdvancedConfiguration": true,
+                "filterTransform": "$",
+                "nextNodes": [
+                  "135e48ea-9dcd-41f3-a19a-0d778ed09e3a"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "ExtractBoolean"
+            },
+            "7c904a63-780d-4539-8549-2df53e2b6720": {
+              "id": "7c904a63-780d-4539-8549-2df53e2b6720",
+              "type": "filterArray",
+              "selected": false,
+              "x": 665,
+              "y": 475,
+              "ports": [
+                {
+                  "id": "cml57g9jn01ux356rf7sld7b0",
+                  "type": "default",
+                  "x": 656.67,
+                  "y": 506.73,
+                  "name": "cml57g9jn01uy356rl3b8oxgc",
+                  "parentNode": "7c904a63-780d-4539-8549-2df53e2b6720",
+                  "links": [
+                    "0ee3bc46-c60e-4aa2-9260-f5be6f44b4a4"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml57g9jn01uz356rn2lk1jsr",
+                  "type": "default",
+                  "x": 811.34,
+                  "y": 506.73,
+                  "name": "cml57g9jn01v0356ry4ocm9or",
+                  "parentNode": "7c904a63-780d-4539-8549-2df53e2b6720",
+                  "links": [
+                    "166c896f-c95e-4d8d-994a-19d517ae940d"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "inputTransform": "{\r\n  \"dataPoints\": $.stringDataPoints.edges\r\n}",
+                "outputTransform": "(\r\n  $chunkSize := 500;\r\n  $dataPoints := $.dataPoints;\r\n  $numChunks := $ceil($count($dataPoints) / $chunkSize);\r\n  \r\n  [0..$numChunks - 1] ~> $map(function($chunkIdx) {\r\n    {\r\n      \"dataPoints\": $dataPoints ~> $filter(function($dp, $idx) {\r\n        $idx >= ($chunkIdx * $chunkSize) and $idx < (($chunkIdx + 1) * $chunkSize)\r\n      })\r\n    }\r\n  })\r\n)",
+                "enableAdvancedConfiguration": true,
+                "filterTransform": "$",
+                "nextNodes": [
+                  "504ac41a-8530-4093-ae75-58883a9a83ed"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "ExtractString"
+            },
+            "ed8ba620-7548-44e4-8b0a-da37eaacb4cd": {
+              "id": "ed8ba620-7548-44e4-8b0a-da37eaacb4cd",
+              "type": "broadcast",
+              "selected": false,
+              "x": 865,
+              "y": 325,
+              "ports": [
+                {
+                  "id": "cml58k06o02pt356rn7rec1k8",
+                  "type": "default",
+                  "x": 856.67,
+                  "y": 356.73,
+                  "name": "cml58k06o02pu356r450eca71",
+                  "parentNode": "ed8ba620-7548-44e4-8b0a-da37eaacb4cd",
+                  "links": [
+                    "7fd98bdd-e3c8-44c6-b558-e0abe3ee34ad"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml58k06o02pv356rf5ro7i68",
+                  "type": "default",
+                  "x": 1011.34,
+                  "y": 356.73,
+                  "name": "cml58k06o02pw356rv4tofx9o",
+                  "parentNode": "ed8ba620-7548-44e4-8b0a-da37eaacb4cd",
+                  "links": [
+                    "e591b815-d579-4981-af34-af92b272290f"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "1a9205ce-3269-4156-9ac0-34cc21ca70c2"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Broadcast"
+            },
+            "135e48ea-9dcd-41f3-a19a-0d778ed09e3a": {
+              "id": "135e48ea-9dcd-41f3-a19a-0d778ed09e3a",
+              "type": "broadcast",
+              "selected": false,
+              "x": 865,
+              "y": 400,
+              "ports": [
+                {
+                  "id": "cml58x3me035j356riex00n6n",
+                  "type": "default",
+                  "x": 856.67,
+                  "y": 431.73,
+                  "name": "cml58x3me035k356rmby7ks5v",
+                  "parentNode": "135e48ea-9dcd-41f3-a19a-0d778ed09e3a",
+                  "links": [
+                    "d313c513-1b19-4e5a-9031-efdc184cc283"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml58x3me035l356r1muu6mlw",
+                  "type": "default",
+                  "x": 1011.34,
+                  "y": 431.73,
+                  "name": "cml58x3me035m356r68kshi6d",
+                  "parentNode": "135e48ea-9dcd-41f3-a19a-0d778ed09e3a",
+                  "links": [
+                    "af66894e-34fd-4c72-ab31-a0628d1c1920"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "b59af77a-ea19-4286-ab36-240b4ee678c4"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Broadcast"
+            },
+            "504ac41a-8530-4093-ae75-58883a9a83ed": {
+              "id": "504ac41a-8530-4093-ae75-58883a9a83ed",
+              "type": "broadcast",
+              "selected": false,
+              "x": 870,
+              "y": 475,
+              "ports": [
+                {
+                  "id": "cml58x3sn035v356rlz7l35pg",
+                  "type": "default",
+                  "x": 861.67,
+                  "y": 506.73,
+                  "name": "cml58x3sn035w356rxl6okdmo",
+                  "parentNode": "504ac41a-8530-4093-ae75-58883a9a83ed",
+                  "links": [
+                    "166c896f-c95e-4d8d-994a-19d517ae940d"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml58x3sn035x356rtou9n5s0",
+                  "type": "default",
+                  "x": 1016.34,
+                  "y": 506.73,
+                  "name": "cml58x3sn035y356riqiw0qd8",
+                  "parentNode": "504ac41a-8530-4093-ae75-58883a9a83ed",
+                  "links": [
+                    "bf368133-0487-4627-9ac8-b92e0413f98b"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "bfe9391c-ceed-4725-9426-646ba25ec0d1"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Broadcast"
+            },
+            "3665213c-0c3a-4425-956f-18b07617ad1d": {
+              "id": "3665213c-0c3a-4425-956f-18b07617ad1d",
+              "type": "javascriptTransform",
+              "selected": true,
+              "x": 1320,
+              "y": 325,
+              "ports": [
+                {
+                  "id": "cml58zuvt03ay356rdtd4h6wr",
+                  "type": "default",
+                  "x": 1311.67,
+                  "y": 356.73,
+                  "name": "cml58zuvt03az356rp5bpkvk6",
+                  "parentNode": "3665213c-0c3a-4425-956f-18b07617ad1d",
+                  "links": [
+                    "4a8f0016-0a2e-46a6-ba81-c000d07055f7"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml58zuvt03b0356rgnjhjr6h",
+                  "type": "default",
+                  "x": 1499.97,
+                  "y": 356.73,
+                  "name": "cml58zuvt03b1356rfw8fqb4y",
+                  "parentNode": "3665213c-0c3a-4425-956f-18b07617ad1d",
+                  "links": [
+                    "03d40ef6-5f38-48a8-b651-5c5d073cd4c3"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "ce7f9973-266a-4227-a7e8-31654fa3a4cb"
+                ],
+                "transform": "'use strict';\r\n\r\n/**\r\n * Generate numeric records for ALL batches with OPC UA quality codes\r\n * OUTPUT: First chunk only (max 1000 records)\r\n * \r\n * QUALITY DISTRIBUTION:\r\n *   - ~3% Bad (out of range - above upperLimit or below lowerLimit)\r\n *   - ~7% Uncertain (warning zone - between warning and limit)\r\n *   - ~90% Good (within normal range)\r\n * \r\n * GUARANTEES:\r\n *   - Every record has: dataPointId, recordedAt, value, quality, qualityCode\r\n *   - First 5 records are forced Bad for testing\r\n */\r\n\r\nvar batches = $ || [];\r\nvar CHUNK_SIZE = 1000;\r\nvar FORCE_BAD_PERCENT = 0.03;\r\nvar FORCE_WARNING_PERCENT = 0.07;\r\n\r\nconsole.log('=== GENERATE NUMERIC RECORDS ===');\r\nconsole.log('Batches: ' + batches.length);\r\n\r\nif (!Array.isArray(batches) || batches.length === 0) {\r\n  console.log('No batches to process');\r\n  return [];\r\n}\r\n\r\n// ============================================================\r\n// VALUE GENERATOR\r\n// ============================================================\r\nfunction generateValue(dp, timestamp, prevValue, anomalyEnabled, anomalyProb) {\r\n  var setPoint = dp.setPoint;\r\n  var upperLimit = dp.upperLimit;\r\n  var lowerLimit = dp.lowerLimit;\r\n  var upperWarning = dp.upperWarning;\r\n  var lowerWarning = dp.lowerWarning;\r\n\r\n  var hour = new Date(timestamp).getUTCHours();\r\n  var isWorkHours = hour >= 6 && hour <= 22;\r\n\r\n  var baseValue = setPoint != null ? setPoint : 50;\r\n  var range = (upperLimit != null && lowerLimit != null)\r\n    ? (upperLimit - lowerLimit) * 0.3\r\n    : 20;\r\n\r\n  var value;\r\n  var roll = Math.random();\r\n\r\n  // 3% chance: force out-of-range\r\n  if (roll < FORCE_BAD_PERCENT && upperLimit != null && lowerLimit != null) {\r\n    if (Math.random() < 0.5) {\r\n      value = upperLimit * (1.05 + Math.random() * 0.20);\r\n    } else {\r\n      value = lowerLimit * (0.75 + Math.random() * 0.20);\r\n    }\r\n  }\r\n  // 7% chance: force warning zone\r\n  else if (roll < (FORCE_BAD_PERCENT + FORCE_WARNING_PERCENT)) {\r\n    var hasUpper = upperWarning != null && upperLimit != null;\r\n    var hasLower = lowerWarning != null && lowerLimit != null;\r\n\r\n    if (hasUpper && hasLower) {\r\n      if (Math.random() < 0.5) {\r\n        value = upperWarning + (upperLimit - upperWarning) * (0.2 + Math.random() * 0.6);\r\n      } else {\r\n        value = lowerLimit + (lowerWarning - lowerLimit) * (0.2 + Math.random() * 0.6);\r\n      }\r\n    } else if (hasUpper) {\r\n      value = upperWarning + (upperLimit - upperWarning) * (0.2 + Math.random() * 0.6);\r\n    } else if (hasLower) {\r\n      value = lowerLimit + (lowerWarning - lowerLimit) * (0.2 + Math.random() * 0.6);\r\n    } else {\r\n      value = null; // fall through to normal\r\n    }\r\n  }\r\n\r\n  // 90% normal generation (or fallback)\r\n  if (value == null) {\r\n    if (prevValue == null) {\r\n      value = baseValue + (Math.random() - 0.5) * range * 0.5;\r\n    } else {\r\n      var drift = (Math.random() - 0.5) * range * 0.05;\r\n      value = prevValue + drift + (baseValue - prevValue) * 0.1;\r\n    }\r\n\r\n    if (isWorkHours) {\r\n      value += Math.sin(timestamp / 3600000 * Math.PI) * range * 0.2;\r\n    }\r\n\r\n    if (anomalyEnabled && Math.random() < anomalyProb) {\r\n      value += (Math.random() - 0.5) * range * 2;\r\n    }\r\n\r\n    if (upperLimit != null && value > upperLimit * 1.5) value = upperLimit * 1.5;\r\n    if (lowerLimit != null && value < lowerLimit * 0.5) value = lowerLimit * 0.5;\r\n  }\r\n\r\n  var precision = dp.precision != null ? dp.precision : 2;\r\n  var factor = Math.pow(10, precision);\r\n  return Math.round(value * factor) / factor;\r\n}\r\n\r\n// ============================================================\r\n// EVALUATE QUALITY (always returns quality + qualityCode)\r\n// ============================================================\r\nfunction evaluateQuality(value, dp) {\r\n  if (dp.upperLimit != null && value > dp.upperLimit) {\r\n    return { quality: \"Bad\", qualityCode: \"16\" };\r\n  }\r\n  if (dp.lowerLimit != null && value < dp.lowerLimit) {\r\n    return { quality: \"Bad\", qualityCode: \"16\" };\r\n  }\r\n  if (dp.upperWarning != null && value > dp.upperWarning) {\r\n    return { quality: \"Uncertain\", qualityCode: \"64\" };\r\n  }\r\n  if (dp.lowerWarning != null && value < dp.lowerWarning) {\r\n    return { quality: \"Uncertain\", qualityCode: \"64\" };\r\n  }\r\n  return { quality: \"Good\", qualityCode: \"192\" };\r\n}\r\n\r\n// ============================================================\r\n// GENERATE ALL RECORDS\r\n// ============================================================\r\nvar allRecords = [];\r\nvar totalRecordCount = 0;\r\nvar qualityStats = { good: 0, uncertain: 0, bad: 0 };\r\n\r\nfor (var b = 0; b < batches.length; b++) {\r\n  var batch = batches[b];\r\n  var dataPoints = batch.dataPoints || [];\r\n  var frequency = batch.frequency || 5000;\r\n  var win = batch.window || {};\r\n\r\n  var windowStartMs = new Date(win.start).getTime();\r\n  var windowEndMs = new Date(win.end).getTime();\r\n  var anomalyEnabled = win.anomalyEnabled !== false;\r\n  var anomalyProb = win.anomalyProb || 0.02;\r\n\r\n  if (isNaN(windowStartMs) || isNaN(windowEndMs)) {\r\n    console.log('Batch ' + b + ': Invalid window - skipping');\r\n    continue;\r\n  }\r\n  if (dataPoints.length === 0) {\r\n    console.log('Batch ' + b + ': No datapoints - skipping');\r\n    continue;\r\n  }\r\n\r\n  console.log('Batch ' + b + ': freq=' + frequency + 'ms, dps=' + dataPoints.length);\r\n\r\n  var dpStates = {};\r\n  for (var d = 0; d < dataPoints.length; d++) {\r\n    dpStates[dataPoints[d].id] = null;\r\n  }\r\n\r\n  var ts = windowStartMs;\r\n  var batchRecordCount = 0;\r\n\r\n  while (ts < windowEndMs) {\r\n    for (var d = 0; d < dataPoints.length; d++) {\r\n      var dp = dataPoints[d];\r\n\r\n      // Skip invalid datapoints\r\n      if (!dp.id) {\r\n        console.log('SKIPPED: datapoint missing id at batch ' + b + ' index ' + d);\r\n        continue;\r\n      }\r\n\r\n      // 1. Generate value\r\n      var value = generateValue(dp, ts, dpStates[dp.id], anomalyEnabled, anomalyProb);\r\n      dpStates[dp.id] = value;\r\n\r\n      // 2. Evaluate quality\r\n      var qResult = evaluateQuality(value, dp);\r\n\r\n      // 3. Track stats\r\n      if (qResult.quality === \"Bad\") qualityStats.bad++;\r\n      else if (qResult.quality === \"Uncertain\") qualityStats.uncertain++;\r\n      else qualityStats.good++;\r\n\r\n      // 4. Build complete record — all 5 fields always present\r\n      var record = {\r\n        dataPointId: dp.id,\r\n        recordedAt: new Date(ts).toISOString(),\r\n        value: value,\r\n        quality: qResult.quality,\r\n        qualityCode: qResult.qualityCode\r\n      };\r\n\r\n      allRecords.push(record);\r\n      batchRecordCount++;\r\n    }\r\n\r\n    ts += frequency;\r\n  }\r\n\r\n  console.log('  Generated ' + batchRecordCount + ' records');\r\n  totalRecordCount += batchRecordCount;\r\n}\r\n\r\nconsole.log('Total records: ' + totalRecordCount);\r\nconsole.log('Quality: Good=' + qualityStats.good + ', Uncertain=' + qualityStats.uncertain + ', Bad=' + qualityStats.bad);\r\n\r\n// ============================================================\r\n// FORCE FIRST 5 RECORDS BAD\r\n// ============================================================\r\nfor (var i = 0; i < Math.min(1, allRecords.length); i++) {\r\n  var original = allRecords[i].value;\r\n  allRecords[i].value = original * 10;\r\n  allRecords[i].quality = \"Bad\";\r\n  allRecords[i].qualityCode = \"16\";\r\n  console.log('FORCED BAD [' + i + ']: dpId=' + allRecords[i].dataPointId + ' original=' + original + ' forced=' + allRecords[i].value);\r\n}\r\n\r\n// ============================================================\r\n// CHUNK AND RETURN FLAT ARRAY\r\n// ============================================================\r\nif (allRecords.length === 0) {\r\n  console.log('No records generated');\r\n  return [];\r\n}\r\n\r\nvar firstChunk = allRecords.slice(0, CHUNK_SIZE);\r\n\r\nconsole.log('Returning ' + firstChunk.length + ' of ' + allRecords.length + ' records');\r\nconsole.log('=== END ===');\r\n\r\nreturn firstChunk;"
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Generate Number Records"
+            },
+            "f3a527ae-4b11-4acc-812f-249110dada64": {
+              "id": "f3a527ae-4b11-4acc-812f-249110dada64",
+              "type": "javascriptTransform",
+              "selected": false,
+              "x": 1320,
+              "y": 475,
+              "ports": [
+                {
+                  "id": "cml59088z03b6356rn8dn9g3g",
+                  "type": "default",
+                  "x": 1311.67,
+                  "y": 506.73,
+                  "name": "cml59088z03b7356ro1f6b94x",
+                  "parentNode": "f3a527ae-4b11-4acc-812f-249110dada64",
+                  "links": [
+                    "919729f6-87c8-41b3-8333-a95b70321d22"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml59088z03b8356rmap4438w",
+                  "type": "default",
+                  "x": 1488.5,
+                  "y": 506.73,
+                  "name": "cml59088z03b9356r3aj09967",
+                  "parentNode": "f3a527ae-4b11-4acc-812f-249110dada64",
+                  "links": [
+                    "28862b41-3e41-4b77-958a-b503c27e36b9"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "'use strict';\r\n\r\n/**\r\n * Generate string records for ALL batches with OPC UA quality codes\r\n * OUTPUT: First chunk only (max 1000 records)\r\n */\r\n\r\nvar batches = $ || [];\r\nvar CHUNK_SIZE = 1000;\r\n\r\nconsole.log('=== GENERATE STRING RECORDS (CHUNKED) ===');\r\nconsole.log('Number of batches: ' + batches.length);\r\n\r\nif (!Array.isArray(batches) || batches.length === 0) {\r\n  console.log('No batches to process');\r\n  return [];\r\n}\r\n\r\n// ============================================================\r\n// STATUS SETS\r\n// ============================================================\r\n\r\nvar statusSets = {\r\n  mode: ['Auto', 'Manual', 'Maintenance', 'Test'],\r\n  operational: ['Running', 'Idle', 'Stopped', 'Starting', 'Stopping'],\r\n  health: ['Normal', 'Warning', 'Alarm', 'Fault', 'Offline'],\r\n  process: ['Ready', 'Processing', 'Complete', 'Waiting', 'Error']\r\n};\r\n\r\n// ============================================================\r\n// STRING VALUE GENERATOR\r\n// ============================================================\r\n\r\nfunction generateValue(name, timestamp, prevValue, anomalyEnabled, anomalyProb) {\r\n  var nameLower = (name || '').toLowerCase();\r\n  var hour = new Date(timestamp).getUTCHours();\r\n  var isWorkHours = hour >= 6 && hour <= 22;\r\n  \r\n  var values;\r\n  var changeProb = 0.05;\r\n  \r\n  if (nameLower.indexOf('mode') >= 0) {\r\n    values = statusSets.mode;\r\n    changeProb = 0.02;\r\n  } else if (nameLower.indexOf('status') >= 0 || nameLower.indexOf('state') >= 0) {\r\n    values = statusSets.operational;\r\n    changeProb = isWorkHours ? 0.08 : 0.02;\r\n  } else if (nameLower.indexOf('health') >= 0 || nameLower.indexOf('condition') >= 0) {\r\n    values = statusSets.health;\r\n    changeProb = 0.03;\r\n  } else if (nameLower.indexOf('process') >= 0 || nameLower.indexOf('phase') >= 0) {\r\n    values = statusSets.process;\r\n    changeProb = isWorkHours ? 0.1 : 0.01;\r\n  } else {\r\n    values = statusSets.operational;\r\n  }\r\n  \r\n  var value;\r\n  var anomalyTriggered = false;\r\n  \r\n  if (prevValue == null || Math.random() < changeProb) {\r\n    if (isWorkHours && values === statusSets.operational) {\r\n      var r = Math.random();\r\n      if (r < 0.7) value = 'Running';\r\n      else if (r < 0.9) value = 'Idle';\r\n      else value = values[Math.floor(Math.random() * values.length)];\r\n    } else if (values === statusSets.health) {\r\n      var r = Math.random();\r\n      if (r < 0.85) value = 'Normal';\r\n      else if (r < 0.95) value = 'Warning';\r\n      else value = values[Math.floor(Math.random() * values.length)];\r\n    } else {\r\n      value = values[Math.floor(Math.random() * values.length)];\r\n    }\r\n  } else {\r\n    value = prevValue;\r\n  }\r\n  \r\n  if (anomalyEnabled && Math.random() < anomalyProb) {\r\n    if (values === statusSets.operational) {\r\n      value = Math.random() < 0.5 ? 'Stopped' : 'Error';\r\n    } else if (values === statusSets.health) {\r\n      value = 'Alarm';\r\n    } else if (values === statusSets.process) {\r\n      value = 'Error';\r\n    }\r\n    anomalyTriggered = true;\r\n  }\r\n  \r\n  return {\r\n    value: value,\r\n    anomalyTriggered: anomalyTriggered\r\n  };\r\n}\r\n\r\n// ============================================================\r\n// GENERATE ALL RECORDS\r\n// ============================================================\r\n\r\nvar allRecords = [];\r\nvar totalRecordCount = 0;\r\n\r\nfor (var b = 0; b < batches.length; b++) {\r\n  var batch = batches[b];\r\n  var dataPoints = batch.dataPoints || [];\r\n  var frequency = batch.frequency || 5000;\r\n  var window = batch.window || {};\r\n  \r\n  var windowStartMs = new Date(window.start).getTime();\r\n  var windowEndMs = new Date(window.end).getTime();\r\n  var anomalyEnabled = window.anomalyEnabled !== false;\r\n  var anomalyProb = window.anomalyProb || 0.02;\r\n  \r\n  if (isNaN(windowStartMs) || isNaN(windowEndMs)) {\r\n    console.log('Batch ' + b + ': Invalid window - skipping');\r\n    continue;\r\n  }\r\n  \r\n  if (dataPoints.length === 0) {\r\n    console.log('Batch ' + b + ': No datapoints - skipping');\r\n    continue;\r\n  }\r\n  \r\n  console.log('Batch ' + b + ': freq=' + frequency + 'ms, dps=' + dataPoints.length);\r\n  \r\n  var dpStates = {};\r\n  for (var d = 0; d < dataPoints.length; d++) {\r\n    dpStates[dataPoints[d].id] = null;\r\n  }\r\n  \r\n  var ts = windowStartMs;\r\n  var batchRecordCount = 0;\r\n  \r\n  while (ts < windowEndMs) {\r\n    for (var d = 0; d < dataPoints.length; d++) {\r\n      var dp = dataPoints[d];\r\n      var result = generateValue(dp.name, ts, dpStates[dp.id], anomalyEnabled, anomalyProb);\r\n      dpStates[dp.id] = result.value;\r\n      \r\n      // ============================================================\r\n      // OPC UA QUALITY CODE EVALUATION\r\n      // ============================================================\r\n      \r\n      var quality = null;\r\n      var qualityCode = null;\r\n      \r\n      // Mark fault/error/alarm states with quality codes\r\n      if (result.value === 'Alarm' || result.value === 'Fault' || result.value === 'Error' || result.value === 'Offline') {\r\n        quality = \"Bad\";\r\n        qualityCode = 16; // Bad - Sensor/Process Failure\r\n      } else if (result.value === 'Warning' || result.anomalyTriggered) {\r\n        quality = \"Uncertain\";\r\n        qualityCode = 64; // Uncertain\r\n      }\r\n      // else: Good quality (192) - we omit quality fields for normal readings\r\n      \r\n      // ============================================================\r\n      // BUILD RECORD\r\n      // ============================================================\r\n      \r\n      var record = {\r\n        dataPointId: dp.id,\r\n        recordedAt: new Date(ts).toISOString(),\r\n        valueString: result.value\r\n      };\r\n      \r\n      // Only include quality fields when NOT good\r\n      if (quality !== null) {\r\n        record.quality = quality;\r\n        record.qualityCode = qualityCode;\r\n      }\r\n      \r\n      allRecords.push(record);\r\n      batchRecordCount++;\r\n    }\r\n    \r\n    ts += frequency;\r\n  }\r\n  \r\n  console.log('  Generated ' + batchRecordCount + ' records');\r\n  totalRecordCount += batchRecordCount;\r\n}\r\n\r\nconsole.log('Total records generated: ' + totalRecordCount);\r\n\r\n// ============================================================\r\n// CHUNK RECORDS\r\n// ============================================================\r\n\r\nif (allRecords.length === 0) {\r\n  console.log('No records to chunk');\r\n  return [];\r\n}\r\n\r\nvar chunks = [];\r\n\r\nfor (var i = 0; i < allRecords.length; i += CHUNK_SIZE) {\r\n  var chunk = allRecords.slice(i, i + CHUNK_SIZE);\r\n  chunks.push(chunk);\r\n}\r\n\r\nconsole.log('Split into ' + chunks.length + ' chunks of max ' + CHUNK_SIZE + ' records');\r\nconsole.log('Returning first chunk only: ' + (chunks.length > 0 ? chunks[0].length : 0) + ' records');\r\nconsole.log('=== END GENERATE STRING ===');\r\n\r\nreturn chunks.length > 0 ? chunks[0] : [];",
+                "nextNodes": [
+                  "ee709af3-9e0e-47a7-92db-7d17e777b95e"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Generate String Records"
+            },
+            "9dbc56cd-8e5d-43c6-9344-3d17e6417ff8": {
+              "id": "9dbc56cd-8e5d-43c6-9344-3d17e6417ff8",
+              "type": "javascriptTransform",
+              "selected": false,
+              "x": 1320,
+              "y": 400,
+              "ports": [
+                {
+                  "id": "cml591fxd03c6356r1rme2v0m",
+                  "type": "default",
+                  "x": 1311.67,
+                  "y": 431.73,
+                  "name": "cml591fxd03c7356rl6ncwwq1",
+                  "parentNode": "9dbc56cd-8e5d-43c6-9344-3d17e6417ff8",
+                  "links": [
+                    "e3af941b-0fdd-490c-8d8c-f60b7002afdd"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml591fxd03c8356ri1flvxct",
+                  "type": "default",
+                  "x": 1500.83,
+                  "y": 431.73,
+                  "name": "cml591fxd03c9356r31opfzs2",
+                  "parentNode": "9dbc56cd-8e5d-43c6-9344-3d17e6417ff8",
+                  "links": [
+                    "0402d2b4-ad0f-400d-8498-8e14ebe50e26"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "'use strict';\r\n\r\n/**\r\n * Generate boolean records for ALL batches with OPC UA quality codes\r\n * OUTPUT: First chunk only (max 1000 records)\r\n */\r\n\r\nvar batches = $ || [];\r\nvar CHUNK_SIZE = 1000;\r\n\r\nconsole.log('=== GENERATE BOOLEAN RECORDS (CHUNKED) ===');\r\nconsole.log('Number of batches: ' + batches.length);\r\n\r\nif (!Array.isArray(batches) || batches.length === 0) {\r\n  console.log('No batches to process');\r\n  return [];\r\n}\r\n\r\n// ============================================================\r\n// BOOLEAN VALUE GENERATOR\r\n// ============================================================\r\n\r\nfunction generateValue(name, timestamp, prevValue, anomalyEnabled, anomalyProb) {\r\n  var nameLower = (name || '').toLowerCase();\r\n  var hour = new Date(timestamp).getUTCHours();\r\n  var isWorkHours = hour >= 6 && hour <= 22;\r\n  \r\n  var changeProb = 0.05;\r\n  var trueProb = 0.5;\r\n  var anomalyTriggered = false;\r\n  \r\n  if (nameLower.indexOf('running') >= 0 || nameLower.indexOf('active') >= 0) {\r\n    changeProb = isWorkHours ? 0.02 : 0.1;\r\n    trueProb = isWorkHours ? 0.85 : 0.2;\r\n  } else if (nameLower.indexOf('alarm') >= 0 || nameLower.indexOf('fault') >= 0) {\r\n    changeProb = 0.01;\r\n    trueProb = 0.05;\r\n  } else if (nameLower.indexOf('enabled') >= 0 || nameLower.indexOf('ready') >= 0) {\r\n    changeProb = 0.005;\r\n    trueProb = 0.9;\r\n  }\r\n  \r\n  var value;\r\n  \r\n  if (prevValue == null || Math.random() < changeProb) {\r\n    value = Math.random() < trueProb;\r\n  } else {\r\n    value = prevValue;\r\n  }\r\n  \r\n  if (anomalyEnabled && Math.random() < anomalyProb) {\r\n    value = !value;\r\n    anomalyTriggered = true;\r\n  }\r\n  \r\n  return {\r\n    value: value,\r\n    anomalyTriggered: anomalyTriggered\r\n  };\r\n}\r\n\r\n// ============================================================\r\n// GENERATE ALL RECORDS\r\n// ============================================================\r\n\r\nvar allRecords = [];\r\nvar totalRecordCount = 0;\r\n\r\nfor (var b = 0; b < batches.length; b++) {\r\n  var batch = batches[b];\r\n  var dataPoints = batch.dataPoints || [];\r\n  var frequency = batch.frequency || 5000;\r\n  var window = batch.window || {};\r\n  \r\n  var windowStartMs = new Date(window.start).getTime();\r\n  var windowEndMs = new Date(window.end).getTime();\r\n  var anomalyEnabled = window.anomalyEnabled !== false;\r\n  var anomalyProb = window.anomalyProb || 0.02;\r\n  \r\n  if (isNaN(windowStartMs) || isNaN(windowEndMs)) {\r\n    console.log('Batch ' + b + ': Invalid window - skipping');\r\n    continue;\r\n  }\r\n  \r\n  if (dataPoints.length === 0) {\r\n    console.log('Batch ' + b + ': No datapoints - skipping');\r\n    continue;\r\n  }\r\n  \r\n  console.log('Batch ' + b + ': freq=' + frequency + 'ms, dps=' + dataPoints.length);\r\n  \r\n  var dpStates = {};\r\n  for (var d = 0; d < dataPoints.length; d++) {\r\n    dpStates[dataPoints[d].id] = null;\r\n  }\r\n  \r\n  var ts = windowStartMs;\r\n  var batchRecordCount = 0;\r\n  \r\n  while (ts < windowEndMs) {\r\n    for (var d = 0; d < dataPoints.length; d++) {\r\n      var dp = dataPoints[d];\r\n      var result = generateValue(dp.name, ts, dpStates[dp.id], anomalyEnabled, anomalyProb);\r\n      dpStates[dp.id] = result.value;\r\n      \r\n      // ============================================================\r\n      // BUILD RECORD WITH QUALITY TRACKING\r\n      // ============================================================\r\n      \r\n      var record = {\r\n        dataPointId: dp.id,\r\n        recordedAt: new Date(ts).toISOString(),\r\n        valueBool: result.value\r\n      };\r\n      \r\n      // Mark anomaly-triggered state changes with quality code\r\n      if (result.anomalyTriggered) {\r\n        record.quality = \"Uncertain\";\r\n        record.qualityCode = 64; // Uncertain - Anomaly detected\r\n      }\r\n      \r\n      allRecords.push(record);\r\n      batchRecordCount++;\r\n    }\r\n    \r\n    ts += frequency;\r\n  }\r\n  \r\n  console.log('  Generated ' + batchRecordCount + ' records');\r\n  totalRecordCount += batchRecordCount;\r\n}\r\n\r\nconsole.log('Total records generated: ' + totalRecordCount);\r\n\r\n// ============================================================\r\n// CHUNK RECORDS\r\n// ============================================================\r\n\r\nif (allRecords.length === 0) {\r\n  console.log('No records to chunk');\r\n  return [];\r\n}\r\n\r\nvar chunks = [];\r\n\r\nfor (var i = 0; i < allRecords.length; i += CHUNK_SIZE) {\r\n  var chunk = allRecords.slice(i, i + CHUNK_SIZE);\r\n  chunks.push(chunk);\r\n}\r\n\r\nconsole.log('Split into ' + chunks.length + ' chunks of max ' + CHUNK_SIZE + ' records');\r\nconsole.log('Returning first chunk only: ' + (chunks.length > 0 ? chunks[0].length : 0) + ' records');\r\nconsole.log('=== END GENERATE BOOLEAN ===');\r\n\r\nreturn chunks.length > 0 ? chunks[0] : [];",
+                "nextNodes": [
+                  "f864f124-086a-44b2-aaf9-7e90358613fb"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Generate Boolean Records"
+            },
+            "ce7f9973-266a-4227-a7e8-31654fa3a4cb": {
+              "id": "ce7f9973-266a-4227-a7e8-31654fa3a4cb",
+              "type": "mutate",
+              "selected": false,
+              "x": 1550,
+              "y": 325,
+              "ports": [
+                {
+                  "id": "cml59dbef040f356ry7f4dld5",
+                  "type": "default",
+                  "x": 1541.67,
+                  "y": 356.73,
+                  "name": "cml59dbef040g356ruktbmibc",
+                  "parentNode": "ce7f9973-266a-4227-a7e8-31654fa3a4cb",
+                  "links": [
+                    "03d40ef6-5f38-48a8-b651-5c5d073cd4c3"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml59dbef040h356rhllupyd3",
+                  "type": "default",
+                  "x": 1786.5,
+                  "y": 356.73,
+                  "name": "cml59dbef040i356rc4zxw7p6",
+                  "parentNode": "ce7f9973-266a-4227-a7e8-31654fa3a4cb",
+                  "links": [
+                    "baa004df-e35a-4ae9-9e2a-49c56b530553"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "Application",
+                "variablesTransform": "{\r\n  \"payload\": [$.{\r\n    \"create\": {\r\n      \"dataPointId\": dataPointId,\r\n      \"recordedAt\": recordedAt,\r\n      \"value\": value,\r\n      \"quality\": quality,\r\n      \"qualityCode\": qualityCode\r\n    }\r\n  }]\r\n}",
+                "mutation": "mutation CreateTelemetryRaw($payload: [TelemetryRawCreatePayloadInput!]!) {\n  createTelemetryRaw(payload: $payload) {\n    id\n  }\n}",
+                "nextNodes": [
+                  "cb511f78-246b-4590-bded-bf2df5de7b08"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": true,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Create TelemetryRaw - Numeric Data"
+            },
+            "f864f124-086a-44b2-aaf9-7e90358613fb": {
+              "id": "f864f124-086a-44b2-aaf9-7e90358613fb",
+              "type": "mutate",
+              "selected": false,
+              "x": 1550,
+              "y": 400,
+              "ports": [
+                {
+                  "id": "cml59dqbz0420356r5v8go28d",
+                  "type": "default",
+                  "x": 1541.67,
+                  "y": 431.73,
+                  "name": "cml59dqbz0421356rqlahzal1",
+                  "parentNode": "f864f124-086a-44b2-aaf9-7e90358613fb",
+                  "links": [
+                    "0402d2b4-ad0f-400d-8498-8e14ebe50e26"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml59dqbz0422356r8wzabxb2",
+                  "type": "default",
+                  "x": 1784.77,
+                  "y": 431.73,
+                  "name": "cml59dqbz0423356r92vg4qav",
+                  "parentNode": "f864f124-086a-44b2-aaf9-7e90358613fb",
+                  "links": [
+                    "f4e21398-8690-424b-bcda-3032b66cbcb1"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "Application",
+                "variablesTransform": "$count($) > 0 ? {\r\n  \"payload\": [$.{\"create\": valueBool ? {\r\n    \"dataPointId\": dataPointId,\r\n    \"recordedAt\": recordedAt,\r\n    \"valueBool\": valueBool\r\n  } : {\r\n    \"dataPointId\": dataPointId,\r\n    \"recordedAt\": recordedAt\r\n  }}]\r\n} : {\r\n  \"payload\": []\r\n}",
+                "mutation": "mutation CreateTelemetryRawBool($payload: [TelemetryRawBoolCreatePayloadInput!]!) {\n  createTelemetryRawBool(payload: $payload) {\n    id\n  }\n}",
+                "nextNodes": [
+                  "cb511f78-246b-4590-bded-bf2df5de7b08"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Create TelemetryRaw - Boolean Data"
+            },
+            "ee709af3-9e0e-47a7-92db-7d17e777b95e": {
+              "id": "ee709af3-9e0e-47a7-92db-7d17e777b95e",
+              "type": "mutate",
+              "selected": false,
+              "x": 1550,
+              "y": 475,
+              "ports": [
+                {
+                  "id": "cml59fbj5043j356rs89tw38c",
+                  "type": "default",
+                  "x": 1541.67,
+                  "y": 506.73,
+                  "name": "cml59fbj5043k356rra2cx0ej",
+                  "parentNode": "ee709af3-9e0e-47a7-92db-7d17e777b95e",
+                  "links": [
+                    "28862b41-3e41-4b77-958a-b503c27e36b9"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml59fbj5043l356rorcvlbcy",
+                  "type": "default",
+                  "x": 1772.43,
+                  "y": 506.73,
+                  "name": "cml59fbj5043m356r5l3fodks",
+                  "parentNode": "ee709af3-9e0e-47a7-92db-7d17e777b95e",
+                  "links": [
+                    "bc585f74-5b40-43b4-b4ca-06460f18880a"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "Application",
+                "variablesTransform": "$count($) > 0 ? {\r\n  \"payload\": [$.{\"create\": {\r\n    \"dataPointId\": dataPointId,\r\n    \"recordedAt\": recordedAt,\r\n    \"valueString\": valueString\r\n  }}]\r\n} : {\r\n  \"payload\": []\r\n}",
+                "mutation": "mutation CreateTelemetryRawString($payload: [TelemetryRawStringCreatePayloadInput!]!) {\n  createTelemetryRawString(payload: $payload) {\n    id\n  }\n}",
+                "nextNodes": [
+                  "cb511f78-246b-4590-bded-bf2df5de7b08"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Create TelemetryRaw - String Data"
+            },
+            "cb511f78-246b-4590-bded-bf2df5de7b08": {
+              "id": "cb511f78-246b-4590-bded-bf2df5de7b08",
+              "type": "response",
+              "selected": false,
+              "x": 1840,
+              "y": 410,
+              "ports": [
+                {
+                  "id": "cml59g9pa044r356rubrqvivn",
+                  "type": "default",
+                  "x": 1831.67,
+                  "y": 441.73,
+                  "name": "cml59g9pa044s356r2duupav8",
+                  "parentNode": "cb511f78-246b-4590-bded-bf2df5de7b08",
+                  "links": [
+                    "baa004df-e35a-4ae9-9e2a-49c56b530553",
+                    "f4e21398-8690-424b-bcda-3032b66cbcb1",
+                    "bc585f74-5b40-43b4-b4ca-06460f18880a"
+                  ],
+                  "in": true,
+                  "fieldLabel": "Response"
+                },
+                {
+                  "id": "cml59g9pa044t356r082ohq1j",
+                  "type": "default",
+                  "x": 1986.34,
+                  "y": 441.73,
+                  "name": "cml59g9pa044u356r0lys5wo4",
+                  "parentNode": "cb511f78-246b-4590-bded-bf2df5de7b08",
+                  "links": [],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "responseTransform": "$",
+                "nextNodes": []
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Response"
+            }
+          }
+        }
+      ],
+      "name": "Telemetry Generator Scheduler IIoT Raw Data",
+      "type": "System",
+      "version": "0.0.15",
+      "walkthrough": {
+        "steps": []
+      }
+    }
+  }
+}

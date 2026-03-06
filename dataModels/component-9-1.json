@@ -1,0 +1,723 @@
+{
+  "header": {
+    "id": "telemetryHourly",
+    "name": "TelemetryHourly",
+    "description": "Represents hourly aggregated telemetry statistics for a DataPoint, including summary metrics like average, min, max, percentiles, and quality counts. Used for trend analysis, reporting, and performance dashboards.\n\n**Typical Use Cases**\n\n- Summarize raw telemetry into hourly intervals for analytics.\n- Support time-based reporting and KPI calculations.\n- Reduce storage overhead compared to raw telemetry while retaining essential insights.",
+    "dataModelKindId": "reference",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cmkcz04ohpm3t01965df1ap58",
+    "number": "5",
+    "dataModelId": "telemetryHourly",
+    "modelDefinition": {
+      "name": "TelemetryHourly",
+      "metadata": {
+        "mfgx": {
+          "module": {
+            "id": "machineDataApp",
+            "group": {
+              "id": "machineTelemetrySiteApplication"
+            }
+          },
+          "exposed": true,
+          "mutable": true,
+          "mutations": {
+            "create": true,
+            "update": true,
+            "del": true
+          },
+          "dataChangeCapture": {
+            "exposed": false,
+            "retentionDays": 1
+          },
+          "customFields": {
+            "exposed": true
+          },
+          "editor": {
+            "autosort": true
+          },
+          "labelField": "id"
+        },
+        "mongo": {
+          "collection": "telemetryHourly"
+        },
+        "graphql": {
+          "type": "Object"
+        }
+      },
+      "kind": "Reference",
+      "fields": [
+        {
+          "name": "id",
+          "type": "ID!",
+          "description": "**`id`** (`ID!`)\nPrimary unique identifier for the TelemetryHourly record.\n\n- Required on creation; cannot be updated.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": false
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": true
+          }
+        },
+        {
+          "name": "count",
+          "type": "Int!",
+          "description": "**`count`** (`Int!`)\nTotal number of telemetry samples aggregated for the hour.\n\n- Default: `0`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 0
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "countBad",
+          "type": "Int!",
+          "description": "**`countBad`** (`Int!`)\nNumber of samples with bad quality during the hour.\n\n- Default: `0`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 0
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "countFalse",
+          "type": "Int!",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 0
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "countGood",
+          "type": "Int!",
+          "description": "**`countGood`** (`Int!`)\nNumber of samples with good quality during the hour.\n\n- Default: `0`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 0
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "countTrue",
+          "type": "Int!",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 0
+            },
+            "unique": false
+          },
+          "description": ""
+        },
+        {
+          "name": "distinctCount",
+          "type": "Int!",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 0
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "modeCount",
+          "type": "Int!",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 0
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "avg",
+          "type": "Float",
+          "description": "**`avg`** (`Float`)\nAverage value of all samples for the hour.\n\n- Default: `0.0`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 0
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "first",
+          "type": "Float",
+          "description": "**`first`** (`Float`)\nFirst recorded value in the hour.\n\n- Default: `0.0`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 0
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "last",
+          "type": "Float",
+          "description": "**`last`** (`Float`)\nLast recorded value in the hour.\n\n- Default: `0.0`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 0
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "max",
+          "type": "Float",
+          "description": "**`max`** (`Float`)\nMaximum recorded value for the hour.\n\n- Default: `0.0`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 0
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "min",
+          "type": "Float",
+          "description": "**`min`** (`Float`)\nMinimum recorded value for the hour.\n\n- Default: `0.0`. ",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 0
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "p05",
+          "type": "Float",
+          "description": "**`p05`**, **`p25`**, **`p50`**, **`p75`**, **`p95`** (`Float`)\nPercentile values for distribution analysis:\n\n- `p05`: 5th percentile\n- `p25`: 25th percentile\n- `p50`: Median\n- `p75`: 75th percentile\n- `p95`: 95th percentile\n- Default: `0.0`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 0
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "p25",
+          "type": "Float",
+          "description": "**`p05`**, **`p25`**, **`p50`**, **`p75`**, **`p95`** (`Float`) \n\nPercentile values for distribution analysis:\n\n- `p05`: 5th percentile\n- `p25`: 25th percentile\n- `p50`: Median\n- `p75`: 75th percentile\n- `p95`: 95th percentile\n- Default: `0.0`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 0
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "p50",
+          "type": "Float",
+          "description": "**`p05`**, **`p25`**, **`p50`**, **`p75`**, **`p95`** (`Float`)\n\nPercentile values for distribution analysis:\n\n- `p05`: 5th percentile\n- `p25`: 25th percentile\n- `p50`: Median\n- `p75`: 75th percentile\n- `p95`: 95th percentile\n- Default: `0.0`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 0
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "p75",
+          "type": "Float",
+          "description": "**`p05`**, **`p25`**, **`p50`**, **`p75`**, **`p95`** (`Float`)\n\nPercentile values for distribution analysis:\n\n- `p05`: 5th percentile\n- `p25`: 25th percentile\n- `p50`: Median\n- `p75`: 75th percentile\n- `p95`: 95th percentile\n- Default: `0.0`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 0
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "p95",
+          "type": "Float",
+          "description": "**`p05`**, **`p25`**, **`p50`**, **`p75`**, **`p95`** (`Float`)\n\nPercentile values for distribution analysis:\n\n- `p05`: 5th percentile\n- `p25`: 25th percentile\n- `p50`: Median\n- `p75`: 75th percentile\n- `p95`: 95th percentile\n- Default: `0.0`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 0
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "pctTrue",
+          "type": "Float!",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 0
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "std",
+          "type": "Float",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 0
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "sum",
+          "type": "Float",
+          "description": "**`std`** (`Float`)\nStandard deviation of all samples for the hour.\n\n- Default: `0.0`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 0
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "modeValue",
+          "type": "String",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "periodAt",
+          "type": "DateTime!",
+          "description": "**`periodAt`** (`DateTime!`)\nStart timestamp of the hour bucket.\n\n- Used to identify the aggregation period.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "dataPointId",
+          "type": "ID!",
+          "description": "**`dataPointId`** (`ID!`)\nForeign key linking the TelemetryHourly record to its parent DataPoint.\n\n- Required for creation.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "dataPoint",
+          "description": "**`dataPoint`** (`DataPoint!`)\nRelated DataPoint object for this hourly telemetry record.\n\n- Relation enforced via `dataPointId → DataPoint.id`.\n- Cascade deletion: TelemetryHourly records are removed if the parent DataPoint is deleted.",
+          "type": "DataPoint!",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "deletionReferenceBehavior": "cascade",
+                "fields": {
+                  "from": "dataPointId",
+                  "to": "id"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        }
+      ],
+      "description": "Represents hourly aggregated telemetry statistics for a DataPoint, including summary metrics like average, min, max, percentiles, and quality counts. Used for trend analysis, reporting, and performance dashboards.\n\n**Typical Use Cases**\n\n- Summarize raw telemetry into hourly intervals for analytics.\n- Support time-based reporting and KPI calculations.\n- Reduce storage overhead compared to raw telemetry while retaining essential insights."
+    },
+    "dataModelTypeId": "transactional"
+  },
+  "migration": "$",
+  "migrations": [
+    {
+      "dataModelVersionId": "cmkcz04ohpm3t01965df1ap58",
+      "dataModelVersion": {
+        "number": "5"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkbfr0heplby01969ejb2gmk",
+      "dataModelVersion": {
+        "number": "4"
+      },
+      "mappingExpression": "{ \"countFalse\": $coalesce([field, 0]),\n\"countTrue\": $coalesce([field, 0]),\n\"distinctCount\": $coalesce([field, 0]),\n\"modeCount\": $coalesce([field, 0]),\n\n  \"pctTrue\": $coalesce([field, 0])\n}"
+    },
+    {
+      "dataModelVersionId": "cmkbflrm2zaab016f29b02wm8",
+      "dataModelVersion": {
+        "number": "3"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmjzz510x22ux016cdix0e9bg",
+      "dataModelVersion": {
+        "number": "2"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmjzyf1se22c8016c6r189nrl",
+      "dataModelVersion": {
+        "number": "1"
+      },
+      "mappingExpression": "$"
+    }
+  ]
+}

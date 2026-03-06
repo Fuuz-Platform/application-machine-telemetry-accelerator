@@ -1,0 +1,16 @@
+{
+  "api": "application",
+  "modelName": "ScheduleGroup",
+  "payload": [
+    {
+      "id": "basic",
+      "code": "Basic",
+      "name": "Basic Shift Schedule Group",
+      "description": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    }
+  ],
+  "metadata": {}
+}

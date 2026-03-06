@@ -1,0 +1,1044 @@
+{
+  "header": {
+    "id": "dailyAggregationFlow",
+    "name": "Daily Telemetry Aggregation Flow",
+    "description": "",
+    "active": true,
+    "substitutesDataFlowId": null,
+    "dataFlowTypeId": "System",
+    "logLevelId": "Info",
+    "mcpToolConfiguration": null,
+    "moduleId": "machineDataApp",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cml6l7xmhhjtw01684w62ezig",
+    "number": "0.0.7",
+    "description": "",
+    "dataFlowId": "dailyAggregationFlow",
+    "flow": {
+      "id": "cml6l7xmhhjtw01684w62ezig",
+      "name": "Daily Telemetry Aggregation Flow",
+      "type": "System",
+      "nodes": [
+        {
+          "id": "06075263-e948-492c-bebe-c29a60c3f926",
+          "name": "Schedule",
+          "type": "schedule",
+          "data": {
+            "configure": "Open Schedule Editor",
+            "nextNodes": [
+              "cf00779f-8e62-45a0-8854-4d03cddbea39"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "26917522-9bee-4a09-8e8e-902a630e3197",
+          "name": "Calculate timewindow for Yesterday",
+          "type": "transform",
+          "data": {
+            "nextNodes": [
+              "95087f32-e093-45c8-a180-68d9339d3c1e"
+            ],
+            "transform": "(\r\n  /* Get tenant timezone (default to America/Detroit if not available) */\r\n  $timezone := $.setting.edges.node.defaultValue ? $.setting.edges.node.defaultValue : $momentTzGuess();\r\n  \r\n  /* Calculate yesterday in LOCAL timezone, then convert to UTC */\r\n  $yesterdayStartLocal := $moment().tz($timezone).subtract(1, 'day').startOf('day');\r\n  $yesterdayEndLocal := $moment().tz($timezone).subtract(1, 'day').endOf('day');\r\n  \r\n  /* Convert to UTC for database query */\r\n  {\r\n    \"recordedAtStart\": $moment($yesterdayStartLocal),\r\n    \"recordedAtEnd\": $moment($yesterdayEndLocal),\r\n    \"localDate\": $moment($yesterdayStartLocal).format(\"YYYY-MM-DD\"),\r\n    \"timezone\": $timezone\r\n  }\r\n)"
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "cf00779f-8e62-45a0-8854-4d03cddbea39",
+          "name": "Query Tenant Timezone",
+          "type": "query",
+          "data": {
+            "api": "application",
+            "variablesTransform": "{}",
+            "query": "query GetTimezoneAndWorkcenters {\r\n  setting(where: { id: { _eq: \"TimeZone\" } }) {\r\n    edges {\r\n      node {\r\n        defaultValue\r\n      }\r\n    }\r\n  }\r\n}",
+            "nextNodes": [
+              "26917522-9bee-4a09-8e8e-902a630e3197"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "95087f32-e093-45c8-a180-68d9339d3c1e",
+          "name": "Set Context",
+          "type": "setContext",
+          "data": {
+            "transform": "{\r\n  \"timeWindow\": $\r\n}",
+            "nextNodes": [
+              "068dc685-2b6d-4f30-95dd-66ca63b7a994"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "068dc685-2b6d-4f30-95dd-66ca63b7a994",
+          "name": "Get Telemetry Hourly for Yesterday",
+          "type": "query",
+          "data": {
+            "api": "application",
+            "variablesTransform": "{}",
+            "query": "query TelemetryHourly($where: TelemetryHourlyWhereInput, $orderBy: [TelemetryHourlyOrderByInput!], $first: Int, $after: String) {\n  telemetryHourly(where: $where, orderBy: $orderBy, first: $first, after: $after) {\n    edges {\n      node {\n        id\n        count\n        countBad\n        countFalse\n        countGood\n        countTrue\n        distinctCount\n        modeCount\n        avg\n        first\n        last\n        max\n        min\n        p05\n        p25\n        p50\n        p75\n        p95\n        pctTrue\n        std\n        sum\n        modeValue\n        periodAt\n        dataPointId\n        dataPoint {\n          id\n          code\n        }\n      }\n    }\n  }\n}",
+            "nextNodes": [
+              "bc26e504-dbea-4390-acc7-558702613f6c"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "92b65400-5ee8-4621-bf9a-c3bb9dad64fd",
+          "name": "Calculate Daily Telemetry Aggregations",
+          "type": "javascriptTransform",
+          "data": {
+            "transform": "'use strict';\r\n\r\n/**\r\n * Aggregate TelemetryHourly records into TelemetryDaily\r\n * INPUT: Array of TelemetryHourly records for ONE datapoint for ONE day\r\n * OUTPUT: Single TelemetryDaily record with generated ID\r\n */\r\n\r\nvar hourlyRecords = $.telemetryHourly.edges.map(function(edge) { return edge.node; });\r\nvar periodAt = $.periodAt || $.date || $state.context.timeWindow.localDate; // Date string for the day (e.g., \"2026-02-02\")\r\n\r\nconsole.log('=== DAILY AGGREGATION ===');\r\nconsole.log('DataPoint: ' + (hourlyRecords.length > 0 ? hourlyRecords[0].dataPointId : 'unknown'));\r\nconsole.log('Period: ' + periodAt);\r\nconsole.log('Hourly records: ' + hourlyRecords.length);\r\n\r\nif (!Array.isArray(hourlyRecords) || hourlyRecords.length === 0) {\r\n  console.log('No hourly records to aggregate');\r\n  return null;\r\n}\r\n\r\n// ============================================================\r\n// EXTRACT DATAPOINT ID\r\n// ============================================================\r\n\r\nvar dataPointId = hourlyRecords[0].dataPointId;\r\n\r\n// ============================================================\r\n// GENERATE MEANINGFUL ID\r\n// ============================================================\r\n\r\n// Format: TDAILY-{dataPointId}-{date}\r\n// Example: TDAILY-DP-02403-2026-02-02\r\nvar dailyId = 'TDAILY-' + dataPointId + '-' + periodAt;\r\n\r\nconsole.log('Generated ID: ' + dailyId);\r\n\r\n// ============================================================\r\n// SORT BY PERIOD (EARLIEST TO LATEST)\r\n// ============================================================\r\n\r\nhourlyRecords.sort(function(a, b) {\r\n  return new Date(a.periodAt) - new Date(b.periodAt);\r\n});\r\n\r\n// ============================================================\r\n// AGGREGATE COUNTS\r\n// ============================================================\r\n\r\nvar totalCount = 0;\r\nvar totalCountGood = 0;\r\nvar totalCountBad = 0;\r\nvar totalCountTrue = 0;\r\nvar totalCountFalse = 0;\r\nvar totalSum = 0;\r\n\r\nfor (var i = 0; i < hourlyRecords.length; i++) {\r\n  var hr = hourlyRecords[i];\r\n  totalCount += hr.count || 0;\r\n  totalCountGood += hr.countGood || 0;\r\n  totalCountBad += hr.countBad || 0;\r\n  totalCountTrue += hr.countTrue || 0;\r\n  totalCountFalse += hr.countFalse || 0;\r\n  totalSum += hr.sum || 0;\r\n}\r\n\r\nconsole.log('Total count: ' + totalCount);\r\n\r\n// ============================================================\r\n// AGGREGATE MIN/MAX/FIRST/LAST\r\n// ============================================================\r\n\r\nvar dailyMin = null;\r\nvar dailyMax = null;\r\nvar dailyFirst = null;\r\nvar dailyLast = null;\r\n\r\nfor (var i = 0; i < hourlyRecords.length; i++) {\r\n  var hr = hourlyRecords[i];\r\n  \r\n  // Min\r\n  if (hr.min != null) {\r\n    if (dailyMin === null || hr.min < dailyMin) {\r\n      dailyMin = hr.min;\r\n    }\r\n  }\r\n  \r\n  // Max\r\n  if (hr.max != null) {\r\n    if (dailyMax === null || hr.max > dailyMax) {\r\n      dailyMax = hr.max;\r\n    }\r\n  }\r\n  \r\n  // First (from earliest hour)\r\n  if (i === 0 && hr.first != null) {\r\n    dailyFirst = hr.first;\r\n  }\r\n  \r\n  // Last (from latest hour)\r\n  if (i === hourlyRecords.length - 1 && hr.last != null) {\r\n    dailyLast = hr.last;\r\n  }\r\n}\r\n\r\n// ============================================================\r\n// CALCULATE AVERAGE\r\n// ============================================================\r\n\r\nvar dailyAvg = totalCount > 0 ? totalSum / totalCount : 0;\r\n\r\n// ============================================================\r\n// CALCULATE POOLED STANDARD DEVIATION\r\n// ============================================================\r\n\r\nvar varianceSum = 0;\r\nvar validStdCount = 0;\r\n\r\nfor (var i = 0; i < hourlyRecords.length; i++) {\r\n  var hr = hourlyRecords[i];\r\n  if (hr.std != null && hr.count > 0) {\r\n    // Variance = std^2\r\n    var hourlyVariance = hr.std * hr.std;\r\n    // Weighted by count\r\n    varianceSum += hourlyVariance * hr.count;\r\n    validStdCount += hr.count;\r\n  }\r\n}\r\n\r\nvar dailyStd = validStdCount > 0 ? Math.sqrt(varianceSum / validStdCount) : 0;\r\n\r\n// ============================================================\r\n// CALCULATE DERIVED METRICS\r\n// ============================================================\r\n\r\nvar dailyRange = (dailyMin != null && dailyMax != null) ? dailyMax - dailyMin : 0;\r\nvar dailyCv = dailyAvg !== 0 ? Math.abs(dailyStd / dailyAvg) : 0;\r\nvar dailyPctTrue = totalCount > 0 ? (totalCountTrue / totalCount) * 100 : 0;\r\n\r\n// ============================================================\r\n// AGGREGATE PERCENTILES (WEIGHTED AVERAGE APPROXIMATION)\r\n// ============================================================\r\n\r\nvar p05Sum = 0, p25Sum = 0, p50Sum = 0, p75Sum = 0, p95Sum = 0;\r\nvar pCount = 0;\r\n\r\nfor (var i = 0; i < hourlyRecords.length; i++) {\r\n  var hr = hourlyRecords[i];\r\n  var weight = hr.count || 0;\r\n  \r\n  if (weight > 0) {\r\n    p05Sum += (hr.p05 || 0) * weight;\r\n    p25Sum += (hr.p25 || 0) * weight;\r\n    p50Sum += (hr.p50 || 0) * weight;\r\n    p75Sum += (hr.p75 || 0) * weight;\r\n    p95Sum += (hr.p95 || 0) * weight;\r\n    pCount += weight;\r\n  }\r\n}\r\n\r\nvar dailyP05 = pCount > 0 ? p05Sum / pCount : 0;\r\nvar dailyP25 = pCount > 0 ? p25Sum / pCount : 0;\r\nvar dailyP50 = pCount > 0 ? p50Sum / pCount : 0;\r\nvar dailyP75 = pCount > 0 ? p75Sum / pCount : 0;\r\nvar dailyP95 = pCount > 0 ? p95Sum / pCount : 0;\r\n\r\n// ============================================================\r\n// AGGREGATE DISTINCT COUNT (MAX APPROXIMATION)\r\n// ============================================================\r\n\r\nvar dailyDistinctCount = 0;\r\nfor (var i = 0; i < hourlyRecords.length; i++) {\r\n  var hr = hourlyRecords[i];\r\n  if (hr.distinctCount != null && hr.distinctCount > dailyDistinctCount) {\r\n    dailyDistinctCount = hr.distinctCount;\r\n  }\r\n}\r\n\r\n// ============================================================\r\n// AGGREGATE MODE (MOST FREQUENT VALUE)\r\n// ============================================================\r\n\r\nvar modeMap = {};\r\nfor (var i = 0; i < hourlyRecords.length; i++) {\r\n  var hr = hourlyRecords[i];\r\n  if (hr.modeValue != null && hr.modeCount != null) {\r\n    if (!modeMap[hr.modeValue]) {\r\n      modeMap[hr.modeValue] = 0;\r\n    }\r\n    modeMap[hr.modeValue] += hr.modeCount;\r\n  }\r\n}\r\n\r\nvar dailyModeValue = null;\r\nvar dailyModeCount = 0;\r\n\r\nfor (var value in modeMap) {\r\n  if (modeMap[value] > dailyModeCount) {\r\n    dailyModeValue = value;\r\n    dailyModeCount = modeMap[value];\r\n  }\r\n}\r\n\r\n// ============================================================\r\n// BUILD OUTPUT RECORD\r\n// ============================================================\r\n\r\nvar dailyRecord = {\r\n  id: dailyId,\r\n  dataPointId: dataPointId,\r\n  periodAt: periodAt,\r\n  count: totalCount,\r\n  countGood: totalCountGood,\r\n  countBad: totalCountBad,\r\n  countTrue: totalCountTrue,\r\n  countFalse: totalCountFalse,\r\n  min: dailyMin,\r\n  max: dailyMax,\r\n  avg: dailyAvg,\r\n  sum: totalSum,\r\n  std: dailyStd,\r\n  first: dailyFirst,\r\n  last: dailyLast,\r\n  range: dailyRange,\r\n  cv: dailyCv,\r\n  pctTrue: dailyPctTrue,\r\n  p05: dailyP05,\r\n  p25: dailyP25,\r\n  p50: dailyP50,\r\n  p75: dailyP75,\r\n  p95: dailyP95,\r\n  distinctCount: dailyDistinctCount,\r\n  modeValue: dailyModeValue,\r\n  modeCount: dailyModeCount\r\n};\r\n\r\nconsole.log('Daily aggregation complete');\r\nconsole.log('ID: ' + dailyId);\r\nconsole.log('Min: ' + dailyMin + ' | Max: ' + dailyMax + ' | Avg: ' + dailyAvg.toFixed(2));\r\nconsole.log('Std: ' + dailyStd.toFixed(2) + ' | CV: ' + dailyCv.toFixed(4));\r\nconsole.log('=== END DAILY AGGREGATION ===');\r\n\r\nreturn dailyRecord;",
+            "nextNodes": [
+              "c7b3307c-e62e-4a3a-945e-69786d10e076"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "bc26e504-dbea-4390-acc7-558702613f6c",
+          "name": "Batch by DataPoint for Yesterday",
+          "type": "javascriptTransform",
+          "data": {
+            "transform": "'use strict';\r\n\r\n/**\r\n * Group TelemetryHourly records by dataPointId\r\n * INPUT: Query result with all hourly records for yesterday\r\n * OUTPUT: Array of batches, one per datapoint\r\n */\r\n\r\nvar hourlyEdges = $.telemetryHourly.edges || [];\r\nvar periodAt = $.periodAt; // Date string (e.g., \"2026-02-02\")\r\n\r\nconsole.log('=== BATCH HOURLY RECORDS BY DATAPOINT ===');\r\nconsole.log('Period: ' + periodAt);\r\nconsole.log('Total hourly records: ' + hourlyEdges.length);\r\n\r\nif (!Array.isArray(hourlyEdges) || hourlyEdges.length === 0) {\r\n  console.log('No hourly records to batch');\r\n  return [];\r\n}\r\n\r\n// ============================================================\r\n// GROUP BY DATAPOINT ID\r\n// ============================================================\r\n\r\nvar groupedByDataPoint = {};\r\n\r\nfor (var i = 0; i < hourlyEdges.length; i++) {\r\n  var edge = hourlyEdges[i];\r\n  var node = edge.node;\r\n  var dataPointId = node.dataPointId;\r\n  \r\n  if (!dataPointId) {\r\n    console.log('Warning: Skipping record without dataPointId at index ' + i);\r\n    continue;\r\n  }\r\n  \r\n  if (!groupedByDataPoint[dataPointId]) {\r\n    groupedByDataPoint[dataPointId] = [];\r\n  }\r\n  \r\n  groupedByDataPoint[dataPointId].push(edge);\r\n}\r\n\r\n// ============================================================\r\n// CREATE BATCHES\r\n// ============================================================\r\n\r\nvar batches = [];\r\n\r\nfor (var dataPointId in groupedByDataPoint) {\r\n  var edges = groupedByDataPoint[dataPointId];\r\n  \r\n  batches.push({\r\n    dataPointId: dataPointId,\r\n    periodAt: periodAt,\r\n    hourlyRecordCount: edges.length,\r\n    telemetryHourly: {\r\n      edges: edges\r\n    }\r\n  });\r\n}\r\n\r\nconsole.log('Created ' + batches.length + ' batches (one per datapoint)');\r\n\r\n// Log sample of batch sizes\r\nfor (var i = 0; i < Math.min(5, batches.length); i++) {\r\n  console.log('  Batch ' + (i + 1) + ': ' + batches[i].dataPointId + \r\n              ' (' + batches[i].hourlyRecordCount + ' hourly records)');\r\n}\r\n\r\nif (batches.length > 5) {\r\n  console.log('  ... and ' + (batches.length - 5) + ' more batches');\r\n}\r\n\r\nconsole.log('=== END BATCHING ===');\r\n\r\nreturn batches;",
+            "nextNodes": [
+              "e0ecb1d3-8105-41fc-a86e-ef54866a83c5"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "c7b3307c-e62e-4a3a-945e-69786d10e076",
+          "name": "Create Telemetry Daily Insert",
+          "type": "mutate",
+          "data": {
+            "api": "Application",
+            "variablesTransform": "$ ? {\r\n  \"payload\": [{\r\n    \"create\": {\r\n      \"id\": $.id,\r\n      \"dataPointId\": $.dataPointId,\r\n      \"periodAt\": $.periodAt,\r\n      \"count\": $.count,\r\n      \"countGood\": $.countGood,\r\n      \"countBad\": $.countBad,\r\n      \"countTrue\": $.countTrue,\r\n      \"countFalse\": $.countFalse,\r\n      \"min\": $.min,\r\n      \"max\": $.max,\r\n      \"avg\": $.avg,\r\n      \"sum\": $.sum,\r\n      \"std\": $.std,\r\n      \"first\": $.first,\r\n      \"last\": $.last,\r\n      \"range\": $.range,\r\n      \"cv\": $.cv,\r\n      \"pctTrue\": $.pctTrue,\r\n      \"p05\": $.p05,\r\n      \"p25\": $.p25,\r\n      \"p50\": $.p50,\r\n      \"p75\": $.p75,\r\n      \"p95\": $.p95\r\n    }\r\n  }]\r\n} : {\r\n  \"payload\": []\r\n}",
+            "mutation": "mutation CreateTelemetryDaily($payload: [TelemetryDailyCreatePayloadInput!]!) {\n  createTelemetryDaily(payload: $payload) {\n    id\n  }\n}",
+            "nextNodes": []
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "e0ecb1d3-8105-41fc-a86e-ef54866a83c5",
+          "name": "Broadcast",
+          "type": "broadcast",
+          "data": {
+            "nextNodes": [
+              "92b65400-5ee8-4621-bf9a-c3bb9dad64fd"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        }
+      ],
+      "version": "0.0.6"
+    },
+    "diagram": {
+      "id": "cml6l7xmhhjtw01684w62ezig",
+      "offsetX": -250.28,
+      "offsetY": 168.9,
+      "zoom": 78.33,
+      "gridSize": 5,
+      "layers": [
+        {
+          "id": "1a7c0104-9279-4ff8-bf19-e8b529911059",
+          "type": "diagram-links",
+          "isSvg": true,
+          "transformed": true,
+          "models": {
+            "5a47e69f-4fd5-4fd6-89c4-81190c0e0461": {
+              "points": [
+                {
+                  "id": "fdc85aa9-8dd4-481a-907a-781f34d74c07",
+                  "type": "point",
+                  "x": 554,
+                  "y": 124.73
+                },
+                {
+                  "id": "fc52f24e-cf2d-43fa-ae15-333c9411abed",
+                  "type": "point",
+                  "x": 625,
+                  "y": 99.73
+                }
+              ],
+              "id": "5a47e69f-4fd5-4fd6-89c4-81190c0e0461",
+              "type": "default",
+              "selected": false,
+              "source": "e6059010-e5c0-4ace-bbfb-c98841a7aa3d",
+              "sourcePort": "cmkejd2az000n356rt3pa9zhy",
+              "target": "cf00779f-8e62-45a0-8854-4d03cddbea39",
+              "targetPort": "cml5pkbdt00p0356rncv0ezp2",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "4331d939-c84d-4e1d-bb57-7030c5aac89a": {
+              "points": [
+                {
+                  "id": "1fb2f6dd-4e4d-4bbc-b0e4-9802d1bdca8a",
+                  "type": "point",
+                  "x": 797.49,
+                  "y": 99.73
+                },
+                {
+                  "id": "dd7af02a-60af-463c-b74c-d8a06a5e59f6",
+                  "type": "point",
+                  "x": 840,
+                  "y": 99.73
+                }
+              ],
+              "id": "4331d939-c84d-4e1d-bb57-7030c5aac89a",
+              "type": "default",
+              "selected": false,
+              "source": "cf00779f-8e62-45a0-8854-4d03cddbea39",
+              "sourcePort": "cml5pkbdt00p2356r36jqi3hy",
+              "target": "26917522-9bee-4a09-8e8e-902a630e3197",
+              "targetPort": "cml5p97g600ir356rb5rv55ak",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "898f3ea4-a444-40d2-adb0-9daa5a7c1f43": {
+              "points": [
+                {
+                  "id": "af327831-97ca-4b27-a263-b5ac9e7bdf16",
+                  "type": "point",
+                  "x": 1079.59,
+                  "y": 99.73
+                },
+                {
+                  "id": "8baa82d6-3960-4290-a50d-cc77bbff09e8",
+                  "type": "point",
+                  "x": 1120,
+                  "y": 99.73
+                }
+              ],
+              "id": "898f3ea4-a444-40d2-adb0-9daa5a7c1f43",
+              "type": "default",
+              "selected": false,
+              "source": "26917522-9bee-4a09-8e8e-902a630e3197",
+              "sourcePort": "cml5p97g600it356r96tfw9po",
+              "target": "95087f32-e093-45c8-a180-68d9339d3c1e",
+              "targetPort": "cml5pkzpl00qa356rwoeculhj",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "b404b179-a2b6-4968-b5bb-97a57cee66d8": {
+              "points": [
+                {
+                  "id": "5bb39e4c-157f-40a9-b33e-9dfae9cd73f1",
+                  "type": "point",
+                  "x": 1274,
+                  "y": 99.73
+                },
+                {
+                  "id": "f158ac94-110b-4c61-84ac-8cfd10b0d5a3",
+                  "type": "point",
+                  "x": 1310,
+                  "y": 99.73
+                }
+              ],
+              "id": "b404b179-a2b6-4968-b5bb-97a57cee66d8",
+              "type": "default",
+              "selected": false,
+              "source": "95087f32-e093-45c8-a180-68d9339d3c1e",
+              "sourcePort": "cml5pkzpm00qc356rw4wveduv",
+              "target": "068dc685-2b6d-4f30-95dd-66ca63b7a994",
+              "targetPort": "cml5pna0900s5356rwvti99x8",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "c34caedc-d426-4740-9271-eef69d4f3064": {
+              "points": [
+                {
+                  "id": "84c713bd-5409-498d-9df9-ad31888c9885",
+                  "type": "point",
+                  "x": 549,
+                  "y": 199.73
+                },
+                {
+                  "id": "e64fd62f-0997-4fb2-9c3f-472378c3a3c3",
+                  "type": "point",
+                  "x": 625,
+                  "y": 99.73
+                }
+              ],
+              "id": "c34caedc-d426-4740-9271-eef69d4f3064",
+              "type": "default",
+              "selected": false,
+              "source": "06075263-e948-492c-bebe-c29a60c3f926",
+              "sourcePort": "cmkejp8tq00ec356rv2fs1691",
+              "target": "cf00779f-8e62-45a0-8854-4d03cddbea39",
+              "targetPort": "cml5pkbdt00p0356rncv0ezp2",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "b3c91c93-ff43-490e-94ed-a1c23a3ef1fd": {
+              "points": [
+                {
+                  "id": "fb075c9b-058c-42fa-92a1-533f8a299297",
+                  "type": "point",
+                  "x": 1543.54,
+                  "y": 99.73
+                },
+                {
+                  "id": "b904269b-47a8-4af2-8b40-bf7546093ce8",
+                  "type": "point",
+                  "x": 620,
+                  "y": 204.73
+                }
+              ],
+              "id": "b3c91c93-ff43-490e-94ed-a1c23a3ef1fd",
+              "type": "default",
+              "selected": false,
+              "source": "068dc685-2b6d-4f30-95dd-66ca63b7a994",
+              "sourcePort": "cml5pna0900s7356r4yn6otie",
+              "target": "bc26e504-dbea-4390-acc7-558702613f6c",
+              "targetPort": "cml5q2mk1004k356re9qmjo4j",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "1255270b-5f25-445e-a703-35a4fa6b8aaf": {
+              "points": [
+                {
+                  "id": "7a19748c-16a3-413f-99d5-29b9db917af2",
+                  "type": "point",
+                  "x": 1387.52,
+                  "y": 204.73
+                },
+                {
+                  "id": "3a03fe4e-7047-4866-8520-c24ac0748a75",
+                  "type": "point",
+                  "x": 1435,
+                  "y": 204.73
+                }
+              ],
+              "id": "1255270b-5f25-445e-a703-35a4fa6b8aaf",
+              "type": "default",
+              "selected": false,
+              "source": "92b65400-5ee8-4621-bf9a-c3bb9dad64fd",
+              "sourcePort": "cml5pwje100vl356rv1o0gxp5",
+              "target": "c7b3307c-e62e-4a3a-945e-69786d10e076",
+              "targetPort": "cml5q56dc0075356rohy18q47",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "2268571d-9512-4d21-8b9c-c067ae77a771": {
+              "points": [
+                {
+                  "id": "0e166d06-b02f-43d9-911e-81397a72d2a0",
+                  "type": "point",
+                  "x": 843.34,
+                  "y": 204.73
+                },
+                {
+                  "id": "fae13aac-1bf9-4817-9005-03ae160f95c0",
+                  "type": "point",
+                  "x": 920,
+                  "y": 204.73
+                }
+              ],
+              "id": "2268571d-9512-4d21-8b9c-c067ae77a771",
+              "type": "default",
+              "selected": false,
+              "source": "bc26e504-dbea-4390-acc7-558702613f6c",
+              "sourcePort": "cml5q2mk1004m356rb3yywpjz",
+              "target": "e0ecb1d3-8105-41fc-a86e-ef54866a83c5",
+              "targetPort": "cml5q6vz8008q356rz0jwwxhm",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "d398ebb5-35ac-4a4d-b700-5d9038eb23e9": {
+              "points": [
+                {
+                  "id": "d82823ac-6541-447f-ab19-3d3fba7d06be",
+                  "type": "point",
+                  "x": 1074,
+                  "y": 204.73
+                },
+                {
+                  "id": "36b98afe-cca5-49a5-b8da-b21d945b905a",
+                  "type": "point",
+                  "x": 1130,
+                  "y": 204.73
+                }
+              ],
+              "id": "d398ebb5-35ac-4a4d-b700-5d9038eb23e9",
+              "type": "default",
+              "selected": false,
+              "source": "e0ecb1d3-8105-41fc-a86e-ef54866a83c5",
+              "sourcePort": "cml5q6vz8008s356rnxd7qia2",
+              "target": "92b65400-5ee8-4621-bf9a-c3bb9dad64fd",
+              "targetPort": "cml5pwje000vj356rzqpr3634",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            }
+          }
+        },
+        {
+          "id": "520e3251-f0cc-4630-9f06-fb76ce84e86e",
+          "type": "diagram-nodes",
+          "isSvg": false,
+          "transformed": true,
+          "models": {
+            "e6059010-e5c0-4ace-bbfb-c98841a7aa3d": {
+              "id": "e6059010-e5c0-4ace-bbfb-c98841a7aa3d",
+              "type": "debugSource",
+              "selected": false,
+              "x": 400,
+              "y": 85,
+              "ports": [
+                {
+                  "id": "cmkejd2az000n356rt3pa9zhy",
+                  "type": "default",
+                  "x": 546,
+                  "y": 116.73,
+                  "name": "cmkejd2az000o356rbtyd4v1z",
+                  "parentNode": "e6059010-e5c0-4ace-bbfb-c98841a7aa3d",
+                  "links": [
+                    "5a47e69f-4fd5-4fd6-89c4-81190c0e0461"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "payload": {},
+                "context": {},
+                "nextNodes": [
+                  "cf00779f-8e62-45a0-8854-4d03cddbea39"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Source"
+            },
+            "06075263-e948-492c-bebe-c29a60c3f926": {
+              "id": "06075263-e948-492c-bebe-c29a60c3f926",
+              "type": "schedule",
+              "selected": false,
+              "x": 395,
+              "y": 160,
+              "ports": [
+                {
+                  "id": "cmkejp8tq00ec356rv2fs1691",
+                  "type": "default",
+                  "x": 541,
+                  "y": 191.73,
+                  "name": "cmkejp8tq00ed356rrnrho2n1",
+                  "parentNode": "06075263-e948-492c-bebe-c29a60c3f926",
+                  "links": [
+                    "c34caedc-d426-4740-9271-eef69d4f3064"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Payload",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "configure": "Open Schedule Editor",
+                "nextNodes": [
+                  "cf00779f-8e62-45a0-8854-4d03cddbea39"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Schedule"
+            },
+            "26917522-9bee-4a09-8e8e-902a630e3197": {
+              "id": "26917522-9bee-4a09-8e8e-902a630e3197",
+              "type": "transform",
+              "selected": false,
+              "x": 840,
+              "y": 60,
+              "ports": [
+                {
+                  "id": "cml5p97g600ir356rb5rv55ak",
+                  "type": "default",
+                  "x": 832,
+                  "y": 91.73,
+                  "name": "cml5p97g600is356rvvwfhswc",
+                  "parentNode": "26917522-9bee-4a09-8e8e-902a630e3197",
+                  "links": [
+                    "4331d939-c84d-4e1d-bb57-7030c5aac89a"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml5p97g600it356r96tfw9po",
+                  "type": "default",
+                  "x": 1071.59,
+                  "y": 91.73,
+                  "name": "cml5p97g600iu356rpfri5231",
+                  "parentNode": "26917522-9bee-4a09-8e8e-902a630e3197",
+                  "links": [
+                    "898f3ea4-a444-40d2-adb0-9daa5a7c1f43"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "95087f32-e093-45c8-a180-68d9339d3c1e"
+                ],
+                "transform": "(\r\n  /* Get tenant timezone (default to America/Detroit if not available) */\r\n  $timezone := $.setting.edges.node.defaultValue ? $.setting.edges.node.defaultValue : $momentTzGuess();\r\n  \r\n  /* Calculate yesterday in LOCAL timezone, then convert to UTC */\r\n  $yesterdayStartLocal := $moment().tz($timezone).subtract(1, 'day').startOf('day');\r\n  $yesterdayEndLocal := $moment().tz($timezone).subtract(1, 'day').endOf('day');\r\n  \r\n  /* Convert to UTC for database query */\r\n  {\r\n    \"recordedAtStart\": $moment($yesterdayStartLocal),\r\n    \"recordedAtEnd\": $moment($yesterdayEndLocal),\r\n    \"localDate\": $moment($yesterdayStartLocal).format(\"YYYY-MM-DD\"),\r\n    \"timezone\": $timezone\r\n  }\r\n)"
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Calculate timewindow for Yesterday"
+            },
+            "cf00779f-8e62-45a0-8854-4d03cddbea39": {
+              "id": "cf00779f-8e62-45a0-8854-4d03cddbea39",
+              "type": "query",
+              "selected": false,
+              "x": 625,
+              "y": 60,
+              "ports": [
+                {
+                  "id": "cml5pkbdt00p0356rncv0ezp2",
+                  "type": "default",
+                  "x": 617,
+                  "y": 91.73,
+                  "name": "cml5pkbdt00p1356r4iqh64k4",
+                  "parentNode": "cf00779f-8e62-45a0-8854-4d03cddbea39",
+                  "links": [
+                    "5a47e69f-4fd5-4fd6-89c4-81190c0e0461",
+                    "c34caedc-d426-4740-9271-eef69d4f3064"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml5pkbdt00p2356r36jqi3hy",
+                  "type": "default",
+                  "x": 789.49,
+                  "y": 91.73,
+                  "name": "cml5pkbdt00p3356rhkcq9gyp",
+                  "parentNode": "cf00779f-8e62-45a0-8854-4d03cddbea39",
+                  "links": [
+                    "4331d939-c84d-4e1d-bb57-7030c5aac89a"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "application",
+                "variablesTransform": "{}",
+                "query": "query GetTimezoneAndWorkcenters {\r\n  setting(where: { id: { _eq: \"TimeZone\" } }) {\r\n    edges {\r\n      node {\r\n        defaultValue\r\n      }\r\n    }\r\n  }\r\n}",
+                "nextNodes": [
+                  "26917522-9bee-4a09-8e8e-902a630e3197"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Query Tenant Timezone"
+            },
+            "95087f32-e093-45c8-a180-68d9339d3c1e": {
+              "id": "95087f32-e093-45c8-a180-68d9339d3c1e",
+              "type": "setContext",
+              "selected": false,
+              "x": 1120,
+              "y": 60,
+              "ports": [
+                {
+                  "id": "cml5pkzpl00qa356rwoeculhj",
+                  "type": "default",
+                  "x": 1112,
+                  "y": 91.73,
+                  "name": "cml5pkzpl00qb356rqcp6n4hs",
+                  "parentNode": "95087f32-e093-45c8-a180-68d9339d3c1e",
+                  "links": [
+                    "898f3ea4-a444-40d2-adb0-9daa5a7c1f43"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml5pkzpm00qc356rw4wveduv",
+                  "type": "default",
+                  "x": 1266,
+                  "y": 91.73,
+                  "name": "cml5pkzpm00qd356rxzp6qa8e",
+                  "parentNode": "95087f32-e093-45c8-a180-68d9339d3c1e",
+                  "links": [
+                    "b404b179-a2b6-4968-b5bb-97a57cee66d8"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "{\r\n  \"timeWindow\": $\r\n}",
+                "nextNodes": [
+                  "068dc685-2b6d-4f30-95dd-66ca63b7a994"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Set Context"
+            },
+            "068dc685-2b6d-4f30-95dd-66ca63b7a994": {
+              "id": "068dc685-2b6d-4f30-95dd-66ca63b7a994",
+              "type": "query",
+              "selected": false,
+              "x": 1310,
+              "y": 60,
+              "ports": [
+                {
+                  "id": "cml5pna0900s5356rwvti99x8",
+                  "type": "default",
+                  "x": 1302,
+                  "y": 91.73,
+                  "name": "cml5pna0900s6356rwlwjbx7x",
+                  "parentNode": "068dc685-2b6d-4f30-95dd-66ca63b7a994",
+                  "links": [
+                    "b404b179-a2b6-4968-b5bb-97a57cee66d8"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml5pna0900s7356r4yn6otie",
+                  "type": "default",
+                  "x": 1535.54,
+                  "y": 91.73,
+                  "name": "cml5pna0900s8356robadnsr6",
+                  "parentNode": "068dc685-2b6d-4f30-95dd-66ca63b7a994",
+                  "links": [
+                    "b3c91c93-ff43-490e-94ed-a1c23a3ef1fd"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "application",
+                "variablesTransform": "{}",
+                "query": "query TelemetryHourly($where: TelemetryHourlyWhereInput, $orderBy: [TelemetryHourlyOrderByInput!], $first: Int, $after: String) {\n  telemetryHourly(where: $where, orderBy: $orderBy, first: $first, after: $after) {\n    edges {\n      node {\n        id\n        count\n        countBad\n        countFalse\n        countGood\n        countTrue\n        distinctCount\n        modeCount\n        avg\n        first\n        last\n        max\n        min\n        p05\n        p25\n        p50\n        p75\n        p95\n        pctTrue\n        std\n        sum\n        modeValue\n        periodAt\n        dataPointId\n        dataPoint {\n          id\n          code\n        }\n      }\n    }\n  }\n}",
+                "nextNodes": [
+                  "bc26e504-dbea-4390-acc7-558702613f6c"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Get Telemetry Hourly for Yesterday"
+            },
+            "92b65400-5ee8-4621-bf9a-c3bb9dad64fd": {
+              "id": "92b65400-5ee8-4621-bf9a-c3bb9dad64fd",
+              "type": "javascriptTransform",
+              "selected": false,
+              "x": 1130,
+              "y": 165,
+              "ports": [
+                {
+                  "id": "cml5pwje000vj356rzqpr3634",
+                  "type": "default",
+                  "x": 1122,
+                  "y": 196.73,
+                  "name": "cml5pwje100vk356r5yoyshxz",
+                  "parentNode": "92b65400-5ee8-4621-bf9a-c3bb9dad64fd",
+                  "links": [
+                    "d398ebb5-35ac-4a4d-b700-5d9038eb23e9"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml5pwje100vl356rv1o0gxp5",
+                  "type": "default",
+                  "x": 1379.52,
+                  "y": 196.73,
+                  "name": "cml5pwje100vm356rj1uw327n",
+                  "parentNode": "92b65400-5ee8-4621-bf9a-c3bb9dad64fd",
+                  "links": [
+                    "1255270b-5f25-445e-a703-35a4fa6b8aaf"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "'use strict';\r\n\r\n/**\r\n * Aggregate TelemetryHourly records into TelemetryDaily\r\n * INPUT: Array of TelemetryHourly records for ONE datapoint for ONE day\r\n * OUTPUT: Single TelemetryDaily record with generated ID\r\n */\r\n\r\nvar hourlyRecords = $.telemetryHourly.edges.map(function(edge) { return edge.node; });\r\nvar periodAt = $.periodAt || $.date || $state.context.timeWindow.localDate; // Date string for the day (e.g., \"2026-02-02\")\r\n\r\nconsole.log('=== DAILY AGGREGATION ===');\r\nconsole.log('DataPoint: ' + (hourlyRecords.length > 0 ? hourlyRecords[0].dataPointId : 'unknown'));\r\nconsole.log('Period: ' + periodAt);\r\nconsole.log('Hourly records: ' + hourlyRecords.length);\r\n\r\nif (!Array.isArray(hourlyRecords) || hourlyRecords.length === 0) {\r\n  console.log('No hourly records to aggregate');\r\n  return null;\r\n}\r\n\r\n// ============================================================\r\n// EXTRACT DATAPOINT ID\r\n// ============================================================\r\n\r\nvar dataPointId = hourlyRecords[0].dataPointId;\r\n\r\n// ============================================================\r\n// GENERATE MEANINGFUL ID\r\n// ============================================================\r\n\r\n// Format: TDAILY-{dataPointId}-{date}\r\n// Example: TDAILY-DP-02403-2026-02-02\r\nvar dailyId = 'TDAILY-' + dataPointId + '-' + periodAt;\r\n\r\nconsole.log('Generated ID: ' + dailyId);\r\n\r\n// ============================================================\r\n// SORT BY PERIOD (EARLIEST TO LATEST)\r\n// ============================================================\r\n\r\nhourlyRecords.sort(function(a, b) {\r\n  return new Date(a.periodAt) - new Date(b.periodAt);\r\n});\r\n\r\n// ============================================================\r\n// AGGREGATE COUNTS\r\n// ============================================================\r\n\r\nvar totalCount = 0;\r\nvar totalCountGood = 0;\r\nvar totalCountBad = 0;\r\nvar totalCountTrue = 0;\r\nvar totalCountFalse = 0;\r\nvar totalSum = 0;\r\n\r\nfor (var i = 0; i < hourlyRecords.length; i++) {\r\n  var hr = hourlyRecords[i];\r\n  totalCount += hr.count || 0;\r\n  totalCountGood += hr.countGood || 0;\r\n  totalCountBad += hr.countBad || 0;\r\n  totalCountTrue += hr.countTrue || 0;\r\n  totalCountFalse += hr.countFalse || 0;\r\n  totalSum += hr.sum || 0;\r\n}\r\n\r\nconsole.log('Total count: ' + totalCount);\r\n\r\n// ============================================================\r\n// AGGREGATE MIN/MAX/FIRST/LAST\r\n// ============================================================\r\n\r\nvar dailyMin = null;\r\nvar dailyMax = null;\r\nvar dailyFirst = null;\r\nvar dailyLast = null;\r\n\r\nfor (var i = 0; i < hourlyRecords.length; i++) {\r\n  var hr = hourlyRecords[i];\r\n  \r\n  // Min\r\n  if (hr.min != null) {\r\n    if (dailyMin === null || hr.min < dailyMin) {\r\n      dailyMin = hr.min;\r\n    }\r\n  }\r\n  \r\n  // Max\r\n  if (hr.max != null) {\r\n    if (dailyMax === null || hr.max > dailyMax) {\r\n      dailyMax = hr.max;\r\n    }\r\n  }\r\n  \r\n  // First (from earliest hour)\r\n  if (i === 0 && hr.first != null) {\r\n    dailyFirst = hr.first;\r\n  }\r\n  \r\n  // Last (from latest hour)\r\n  if (i === hourlyRecords.length - 1 && hr.last != null) {\r\n    dailyLast = hr.last;\r\n  }\r\n}\r\n\r\n// ============================================================\r\n// CALCULATE AVERAGE\r\n// ============================================================\r\n\r\nvar dailyAvg = totalCount > 0 ? totalSum / totalCount : 0;\r\n\r\n// ============================================================\r\n// CALCULATE POOLED STANDARD DEVIATION\r\n// ============================================================\r\n\r\nvar varianceSum = 0;\r\nvar validStdCount = 0;\r\n\r\nfor (var i = 0; i < hourlyRecords.length; i++) {\r\n  var hr = hourlyRecords[i];\r\n  if (hr.std != null && hr.count > 0) {\r\n    // Variance = std^2\r\n    var hourlyVariance = hr.std * hr.std;\r\n    // Weighted by count\r\n    varianceSum += hourlyVariance * hr.count;\r\n    validStdCount += hr.count;\r\n  }\r\n}\r\n\r\nvar dailyStd = validStdCount > 0 ? Math.sqrt(varianceSum / validStdCount) : 0;\r\n\r\n// ============================================================\r\n// CALCULATE DERIVED METRICS\r\n// ============================================================\r\n\r\nvar dailyRange = (dailyMin != null && dailyMax != null) ? dailyMax - dailyMin : 0;\r\nvar dailyCv = dailyAvg !== 0 ? Math.abs(dailyStd / dailyAvg) : 0;\r\nvar dailyPctTrue = totalCount > 0 ? (totalCountTrue / totalCount) * 100 : 0;\r\n\r\n// ============================================================\r\n// AGGREGATE PERCENTILES (WEIGHTED AVERAGE APPROXIMATION)\r\n// ============================================================\r\n\r\nvar p05Sum = 0, p25Sum = 0, p50Sum = 0, p75Sum = 0, p95Sum = 0;\r\nvar pCount = 0;\r\n\r\nfor (var i = 0; i < hourlyRecords.length; i++) {\r\n  var hr = hourlyRecords[i];\r\n  var weight = hr.count || 0;\r\n  \r\n  if (weight > 0) {\r\n    p05Sum += (hr.p05 || 0) * weight;\r\n    p25Sum += (hr.p25 || 0) * weight;\r\n    p50Sum += (hr.p50 || 0) * weight;\r\n    p75Sum += (hr.p75 || 0) * weight;\r\n    p95Sum += (hr.p95 || 0) * weight;\r\n    pCount += weight;\r\n  }\r\n}\r\n\r\nvar dailyP05 = pCount > 0 ? p05Sum / pCount : 0;\r\nvar dailyP25 = pCount > 0 ? p25Sum / pCount : 0;\r\nvar dailyP50 = pCount > 0 ? p50Sum / pCount : 0;\r\nvar dailyP75 = pCount > 0 ? p75Sum / pCount : 0;\r\nvar dailyP95 = pCount > 0 ? p95Sum / pCount : 0;\r\n\r\n// ============================================================\r\n// AGGREGATE DISTINCT COUNT (MAX APPROXIMATION)\r\n// ============================================================\r\n\r\nvar dailyDistinctCount = 0;\r\nfor (var i = 0; i < hourlyRecords.length; i++) {\r\n  var hr = hourlyRecords[i];\r\n  if (hr.distinctCount != null && hr.distinctCount > dailyDistinctCount) {\r\n    dailyDistinctCount = hr.distinctCount;\r\n  }\r\n}\r\n\r\n// ============================================================\r\n// AGGREGATE MODE (MOST FREQUENT VALUE)\r\n// ============================================================\r\n\r\nvar modeMap = {};\r\nfor (var i = 0; i < hourlyRecords.length; i++) {\r\n  var hr = hourlyRecords[i];\r\n  if (hr.modeValue != null && hr.modeCount != null) {\r\n    if (!modeMap[hr.modeValue]) {\r\n      modeMap[hr.modeValue] = 0;\r\n    }\r\n    modeMap[hr.modeValue] += hr.modeCount;\r\n  }\r\n}\r\n\r\nvar dailyModeValue = null;\r\nvar dailyModeCount = 0;\r\n\r\nfor (var value in modeMap) {\r\n  if (modeMap[value] > dailyModeCount) {\r\n    dailyModeValue = value;\r\n    dailyModeCount = modeMap[value];\r\n  }\r\n}\r\n\r\n// ============================================================\r\n// BUILD OUTPUT RECORD\r\n// ============================================================\r\n\r\nvar dailyRecord = {\r\n  id: dailyId,\r\n  dataPointId: dataPointId,\r\n  periodAt: periodAt,\r\n  count: totalCount,\r\n  countGood: totalCountGood,\r\n  countBad: totalCountBad,\r\n  countTrue: totalCountTrue,\r\n  countFalse: totalCountFalse,\r\n  min: dailyMin,\r\n  max: dailyMax,\r\n  avg: dailyAvg,\r\n  sum: totalSum,\r\n  std: dailyStd,\r\n  first: dailyFirst,\r\n  last: dailyLast,\r\n  range: dailyRange,\r\n  cv: dailyCv,\r\n  pctTrue: dailyPctTrue,\r\n  p05: dailyP05,\r\n  p25: dailyP25,\r\n  p50: dailyP50,\r\n  p75: dailyP75,\r\n  p95: dailyP95,\r\n  distinctCount: dailyDistinctCount,\r\n  modeValue: dailyModeValue,\r\n  modeCount: dailyModeCount\r\n};\r\n\r\nconsole.log('Daily aggregation complete');\r\nconsole.log('ID: ' + dailyId);\r\nconsole.log('Min: ' + dailyMin + ' | Max: ' + dailyMax + ' | Avg: ' + dailyAvg.toFixed(2));\r\nconsole.log('Std: ' + dailyStd.toFixed(2) + ' | CV: ' + dailyCv.toFixed(4));\r\nconsole.log('=== END DAILY AGGREGATION ===');\r\n\r\nreturn dailyRecord;",
+                "nextNodes": [
+                  "c7b3307c-e62e-4a3a-945e-69786d10e076"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Calculate Daily Telemetry Aggregations"
+            },
+            "bc26e504-dbea-4390-acc7-558702613f6c": {
+              "id": "bc26e504-dbea-4390-acc7-558702613f6c",
+              "type": "javascriptTransform",
+              "selected": false,
+              "x": 620,
+              "y": 165,
+              "ports": [
+                {
+                  "id": "cml5q2mk1004k356re9qmjo4j",
+                  "type": "default",
+                  "x": 612,
+                  "y": 196.73,
+                  "name": "cml5q2mk1004l356rzwrl69ss",
+                  "parentNode": "bc26e504-dbea-4390-acc7-558702613f6c",
+                  "links": [
+                    "b3c91c93-ff43-490e-94ed-a1c23a3ef1fd"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml5q2mk1004m356rb3yywpjz",
+                  "type": "default",
+                  "x": 835.34,
+                  "y": 196.73,
+                  "name": "cml5q2mk1004n356rgnarpzxb",
+                  "parentNode": "bc26e504-dbea-4390-acc7-558702613f6c",
+                  "links": [
+                    "2268571d-9512-4d21-8b9c-c067ae77a771"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "'use strict';\r\n\r\n/**\r\n * Group TelemetryHourly records by dataPointId\r\n * INPUT: Query result with all hourly records for yesterday\r\n * OUTPUT: Array of batches, one per datapoint\r\n */\r\n\r\nvar hourlyEdges = $.telemetryHourly.edges || [];\r\nvar periodAt = $.periodAt; // Date string (e.g., \"2026-02-02\")\r\n\r\nconsole.log('=== BATCH HOURLY RECORDS BY DATAPOINT ===');\r\nconsole.log('Period: ' + periodAt);\r\nconsole.log('Total hourly records: ' + hourlyEdges.length);\r\n\r\nif (!Array.isArray(hourlyEdges) || hourlyEdges.length === 0) {\r\n  console.log('No hourly records to batch');\r\n  return [];\r\n}\r\n\r\n// ============================================================\r\n// GROUP BY DATAPOINT ID\r\n// ============================================================\r\n\r\nvar groupedByDataPoint = {};\r\n\r\nfor (var i = 0; i < hourlyEdges.length; i++) {\r\n  var edge = hourlyEdges[i];\r\n  var node = edge.node;\r\n  var dataPointId = node.dataPointId;\r\n  \r\n  if (!dataPointId) {\r\n    console.log('Warning: Skipping record without dataPointId at index ' + i);\r\n    continue;\r\n  }\r\n  \r\n  if (!groupedByDataPoint[dataPointId]) {\r\n    groupedByDataPoint[dataPointId] = [];\r\n  }\r\n  \r\n  groupedByDataPoint[dataPointId].push(edge);\r\n}\r\n\r\n// ============================================================\r\n// CREATE BATCHES\r\n// ============================================================\r\n\r\nvar batches = [];\r\n\r\nfor (var dataPointId in groupedByDataPoint) {\r\n  var edges = groupedByDataPoint[dataPointId];\r\n  \r\n  batches.push({\r\n    dataPointId: dataPointId,\r\n    periodAt: periodAt,\r\n    hourlyRecordCount: edges.length,\r\n    telemetryHourly: {\r\n      edges: edges\r\n    }\r\n  });\r\n}\r\n\r\nconsole.log('Created ' + batches.length + ' batches (one per datapoint)');\r\n\r\n// Log sample of batch sizes\r\nfor (var i = 0; i < Math.min(5, batches.length); i++) {\r\n  console.log('  Batch ' + (i + 1) + ': ' + batches[i].dataPointId + \r\n              ' (' + batches[i].hourlyRecordCount + ' hourly records)');\r\n}\r\n\r\nif (batches.length > 5) {\r\n  console.log('  ... and ' + (batches.length - 5) + ' more batches');\r\n}\r\n\r\nconsole.log('=== END BATCHING ===');\r\n\r\nreturn batches;",
+                "nextNodes": [
+                  "e0ecb1d3-8105-41fc-a86e-ef54866a83c5"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Batch by DataPoint for Yesterday"
+            },
+            "c7b3307c-e62e-4a3a-945e-69786d10e076": {
+              "id": "c7b3307c-e62e-4a3a-945e-69786d10e076",
+              "type": "mutate",
+              "selected": true,
+              "x": 1435,
+              "y": 165,
+              "ports": [
+                {
+                  "id": "cml5q56dc0075356rohy18q47",
+                  "type": "default",
+                  "x": 1427,
+                  "y": 196.73,
+                  "name": "cml5q56dd0076356rt6yar04f",
+                  "parentNode": "c7b3307c-e62e-4a3a-945e-69786d10e076",
+                  "links": [
+                    "1255270b-5f25-445e-a703-35a4fa6b8aaf"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml5q56dd0077356rbgzjuq8z",
+                  "type": "default",
+                  "x": 1627.78,
+                  "y": 196.73,
+                  "name": "cml5q56dd0078356rggyjar2a",
+                  "parentNode": "c7b3307c-e62e-4a3a-945e-69786d10e076",
+                  "links": [],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "Application",
+                "variablesTransform": "$ ? {\r\n  \"payload\": [{\r\n    \"create\": {\r\n      \"id\": $.id,\r\n      \"dataPointId\": $.dataPointId,\r\n      \"periodAt\": $.periodAt,\r\n      \"count\": $.count,\r\n      \"countGood\": $.countGood,\r\n      \"countBad\": $.countBad,\r\n      \"countTrue\": $.countTrue,\r\n      \"countFalse\": $.countFalse,\r\n      \"min\": $.min,\r\n      \"max\": $.max,\r\n      \"avg\": $.avg,\r\n      \"sum\": $.sum,\r\n      \"std\": $.std,\r\n      \"first\": $.first,\r\n      \"last\": $.last,\r\n      \"range\": $.range,\r\n      \"cv\": $.cv,\r\n      \"pctTrue\": $.pctTrue,\r\n      \"p05\": $.p05,\r\n      \"p25\": $.p25,\r\n      \"p50\": $.p50,\r\n      \"p75\": $.p75,\r\n      \"p95\": $.p95\r\n    }\r\n  }]\r\n} : {\r\n  \"payload\": []\r\n}",
+                "mutation": "mutation CreateTelemetryDaily($payload: [TelemetryDailyCreatePayloadInput!]!) {\n  createTelemetryDaily(payload: $payload) {\n    id\n  }\n}",
+                "nextNodes": []
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Create Telemetry Daily Insert"
+            },
+            "e0ecb1d3-8105-41fc-a86e-ef54866a83c5": {
+              "id": "e0ecb1d3-8105-41fc-a86e-ef54866a83c5",
+              "type": "broadcast",
+              "selected": false,
+              "x": 920,
+              "y": 165,
+              "ports": [
+                {
+                  "id": "cml5q6vz8008q356rz0jwwxhm",
+                  "type": "default",
+                  "x": 912,
+                  "y": 196.73,
+                  "name": "cml5q6vz8008r356rxgy8km8z",
+                  "parentNode": "e0ecb1d3-8105-41fc-a86e-ef54866a83c5",
+                  "links": [
+                    "2268571d-9512-4d21-8b9c-c067ae77a771"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml5q6vz8008s356rnxd7qia2",
+                  "type": "default",
+                  "x": 1066,
+                  "y": 196.73,
+                  "name": "cml5q6vz8008t356rdmd09fk8",
+                  "parentNode": "e0ecb1d3-8105-41fc-a86e-ef54866a83c5",
+                  "links": [
+                    "d398ebb5-35ac-4a4d-b700-5d9038eb23e9"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "92b65400-5ee8-4621-bf9a-c3bb9dad64fd"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Broadcast"
+            }
+          }
+        }
+      ],
+      "name": "Daily Telemetry Aggregation Flow",
+      "type": "System",
+      "version": "0.0.6",
+      "walkthrough": {
+        "steps": []
+      }
+    }
+  }
+}

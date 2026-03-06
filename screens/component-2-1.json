@@ -1,0 +1,1830 @@
+{
+  "header": {
+    "id": "oeeHourly",
+    "name": "OEE Hourly",
+    "description": "",
+    "active": true,
+    "edgeScreen": false,
+    "forceFullscreen": false,
+    "moduleId": "machineDataApp",
+    "substitutesScreenId": null,
+    "isWidget": false
+  },
+  "version": {
+    "id": "cml9gcyln11gi016p0dl94n04",
+    "number": "0.0.10",
+    "description": "",
+    "screenId": "oeeHourly",
+    "design": {
+      "components": [
+        {
+          "name": "OEE Hourly History",
+          "tabTitle": "OEE Hourly",
+          "type": "canvas",
+          "props": {
+            "design": {
+              "ROOT": {
+                "type": {
+                  "resolvedName": "Screen"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexDirection": "column",
+                  "flexWrap": false,
+                  "alignItems": "stretch",
+                  "justifyContent": "flex-start",
+                  "width": "100%",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "flowsDelay": 0,
+                  "removeOuterMargin": true,
+                  "background": "paper"
+                },
+                "displayName": "Screen",
+                "custom": {
+                  "elementName": "Screen",
+                  "elementCounts": {
+                    "Container": 11,
+                    "Action": 2,
+                    "Resizable Panel": 1,
+                    "Form": 1,
+                    "Select": 4,
+                    "Date Range": 1,
+                    "GraphQL Where Input": 1,
+                    "Table": 1,
+                    "Table Column": 28,
+                    "RichText": 1,
+                    "Text": 1
+                  },
+                  "module": {
+                    "id": "machineDataApp",
+                    "group": {
+                      "id": "machineTelemetrySiteApplication"
+                    }
+                  },
+                  "dataModel": "OeeHourly",
+                  "template": "history"
+                },
+                "parent": null,
+                "hidden": false,
+                "nodes": [
+                  "ContainerOuter"
+                ],
+                "linkedNodes": {}
+              },
+              "ContainerOuter": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": true,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "0px",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "ContainerOuter"
+                },
+                "parent": "ROOT",
+                "hidden": false,
+                "nodes": [
+                  "ResizableFilterPanel",
+                  "ContainerBody"
+                ],
+                "linkedNodes": {}
+              },
+              "ContainerBody": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "0px",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0.5px solid #5b30df"
+                  },
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "ContainerBody"
+                },
+                "parent": "ContainerOuter",
+                "hidden": false,
+                "nodes": [
+                  "TopActionBar",
+                  "BrandBandSeparator",
+                  "OeeHourlyTable"
+                ],
+                "linkedNodes": {}
+              },
+              "ResizableFilterPanel": {
+                "type": {
+                  "resolvedName": "ResizablePanelLayout"
+                },
+                "isCanvas": true,
+                "props": {
+                  "handle": "right",
+                  "toggleHotkey": "",
+                  "defaultSize": 320,
+                  "axis": false,
+                  "minSize": 0,
+                  "maxSize": 320
+                },
+                "displayName": "Resizable Panel",
+                "custom": {
+                  "elementName": "ResizableFilterPanel"
+                },
+                "parent": "ContainerOuter",
+                "hidden": false,
+                "nodes": [
+                  "ContainerFilterOuter"
+                ],
+                "linkedNodes": {}
+              },
+              "ContainerFilterOuter": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": true,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "ContainerFilterOuter"
+                },
+                "parent": "ResizableFilterPanel",
+                "hidden": false,
+                "nodes": [
+                  "FilterPanelHeader",
+                  "FormFilterPanel"
+                ],
+                "linkedNodes": {}
+              },
+              "FormFilterPanel": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "isCanvas": true,
+                "props": {
+                  "query": {
+                    "api": "Application",
+                    "query": null,
+                    "dataPath": "edges[0]",
+                    "dataTransform": {
+                      "transform": null,
+                      "remote": true
+                    },
+                    "dataSubscription": {
+                      "enabled": false
+                    },
+                    "autoLoad": false,
+                    "parameters": "{\n  \"filter\": {\n    \"id\": {\n      \"_eq\": id\n    }\n  },\n  \"first\": 1\n}",
+                    "fields": [
+                      "id"
+                    ],
+                    "disableDataChangeIndicator": false,
+                    "dataChangeIndicatorSize": "normal",
+                    "model": "OeeHourly"
+                  },
+                  "blockNavigationWhenDirty": false,
+                  "enableConfirmOnDataChanged": false,
+                  "description": "Hourly OEE (Overall Equipment Effectiveness) records tracking availability, performance, and quality metrics for workcenters."
+                },
+                "displayName": "Form",
+                "custom": {
+                  "elementName": "FormFilterPanel"
+                },
+                "parent": "ContainerFilterOuter",
+                "hidden": false,
+                "nodes": [
+                  "FilterFormContainer"
+                ],
+                "linkedNodes": {}
+              },
+              "FilterFormContainer": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "0px",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {},
+                  "data": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "FilterFormContainer"
+                },
+                "parent": "FormFilterPanel",
+                "hidden": false,
+                "nodes": [
+                  "SelectWorkcenter",
+                  "SelectSchedule",
+                  "r_mpN_t-2K",
+                  "DateRangePeriodAt",
+                  "GraphQLAdvancedFilter"
+                ],
+                "linkedNodes": {}
+              },
+              "GraphQLAdvancedFilter": {
+                "type": {
+                  "resolvedName": "WrappedGraphQLPredicate"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "graphqlWhere",
+                  "dataPath": "predicate",
+                  "target": {
+                    "dataPath": "_and.0"
+                  },
+                  "formElement": "FormFilterPanel",
+                  "label": "Advanced Filter",
+                  "disabled": false,
+                  "description": "Advanced GraphQL where clause for complex filtering of OEE records."
+                },
+                "displayName": "GraphQL Where Input",
+                "custom": {
+                  "elementName": "GraphQLAdvancedFilter"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TopActionBar": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "35px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0px undefined ",
+                    "borderBottom": "0px none "
+                  },
+                  "justifyItems": "start",
+                  "style": {},
+                  "background": "light",
+                  "customBackground": "#f0f0f0"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "TopActionBar"
+                },
+                "parent": "ContainerBody",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "FilterPanelHeader": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "40px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0px undefined ",
+                    "borderBottom": "0px none "
+                  },
+                  "justifyItems": "start",
+                  "style": {},
+                  "background": "light",
+                  "customBackground": "#f0f0f0"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "FilterPanelHeader"
+                },
+                "parent": "ContainerFilterOuter",
+                "hidden": false,
+                "nodes": [
+                  "FilterPanelHeaderInner",
+                  "FilterBrandSeparator"
+                ],
+                "linkedNodes": {}
+              },
+              "FilterPanelHeaderInner": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 4,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "space-between",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "35px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0px undefined ",
+                    "borderBottom": "undefinedpx none "
+                  },
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "FilterPanelHeaderInner"
+                },
+                "parent": "FilterPanelHeader",
+                "hidden": false,
+                "nodes": [
+                  "FilterPanelTitle",
+                  "FilterSearchContainer"
+                ],
+                "linkedNodes": {}
+              },
+              "FilterPanelTitle": {
+                "type": {
+                  "resolvedName": "RichText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "width": "180px",
+                  "height": "40px",
+                  "content": {
+                    "blocks": [
+                      {
+                        "key": "filterPanelTitle",
+                        "text": "OEE Hourly Filters",
+                        "type": "unstyled",
+                        "depth": 0,
+                        "inlineStyleRanges": [
+                          {
+                            "offset": 0,
+                            "length": 18,
+                            "style": "fontfamily-Roboto"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 18,
+                            "style": "fontsize-14"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 18,
+                            "style": "color-rgb(44,130,201)"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 18,
+                            "style": "BOLD"
+                          }
+                        ],
+                        "entityRanges": [],
+                        "data": {}
+                      }
+                    ],
+                    "entityMap": {}
+                  }
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "FilterPanelTitle"
+                },
+                "parent": "FilterPanelHeaderInner",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "FilterSearchContainer": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "center",
+                  "width": "30px",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "FilterSearchContainer"
+                },
+                "parent": "FilterPanelHeaderInner",
+                "hidden": false,
+                "nodes": [
+                  "ActionSearch"
+                ],
+                "linkedNodes": {}
+              },
+              "ActionSearch": {
+                "type": {
+                  "resolvedName": "ActionButton"
+                },
+                "isCanvas": false,
+                "props": {
+                  "margin": 0,
+                  "buttonColor": "primary",
+                  "icon": {
+                    "icon": "magnifying-glass",
+                    "color": "info",
+                    "variant": "regular",
+                    "size": "icon"
+                  },
+                  "width": "24px",
+                  "height": "24px",
+                  "disabled": false,
+                  "hidden": false,
+                  "useIconButton": true,
+                  "disableHover": false,
+                  "disableRipple": false,
+                  "action": [
+                    {
+                      "type": "transformation",
+                      "transformation": "$components.OeeHourlyTable.fn.search()",
+                      "remote": false
+                    }
+                  ],
+                  "title": "Search Using Filters"
+                },
+                "displayName": "Action",
+                "custom": {
+                  "elementName": "ActionSearch"
+                },
+                "parent": "FilterSearchContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "FilterBrandSeparator": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "4px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {
+                    "background-image": "linear-gradient(90deg, #39005a,#5b30df, #03caaf)"
+                  }
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "FilterBrandSeparator"
+                },
+                "parent": "FilterPanelHeader",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "BrandBandSeparator": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "4px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {
+                    "background-image": "linear-gradient(90deg, #39005a,#5b30df, #03caaf)"
+                  }
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "BrandBandSeparator"
+                },
+                "parent": "ContainerBody",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "OeeHourlyTable": {
+                "type": {
+                  "resolvedName": "Table"
+                },
+                "isCanvas": true,
+                "props": {
+                  "margin": 0,
+                  "width": "100%",
+                  "height": "0px",
+                  "flexGrow": true,
+                  "query": {
+                    "api": "Application",
+                    "query": null,
+                    "dataPath": "edges",
+                    "dataTransform": {
+                      "transform": null,
+                      "remote": true
+                    },
+                    "dataSubscription": {
+                      "enabled": false
+                    },
+                    "autoLoad": true,
+                    "fields": [
+                      "id",
+                      "workcenterId",
+                      "workcenter.code",
+                      "workcenter.name",
+                      "scheduleId",
+                      "schedule.code",
+                      "schedule.name",
+                      "dayHour",
+                      "shiftHour",
+                      "shift",
+                      "periodStartAt",
+                      "periodEndAt",
+                      "scheduleHourStartAt",
+                      "scheduleHourEndAt",
+                      "isPartialHour",
+                      "availability",
+                      "performance",
+                      "quality",
+                      "oee",
+                      "goodUnits",
+                      "scrapUnits",
+                      "totalUnits",
+                      "idealUnits",
+                      "plannedMinutes",
+                      "scheduledTime",
+                      "runMinutes",
+                      "downtimeMinutes",
+                      "setupMinutes",
+                      "topDowntime",
+                      "actualCycleTime",
+                      "idealCycleTime"
+                    ],
+                    "disableDataChangeIndicator": false,
+                    "selectedDataChangeIndicator": "refresh",
+                    "model": "OeeHourly",
+                    "readPreference": "primaryPreferred",
+                    "parameters": "{\r\n  \"orderBy\": [\r\n    {\r\n      \"field\": \"periodStartAt\",\r\n      \"direction\": \"desc\"\r\n    },\r\n    {\r\n      \"field\": \"dayHour\",\r\n      \"direction\": \"asc\"\r\n    },\r\n    {\r\n      \"field\": \"workcenterId\",\r\n      \"direction\": \"asc\"\r\n    }\r\n  ]\r\n}"
+                  },
+                  "selectable": "none",
+                  "showToolPanels": true,
+                  "showStatusBar": true,
+                  "enableGrouping": true,
+                  "enableCharts": true,
+                  "showColumnMenu": true,
+                  "enableRowDragging": false,
+                  "disableColumnDragging": false,
+                  "disableDragLeaveHidesColumns": false,
+                  "masterDetail": false,
+                  "hideTableHeader": false,
+                  "description": "OeeHourly records showing hourly OEE metrics including availability, performance, quality, and production counts.",
+                  "rowMultiSelectWithClick": false,
+                  "defaultSort": [
+                    {
+                      "field": "ColPeriodStart",
+                      "direction": "desc"
+                    }
+                  ],
+                  "limitToOneActiveDetail": false,
+                  "filterFormName": "FormFilterPanel"
+                },
+                "displayName": "Table",
+                "custom": {
+                  "elementName": "OeeHourlyTable"
+                },
+                "parent": "ContainerBody",
+                "hidden": false,
+                "nodes": [
+                  "ColPeriodStart",
+                  "ColWorkcenterCode",
+                  "ColWorkcenterName",
+                  "ColScheduleCode",
+                  "ColDayHour",
+                  "ColShiftHour",
+                  "ColShift",
+                  "ColOEE",
+                  "ColAvailability",
+                  "ColPerformance",
+                  "ColQuality",
+                  "ColGoodCount",
+                  "ColScrapCount",
+                  "ColTotalCount",
+                  "ColIdealCount",
+                  "uSuu4zyvwk",
+                  "rYjblsrEn8",
+                  "ColRunMinutes",
+                  "ColDowntimeMinutes",
+                  "ColSetupMinutes",
+                  "ColTopDowntime",
+                  "ColActualCycleTime",
+                  "ColIdealCycleTime",
+                  "ColPartialHour",
+                  "hP_OXRoTWy",
+                  "3Z8EO3133p",
+                  "ColPeriodEnd"
+                ],
+                "linkedNodes": {}
+              },
+              "ColPeriodStart": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Period Start",
+                  "format": "datetime",
+                  "sortable": true,
+                  "dataPath": "periodStartAt",
+                  "description": "Start timestamp of the hour period (24H based on tenant timezone).",
+                  "query": {},
+                  "field": "periodStartAt",
+                  "width": "180px",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "showColumnSuppressMenu": false,
+                  "timeZone": "setting"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "ColPeriodStart"
+                },
+                "parent": "OeeHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ColWorkcenterCode": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Workcenter",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "workcenter.code",
+                  "description": "Workcenter code.",
+                  "query": {
+                    "fields": [
+                      "workcenter.id",
+                      "workcenter.code"
+                    ]
+                  },
+                  "field": "workcenter.code",
+                  "width": "140px",
+                  "editable": false,
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "ColWorkcenterCode"
+                },
+                "parent": "OeeHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ColWorkcenterName": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Workcenter Name",
+                  "format": "text",
+                  "sortable": false,
+                  "dataPath": "workcenter.name",
+                  "description": "Workcenter name.",
+                  "query": {
+                    "fields": [
+                      "workcenter.name"
+                    ]
+                  },
+                  "field": "workcenter.name",
+                  "width": "200px",
+                  "editable": false,
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "ColWorkcenterName"
+                },
+                "parent": "OeeHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ColScheduleCode": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Schedule",
+                  "format": "text",
+                  "sortable": false,
+                  "dataPath": "schedule.code",
+                  "description": "Schedule code for the shift.",
+                  "query": {
+                    "fields": [
+                      "schedule.code"
+                    ]
+                  },
+                  "field": "schedule.code",
+                  "width": "120px",
+                  "editable": false,
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "ColScheduleCode"
+                },
+                "parent": "OeeHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ColDayHour": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Day Hour",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "dayHour",
+                  "description": "24-hour clock hour (0-23) representing the hour of the day in local/site timezone.",
+                  "query": {},
+                  "field": "dayHour",
+                  "width": "100px",
+                  "style": {
+                    "alignItems": "center",
+                    "justifyContent": "center"
+                  },
+                  "sortAsNumber": true,
+                  "formatString": "0"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "ColDayHour"
+                },
+                "parent": "OeeHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ColShiftHour": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Shift Hour",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "shiftHour",
+                  "description": "Hour number within the shift (1-N), calculated from shift start time.",
+                  "query": {},
+                  "field": "shiftHour",
+                  "width": "100px",
+                  "style": {
+                    "alignItems": "center",
+                    "justifyContent": "center"
+                  },
+                  "sortAsNumber": true,
+                  "formatString": "0"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "ColShiftHour"
+                },
+                "parent": "OeeHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ColShift": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Shift",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "shift",
+                  "description": "Shift name or identifier derived from Schedule name/code. 'Exception' indicates exception event.",
+                  "query": {},
+                  "field": "shift",
+                  "width": "140px",
+                  "cellTransform": "(\n  $shift := $.shift;\n  $shift = 'Exception' ? {\n    'background': '#fff59d',\n    'fontWeight': 600\n  } : {}\n)",
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "ColShift"
+                },
+                "parent": "OeeHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ColOEE": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "OEE %",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "oee",
+                  "description": "Overall Equipment Effectiveness percentage (Availability × Performance × Quality).",
+                  "query": {},
+                  "field": "oee",
+                  "width": "110px",
+                  "cellTransform": "(\n  $value := $.oee * 100;\n  $value < 60 ? {\n    'background': '#ffcdd2',\n    'color': '#c62828',\n    'fontWeight': 600\n  } : $value < 85 ? {\n    'background': '#fff9c4',\n    'color': '#f57f17',\n    'fontWeight': 600\n  } : {\n    'background': '#c8e6c9',\n    'color': '#2e7d32',\n    'fontWeight': 600\n  }\n)",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "sortAsNumber": true,
+                  "formatString": "0.00%"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "ColOEE"
+                },
+                "parent": "OeeHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ColAvailability": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Availability %",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "availability",
+                  "description": "Availability percentage (Run Time / Planned Production Time).",
+                  "query": {},
+                  "field": "availability",
+                  "width": "140px",
+                  "cellTransform": "(\n  $value := $.availability * 100;\n  $value < 60 ? {\n    'background': '#ffcdd2',\n    'color': '#c62828'\n  } : $value < 85 ? {\n    'background': '#fff9c4',\n    'color': '#f57f17'\n  } : {\n    'background': '#c8e6c9',\n    'color': '#2e7d32'\n  }\n)",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "sortAsNumber": true,
+                  "formatString": "0.00%"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "ColAvailability"
+                },
+                "parent": "OeeHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ColPerformance": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Performance %",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "performance",
+                  "description": "Performance percentage (Ideal Cycle Time / Actual Cycle Time).",
+                  "query": {},
+                  "field": "performance",
+                  "width": "140px",
+                  "cellTransform": "(\n  $value := $.performance * 100;\n  $value < 60 ? {\n    'background': '#ffcdd2',\n    'color': '#c62828'\n  } : $value < 85 ? {\n    'background': '#fff9c4',\n    'color': '#f57f17'\n  } : {\n    'background': '#c8e6c9',\n    'color': '#2e7d32'\n  }\n)",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "sortAsNumber": true,
+                  "formatString": "0.00%"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "ColPerformance"
+                },
+                "parent": "OeeHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ColQuality": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Quality %",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "quality",
+                  "description": "Quality percentage (Good Count / Total Count).",
+                  "query": {},
+                  "field": "quality",
+                  "width": "110px",
+                  "cellTransform": "(\n  $value := $.quality * 100;\n  $value < 60 ? {\n    'background': '#ffcdd2',\n    'color': '#c62828'\n  } : $value < 85 ? {\n    'background': '#fff9c4',\n    'color': '#f57f17'\n  } : {\n    'background': '#c8e6c9',\n    'color': '#2e7d32'\n  }\n)",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "sortAsNumber": true,
+                  "formatString": "0.00%"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "ColQuality"
+                },
+                "parent": "OeeHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ColGoodCount": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Good Units",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "goodUnits",
+                  "description": "changed from goodCount to goodUnits",
+                  "query": {},
+                  "field": "goodUnits",
+                  "width": "120px",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "sortAsNumber": true,
+                  "formatString": "0,0"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "ColGoodCount"
+                },
+                "parent": "OeeHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ColScrapCount": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Scrap Units",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "scrapUnits",
+                  "description": "chnged from scrapCount to scrapUnits.",
+                  "query": {},
+                  "field": "scrapUnits",
+                  "width": "120px",
+                  "cellTransform": "(\n  $value := $.scrapCount;\n  $value > 0 ? {\n    'color': '#d32f2f',\n    'fontWeight': 600\n  } : {}\n)",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "sortAsNumber": true,
+                  "formatString": "0,0"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "ColScrapCount"
+                },
+                "parent": "OeeHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ColTotalCount": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Total Units",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "totalUnits",
+                  "description": "changed from totalCount to totalUnits",
+                  "query": {},
+                  "field": "totalUnits",
+                  "width": "120px",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "sortAsNumber": true,
+                  "formatString": "0,0"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "ColTotalCount"
+                },
+                "parent": "OeeHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ColIdealCount": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Ideal Units",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "idealUnits",
+                  "description": "Changed from idealCount to idealUnits for clarity.",
+                  "query": {},
+                  "field": "idealUnits",
+                  "width": "120px",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "sortAsNumber": true,
+                  "formatString": "0,0"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "ColIdealCount"
+                },
+                "parent": "OeeHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ColRunMinutes": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Run Time",
+                  "format": "duration",
+                  "sortable": false,
+                  "dataPath": "runMinutes",
+                  "description": "Actual run time in minutes (ISO 8601 duration).",
+                  "query": {},
+                  "field": "runMinutes",
+                  "width": "120px",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "durationMode": "time"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "ColRunMinutes"
+                },
+                "parent": "OeeHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ColDowntimeMinutes": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Downtime",
+                  "format": "duration",
+                  "sortable": false,
+                  "dataPath": "downtimeMinutes",
+                  "description": "Downtime duration in minutes (ISO 8601 duration).",
+                  "query": {},
+                  "field": "downtimeMinutes",
+                  "width": "140px",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "durationMode": "time"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "ColDowntimeMinutes"
+                },
+                "parent": "OeeHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ColSetupMinutes": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Setup",
+                  "format": "duration",
+                  "sortable": false,
+                  "dataPath": "setupMinutes",
+                  "description": "Setup time in minutes (ISO 8601 duration).",
+                  "query": {},
+                  "field": "setupMinutes",
+                  "width": "120px",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "durationMode": "time"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "ColSetupMinutes"
+                },
+                "parent": "OeeHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ColTopDowntime": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Top Downtime",
+                  "format": "duration",
+                  "sortable": false,
+                  "dataPath": "topDowntime",
+                  "description": "Duration of the longest downtime event (ISO 8601 duration).",
+                  "query": {},
+                  "field": "topDowntime",
+                  "width": "140px",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "durationMode": "time"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "ColTopDowntime"
+                },
+                "parent": "OeeHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ColActualCycleTime": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Actual Cycle",
+                  "format": "duration",
+                  "sortable": false,
+                  "dataPath": "actualCycleTime",
+                  "description": "Actual average cycle time per part (ISO 8601 duration).",
+                  "query": {},
+                  "field": "actualCycleTime",
+                  "width": "130px",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "durationMode": "time"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "ColActualCycleTime"
+                },
+                "parent": "OeeHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ColIdealCycleTime": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Ideal Cycle",
+                  "format": "duration",
+                  "sortable": false,
+                  "dataPath": "idealCycleTime",
+                  "description": "Ideal theoretical cycle time per part (ISO 8601 duration).",
+                  "query": {},
+                  "field": "idealCycleTime",
+                  "width": "130px",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "durationMode": "time"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "ColIdealCycleTime"
+                },
+                "parent": "OeeHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ColPartialHour": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Partial Hour",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "isPartialHour",
+                  "description": "Indicates if this hour period is partial (less than 60 minutes of scheduled time).",
+                  "query": {},
+                  "field": "isPartialHour",
+                  "width": "120px",
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "ColPartialHour"
+                },
+                "parent": "OeeHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ColPeriodEnd": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Period End",
+                  "format": "datetime",
+                  "sortable": true,
+                  "dataPath": "periodEndAt",
+                  "description": "End timestamp of the hour period (24H based on tenant timezone).",
+                  "query": {},
+                  "field": "periodEndAt",
+                  "width": "180px",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "timeZone": "setting"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "ColPeriodEnd"
+                },
+                "parent": "OeeHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "SelectWorkcenter": {
+                "type": {
+                  "resolvedName": "SelectInput"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "select",
+                  "label": "Workcenter",
+                  "dialogMode": "never",
+                  "multiselect": true,
+                  "isClearable": true,
+                  "selectAll": true,
+                  "searchPredicate": "contains",
+                  "api": "Application",
+                  "stateTracking": "full",
+                  "optionLimit": 20,
+                  "optionLimitFlex": 10,
+                  "alwaysReloadOptions": false,
+                  "target": {
+                    "dataPath": "workcenterId._in"
+                  },
+                  "dataPath": "workcenter",
+                  "formElement": "FormFilterPanel",
+                  "variant": "filled",
+                  "disabled": false,
+                  "description": "Filter by one or more workcenters.",
+                  "query": {
+                    "api": "Application",
+                    "model": "Workcenter",
+                    "dataPath": "edges",
+                    "fields": [
+                      "workcenter.id",
+                      "workcenter.code",
+                      "workcenter.name"
+                    ],
+                    "parameters": "{\n  \"orderBy\": {\n    \"code\": \"ASC\"\n  }\n}"
+                  },
+                  "optionLabelPath": "code",
+                  "optionValuePath": "id",
+                  "optionSecondaryLabelPath": "name",
+                  "field": "workcenter",
+                  "labelPath": "code",
+                  "orderByField": "code",
+                  "dataModel": "Workcenter",
+                  "selectFields": [
+                    "code",
+                    "name"
+                  ],
+                  "additionalFields": [],
+                  "orderByDirection": "asc",
+                  "predicate": "_in"
+                },
+                "displayName": "Select",
+                "custom": {
+                  "elementName": "SelectWorkcenter"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "SelectSchedule": {
+                "type": {
+                  "resolvedName": "SelectInput"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "select",
+                  "label": "Schedule",
+                  "dialogMode": "never",
+                  "multiselect": true,
+                  "isClearable": true,
+                  "selectAll": true,
+                  "searchPredicate": "contains",
+                  "api": "Application",
+                  "stateTracking": "full",
+                  "optionLimit": 20,
+                  "optionLimitFlex": 10,
+                  "alwaysReloadOptions": false,
+                  "target": {
+                    "dataPath": "scheduleId._in"
+                  },
+                  "dataPath": "schedule",
+                  "formElement": "FormFilterPanel",
+                  "variant": "filled",
+                  "disabled": false,
+                  "description": "Filter by one or more schedules.",
+                  "query": {
+                    "api": "Application",
+                    "model": "Schedule",
+                    "dataPath": "edges",
+                    "fields": [
+                      "schedule.id",
+                      "schedule.code",
+                      "schedule.name"
+                    ],
+                    "parameters": "{\n  \"orderBy\": {\n    \"code\": \"ASC\"\n  }\n}"
+                  },
+                  "optionLabelPath": "code",
+                  "optionValuePath": "id",
+                  "optionSecondaryLabelPath": "name",
+                  "field": "schedule",
+                  "labelPath": "code",
+                  "orderByField": "code",
+                  "dataModel": "Schedule",
+                  "selectFields": [
+                    "code",
+                    "name"
+                  ],
+                  "additionalFields": [],
+                  "orderByDirection": "asc",
+                  "predicate": "_in"
+                },
+                "displayName": "Select",
+                "custom": {
+                  "elementName": "SelectSchedule"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "DateRangePeriodAt": {
+                "type": {
+                  "resolvedName": "DateRangeInput"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "datetimeRange",
+                  "label": "Period Range",
+                  "target": {
+                    "dataPath": "periodStartAt"
+                  },
+                  "dataPath": "periodStartAt",
+                  "formElement": "FormFilterPanel",
+                  "disabled": false,
+                  "description": "Filter by period start date/time range.",
+                  "field": "periodStartAt"
+                },
+                "displayName": "Date Range",
+                "custom": {
+                  "elementName": "DateRangePeriodAt"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "3Z8EO3133p": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Schedule End At",
+                  "format": "datetime",
+                  "sortable": true,
+                  "dataPath": "scheduleHourEndAt",
+                  "description": "",
+                  "query": {},
+                  "field": "scheduleHourEndAt",
+                  "timeZone": "setting",
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn25"
+                },
+                "parent": "OeeHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "hP_OXRoTWy": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Schedule Start At",
+                  "format": "datetime",
+                  "sortable": true,
+                  "dataPath": "scheduleHourStartAt",
+                  "description": "",
+                  "query": {},
+                  "field": "scheduleHourStartAt",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "timeZone": "setting"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn26"
+                },
+                "parent": "OeeHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "r_mpN_t-2K": {
+                "type": {
+                  "resolvedName": "TextInput"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "text",
+                  "label": "Shift",
+                  "variant": "standard",
+                  "formElement": "FormFilterPanel",
+                  "dataPath": "shift",
+                  "target": {
+                    "dataPath": "shift._in"
+                  },
+                  "description": "**`shift`** (`String`)\\nShift name or identifier.\\n\\n- Derived from Schedule name/code.\\n- Example: `First Shift`, `Day Shift`, `A Crew`.\\n- Null if unscheduled production.",
+                  "field": "shift",
+                  "predicate": "_in",
+                  "disabled": false
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "Text1"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "uSuu4zyvwk": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Scheduled Time",
+                  "format": "duration",
+                  "sortable": true,
+                  "dataPath": "scheduledTime",
+                  "description": "Time for scheduled production of this asset.",
+                  "query": {},
+                  "field": "scheduledTime",
+                  "durationMode": "time",
+                  "editable": false,
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn27"
+                },
+                "parent": "OeeHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "rYjblsrEn8": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Planned Downtime",
+                  "format": "duration",
+                  "sortable": true,
+                  "dataPath": "plannedDowntimeMinutes",
+                  "description": "Planned downtime for the hour, can be scheduled maintenance, or non-scheduled production time. this is derived from the Schedulegroup, schedule, events (exception types) OR manually via generating a mainteinance work order/etc.",
+                  "query": {},
+                  "field": "plannedDowntimeMinutes",
+                  "durationMode": "time",
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn28"
+                },
+                "parent": "OeeHourlyTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "routes": [
+    {
+      "id": "cmki8cd9zot3m0148eys23kv4",
+      "title": "OEE Hourly",
+      "path": "/machineTelemetrySiteApplication/machineDataApp/oeeHourlies",
+      "moduleId": "machineDataApp",
+      "screenId": "oeeHourly",
+      "isMenuAccessible": true,
+      "submenu": ""
+    }
+  ]
+}

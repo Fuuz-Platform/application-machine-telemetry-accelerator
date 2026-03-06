@@ -1,0 +1,45 @@
+{
+  "api": "application",
+  "modelName": "Sequence",
+  "payload": [
+    {
+      "id": "alarmCode",
+      "name": "AlarmCode",
+      "type": "String",
+      "increment": 1,
+      "prefix": "ALM-",
+      "suffix": "",
+      "zeroPadding": 3,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "assetCode",
+      "name": "AssetCode",
+      "type": "String",
+      "increment": 1,
+      "prefix": "ASSET-",
+      "suffix": "",
+      "zeroPadding": 1,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "dataPointCode",
+      "name": "DataPointCode",
+      "type": "String",
+      "increment": 1,
+      "prefix": "DP-0",
+      "suffix": "",
+      "zeroPadding": 3,
+      "_customFields": {
+        "_externalId": null
+      }
+    }
+  ],
+  "metadata": {
+    "insertEarly": true
+  }
+}

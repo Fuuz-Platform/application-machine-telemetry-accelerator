@@ -1,0 +1,1207 @@
+{
+  "api": "application",
+  "modelName": "Event",
+  "payload": [
+    {
+      "id": "chgv-001",
+      "name": "Product Changeover",
+      "defaultDuration": 45,
+      "sortOrder": 10,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "CHGV-001",
+      "description": "Changing from one product to another.",
+      "eventCategoryId": "chgv",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "chgv-002",
+      "name": "Tool Change",
+      "defaultDuration": 60,
+      "sortOrder": 20,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "CHGV-002",
+      "description": "Die, mold, or tooling change.",
+      "eventCategoryId": "chgv",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "chgv-003",
+      "name": "Recipe Change",
+      "defaultDuration": 30,
+      "sortOrder": 30,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "CHGV-003",
+      "description": "Process recipe or parameter change.",
+      "eventCategoryId": "chgv",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "chgv-004",
+      "name": "First Article",
+      "defaultDuration": 20,
+      "sortOrder": 40,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "CHGV-004",
+      "description": "First article inspection and approval.",
+      "eventCategoryId": "chgv",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "chgv-005",
+      "name": "CIP/Cleaning",
+      "defaultDuration": 90,
+      "sortOrder": 50,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "CHGV-005",
+      "description": "Clean-in-place or equipment cleaning.",
+      "eventCategoryId": "chgv",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "chgv-006",
+      "name": "Other Changeover",
+      "defaultDuration": 30,
+      "sortOrder": 60,
+      "isActive": true,
+      "requiresNote": true,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "CHGV-006",
+      "description": "Other changeover activity not listed above.",
+      "eventCategoryId": "chgv",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "elec-001",
+      "name": "Drive Fault",
+      "defaultDuration": 45,
+      "sortOrder": 10,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": true,
+      "usable": true,
+      "code": "ELEC-001",
+      "description": "VFD or servo drive fault or failure.",
+      "eventCategoryId": "elec",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "elec-002",
+      "name": "PLC Fault",
+      "defaultDuration": 60,
+      "sortOrder": 20,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "ELEC-002",
+      "description": "PLC communication error, program fault, or hardware failure.",
+      "eventCategoryId": "elec",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "elec-003",
+      "name": "Sensor Failure",
+      "defaultDuration": 20,
+      "sortOrder": 30,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "ELEC-003",
+      "description": "Proximity, photoelectric, or other sensor malfunction.",
+      "eventCategoryId": "elec",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "elec-004",
+      "name": "Wiring Issue",
+      "defaultDuration": 45,
+      "sortOrder": 40,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "ELEC-004",
+      "description": "Loose connection, damaged wire, or cable failure.",
+      "eventCategoryId": "elec",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "elec-005",
+      "name": "Power Outage",
+      "defaultDuration": 30,
+      "sortOrder": 50,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "ELEC-005",
+      "description": "Loss of electrical power to equipment.",
+      "eventCategoryId": "elec",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "elec-006",
+      "name": "HMI/Panel Issue",
+      "defaultDuration": 30,
+      "sortOrder": 60,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "ELEC-006",
+      "description": "Operator interface or control panel malfunction.",
+      "eventCategoryId": "elec",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "elec-007",
+      "name": "Safety Circuit",
+      "defaultDuration": 25,
+      "sortOrder": 70,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "ELEC-007",
+      "description": "Safety relay, interlock, or E-stop issue.",
+      "eventCategoryId": "elec",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "elec-008",
+      "name": "Vision System",
+      "defaultDuration": 40,
+      "sortOrder": 80,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "ELEC-008",
+      "description": "Camera, lighting, or vision inspection system failure.",
+      "eventCategoryId": "elec",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "elec-009",
+      "name": "Instrument Fault",
+      "defaultDuration": 35,
+      "sortOrder": 90,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "ELEC-009",
+      "description": "Temperature, pressure, flow, or level transmitter failure.",
+      "eventCategoryId": "elec",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "elec-010",
+      "name": "Other Electrical",
+      "defaultDuration": 30,
+      "sortOrder": 100,
+      "isActive": true,
+      "requiresNote": true,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "ELEC-010",
+      "description": "Other electrical issue not listed above.",
+      "eventCategoryId": "elec",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "extl-001",
+      "name": "Customer Hold",
+      "defaultDuration": 60,
+      "sortOrder": 10,
+      "isActive": true,
+      "requiresNote": true,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "EXTL-001",
+      "description": "Customer-requested production hold.",
+      "eventCategoryId": "extl",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "extl-002",
+      "name": "Supplier Issue",
+      "defaultDuration": 120,
+      "sortOrder": 20,
+      "isActive": true,
+      "requiresNote": true,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "EXTL-002",
+      "description": "Supplier delay or quality issue.",
+      "eventCategoryId": "extl",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "extl-003",
+      "name": "Regulatory",
+      "defaultDuration": 180,
+      "sortOrder": 30,
+      "isActive": true,
+      "requiresNote": true,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "EXTL-003",
+      "description": "Regulatory inspection or compliance hold.",
+      "eventCategoryId": "extl",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "extl-004",
+      "name": "Weather",
+      "defaultDuration": 60,
+      "sortOrder": 40,
+      "isActive": true,
+      "requiresNote": true,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "EXTL-004",
+      "description": "Weather-related stoppage.",
+      "eventCategoryId": "extl",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "extl-005",
+      "name": "Other External",
+      "defaultDuration": 30,
+      "sortOrder": 50,
+      "isActive": true,
+      "requiresNote": true,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "EXTL-005",
+      "description": "Other external factor not listed above.",
+      "eventCategoryId": "extl",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "matl-001",
+      "name": "Material Shortage",
+      "defaultDuration": 60,
+      "sortOrder": 10,
+      "isActive": true,
+      "requiresNote": true,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "MATL-001",
+      "description": "Raw material or component not available.",
+      "eventCategoryId": "matl",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "matl-002",
+      "name": "Wrong Material",
+      "defaultDuration": 30,
+      "sortOrder": 20,
+      "isActive": true,
+      "requiresNote": true,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "MATL-002",
+      "description": "Incorrect material delivered or staged.",
+      "eventCategoryId": "matl",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "matl-003",
+      "name": "Material Defect",
+      "defaultDuration": 45,
+      "sortOrder": 30,
+      "isActive": true,
+      "requiresNote": true,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "MATL-003",
+      "description": "Incoming material quality issue.",
+      "eventCategoryId": "matl",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "matl-004",
+      "name": "Material Handling",
+      "defaultDuration": 20,
+      "sortOrder": 40,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "MATL-004",
+      "description": "Forklift, crane, or material handling equipment issue.",
+      "eventCategoryId": "matl",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "matl-005",
+      "name": "Other Material",
+      "defaultDuration": 30,
+      "sortOrder": 50,
+      "isActive": true,
+      "requiresNote": true,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "MATL-005",
+      "description": "Other material issue not listed above.",
+      "eventCategoryId": "matl",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "mech-001",
+      "name": "Motor Failure",
+      "defaultDuration": 60,
+      "sortOrder": 10,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": true,
+      "usable": true,
+      "code": "MECH-001",
+      "description": "Motor stopped or tripped due to overload, overheating, or mechanical failure.",
+      "eventCategoryId": "mech",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "mech-002",
+      "name": "Bearing Failure",
+      "defaultDuration": 120,
+      "sortOrder": 20,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": true,
+      "usable": true,
+      "code": "MECH-002",
+      "description": "Bearing noise, vibration, or seizure requiring replacement.",
+      "eventCategoryId": "mech",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "mech-003",
+      "name": "Belt/Chain Break",
+      "defaultDuration": 45,
+      "sortOrder": 30,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": true,
+      "usable": true,
+      "code": "MECH-003",
+      "description": "Drive belt or chain broken or jumped requiring repair.",
+      "eventCategoryId": "mech",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "mech-004",
+      "name": "Gearbox Issue",
+      "defaultDuration": 180,
+      "sortOrder": 40,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": true,
+      "usable": true,
+      "code": "MECH-004",
+      "description": "Gearbox noise, leak, or failure affecting operation.",
+      "eventCategoryId": "mech",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "mech-005",
+      "name": "Pneumatic Cylinder",
+      "defaultDuration": 30,
+      "sortOrder": 50,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "MECH-005",
+      "description": "Air cylinder leak, stuck, or failed to actuate.",
+      "eventCategoryId": "mech",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "mech-006",
+      "name": "Hydraulic System",
+      "defaultDuration": 90,
+      "sortOrder": 60,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": true,
+      "usable": true,
+      "code": "MECH-006",
+      "description": "Hydraulic leak, pressure loss, or pump failure.",
+      "eventCategoryId": "mech",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "mech-007",
+      "name": "Conveyor Jam",
+      "defaultDuration": 15,
+      "sortOrder": 70,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "MECH-007",
+      "description": "Material jam or blockage on conveyor system.",
+      "eventCategoryId": "mech",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "mech-008",
+      "name": "Mechanical Adjustment",
+      "defaultDuration": 30,
+      "sortOrder": 80,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "MECH-008",
+      "description": "Mechanical alignment, tension, or clearance adjustment needed.",
+      "eventCategoryId": "mech",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "mech-009",
+      "name": "Pump Failure",
+      "defaultDuration": 60,
+      "sortOrder": 90,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": true,
+      "usable": true,
+      "code": "MECH-009",
+      "description": "Process or transfer pump failure or leak.",
+      "eventCategoryId": "mech",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "mech-010",
+      "name": "Other Mechanical",
+      "defaultDuration": 30,
+      "sortOrder": 100,
+      "isActive": true,
+      "requiresNote": true,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "MECH-010",
+      "description": "Other mechanical issue not listed above.",
+      "eventCategoryId": "mech",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "oper-001",
+      "name": "Break",
+      "defaultDuration": 15,
+      "sortOrder": 10,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "OPER-001",
+      "description": "Scheduled operator break.",
+      "eventCategoryId": "oper",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "oper-002",
+      "name": "Meal",
+      "defaultDuration": 30,
+      "sortOrder": 20,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "OPER-002",
+      "description": "Scheduled meal break.",
+      "eventCategoryId": "oper",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "oper-003",
+      "name": "Meeting",
+      "defaultDuration": 20,
+      "sortOrder": 30,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "OPER-003",
+      "description": "Team meeting or huddle.",
+      "eventCategoryId": "oper",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "oper-004",
+      "name": "Training",
+      "defaultDuration": 60,
+      "sortOrder": 40,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "OPER-004",
+      "description": "Operator training session.",
+      "eventCategoryId": "oper",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "oper-005",
+      "name": "No Operator",
+      "defaultDuration": 30,
+      "sortOrder": 50,
+      "isActive": true,
+      "requiresNote": true,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "OPER-005",
+      "description": "Operator not available or short-staffed.",
+      "eventCategoryId": "oper",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "oper-006",
+      "name": "Other Operator",
+      "defaultDuration": 15,
+      "sortOrder": 60,
+      "isActive": true,
+      "requiresNote": true,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "OPER-006",
+      "description": "Other operator-related stop not listed above.",
+      "eventCategoryId": "oper",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "pmnt-001",
+      "name": "Scheduled PM",
+      "defaultDuration": 120,
+      "sortOrder": 10,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": true,
+      "usable": true,
+      "code": "PMNT-001",
+      "description": "Regular scheduled preventive maintenance.",
+      "eventCategoryId": "pmnt",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "pmnt-002",
+      "name": "Lubrication",
+      "defaultDuration": 30,
+      "sortOrder": 20,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "PMNT-002",
+      "description": "Scheduled lubrication and greasing.",
+      "eventCategoryId": "pmnt",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "pmnt-003",
+      "name": "Calibration",
+      "defaultDuration": 45,
+      "sortOrder": 30,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "PMNT-003",
+      "description": "Instrument or equipment calibration.",
+      "eventCategoryId": "pmnt",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "pmnt-004",
+      "name": "Inspection",
+      "defaultDuration": 60,
+      "sortOrder": 40,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "PMNT-004",
+      "description": "Scheduled equipment inspection.",
+      "eventCategoryId": "pmnt",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "pmnt-005",
+      "name": "Other Planned",
+      "defaultDuration": 30,
+      "sortOrder": 50,
+      "isActive": true,
+      "requiresNote": true,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "PMNT-005",
+      "description": "Other planned maintenance not listed above.",
+      "eventCategoryId": "pmnt",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "proc-001",
+      "name": "Process Upset",
+      "defaultDuration": 30,
+      "sortOrder": 10,
+      "isActive": true,
+      "requiresNote": true,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "PROC-001",
+      "description": "Process parameter deviation or upset condition.",
+      "eventCategoryId": "proc",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "proc-002",
+      "name": "Recipe Error",
+      "defaultDuration": 20,
+      "sortOrder": 20,
+      "isActive": true,
+      "requiresNote": true,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "PROC-002",
+      "description": "Recipe or program error.",
+      "eventCategoryId": "proc",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "proc-003",
+      "name": "Batch Failure",
+      "defaultDuration": 60,
+      "sortOrder": 30,
+      "isActive": true,
+      "requiresNote": true,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "PROC-003",
+      "description": "Failed batch requiring restart or disposal.",
+      "eventCategoryId": "proc",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "proc-004",
+      "name": "Yield Issue",
+      "defaultDuration": 30,
+      "sortOrder": 40,
+      "isActive": true,
+      "requiresNote": true,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "PROC-004",
+      "description": "Low yield or high waste condition.",
+      "eventCategoryId": "proc",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "proc-005",
+      "name": "Other Process",
+      "defaultDuration": 30,
+      "sortOrder": 50,
+      "isActive": true,
+      "requiresNote": true,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "PROC-005",
+      "description": "Other process issue not listed above.",
+      "eventCategoryId": "proc",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "qual-001",
+      "name": "Out of Spec",
+      "defaultDuration": 30,
+      "sortOrder": 10,
+      "isActive": true,
+      "requiresNote": true,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "QUAL-001",
+      "description": "Product dimensions, weight, or properties outside specification.",
+      "eventCategoryId": "qual",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "qual-002",
+      "name": "Visual Defect",
+      "defaultDuration": 20,
+      "sortOrder": 20,
+      "isActive": true,
+      "requiresNote": true,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "QUAL-002",
+      "description": "Cosmetic or visual defect requiring investigation.",
+      "eventCategoryId": "qual",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "qual-003",
+      "name": "Contamination",
+      "defaultDuration": 60,
+      "sortOrder": 30,
+      "isActive": true,
+      "requiresNote": true,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "QUAL-003",
+      "description": "Foreign material or cross-contamination detected.",
+      "eventCategoryId": "qual",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "qual-004",
+      "name": "Label/Packaging",
+      "defaultDuration": 15,
+      "sortOrder": 40,
+      "isActive": true,
+      "requiresNote": true,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "QUAL-004",
+      "description": "Labeling, packaging, or marking defect.",
+      "eventCategoryId": "qual",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "qual-005",
+      "name": "SPC Alarm",
+      "defaultDuration": 30,
+      "sortOrder": 50,
+      "isActive": true,
+      "requiresNote": true,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "QUAL-005",
+      "description": "Statistical process control alarm triggered.",
+      "eventCategoryId": "qual",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "qual-006",
+      "name": "Inspection Hold",
+      "defaultDuration": 45,
+      "sortOrder": 60,
+      "isActive": true,
+      "requiresNote": true,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "QUAL-006",
+      "description": "Quality inspection or testing hold.",
+      "eventCategoryId": "qual",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "qual-007",
+      "name": "Other Quality",
+      "defaultDuration": 30,
+      "sortOrder": 70,
+      "isActive": true,
+      "requiresNote": true,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "QUAL-007",
+      "description": "Other quality issue not listed above.",
+      "eventCategoryId": "qual",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "schd-001",
+      "name": "No Orders",
+      "defaultDuration": 480,
+      "sortOrder": 10,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "SCHD-001",
+      "description": "No production orders scheduled.",
+      "eventCategoryId": "schd",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "schd-002",
+      "name": "Weekend",
+      "defaultDuration": 960,
+      "sortOrder": 20,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "SCHD-002",
+      "description": "Weekend - no production scheduled.",
+      "eventCategoryId": "schd",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "schd-003",
+      "name": "Holiday",
+      "defaultDuration": 480,
+      "sortOrder": 30,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "SCHD-003",
+      "description": "Holiday - plant closed.",
+      "eventCategoryId": "schd",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "schd-004",
+      "name": "Planned Idle",
+      "defaultDuration": 60,
+      "sortOrder": 40,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "SCHD-004",
+      "description": "Planned idle time between orders.",
+      "eventCategoryId": "schd",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "schd-005",
+      "name": "Other No Schedule",
+      "defaultDuration": 30,
+      "sortOrder": 50,
+      "isActive": true,
+      "requiresNote": true,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "SCHD-005",
+      "description": "Other no schedule reason not listed above.",
+      "eventCategoryId": "schd",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "umnt-001",
+      "name": "Breakdown Repair",
+      "defaultDuration": 90,
+      "sortOrder": 10,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": true,
+      "usable": true,
+      "code": "UMNT-001",
+      "description": "Unplanned repair due to equipment failure.",
+      "eventCategoryId": "umnt",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "umnt-002",
+      "name": "Emergency Repair",
+      "defaultDuration": 60,
+      "sortOrder": 20,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": true,
+      "usable": true,
+      "code": "UMNT-002",
+      "description": "Urgent repair to restore operation.",
+      "eventCategoryId": "umnt",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "umnt-003",
+      "name": "Troubleshooting",
+      "defaultDuration": 45,
+      "sortOrder": 30,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "UMNT-003",
+      "description": "Diagnosing equipment problem.",
+      "eventCategoryId": "umnt",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "umnt-004",
+      "name": "Parts Waiting",
+      "defaultDuration": 120,
+      "sortOrder": 40,
+      "isActive": true,
+      "requiresNote": true,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "UMNT-004",
+      "description": "Waiting for replacement parts.",
+      "eventCategoryId": "umnt",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "umnt-005",
+      "name": "Other Unplanned",
+      "defaultDuration": 60,
+      "sortOrder": 50,
+      "isActive": true,
+      "requiresNote": true,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "UMNT-005",
+      "description": "Other unplanned maintenance not listed above.",
+      "eventCategoryId": "umnt",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "util-001",
+      "name": "Compressed Air",
+      "defaultDuration": 30,
+      "sortOrder": 10,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "UTIL-001",
+      "description": "Compressed air supply failure or low pressure.",
+      "eventCategoryId": "util",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "util-002",
+      "name": "Steam",
+      "defaultDuration": 45,
+      "sortOrder": 20,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "UTIL-002",
+      "description": "Steam supply failure or low pressure.",
+      "eventCategoryId": "util",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "util-003",
+      "name": "Cooling Water",
+      "defaultDuration": 30,
+      "sortOrder": 30,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "UTIL-003",
+      "description": "Cooling water supply or temperature issue.",
+      "eventCategoryId": "util",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "util-004",
+      "name": "Nitrogen",
+      "defaultDuration": 25,
+      "sortOrder": 40,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "UTIL-004",
+      "description": "Nitrogen or inert gas supply issue.",
+      "eventCategoryId": "util",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "util-005",
+      "name": "HVAC",
+      "defaultDuration": 60,
+      "sortOrder": 50,
+      "isActive": true,
+      "requiresNote": false,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "UTIL-005",
+      "description": "Heating, ventilation, or air conditioning issue.",
+      "eventCategoryId": "util",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "util-006",
+      "name": "Other Utility",
+      "defaultDuration": 30,
+      "sortOrder": 60,
+      "isActive": true,
+      "requiresNote": true,
+      "requiresWorkOrder": false,
+      "usable": true,
+      "code": "UTIL-006",
+      "description": "Other utility issue not listed above.",
+      "eventCategoryId": "util",
+      "_customFields": {
+        "_externalId": null
+      }
+    }
+  ],
+  "metadata": {}
+}

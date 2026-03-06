@@ -1,0 +1,271 @@
+{
+  "header": {
+    "id": "area",
+    "name": "Area",
+    "description": "Represents a functional or physical subdivision within a Site, such as an assembly zone, machining bay, or packaging section. Areas organize Lines and Cells into logical groups for scheduling, reporting, and operational control.\n\n**Typical Use Cases**\n\n- Group production lines for shift planning and maintenance campaigns.\n- Apply area-level rules (e.g., safety procedures, blackout windows).\n- Aggregate metrics for dashboards and compliance reporting.",
+    "dataModelKindId": "reference",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cmjztt4891zqd016cee2sai21",
+    "number": "4",
+    "dataModelId": "area",
+    "modelDefinition": {
+      "name": "Area",
+      "metadata": {
+        "mfgx": {
+          "module": {
+            "id": "machineDataApp",
+            "group": {
+              "id": "machineTelemetrySiteApplication"
+            }
+          },
+          "exposed": true,
+          "mutable": true,
+          "mutations": {
+            "create": true,
+            "update": true,
+            "del": true
+          },
+          "dataChangeCapture": {
+            "exposed": false,
+            "retentionDays": 120
+          },
+          "customFields": {
+            "exposed": true
+          },
+          "editor": {
+            "autosort": false
+          },
+          "labelField": "code"
+        },
+        "mongo": {
+          "collection": "area"
+        },
+        "graphql": {
+          "type": "Object"
+        }
+      },
+      "kind": "Reference",
+      "fields": [
+        {
+          "name": "id",
+          "type": "ID!",
+          "description": "The immutable, primary unique identifier for the Area record.\n\n- **Behavior:** Required on creation; cannot be updated.\n- **Usage:** Used for queries, filters, and as a foreign key in related models (e.g., Lines reference Area via `areaId`).\n- **Example:** `\"a1b2c3d4-5678-90ef-ghij-1234567890ab\"`",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": false
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": true
+          }
+        },
+        {
+          "name": "code",
+          "type": "String!",
+          "description": "A unique, human-readable code for the Area within its parent Site.\n\n- **Behavior:** Required at creation; can be updated.\n- **Usage:** Acts as the label field for UI and integrations.\n- **Example:** `A01`, `ASSEMBLY-01`\n- **Constraint:** Must be unique within the Site.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": true
+          }
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "description": "The descriptive name of the Area for display and reporting purposes.\n\n- **Example:** `Assembly Zone`, `Machining Bay`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "isActive",
+          "type": "Boolean!",
+          "description": "Indicates whether the Area is active for scheduling, telemetry, and reporting.\n\n- **Default:** `true`\n- **Behavior:**When `false`, new operations should be blocked; historical data remains accessible.\n\n- **Example:** `true` (operational), `false` (inactive).",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": true
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "siteId",
+          "type": "ID!",
+          "description": "Foreign key linking the Area to its parent Site.\n\n- **Behavior:** Required; ensures hierarchical integrity.\n- **Usage:** Used in queries and mutations to associate the Area with a Site.\n- **Example:** `\"c3f1b3c0-8b3d-4b2b-9e3d-2f9e5b6a12cd\"`",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "site",
+          "description": "The related Site object for this Area.\n\n- **Behavior:**Relation enforced via `siteId → Site.id`.\nDeletion of the Site is prevented if Areas exist.\n\n- **Usage:** Enables nested queries and mutations for hierarchical data.\n- **Example:** `{ id: \"...\", code: \"DET-PLANT01\", name: \"Detroit Plant 1\" }`",
+          "type": "Site!",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "deletionReferenceBehavior": "prevent",
+                "fields": {
+                  "from": "siteId",
+                  "to": "id"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "lines",
+          "description": "Collection of Lines associated with this Area.\n\n- **Behavior:**Relation enforced via `Area.id → Line.areaId`.\nIncluded in queries and mutations for nested operations.\n\n- **Usage:** Represents the next level in the manufacturing hierarchy under the Area.\n- **Example:** `[ { id: \"...\", code: \"L01\", name: \"Assembly Line 1\" }, ... ]`",
+          "type": "[Line!]!",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "fields": {
+                  "from": "id",
+                  "to": "areaId"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        }
+      ],
+      "description": "Represents a functional or physical subdivision within a Site, such as an assembly zone, machining bay, or packaging section. Areas organize Lines and Cells into logical groups for scheduling, reporting, and operational control.\n\n**Typical Use Cases**\n\n- Group production lines for shift planning and maintenance campaigns.\n- Apply area-level rules (e.g., safety procedures, blackout windows).\n- Aggregate metrics for dashboards and compliance reporting."
+    },
+    "dataModelTypeId": "master"
+  },
+  "migration": "$",
+  "migrations": [
+    {
+      "dataModelVersionId": "cmjztt4891zqd016cee2sai21",
+      "dataModelVersion": {
+        "number": "4"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmjztooki1zmq016c1xu19v49",
+      "dataModelVersion": {
+        "number": "3"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmjzt714b1zbd016c4t2tevcr",
+      "dataModelVersion": {
+        "number": "2"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmjzt4n5e2esa017jexsqdzi1",
+      "dataModelVersion": {
+        "number": "1"
+      },
+      "mappingExpression": "$"
+    }
+  ]
+}

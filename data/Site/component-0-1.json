@@ -1,0 +1,58 @@
+{
+  "api": "application",
+  "modelName": "Site",
+  "payload": [
+    {
+      "id": "cmmk01grpn00lfls9su1",
+      "code": "DET",
+      "isActive": true,
+      "city": "Detroit",
+      "country": "USA",
+      "industry": "Automotive Components",
+      "name": "Detroit Metal Fabrication",
+      "postalCode": "48201",
+      "state": "MI",
+      "street": "4500 Industrial Parkway",
+      "timezone": "America/Detroit",
+      "type": "Discrete",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfltn4w7",
+      "code": "HOU",
+      "isActive": true,
+      "city": "Houston",
+      "country": "USA",
+      "industry": "Specialty Chemicals",
+      "name": "Houston Chemical Processing",
+      "postalCode": "77012",
+      "state": "TX",
+      "street": "8200 Petrochemical Drive",
+      "timezone": "America/Chicago",
+      "type": "Process",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfluh3op",
+      "code": "MKE",
+      "isActive": true,
+      "city": "Milwaukee",
+      "country": "USA",
+      "industry": "Food Processing",
+      "name": "Milwaukee Food & Beverage",
+      "postalCode": "53204",
+      "state": "WI",
+      "street": "1200 Brewery Boulevard",
+      "timezone": "America/Chicago",
+      "type": "Hybrid",
+      "_customFields": {
+        "_externalId": null
+      }
+    }
+  ],
+  "metadata": {}
+}

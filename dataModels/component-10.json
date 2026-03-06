@@ -1,0 +1,343 @@
+{
+  "header": {
+    "id": "telemetryRaw",
+    "name": "TelemetryRaw",
+    "description": "Represents a raw telemetry record captured from a device or sensor before any processing, scaling, or historization. These records provide the original data values for diagnostics, validation, and troubleshooting.\n\n**Typical Use Cases**\n\n- Store unprocessed sensor readings for audit and verification.\n- Support advanced analytics by comparing raw and processed values.\n- Enable short-term retention for high-frequency data streams.",
+    "dataModelKindId": "reference",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cmke1tc5b007p016oeuqwcl36",
+    "number": "10",
+    "dataModelId": "telemetryRaw",
+    "modelDefinition": {
+      "name": "TelemetryRaw",
+      "metadata": {
+        "mfgx": {
+          "module": {
+            "id": "machineDataApp",
+            "group": {
+              "id": "machineTelemetrySiteApplication"
+            }
+          },
+          "exposed": true,
+          "mutable": true,
+          "mutations": {
+            "create": true,
+            "update": true,
+            "del": true
+          },
+          "dataChangeCapture": {
+            "exposed": false,
+            "retentionDays": 1
+          },
+          "customFields": {
+            "exposed": false
+          },
+          "editor": {
+            "autosort": true
+          },
+          "labelField": "id",
+          "indices": [
+            {
+              "name": "TTLIndex",
+              "unique": false,
+              "ttl": 14400,
+              "fields": [
+                "createdAt"
+              ]
+            }
+          ]
+        },
+        "mongo": {
+          "collection": "telemetryRaw"
+        },
+        "graphql": {
+          "type": "Object"
+        }
+      },
+      "kind": "Reference",
+      "fields": [
+        {
+          "name": "id",
+          "type": "ID!",
+          "description": "**`id`** (`ID!`)\nThe immutable, primary unique identifier for the TelemetryRaw record.\n\n- **Behavior:** Required on creation; cannot be updated.\n- **Usage:** Used for queries, filters, and as a foreign key in related models.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": false
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": true
+          }
+        },
+        {
+          "name": "value",
+          "type": "Float!",
+          "description": "**`value`** (`Float`)\nThe raw numeric value captured from the sensor or device.\n\n- **Usage:** Represents the primary measurement before scaling or conversion.\n- **Example:** `78.5`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "isAgg",
+          "type": "Boolean!",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": false
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "quality",
+          "type": "String!",
+          "description": "**`quality`** (`String`)\nIndicates the quality status of the captured value.\n\n- **Default:** `\"Good\"`.\n- **Usage:** Helps determine reliability of the reading.\n- **Example:** `\"Good\"`, `\"Bad\"`, `\"Uncertain\"`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": "Good"
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "qualityCode",
+          "type": "String!",
+          "description": "**`qualityCode`** (`String`)\nNumeric or coded representation of quality.\n\n- **Default:** `\"192\"`.\n- **Usage:** Often follows OPC UA or similar standards for quality codes.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": "192"
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "recordedAt",
+          "type": "DateTime!",
+          "description": "**`recordedAt`** (`DateTime!`)\nTimestamp when the raw telemetry value was recorded.\n\n- **Usage:** Critical for time-series analysis and correlation.\n- **Example:** `\"2026-01-04T09:20:00Z\"`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "dataPointId",
+          "type": "ID!",
+          "description": "**`dataPointId`** (`ID!`)\nForeign key linking the raw telemetry record to its parent DataPoint.\n\n- **Usage:** Ensures hierarchical integrity.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "dataPoint",
+          "description": "**`dataPoint`** (`DataPoint!`)\nThe related DataPoint object for this raw telemetry record.\n\n- **Behavior:**Relation enforced via `dataPointId → DataPoint.id`.\nCascade deletion: TelemetryRaw records are removed if the parent DataPoint is deleted.\n\n- **Usage:** Enables nested queries and mutations for contextual data.",
+          "type": "DataPoint!",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "deletionReferenceBehavior": "cascade",
+                "fields": {
+                  "from": "dataPointId",
+                  "to": "id"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        }
+      ],
+      "description": "Represents a raw telemetry record captured from a device or sensor before any processing, scaling, or historization. These records provide the original data values for diagnostics, validation, and troubleshooting.\n\n**Typical Use Cases**\n\n- Store unprocessed sensor readings for audit and verification.\n- Support advanced analytics by comparing raw and processed values.\n- Enable short-term retention for high-frequency data streams."
+    },
+    "dataModelTypeId": "transactional"
+  },
+  "migration": "$",
+  "migrations": [
+    {
+      "dataModelVersionId": "cmke1tc5b007p016oeuqwcl36",
+      "dataModelVersion": {
+        "number": "10"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmke1nt69005b013q88ht7wqp",
+      "dataModelVersion": {
+        "number": "9"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmke0dwwlipso016hgq6f8bt8",
+      "dataModelVersion": {
+        "number": "8"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkcp02t4pgow016hhaa47u4z",
+      "dataModelVersion": {
+        "number": "7"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkbb0h2mpkfz015xf7to8b2i",
+      "dataModelVersion": {
+        "number": "6"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkbaw071eei90196gx85ewku",
+      "dataModelVersion": {
+        "number": "5"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkb5mi551ia7018matvvf2ac",
+      "dataModelVersion": {
+        "number": "4"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmk9rmjxv01ec010mhzbmcqx6",
+      "dataModelVersion": {
+        "number": "3"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmjzxpon32h51017j8d06h4zz",
+      "dataModelVersion": {
+        "number": "2"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmjzxfm4t21vi016c6w57gn35",
+      "dataModelVersion": {
+        "number": "1"
+      },
+      "mappingExpression": "$"
+    }
+  ]
+}

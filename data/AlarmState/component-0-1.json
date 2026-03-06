@@ -1,0 +1,87 @@
+{
+  "api": "application",
+  "modelName": "AlarmState",
+  "payload": [
+    {
+      "id": "ACKNOWLEDGED",
+      "code": "ACKNOWLEDGED",
+      "sortOrder": 20,
+      "usable": true,
+      "name": "Acknowledged",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "ACTIVE",
+      "code": "ACTIVE",
+      "sortOrder": 10,
+      "usable": true,
+      "name": "Active",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "ACTIVE_ACK",
+      "code": "ACTIVE_ACK",
+      "sortOrder": 15,
+      "usable": true,
+      "name": "Active Acknowledged",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "CLEARED_ACK",
+      "code": "CLEARED_ACK",
+      "sortOrder": 40,
+      "usable": true,
+      "name": "Cleared Acknowledged",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "CLEARED_UNACK",
+      "code": "CLEARED_UNACK",
+      "sortOrder": 30,
+      "usable": true,
+      "name": "Cleared Unacknowledged",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "OUT_OF_SERVICE",
+      "code": "OUT_OF_SERVICE",
+      "sortOrder": 70,
+      "usable": true,
+      "name": "Out of Service",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "SHELVED",
+      "code": "SHELVED",
+      "sortOrder": 50,
+      "usable": true,
+      "name": "Shelved",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "SUPPRESSED",
+      "code": "SUPPRESSED",
+      "sortOrder": 60,
+      "usable": true,
+      "name": "Suppressed",
+      "_customFields": {
+        "_externalId": null
+      }
+    }
+  ],
+  "metadata": {}
+}

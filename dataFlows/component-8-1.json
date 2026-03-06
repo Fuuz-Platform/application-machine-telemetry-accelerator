@@ -1,0 +1,1748 @@
+{
+  "header": {
+    "id": "telemetryRawDataAggregationHourly",
+    "name": "Telemetry Raw Data Aggregation Hourly",
+    "description": "Runs every hour, gets all the active historized data points, and then kicks off a sub-flow to aggregate the data for a given batch size. ",
+    "active": true,
+    "substitutesDataFlowId": null,
+    "dataFlowTypeId": "System",
+    "logLevelId": "Info",
+    "mcpToolConfiguration": null,
+    "moduleId": "machineDataApp",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cml5tao74uqrq0170clzp4x9l",
+    "number": "0.0.11",
+    "description": "",
+    "dataFlowId": "telemetryRawDataAggregationHourly",
+    "flow": {
+      "id": "cml5tao74uqrq0170clzp4x9l",
+      "name": "Telemetry Raw Data Aggregation Hourly",
+      "type": "System",
+      "nodes": [
+        {
+          "id": "892e2857-8fe6-40ef-848e-bd7780ee679e",
+          "name": "Schedule",
+          "type": "schedule",
+          "data": {
+            "configure": "Open Schedule Editor",
+            "nextNodes": [
+              "f18fb1ec-5745-4b89-ae02-99592e5a5dc3"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "f18fb1ec-5745-4b89-ae02-99592e5a5dc3",
+          "name": "Calculate The Time Window",
+          "type": "transform",
+          "data": {
+            "transform": "(\r\n  /* Calculate previous hour in UTC */\r\n  $prevHourStart := $moment().startOf('hour').subtract(1, 'hour');\r\n  $prevHourEnd := $moment($prevHourStart).add(1, 'hour');\r\n  \r\n  /* Output UTC time window */\r\n  {\r\n    \"periodStart\": $moment($prevHourStart),\r\n    \"periodEnd\": $moment($prevHourEnd),\r\n    \"periodAt\": $moment($prevHourStart),\r\n    \"utcHour\": $moment($prevHourStart).format(\"YYYY-MM-DD HH:00\")\r\n  }\r\n)",
+            "nextNodes": [
+              "e9ba42e3-29d6-4f21-8d35-d56e8f7c1e33"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "e9ba42e3-29d6-4f21-8d35-d56e8f7c1e33",
+          "name": "Set Context",
+          "type": "setContext",
+          "data": {
+            "transform": "{\r\n  \"timeWindow\": $\r\n}",
+            "nextNodes": [
+              "c288d9a4-9dbc-470b-b91f-e91b4d9642c8"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "c288d9a4-9dbc-470b-b91f-e91b4d9642c8",
+          "name": "Get Data Points - where Historize = True",
+          "type": "query",
+          "data": {
+            "api": "application",
+            "variablesTransform": "{}",
+            "query": "query GetDataPointsForAggregation {\r\n  dataPoint(\r\n    where: {\r\n      enabled: { _eq: true }\r\n      historize: { _eq: true }\r\n    }\r\n    first: 100000\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        code\r\n        dataType\r\n        unitId\r\n      }\r\n    }\r\n  }\r\n}",
+            "nextNodes": [
+              "60daf6a6-01c0-4543-b667-b45a8e4287c2"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "60daf6a6-01c0-4543-b667-b45a8e4287c2",
+          "name": "Batch Data Points",
+          "type": "javascriptTransform",
+          "data": {
+            "transform": "/**\r\n * Batch DataPoints for Aggregation\r\n * Pure UTC - No Timezone Handling\r\n * \r\n * INPUT: \r\n *   $ (payload): DataPoint query result\r\n *   $state.context.timeWindow: { periodStart, periodEnd, periodAt }\r\n * \r\n * OUTPUT: \r\n *   Array of batch objects for broadcast\r\n */\r\n\r\n'use strict';\r\n\r\nvar batchSize = 100;\r\n\r\nvar timeWindow = ($state && $state.context && $state.context.timeWindow) || {};\r\nvar periodStart = timeWindow.periodStart;\r\nvar periodEnd = timeWindow.periodEnd;\r\nvar periodAt = timeWindow.periodAt;\r\n\r\nif (!periodAt) {\r\n  console.error('ERROR: timeWindow not found in context');\r\n  return null;\r\n}\r\n\r\nconsole.log('Aggregation Window (UTC): ' + periodStart + ' to ' + periodEnd);\r\n\r\n// Extract and group dataPoints by type\r\nvar edges = ($ && $.dataPoint && $.dataPoint.edges) || [];\r\nvar numericPoints = [];\r\nvar booleanPoints = [];\r\n\r\nfor (var i = 0; i < edges.length; i++) {\r\n  var node = edges[i].node;\r\n  if (!node || !node.id) continue;\r\n  \r\n  var dataType = (node.dataType || '').toLowerCase();\r\n  var dp = {\r\n    id: node.id,\r\n    code: node.code,\r\n    unitId: node.unitId\r\n  };\r\n  \r\n  if (dataType === 'float' || dataType === 'integer') {\r\n    numericPoints.push(dp);\r\n  } else if (dataType === 'boolean') {\r\n    booleanPoints.push(dp);\r\n  }\r\n}\r\n\r\nconsole.log('DataPoints: ' + numericPoints.length + ' numeric, ' + booleanPoints.length + ' boolean');\r\n\r\n// Create batches\r\nfunction createBatches(dataPoints, dataType) {\r\n  var batches = [];\r\n  if (!dataPoints || dataPoints.length === 0) return batches;\r\n  \r\n  var totalBatches = Math.ceil(dataPoints.length / batchSize);\r\n  \r\n  for (var i = 0; i < dataPoints.length; i += batchSize) {\r\n    var batch = dataPoints.slice(i, i + batchSize);\r\n    batches.push({\r\n      dataPoints: batch,\r\n      dataPointIds: batch.map(function(dp) { return dp.id; }),\r\n      periodStart: periodStart,\r\n      periodEnd: periodEnd,\r\n      periodAt: periodAt,\r\n      batchIndex: Math.floor(i / batchSize) + 1,\r\n      totalBatches: totalBatches,\r\n      dataType: dataType,\r\n      count: batch.length\r\n    });\r\n  }\r\n  \r\n  return batches;\r\n}\r\n\r\nvar allBatches = createBatches(numericPoints, 'numeric')\r\n  .concat(createBatches(booleanPoints, 'boolean'));\r\n\r\nconsole.log('Created ' + allBatches.length + ' batches (' + batchSize + ' dataPoints each)');\r\n\r\nif (allBatches.length === 0) {\r\n  console.log('No DataPoints to aggregate');\r\n  return null;\r\n}\r\n\r\nreturn allBatches;",
+            "nextNodes": [
+              "2d08aee0-2d79-4605-9b04-ad10a12f4f7c"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "2d08aee0-2d79-4605-9b04-ad10a12f4f7c",
+          "name": "Broadcast",
+          "type": "broadcast",
+          "data": {
+            "nextNodes": [
+              "cd8b75c6-91e2-4404-8547-c1aeda4ae70a"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "cd8b75c6-91e2-4404-8547-c1aeda4ae70a",
+          "name": "Aggregate Numeric Telemetry",
+          "type": "query",
+          "data": {
+            "api": "application",
+            "variablesTransform": "{\r\n  \"where\": {\r\n    \"dataPointId\": {\r\n      \"_in\": $.dataPointIds\r\n    },\r\n    \"recordedAt\": {\r\n      \"_gte\": $.periodStart,\r\n      \"_lt\": $.periodEnd\r\n    }\r\n  },\r\n  \"first\": 100000\r\n}",
+            "query": "query TelemetryRaw($where: TelemetryRawWhereInput, $orderBy: [TelemetryRawOrderByInput!], $first: Int, $after: String) {\r\n  telemetryRaw(where: $where, orderBy: $orderBy, first: $first, after: $after) {\r\n    edges {\r\n      node {\r\n        dataPointId\r\n        _aggregate {\r\n          value {\r\n            count\r\n            minimum\r\n            maximum\r\n            average\r\n            sum\r\n            first\r\n            last\r\n            standardDeviation\r\n            median\r\n            uniqueCount\r\n            percentile(percentiles: [5, 25, 50, 75, 95])\r\n           \r\n          }\r\n        }\r\n      }\r\n    }\r\n  }\r\n}",
+            "nextNodes": [
+              "4a09ea13-fb1d-4616-977a-78c212b9f12c"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": true,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "4a09ea13-fb1d-4616-977a-78c212b9f12c",
+          "name": "Create Telemetry Hourly Records",
+          "type": "mutate",
+          "data": {
+            "api": "Application",
+            "variablesTransform": "$count($.telemetryRaw.edges) > 0 ? {\r\n  \"payload\": $.telemetryRaw.edges.{\r\n    \"create\": {\r\n      \"dataPointId\": node.dataPointId,\r\n      \"periodAt\": $state.context.timeWindow.periodAt,\r\n      \"count\": node._aggregate.value.count,\r\n      \"distinctCount\": node._aggregate.value.uniqueCount,\r\n      \"min\": node._aggregate.value.minimum[0],\r\n      \"max\": node._aggregate.value.maximum[0],\r\n      \"avg\": node._aggregate.value.average,\r\n      \"sum\": node._aggregate.value.sum,\r\n      \"std\": node._aggregate.value.standardDeviation,\r\n      \"first\": node._aggregate.value.first[0],\r\n      \"last\": node._aggregate.value.last[0],\r\n      \"p05\": node._aggregate.value.percentile[0],\r\n      \"p25\": node._aggregate.value.percentile[1],\r\n      \"p50\": node._aggregate.value.percentile[2],\r\n      \"p75\": node._aggregate.value.percentile[3],\r\n      \"p95\": node._aggregate.value.percentile[4]\r\n    }\r\n  }\r\n} : {\r\n  \"payload\": []\r\n}",
+            "mutation": "mutation CreateTelemetryHourly($payload: [TelemetryHourlyCreatePayloadInput!]!) {\r\n  createTelemetryHourly(payload: $payload) {\r\n    id\r\n    dataPointId\r\n    periodAt\r\n    count\r\n  }\r\n}",
+            "nextNodes": [
+              "5dc19704-69e7-4715-bd6f-46658a05942e"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "5dc19704-69e7-4715-bd6f-46658a05942e",
+          "name": "Response",
+          "type": "response",
+          "data": {
+            "responseTransform": "$",
+            "nextNodes": []
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        }
+      ],
+      "version": "0.0.10"
+    },
+    "diagram": {
+      "id": "cml5tao74uqrq0170clzp4x9l",
+      "offsetX": -111.71,
+      "offsetY": 217.94,
+      "zoom": 60,
+      "gridSize": 5,
+      "layers": [
+        {
+          "id": "94772a74-dff2-41f9-bbe0-31412d367433",
+          "type": "diagram-links",
+          "isSvg": true,
+          "transformed": true,
+          "models": {
+            "4d529a56-0961-4549-ae55-84dd0987fc54": {
+              "points": [
+                {
+                  "id": "dd08a4d5-8a2c-46c6-ae9a-1d43ef513532",
+                  "type": "point",
+                  "selected": true,
+                  "x": 409,
+                  "y": 394.73
+                },
+                {
+                  "id": "ba0abef8-2dc1-42f0-ac5c-f6cfd27ac48d",
+                  "type": "point",
+                  "selected": true,
+                  "x": 495,
+                  "y": 394.73
+                }
+              ],
+              "id": "4d529a56-0961-4549-ae55-84dd0987fc54",
+              "type": "default",
+              "selected": false,
+              "source": "6bf03a33-296a-49bb-b9a0-9a04633b62e1",
+              "sourcePort": "cml5jttoy00ny356rs2p7kawy",
+              "target": "f18fb1ec-5745-4b89-ae02-99592e5a5dc3",
+              "targetPort": "cml5jtdzd00ms356ry1a8019x",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "4f29e768-5336-4d73-bc0f-38b8e027ceea": {
+              "points": [
+                {
+                  "id": "503f860c-e207-4fc6-a27f-338e3da1df3a",
+                  "type": "point",
+                  "selected": true,
+                  "x": 690.41,
+                  "y": 394.73
+                },
+                {
+                  "id": "bc8ee1ca-baba-4c3a-86a1-4374bb19934e",
+                  "type": "point",
+                  "selected": true,
+                  "x": 750,
+                  "y": 394.73
+                }
+              ],
+              "id": "4f29e768-5336-4d73-bc0f-38b8e027ceea",
+              "type": "default",
+              "selected": false,
+              "source": "f18fb1ec-5745-4b89-ae02-99592e5a5dc3",
+              "sourcePort": "cml5jtdzd00mu356rp6mw90j2",
+              "target": "e9ba42e3-29d6-4f21-8d35-d56e8f7c1e33",
+              "targetPort": "cml5jun1l00ob356rp2a368kh",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "de88fd0d-c3cf-40eb-88d6-90ce93efbe4d": {
+              "points": [
+                {
+                  "id": "451a1541-6026-4689-b6c1-e992b40bfa39",
+                  "type": "point",
+                  "selected": true,
+                  "x": 904,
+                  "y": 394.73
+                },
+                {
+                  "id": "ef396ade-3d4a-43a5-a92c-a2e020288a72",
+                  "type": "point",
+                  "selected": true,
+                  "x": 960,
+                  "y": 394.73
+                }
+              ],
+              "id": "de88fd0d-c3cf-40eb-88d6-90ce93efbe4d",
+              "type": "default",
+              "selected": false,
+              "source": "e9ba42e3-29d6-4f21-8d35-d56e8f7c1e33",
+              "sourcePort": "cml5jun1l00od356rdzjyi6em",
+              "target": "c288d9a4-9dbc-470b-b91f-e91b4d9642c8",
+              "targetPort": "cml5jva5m00pc356rrt3ds88v",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "2d42d660-e013-449b-91bb-1b7c13a46eef": {
+              "points": [
+                {
+                  "id": "14a43a80-0d20-4f0c-9bd7-2bf5bca47d17",
+                  "type": "point",
+                  "selected": true,
+                  "x": 1220.41,
+                  "y": 394.73
+                },
+                {
+                  "id": "89ff7530-20e9-45d6-9986-dd21ce84963e",
+                  "type": "point",
+                  "selected": true,
+                  "x": 1275,
+                  "y": 394.73
+                }
+              ],
+              "id": "2d42d660-e013-449b-91bb-1b7c13a46eef",
+              "type": "default",
+              "selected": false,
+              "source": "c288d9a4-9dbc-470b-b91f-e91b4d9642c8",
+              "sourcePort": "cml5jva5m00pe356ri4a92bfx",
+              "target": "60daf6a6-01c0-4543-b667-b45a8e4287c2",
+              "targetPort": "cml5jw7mx00r9356r46y6xlkb",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "6903f7be-9dbd-4588-9dcb-4c99db299e44": {
+              "points": [
+                {
+                  "id": "fe9ea77a-036d-4f42-be3c-e2ef74fad65a",
+                  "type": "point",
+                  "selected": true,
+                  "x": 1429,
+                  "y": 394.73
+                },
+                {
+                  "id": "e4b6d401-8171-4966-bd4f-baf8d0d83bbd",
+                  "type": "point",
+                  "selected": true,
+                  "x": 1485,
+                  "y": 394.73
+                }
+              ],
+              "id": "6903f7be-9dbd-4588-9dcb-4c99db299e44",
+              "type": "default",
+              "selected": false,
+              "source": "60daf6a6-01c0-4543-b667-b45a8e4287c2",
+              "sourcePort": "cml5jw7mx00rb356rzq7o9fd7",
+              "target": "2d08aee0-2d79-4605-9b04-ad10a12f4f7c",
+              "targetPort": "cml5jxoop00sx356rz2z2422w",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "6f88f599-11c5-4e31-8a62-bda0fe1dd744": {
+              "points": [
+                {
+                  "id": "ca50dbd8-1269-4a7c-942d-e1bec5bfd762",
+                  "type": "point",
+                  "selected": true,
+                  "x": 1639,
+                  "y": 394.73
+                },
+                {
+                  "id": "916a838d-a139-46a4-a0bf-5c481274730d",
+                  "type": "point",
+                  "selected": true,
+                  "x": 1705,
+                  "y": 394.73
+                }
+              ],
+              "id": "6f88f599-11c5-4e31-8a62-bda0fe1dd744",
+              "type": "default",
+              "selected": false,
+              "source": "2d08aee0-2d79-4605-9b04-ad10a12f4f7c",
+              "sourcePort": "cml5jxoop00sz356r4n8thofi",
+              "target": "cd8b75c6-91e2-4404-8547-c1aeda4ae70a",
+              "targetPort": "cml5jxvve00t5356reuwujl78",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "c2314dd8-8a99-4eeb-ade4-80485cce57a7": {
+              "points": [
+                {
+                  "id": "3e8a8ffa-3d32-4249-a5ef-2354a3c96f73",
+                  "type": "point",
+                  "x": 404,
+                  "y": 244.73
+                },
+                {
+                  "id": "8fcd1343-76be-4c62-a56f-7c6097634fbd",
+                  "type": "point",
+                  "x": 495,
+                  "y": 394.73
+                }
+              ],
+              "id": "c2314dd8-8a99-4eeb-ade4-80485cce57a7",
+              "type": "default",
+              "selected": false,
+              "source": "892e2857-8fe6-40ef-848e-bd7780ee679e",
+              "sourcePort": "cmkbntiqp00vf356rig2q93qs",
+              "target": "f18fb1ec-5745-4b89-ae02-99592e5a5dc3",
+              "targetPort": "cml5jtdzd00ms356ry1a8019x",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "9d0268e6-8bc1-47d1-91b2-31dcd7b2e917": {
+              "points": [
+                {
+                  "id": "77978755-0b8d-4395-b200-e50dd131942d",
+                  "type": "point",
+                  "x": 1649,
+                  "y": 289.73
+                },
+                {
+                  "id": "d8837f88-d9c9-4ab3-9d9e-b5aca37b8e03",
+                  "type": "point",
+                  "x": 1705,
+                  "y": 394.73
+                }
+              ],
+              "id": "9d0268e6-8bc1-47d1-91b2-31dcd7b2e917",
+              "type": "default",
+              "selected": false,
+              "source": "76beb5e6-cee7-48e1-b993-aa28d4048ab3",
+              "sourcePort": "cml5otw31051y356rr4rwc0mi",
+              "target": "cd8b75c6-91e2-4404-8547-c1aeda4ae70a",
+              "targetPort": "cml5jxvve00t5356reuwujl78",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "2f67afe4-6aed-4620-9f04-8951a2518d24": {
+              "points": [
+                {
+                  "id": "a1017c98-c556-47c0-8a5e-2e10ebba9610",
+                  "type": "point",
+                  "x": 1911.46,
+                  "y": 394.73
+                },
+                {
+                  "id": "38b17726-73be-4f22-b3bf-a39f9ff69d4b",
+                  "type": "point",
+                  "x": 2000,
+                  "y": 394.73
+                }
+              ],
+              "id": "2f67afe4-6aed-4620-9f04-8951a2518d24",
+              "type": "default",
+              "selected": false,
+              "source": "cd8b75c6-91e2-4404-8547-c1aeda4ae70a",
+              "sourcePort": "cml5jxvve00t7356rcxgwnlrr",
+              "target": "4a09ea13-fb1d-4616-977a-78c212b9f12c",
+              "targetPort": "cml5oxszv05mx356rhmw4r67l",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "99d909b5-dc22-44f2-98e6-334cc0163f2c": {
+              "points": [
+                {
+                  "id": "9e268659-75c0-41b4-ab7c-36d4a60f9a85",
+                  "type": "point",
+                  "x": 2222.87,
+                  "y": 394.73
+                },
+                {
+                  "id": "e6d6df6d-0d37-4bae-aa8d-e6e0e78000d9",
+                  "type": "point",
+                  "x": 2335,
+                  "y": 394.73
+                }
+              ],
+              "id": "99d909b5-dc22-44f2-98e6-334cc0163f2c",
+              "type": "default",
+              "selected": false,
+              "source": "4a09ea13-fb1d-4616-977a-78c212b9f12c",
+              "sourcePort": "cml5oxszv05mz356rs581bm1c",
+              "target": "5dc19704-69e7-4715-bd6f-46658a05942e",
+              "targetPort": "cml5p6i5x066g356r2m4n805t",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            }
+          }
+        },
+        {
+          "id": "c006fae7-f438-4f40-a29c-731f223e471e",
+          "type": "diagram-nodes",
+          "isSvg": false,
+          "transformed": true,
+          "models": {
+            "892e2857-8fe6-40ef-848e-bd7780ee679e": {
+              "id": "892e2857-8fe6-40ef-848e-bd7780ee679e",
+              "type": "schedule",
+              "selected": false,
+              "x": 250,
+              "y": 205,
+              "ports": [
+                {
+                  "id": "cmkbntiqp00vf356rig2q93qs",
+                  "type": "default",
+                  "x": 396,
+                  "y": 236.73,
+                  "name": "cmkbntiqp00vg356rbsixg58x",
+                  "parentNode": "892e2857-8fe6-40ef-848e-bd7780ee679e",
+                  "links": [
+                    "c2314dd8-8a99-4eeb-ade4-80485cce57a7"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Payload",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "configure": "Open Schedule Editor",
+                "nextNodes": [
+                  "f18fb1ec-5745-4b89-ae02-99592e5a5dc3"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Schedule"
+            },
+            "f18fb1ec-5745-4b89-ae02-99592e5a5dc3": {
+              "id": "f18fb1ec-5745-4b89-ae02-99592e5a5dc3",
+              "type": "transform",
+              "selected": false,
+              "x": 495,
+              "y": 355,
+              "ports": [
+                {
+                  "id": "cml5jtdzd00ms356ry1a8019x",
+                  "type": "default",
+                  "x": 487,
+                  "y": 386.73,
+                  "name": "cml5jtdzd00mt356rlo7u0hmy",
+                  "parentNode": "f18fb1ec-5745-4b89-ae02-99592e5a5dc3",
+                  "links": [
+                    "4d529a56-0961-4549-ae55-84dd0987fc54",
+                    "c2314dd8-8a99-4eeb-ade4-80485cce57a7"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml5jtdzd00mu356rp6mw90j2",
+                  "type": "default",
+                  "x": 682.41,
+                  "y": 386.73,
+                  "name": "cml5jtdzd00mv356r6p47wao6",
+                  "parentNode": "f18fb1ec-5745-4b89-ae02-99592e5a5dc3",
+                  "links": [
+                    "4f29e768-5336-4d73-bc0f-38b8e027ceea"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "(\r\n  /* Calculate previous hour in UTC */\r\n  $prevHourStart := $moment().startOf('hour').subtract(1, 'hour');\r\n  $prevHourEnd := $moment($prevHourStart).add(1, 'hour');\r\n  \r\n  /* Output UTC time window */\r\n  {\r\n    \"periodStart\": $moment($prevHourStart),\r\n    \"periodEnd\": $moment($prevHourEnd),\r\n    \"periodAt\": $moment($prevHourStart),\r\n    \"utcHour\": $moment($prevHourStart).format(\"YYYY-MM-DD HH:00\")\r\n  }\r\n)",
+                "nextNodes": [
+                  "e9ba42e3-29d6-4f21-8d35-d56e8f7c1e33"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Calculate The Time Window"
+            },
+            "6bf03a33-296a-49bb-b9a0-9a04633b62e1": {
+              "id": "6bf03a33-296a-49bb-b9a0-9a04633b62e1",
+              "type": "debugSource",
+              "selected": false,
+              "x": 255,
+              "y": 355,
+              "ports": [
+                {
+                  "id": "cml5jttoy00ny356rs2p7kawy",
+                  "type": "default",
+                  "x": 401,
+                  "y": 386.73,
+                  "name": "cml5jttoy00nz356r0jvrku0s",
+                  "parentNode": "6bf03a33-296a-49bb-b9a0-9a04633b62e1",
+                  "links": [
+                    "4d529a56-0961-4549-ae55-84dd0987fc54"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "payload": {},
+                "context": {},
+                "nextNodes": [
+                  "f18fb1ec-5745-4b89-ae02-99592e5a5dc3"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Source"
+            },
+            "e9ba42e3-29d6-4f21-8d35-d56e8f7c1e33": {
+              "id": "e9ba42e3-29d6-4f21-8d35-d56e8f7c1e33",
+              "type": "setContext",
+              "selected": false,
+              "x": 750,
+              "y": 355,
+              "ports": [
+                {
+                  "id": "cml5jun1l00ob356rp2a368kh",
+                  "type": "default",
+                  "x": 742,
+                  "y": 386.73,
+                  "name": "cml5jun1l00oc356rc78nbhkz",
+                  "parentNode": "e9ba42e3-29d6-4f21-8d35-d56e8f7c1e33",
+                  "links": [
+                    "4f29e768-5336-4d73-bc0f-38b8e027ceea"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml5jun1l00od356rdzjyi6em",
+                  "type": "default",
+                  "x": 896,
+                  "y": 386.73,
+                  "name": "cml5jun1l00oe356ryb4ssi4v",
+                  "parentNode": "e9ba42e3-29d6-4f21-8d35-d56e8f7c1e33",
+                  "links": [
+                    "de88fd0d-c3cf-40eb-88d6-90ce93efbe4d"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "{\r\n  \"timeWindow\": $\r\n}",
+                "nextNodes": [
+                  "c288d9a4-9dbc-470b-b91f-e91b4d9642c8"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Set Context"
+            },
+            "c288d9a4-9dbc-470b-b91f-e91b4d9642c8": {
+              "id": "c288d9a4-9dbc-470b-b91f-e91b4d9642c8",
+              "type": "query",
+              "selected": false,
+              "x": 960,
+              "y": 355,
+              "ports": [
+                {
+                  "id": "cml5jva5m00pc356rrt3ds88v",
+                  "type": "default",
+                  "x": 952,
+                  "y": 386.73,
+                  "name": "cml5jva5m00pd356ry83gmu2w",
+                  "parentNode": "c288d9a4-9dbc-470b-b91f-e91b4d9642c8",
+                  "links": [
+                    "de88fd0d-c3cf-40eb-88d6-90ce93efbe4d"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml5jva5m00pe356ri4a92bfx",
+                  "type": "default",
+                  "x": 1212.41,
+                  "y": 386.73,
+                  "name": "cml5jva5m00pf356rotns3q91",
+                  "parentNode": "c288d9a4-9dbc-470b-b91f-e91b4d9642c8",
+                  "links": [
+                    "2d42d660-e013-449b-91bb-1b7c13a46eef"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "application",
+                "variablesTransform": "{}",
+                "query": "query GetDataPointsForAggregation {\r\n  dataPoint(\r\n    where: {\r\n      enabled: { _eq: true }\r\n      historize: { _eq: true }\r\n    }\r\n    first: 100000\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        code\r\n        dataType\r\n        unitId\r\n      }\r\n    }\r\n  }\r\n}",
+                "nextNodes": [
+                  "60daf6a6-01c0-4543-b667-b45a8e4287c2"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Get Data Points - where Historize = True"
+            },
+            "60daf6a6-01c0-4543-b667-b45a8e4287c2": {
+              "id": "60daf6a6-01c0-4543-b667-b45a8e4287c2",
+              "type": "javascriptTransform",
+              "selected": false,
+              "x": 1275,
+              "y": 355,
+              "ports": [
+                {
+                  "id": "cml5jw7mx00r9356r46y6xlkb",
+                  "type": "default",
+                  "x": 1267,
+                  "y": 386.73,
+                  "name": "cml5jw7mx00ra356rnlqp5xn8",
+                  "parentNode": "60daf6a6-01c0-4543-b667-b45a8e4287c2",
+                  "links": [
+                    "2d42d660-e013-449b-91bb-1b7c13a46eef"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml5jw7mx00rb356rzq7o9fd7",
+                  "type": "default",
+                  "x": 1421,
+                  "y": 386.73,
+                  "name": "cml5jw7mx00rc356rl8i0nasb",
+                  "parentNode": "60daf6a6-01c0-4543-b667-b45a8e4287c2",
+                  "links": [
+                    "6903f7be-9dbd-4588-9dcb-4c99db299e44"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "/**\r\n * Batch DataPoints for Aggregation\r\n * Pure UTC - No Timezone Handling\r\n * \r\n * INPUT: \r\n *   $ (payload): DataPoint query result\r\n *   $state.context.timeWindow: { periodStart, periodEnd, periodAt }\r\n * \r\n * OUTPUT: \r\n *   Array of batch objects for broadcast\r\n */\r\n\r\n'use strict';\r\n\r\nvar batchSize = 100;\r\n\r\nvar timeWindow = ($state && $state.context && $state.context.timeWindow) || {};\r\nvar periodStart = timeWindow.periodStart;\r\nvar periodEnd = timeWindow.periodEnd;\r\nvar periodAt = timeWindow.periodAt;\r\n\r\nif (!periodAt) {\r\n  console.error('ERROR: timeWindow not found in context');\r\n  return null;\r\n}\r\n\r\nconsole.log('Aggregation Window (UTC): ' + periodStart + ' to ' + periodEnd);\r\n\r\n// Extract and group dataPoints by type\r\nvar edges = ($ && $.dataPoint && $.dataPoint.edges) || [];\r\nvar numericPoints = [];\r\nvar booleanPoints = [];\r\n\r\nfor (var i = 0; i < edges.length; i++) {\r\n  var node = edges[i].node;\r\n  if (!node || !node.id) continue;\r\n  \r\n  var dataType = (node.dataType || '').toLowerCase();\r\n  var dp = {\r\n    id: node.id,\r\n    code: node.code,\r\n    unitId: node.unitId\r\n  };\r\n  \r\n  if (dataType === 'float' || dataType === 'integer') {\r\n    numericPoints.push(dp);\r\n  } else if (dataType === 'boolean') {\r\n    booleanPoints.push(dp);\r\n  }\r\n}\r\n\r\nconsole.log('DataPoints: ' + numericPoints.length + ' numeric, ' + booleanPoints.length + ' boolean');\r\n\r\n// Create batches\r\nfunction createBatches(dataPoints, dataType) {\r\n  var batches = [];\r\n  if (!dataPoints || dataPoints.length === 0) return batches;\r\n  \r\n  var totalBatches = Math.ceil(dataPoints.length / batchSize);\r\n  \r\n  for (var i = 0; i < dataPoints.length; i += batchSize) {\r\n    var batch = dataPoints.slice(i, i + batchSize);\r\n    batches.push({\r\n      dataPoints: batch,\r\n      dataPointIds: batch.map(function(dp) { return dp.id; }),\r\n      periodStart: periodStart,\r\n      periodEnd: periodEnd,\r\n      periodAt: periodAt,\r\n      batchIndex: Math.floor(i / batchSize) + 1,\r\n      totalBatches: totalBatches,\r\n      dataType: dataType,\r\n      count: batch.length\r\n    });\r\n  }\r\n  \r\n  return batches;\r\n}\r\n\r\nvar allBatches = createBatches(numericPoints, 'numeric')\r\n  .concat(createBatches(booleanPoints, 'boolean'));\r\n\r\nconsole.log('Created ' + allBatches.length + ' batches (' + batchSize + ' dataPoints each)');\r\n\r\nif (allBatches.length === 0) {\r\n  console.log('No DataPoints to aggregate');\r\n  return null;\r\n}\r\n\r\nreturn allBatches;",
+                "nextNodes": [
+                  "2d08aee0-2d79-4605-9b04-ad10a12f4f7c"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Batch Data Points"
+            },
+            "2d08aee0-2d79-4605-9b04-ad10a12f4f7c": {
+              "id": "2d08aee0-2d79-4605-9b04-ad10a12f4f7c",
+              "type": "broadcast",
+              "selected": false,
+              "x": 1485,
+              "y": 355,
+              "ports": [
+                {
+                  "id": "cml5jxoop00sx356rz2z2422w",
+                  "type": "default",
+                  "x": 1477,
+                  "y": 386.73,
+                  "name": "cml5jxoop00sy356rw0oy2lzu",
+                  "parentNode": "2d08aee0-2d79-4605-9b04-ad10a12f4f7c",
+                  "links": [
+                    "6903f7be-9dbd-4588-9dcb-4c99db299e44"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml5jxoop00sz356r4n8thofi",
+                  "type": "default",
+                  "x": 1631,
+                  "y": 386.73,
+                  "name": "cml5jxoop00t0356r6wjq6g83",
+                  "parentNode": "2d08aee0-2d79-4605-9b04-ad10a12f4f7c",
+                  "links": [
+                    "6f88f599-11c5-4e31-8a62-bda0fe1dd744"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "cd8b75c6-91e2-4404-8547-c1aeda4ae70a"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Broadcast"
+            },
+            "cd8b75c6-91e2-4404-8547-c1aeda4ae70a": {
+              "id": "cd8b75c6-91e2-4404-8547-c1aeda4ae70a",
+              "type": "query",
+              "selected": false,
+              "x": 1705,
+              "y": 355,
+              "ports": [
+                {
+                  "id": "cml5jxvve00t5356reuwujl78",
+                  "type": "default",
+                  "x": 1697,
+                  "y": 386.73,
+                  "name": "cml5jxvve00t6356rzikb780e",
+                  "parentNode": "cd8b75c6-91e2-4404-8547-c1aeda4ae70a",
+                  "links": [
+                    "6f88f599-11c5-4e31-8a62-bda0fe1dd744",
+                    "9d0268e6-8bc1-47d1-91b2-31dcd7b2e917"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml5jxvve00t7356rcxgwnlrr",
+                  "type": "default",
+                  "x": 1903.46,
+                  "y": 386.73,
+                  "name": "cml5jxvve00t8356rtnnvdeu9",
+                  "parentNode": "cd8b75c6-91e2-4404-8547-c1aeda4ae70a",
+                  "links": [
+                    "2f67afe4-6aed-4620-9f04-8951a2518d24"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "application",
+                "variablesTransform": "{\r\n  \"where\": {\r\n    \"dataPointId\": {\r\n      \"_in\": $.dataPointIds\r\n    },\r\n    \"recordedAt\": {\r\n      \"_gte\": $.periodStart,\r\n      \"_lt\": $.periodEnd\r\n    }\r\n  },\r\n  \"first\": 100000\r\n}",
+                "query": "query TelemetryRaw($where: TelemetryRawWhereInput, $orderBy: [TelemetryRawOrderByInput!], $first: Int, $after: String) {\r\n  telemetryRaw(where: $where, orderBy: $orderBy, first: $first, after: $after) {\r\n    edges {\r\n      node {\r\n        dataPointId\r\n        _aggregate {\r\n          value {\r\n            count\r\n            minimum\r\n            maximum\r\n            average\r\n            sum\r\n            first\r\n            last\r\n            standardDeviation\r\n            median\r\n            uniqueCount\r\n            percentile(percentiles: [5, 25, 50, 75, 95])\r\n           \r\n          }\r\n        }\r\n      }\r\n    }\r\n  }\r\n}",
+                "nextNodes": [
+                  "4a09ea13-fb1d-4616-977a-78c212b9f12c"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": true,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Aggregate Numeric Telemetry"
+            },
+            "76beb5e6-cee7-48e1-b993-aa28d4048ab3": {
+              "id": "76beb5e6-cee7-48e1-b993-aa28d4048ab3",
+              "type": "debugSource",
+              "selected": false,
+              "x": 1495,
+              "y": 250,
+              "ports": [
+                {
+                  "id": "cml5otw31051y356rr4rwc0mi",
+                  "type": "default",
+                  "x": 1641,
+                  "y": 281.73,
+                  "name": "cml5otw31051z356rhyb26kgd",
+                  "parentNode": "76beb5e6-cee7-48e1-b993-aa28d4048ab3",
+                  "links": [
+                    "9d0268e6-8bc1-47d1-91b2-31dcd7b2e917"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "payload": {
+                  "dataPoints": [
+                    {
+                      "id": "DP-02400",
+                      "code": "DP-02400",
+                      "unitId": "kW"
+                    },
+                    {
+                      "id": "DP-02401",
+                      "code": "DP-02401",
+                      "unitId": "A"
+                    },
+                    {
+                      "id": "DP-02402",
+                      "code": "DP-02402",
+                      "unitId": "V"
+                    },
+                    {
+                      "id": "DP-02403",
+                      "code": "DP-02403",
+                      "unitId": "RPM"
+                    },
+                    {
+                      "id": "DP-02404",
+                      "code": "DP-02404",
+                      "unitId": "Lmin"
+                    },
+                    {
+                      "id": "DP-02405",
+                      "code": "DP-02405",
+                      "unitId": "C"
+                    },
+                    {
+                      "id": "DP-02406",
+                      "code": "DP-02406",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02407",
+                      "code": "DP-02407",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02408",
+                      "code": "DP-02408",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02409",
+                      "code": "DP-02409",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02410",
+                      "code": "DP-02410",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02411",
+                      "code": "DP-02411",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02412",
+                      "code": "DP-02412",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02413",
+                      "code": "DP-02413",
+                      "unitId": "ea"
+                    },
+                    {
+                      "id": "DP-02414",
+                      "code": "DP-02414",
+                      "unitId": "s"
+                    },
+                    {
+                      "id": "DP-02420",
+                      "code": "DP-02420",
+                      "unitId": "kW"
+                    },
+                    {
+                      "id": "DP-02421",
+                      "code": "DP-02421",
+                      "unitId": "A"
+                    },
+                    {
+                      "id": "DP-02422",
+                      "code": "DP-02422",
+                      "unitId": "V"
+                    },
+                    {
+                      "id": "DP-02423",
+                      "code": "DP-02423",
+                      "unitId": "RPM"
+                    },
+                    {
+                      "id": "DP-02424",
+                      "code": "DP-02424",
+                      "unitId": "Lmin"
+                    },
+                    {
+                      "id": "DP-02425",
+                      "code": "DP-02425",
+                      "unitId": "C"
+                    },
+                    {
+                      "id": "DP-02426",
+                      "code": "DP-02426",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02427",
+                      "code": "DP-02427",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02428",
+                      "code": "DP-02428",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02429",
+                      "code": "DP-02429",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02430",
+                      "code": "DP-02430",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02431",
+                      "code": "DP-02431",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02432",
+                      "code": "DP-02432",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02433",
+                      "code": "DP-02433",
+                      "unitId": "ea"
+                    },
+                    {
+                      "id": "DP-02434",
+                      "code": "DP-02434",
+                      "unitId": "s"
+                    },
+                    {
+                      "id": "DP-02440",
+                      "code": "DP-02440",
+                      "unitId": "kW"
+                    },
+                    {
+                      "id": "DP-02441",
+                      "code": "DP-02441",
+                      "unitId": "A"
+                    },
+                    {
+                      "id": "DP-02442",
+                      "code": "DP-02442",
+                      "unitId": "V"
+                    },
+                    {
+                      "id": "DP-02443",
+                      "code": "DP-02443",
+                      "unitId": "RPM"
+                    },
+                    {
+                      "id": "DP-02444",
+                      "code": "DP-02444",
+                      "unitId": "Lmin"
+                    },
+                    {
+                      "id": "DP-02445",
+                      "code": "DP-02445",
+                      "unitId": "C"
+                    },
+                    {
+                      "id": "DP-02446",
+                      "code": "DP-02446",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02447",
+                      "code": "DP-02447",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02448",
+                      "code": "DP-02448",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02449",
+                      "code": "DP-02449",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02450",
+                      "code": "DP-02450",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02451",
+                      "code": "DP-02451",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02452",
+                      "code": "DP-02452",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02453",
+                      "code": "DP-02453",
+                      "unitId": "ea"
+                    },
+                    {
+                      "id": "DP-02454",
+                      "code": "DP-02454",
+                      "unitId": "s"
+                    },
+                    {
+                      "id": "DP-02460",
+                      "code": "DP-02460",
+                      "unitId": "kW"
+                    },
+                    {
+                      "id": "DP-02461",
+                      "code": "DP-02461",
+                      "unitId": "A"
+                    },
+                    {
+                      "id": "DP-02462",
+                      "code": "DP-02462",
+                      "unitId": "V"
+                    },
+                    {
+                      "id": "DP-02463",
+                      "code": "DP-02463",
+                      "unitId": "RPM"
+                    },
+                    {
+                      "id": "DP-02464",
+                      "code": "DP-02464",
+                      "unitId": "Lmin"
+                    },
+                    {
+                      "id": "DP-02465",
+                      "code": "DP-02465",
+                      "unitId": "C"
+                    },
+                    {
+                      "id": "DP-02466",
+                      "code": "DP-02466",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02467",
+                      "code": "DP-02467",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02468",
+                      "code": "DP-02468",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02469",
+                      "code": "DP-02469",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02470",
+                      "code": "DP-02470",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02471",
+                      "code": "DP-02471",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02472",
+                      "code": "DP-02472",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02473",
+                      "code": "DP-02473",
+                      "unitId": "ea"
+                    },
+                    {
+                      "id": "DP-02474",
+                      "code": "DP-02474",
+                      "unitId": "s"
+                    },
+                    {
+                      "id": "DP-02480",
+                      "code": "DP-02480",
+                      "unitId": "kW"
+                    },
+                    {
+                      "id": "DP-02481",
+                      "code": "DP-02481",
+                      "unitId": "A"
+                    },
+                    {
+                      "id": "DP-02482",
+                      "code": "DP-02482",
+                      "unitId": "V"
+                    },
+                    {
+                      "id": "DP-02483",
+                      "code": "DP-02483",
+                      "unitId": "RPM"
+                    },
+                    {
+                      "id": "DP-02484",
+                      "code": "DP-02484",
+                      "unitId": "Lmin"
+                    },
+                    {
+                      "id": "DP-02485",
+                      "code": "DP-02485",
+                      "unitId": "C"
+                    },
+                    {
+                      "id": "DP-02486",
+                      "code": "DP-02486",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02487",
+                      "code": "DP-02487",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02488",
+                      "code": "DP-02488",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02489",
+                      "code": "DP-02489",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02490",
+                      "code": "DP-02490",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02491",
+                      "code": "DP-02491",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02492",
+                      "code": "DP-02492",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02493",
+                      "code": "DP-02493",
+                      "unitId": "ea"
+                    },
+                    {
+                      "id": "DP-02494",
+                      "code": "DP-02494",
+                      "unitId": "s"
+                    },
+                    {
+                      "id": "DP-02500",
+                      "code": "DP-02500",
+                      "unitId": "kW"
+                    },
+                    {
+                      "id": "DP-02501",
+                      "code": "DP-02501",
+                      "unitId": "A"
+                    },
+                    {
+                      "id": "DP-02502",
+                      "code": "DP-02502",
+                      "unitId": "V"
+                    },
+                    {
+                      "id": "DP-02503",
+                      "code": "DP-02503",
+                      "unitId": "RPM"
+                    },
+                    {
+                      "id": "DP-02504",
+                      "code": "DP-02504",
+                      "unitId": "Lmin"
+                    },
+                    {
+                      "id": "DP-02505",
+                      "code": "DP-02505",
+                      "unitId": "C"
+                    },
+                    {
+                      "id": "DP-02506",
+                      "code": "DP-02506",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02507",
+                      "code": "DP-02507",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02508",
+                      "code": "DP-02508",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02509",
+                      "code": "DP-02509",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02510",
+                      "code": "DP-02510",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02511",
+                      "code": "DP-02511",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02512",
+                      "code": "DP-02512",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02513",
+                      "code": "DP-02513",
+                      "unitId": "ea"
+                    },
+                    {
+                      "id": "DP-02514",
+                      "code": "DP-02514",
+                      "unitId": "s"
+                    },
+                    {
+                      "id": "DP-02520",
+                      "code": "DP-02520",
+                      "unitId": "kW"
+                    },
+                    {
+                      "id": "DP-02521",
+                      "code": "DP-02521",
+                      "unitId": "A"
+                    },
+                    {
+                      "id": "DP-02522",
+                      "code": "DP-02522",
+                      "unitId": "V"
+                    },
+                    {
+                      "id": "DP-02523",
+                      "code": "DP-02523",
+                      "unitId": "RPM"
+                    },
+                    {
+                      "id": "DP-02524",
+                      "code": "DP-02524",
+                      "unitId": "Lmin"
+                    },
+                    {
+                      "id": "DP-02525",
+                      "code": "DP-02525",
+                      "unitId": "C"
+                    },
+                    {
+                      "id": "DP-02526",
+                      "code": "DP-02526",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02527",
+                      "code": "DP-02527",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02528",
+                      "code": "DP-02528",
+                      "unitId": "mm"
+                    },
+                    {
+                      "id": "DP-02529",
+                      "code": "DP-02529",
+                      "unitId": "mm"
+                    }
+                  ],
+                  "dataPointIds": [
+                    "DP-02400",
+                    "DP-02401",
+                    "DP-02402",
+                    "DP-02403",
+                    "DP-02404",
+                    "DP-02405",
+                    "DP-02406",
+                    "DP-02407",
+                    "DP-02408",
+                    "DP-02409",
+                    "DP-02410",
+                    "DP-02411",
+                    "DP-02412",
+                    "DP-02413",
+                    "DP-02414",
+                    "DP-02420",
+                    "DP-02421",
+                    "DP-02422",
+                    "DP-02423",
+                    "DP-02424",
+                    "DP-02425",
+                    "DP-02426",
+                    "DP-02427",
+                    "DP-02428",
+                    "DP-02429",
+                    "DP-02430",
+                    "DP-02431",
+                    "DP-02432",
+                    "DP-02433",
+                    "DP-02434",
+                    "DP-02440",
+                    "DP-02441",
+                    "DP-02442",
+                    "DP-02443",
+                    "DP-02444",
+                    "DP-02445",
+                    "DP-02446",
+                    "DP-02447",
+                    "DP-02448",
+                    "DP-02449",
+                    "DP-02450",
+                    "DP-02451",
+                    "DP-02452",
+                    "DP-02453",
+                    "DP-02454",
+                    "DP-02460",
+                    "DP-02461",
+                    "DP-02462",
+                    "DP-02463",
+                    "DP-02464",
+                    "DP-02465",
+                    "DP-02466",
+                    "DP-02467",
+                    "DP-02468",
+                    "DP-02469",
+                    "DP-02470",
+                    "DP-02471",
+                    "DP-02472",
+                    "DP-02473",
+                    "DP-02474",
+                    "DP-02480",
+                    "DP-02481",
+                    "DP-02482",
+                    "DP-02483",
+                    "DP-02484",
+                    "DP-02485",
+                    "DP-02486",
+                    "DP-02487",
+                    "DP-02488",
+                    "DP-02489",
+                    "DP-02490",
+                    "DP-02491",
+                    "DP-02492",
+                    "DP-02493",
+                    "DP-02494",
+                    "DP-02500",
+                    "DP-02501",
+                    "DP-02502",
+                    "DP-02503",
+                    "DP-02504",
+                    "DP-02505",
+                    "DP-02506",
+                    "DP-02507",
+                    "DP-02508",
+                    "DP-02509",
+                    "DP-02510",
+                    "DP-02511",
+                    "DP-02512",
+                    "DP-02513",
+                    "DP-02514",
+                    "DP-02520",
+                    "DP-02521",
+                    "DP-02522",
+                    "DP-02523",
+                    "DP-02524",
+                    "DP-02525",
+                    "DP-02526",
+                    "DP-02527",
+                    "DP-02528",
+                    "DP-02529"
+                  ],
+                  "periodStart": "2026-02-02T21:00:00.000Z",
+                  "periodEnd": "2026-02-02T22:00:00.000Z",
+                  "periodAt": "2026-02-02T21:00:00.000Z",
+                  "batchIndex": 21,
+                  "totalBatches": 65,
+                  "dataType": "numeric",
+                  "count": 100
+                },
+                "context": {
+                  "timeWindow": {
+                    "periodStart": "2026-02-02T20:00:00.000Z",
+                    "periodEnd": "2026-02-02T21:00:00.000Z",
+                    "periodAt": "2026-02-02T20:00:00.000Z",
+                    "utcHour": "2026-02-02 20:00"
+                  }
+                },
+                "nextNodes": [
+                  "cd8b75c6-91e2-4404-8547-c1aeda4ae70a"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Source"
+            },
+            "4a09ea13-fb1d-4616-977a-78c212b9f12c": {
+              "id": "4a09ea13-fb1d-4616-977a-78c212b9f12c",
+              "type": "mutate",
+              "selected": false,
+              "x": 2000,
+              "y": 355,
+              "ports": [
+                {
+                  "id": "cml5oxszv05mx356rhmw4r67l",
+                  "type": "default",
+                  "x": 1992,
+                  "y": 386.73,
+                  "name": "cml5oxszv05my356ru8wn2hzt",
+                  "parentNode": "4a09ea13-fb1d-4616-977a-78c212b9f12c",
+                  "links": [
+                    "2f67afe4-6aed-4620-9f04-8951a2518d24"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cml5oxszv05mz356rs581bm1c",
+                  "type": "default",
+                  "x": 2214.87,
+                  "y": 386.73,
+                  "name": "cml5oxszv05n0356rjb3gea3w",
+                  "parentNode": "4a09ea13-fb1d-4616-977a-78c212b9f12c",
+                  "links": [
+                    "99d909b5-dc22-44f2-98e6-334cc0163f2c"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "Application",
+                "variablesTransform": "$count($.telemetryRaw.edges) > 0 ? {\r\n  \"payload\": $.telemetryRaw.edges.{\r\n    \"create\": {\r\n      \"dataPointId\": node.dataPointId,\r\n      \"periodAt\": $state.context.timeWindow.periodAt,\r\n      \"count\": node._aggregate.value.count,\r\n      \"distinctCount\": node._aggregate.value.uniqueCount,\r\n      \"min\": node._aggregate.value.minimum[0],\r\n      \"max\": node._aggregate.value.maximum[0],\r\n      \"avg\": node._aggregate.value.average,\r\n      \"sum\": node._aggregate.value.sum,\r\n      \"std\": node._aggregate.value.standardDeviation,\r\n      \"first\": node._aggregate.value.first[0],\r\n      \"last\": node._aggregate.value.last[0],\r\n      \"p05\": node._aggregate.value.percentile[0],\r\n      \"p25\": node._aggregate.value.percentile[1],\r\n      \"p50\": node._aggregate.value.percentile[2],\r\n      \"p75\": node._aggregate.value.percentile[3],\r\n      \"p95\": node._aggregate.value.percentile[4]\r\n    }\r\n  }\r\n} : {\r\n  \"payload\": []\r\n}",
+                "mutation": "mutation CreateTelemetryHourly($payload: [TelemetryHourlyCreatePayloadInput!]!) {\r\n  createTelemetryHourly(payload: $payload) {\r\n    id\r\n    dataPointId\r\n    periodAt\r\n    count\r\n  }\r\n}",
+                "nextNodes": [
+                  "5dc19704-69e7-4715-bd6f-46658a05942e"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Create Telemetry Hourly Records"
+            },
+            "5dc19704-69e7-4715-bd6f-46658a05942e": {
+              "id": "5dc19704-69e7-4715-bd6f-46658a05942e",
+              "type": "response",
+              "selected": false,
+              "x": 2335,
+              "y": 355,
+              "ports": [
+                {
+                  "id": "cml5p6i5x066g356r2m4n805t",
+                  "type": "default",
+                  "x": 2327,
+                  "y": 386.73,
+                  "name": "cml5p6i5x066h356rt3ezcw9a",
+                  "parentNode": "5dc19704-69e7-4715-bd6f-46658a05942e",
+                  "links": [
+                    "99d909b5-dc22-44f2-98e6-334cc0163f2c"
+                  ],
+                  "in": true,
+                  "fieldLabel": "Response"
+                },
+                {
+                  "id": "cml5p6i5x066i356rf4wxl1hv",
+                  "type": "default",
+                  "x": 2481,
+                  "y": 386.73,
+                  "name": "cml5p6i5x066j356rgupnjrd2",
+                  "parentNode": "5dc19704-69e7-4715-bd6f-46658a05942e",
+                  "links": [],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "responseTransform": "$",
+                "nextNodes": []
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Response"
+            }
+          }
+        }
+      ],
+      "name": "Telemetry Raw Data Aggregation Hourly",
+      "type": "System",
+      "version": "0.0.10",
+      "walkthrough": {
+        "steps": []
+      }
+    }
+  }
+}

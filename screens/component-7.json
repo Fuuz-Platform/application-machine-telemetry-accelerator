@@ -1,0 +1,2652 @@
+{
+  "header": {
+    "id": "workcenterHistory",
+    "name": "Workcenter History",
+    "description": "**Workcenter History**\n\nThis screen provides a detailed timeline of operational states, modes, and events for each workcenter, enabling visibility into equipment behavior and downtime analysis.\n\n**Purpose:**\n\n- Track every state change (e.g., Production, Idle, Disabled) and associated events (e.g., Maintenance, Setup, Faults).\n\n- Support OEE (Overall Equipment Effectiveness) analysis by capturing availability and performance losses.\n\n- Provide audit trails for compliance and continuous improvement.\n\n**Key Features:**\n\n- \\*\\*Historical Records:\\*\\* Displays start and end times, duration, workcenter, mode, state, event, work order, and schedule.\n\n- \\*\\*Color-Coded Status:\\*\\* Modes and states use ISA-101 color standards for quick visual interpretation.\n\n- \\*\\*Filtering & Search:\\*\\* Narrow results by date range, workcenter, work order, schedule, or mode. Advanced GraphQL filtering available for complex queries.\n\n- \\*\\*Data Analysis Tools:\\*\\* Group, sort, and chart records to identify trends and root causes.\n\n- \\*\\*Actions:\\*\\* Create new entries, edit existing records, delete, or refresh data. Each record includes notes and user attribution for traceability.\n\n- \\*\\*Integration:\\*\\* Records can be created automatically via equipment signals or manually by operators.\n\nThis screen is essential for downtime tracking, shift performance comparison, and operational efficiency improvements.",
+    "active": true,
+    "edgeScreen": false,
+    "forceFullscreen": false,
+    "moduleId": "machineDataApp",
+    "substitutesScreenId": null,
+    "isWidget": false
+  },
+  "version": {
+    "id": "cml8cb9gy7j050182fqfc9bf1",
+    "number": "0.0.9",
+    "description": "",
+    "screenId": "workcenterHistory",
+    "design": {
+      "components": [
+        {
+          "name": "Workcenter History",
+          "tabTitle": "Workcenter History",
+          "type": "canvas",
+          "props": {
+            "design": {
+              "ROOT": {
+                "type": {
+                  "resolvedName": "Screen"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexDirection": "column",
+                  "flexWrap": false,
+                  "alignItems": "stretch",
+                  "justifyContent": "flex-start",
+                  "width": "100%",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "flowsDelay": 0,
+                  "removeOuterMargin": true,
+                  "background": "paper"
+                },
+                "displayName": "Screen",
+                "custom": {
+                  "elementName": "Screen",
+                  "elementCounts": {
+                    "Container": 16,
+                    "Action": 4,
+                    "Resizable Panel": 1,
+                    "Form": 1,
+                    "Select": 4,
+                    "Date Range": 1,
+                    "GraphQL Where Input": 1,
+                    "Table": 1,
+                    "Table Column": 19,
+                    "Text": 4,
+                    "Custom Column": 1,
+                    "Options": 1
+                  },
+                  "module": {
+                    "id": "machineDataApp",
+                    "group": {
+                      "id": "machineTelemetrySiteApplication"
+                    }
+                  },
+                  "dataModel": "WorkcenterHistory",
+                  "template": "history"
+                },
+                "parent": null,
+                "hidden": false,
+                "nodes": [
+                  "ContainerOuter"
+                ],
+                "linkedNodes": {}
+              },
+              "ContainerOuter": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": true,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "0px",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "ContainerOuter"
+                },
+                "parent": "ROOT",
+                "hidden": false,
+                "nodes": [
+                  "ResizableFilterPanel",
+                  "ContainerBody"
+                ],
+                "linkedNodes": {}
+              },
+              "ContainerBody": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "0px",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0.5px solid #5b30df"
+                  },
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "ContainerBody"
+                },
+                "parent": "ContainerOuter",
+                "hidden": false,
+                "nodes": [
+                  "TopActionBar",
+                  "BrandBandSeparator",
+                  "WorkcenterHistoryTable"
+                ],
+                "linkedNodes": {}
+              },
+              "ResizableFilterPanel": {
+                "type": {
+                  "resolvedName": "ResizablePanelLayout"
+                },
+                "isCanvas": true,
+                "props": {
+                  "handle": "right",
+                  "toggleHotkey": "",
+                  "defaultSize": 320,
+                  "axis": false,
+                  "minSize": 0,
+                  "maxSize": 400
+                },
+                "displayName": "Resizable Panel",
+                "custom": {
+                  "elementName": "ResizableFilterPanel"
+                },
+                "parent": "ContainerOuter",
+                "hidden": false,
+                "nodes": [
+                  "ContainerFilterOuter"
+                ],
+                "linkedNodes": {}
+              },
+              "ContainerFilterOuter": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": true,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "ContainerFilterOuter"
+                },
+                "parent": "ResizableFilterPanel",
+                "hidden": false,
+                "nodes": [
+                  "FilterPanelHeader",
+                  "FormFilterPanel"
+                ],
+                "linkedNodes": {}
+              },
+              "TableColumnActions": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": " ",
+                  "format": "menu",
+                  "sortable": false,
+                  "dataPath": "actions",
+                  "width": "50px",
+                  "flows": [],
+                  "actions": [
+                    {
+                      "text": "View Details",
+                      "icon": {
+                        "icon": "eye",
+                        "color": "info",
+                        "variant": "regular",
+                        "size": "small"
+                      },
+                      "action": [
+                        {
+                          "type": "form",
+                          "submitIcon": "check",
+                          "submitLabel": "Close",
+                          "title": {
+                            "__transform": "\"Workcenter History: \" & data.code"
+                          },
+                          "transforms": {
+                            "pre": "data"
+                          },
+                          "fields": [
+                            {
+                              "label": "Code",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "Unique identifier for this workcenter history record.",
+                              "field": "code",
+                              "dataPath": "code",
+                              "target": {
+                                "dataPath": "code"
+                              }
+                            },
+                            {
+                              "label": "Occur At",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "Timestamp when this state/event started.",
+                              "format": "datetime",
+                              "formatString": "MM/DD/YYYY h:mm A",
+                              "timeZone": "setting",
+                              "field": "occurAt",
+                              "dataPath": "occurAt",
+                              "target": {
+                                "dataPath": "occurAt"
+                              }
+                            },
+                            {
+                              "label": "End At",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "Timestamp when this state/event ended.",
+                              "format": "datetime",
+                              "formatString": "MM/DD/YYYY h:mm A",
+                              "timeZone": "setting",
+                              "field": "endAt",
+                              "dataPath": "endAt",
+                              "target": {
+                                "dataPath": "endAt"
+                              }
+                            },
+                            {
+                              "label": "Workcenter",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "The workcenter this record applies to.",
+                              "field": "workcenter.code",
+                              "dataPath": "workcenter.code",
+                              "target": {
+                                "dataPath": "workcenter.code"
+                              }
+                            },
+                            {
+                              "label": "Mode",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "Operational mode (Production, Idle, disabled).",
+                              "field": "modeId",
+                              "dataPath": "modeId",
+                              "target": {
+                                "dataPath": "modeId"
+                              },
+                              "style": {
+                                "__transform": "{\n  \"color\": data.modeColor\n}",
+                                "__dynamicFields": {
+                                  "payload": null,
+                                  "context": []
+                                },
+                                "__cacheKey": "",
+                                "__remote": false
+                              }
+                            },
+                            {
+                              "label": "State",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "Operational state (running, blocked, starved, etc.).",
+                              "field": "stateId",
+                              "dataPath": "stateId",
+                              "target": {
+                                "dataPath": "stateId"
+                              },
+                              "style": {
+                                "__transform": "{\n  \"color\": data.stateColor\n}",
+                                "__dynamicFields": {
+                                  "payload": null,
+                                  "context": []
+                                },
+                                "__cacheKey": "",
+                                "__remote": false
+                              }
+                            },
+                            {
+                              "label": "Event",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "The event associated with this record.",
+                              "field": "eventDisplay",
+                              "dataPath": "eventDisplay",
+                              "target": {
+                                "dataPath": "eventDisplay"
+                              }
+                            },
+                            {
+                              "label": "Event Category",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "Category of the event (Downtime, Setup, etc.).",
+                              "field": "eventCategoryDisplay",
+                              "dataPath": "eventCategoryDisplay",
+                              "target": {
+                                "dataPath": "eventCategoryDisplay"
+                              }
+                            },
+                            {
+                              "label": "Work Order",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "The work order active during this period.",
+                              "field": "workOrderDisplay",
+                              "dataPath": "workOrderDisplay",
+                              "target": {
+                                "dataPath": "workOrderDisplay"
+                              }
+                            },
+                            {
+                              "label": "Duration",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "Duration of this state/event.",
+                              "format": "duration",
+                              "durationMode": "abbreviated",
+                              "timeUnit": "minute",
+                              "field": "duration",
+                              "dataPath": "duration",
+                              "target": {
+                                "dataPath": "duration"
+                              }
+                            },
+                            {
+                              "label": "Schedule",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "Production schedule/shift.",
+                              "field": "scheduleDisplay",
+                              "dataPath": "scheduleDisplay",
+                              "target": {
+                                "dataPath": "scheduleDisplay"
+                              }
+                            },
+                            {
+                              "label": "Notes",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "Operator notes or comments.",
+                              "field": "notes",
+                              "dataPath": "notes",
+                              "target": {
+                                "dataPath": "notes"
+                              }
+                            },
+                            {
+                              "label": "Created At",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "System timestamp when record was created.",
+                              "format": "datetime",
+                              "formatString": "MM/DD/YYYY h:mm A",
+                              "timeZone": "setting",
+                              "field": "createdAt",
+                              "dataPath": "createdAt",
+                              "target": {
+                                "dataPath": "createdAt"
+                              }
+                            },
+                            {
+                              "label": "Created By",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "User who created this record.",
+                              "field": "createdByDisplay",
+                              "dataPath": "createdByDisplay",
+                              "target": {
+                                "dataPath": "createdByDisplay"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "text": "Edit",
+                      "icon": {
+                        "icon": "pencil",
+                        "color": "warning",
+                        "variant": "regular",
+                        "size": "small"
+                      },
+                      "action": [
+                        {
+                          "type": "form",
+                          "submitIcon": "save",
+                          "title": {
+                            "__transform": "\"Update Workcenter History \" & data.code"
+                          },
+                          "transforms": {
+                            "pre": "data"
+                          },
+                          "fields": [
+                            {
+                              "label": "Code",
+                              "uniqueValidationEnabled": false,
+                              "validation": {
+                                "required": true
+                              },
+                              "dataPath": "code",
+                              "field": "code",
+                              "description": "Unique identifier for this workcenter history record. Typically auto-generated but can be modified if your organization uses a specific naming convention. Must be unique across all workcenter history records.",
+                              "element": "TextInput",
+                              "type": "text"
+                            },
+                            {
+                              "label": "Occur At",
+                              "uniqueValidationEnabled": false,
+                              "validation": {
+                                "required": true
+                              },
+                              "dataPath": "occurAt",
+                              "field": "occurAt",
+                              "description": "When did this operational state or event begin? Select the date and time. This is required for all records and is used to calculate duration and build operational timelines.",
+                              "element": "DateTimeInput",
+                              "type": "datetime"
+                            },
+                            {
+                              "label": "End At",
+                              "uniqueValidationEnabled": false,
+                              "validation": {
+                                "required": false
+                              },
+                              "dataPath": "endAt",
+                              "field": "endAt",
+                              "description": "When did this operational state or event end? Leave blank if the state is still ongoing. Setting this value will enable duration calculation and mark the state as closed.",
+                              "element": "DateTimeInput",
+                              "type": "datetime"
+                            },
+                            {
+                              "label": "Workcenter",
+                              "uniqueValidationEnabled": false,
+                              "validation": {
+                                "required": true
+                              },
+                              "dataPath": "workcenter",
+                              "field": "workcenter",
+                              "description": "Select the workcenter where this state/event occurred. Start typing to search by code or name. This is a required field - every history record must be associated with a workcenter.",
+                              "element": "SelectInput",
+                              "type": "select",
+                              "api": "Application",
+                              "dataModel": "Workcenter",
+                              "labelField": "code",
+                              "labelPath": "code",
+                              "additionalFields": [
+                                "code"
+                              ],
+                              "selectFields": [
+                                "code"
+                              ],
+                              "target": {
+                                "dataPath": "workcenterId"
+                              }
+                            },
+                            {
+                              "label": "Mode",
+                              "uniqueValidationEnabled": false,
+                              "validation": {
+                                "required": false
+                              },
+                              "dataPath": "mode",
+                              "field": "mode",
+                              "description": "Select the operational mode during this period. Standard modes include: Production (actively making product), Idle (available but not producing), Maintenance, Setup/Changeover, and Disabled (unavailable/down).",
+                              "element": "SelectInput",
+                              "type": "select",
+                              "api": "Application",
+                              "dataModel": "Mode",
+                              "labelField": "name",
+                              "labelPath": "name",
+                              "additionalFields": [
+                                "id",
+                                "code",
+                                "name"
+                              ],
+                              "selectFields": [
+                                "id",
+                                "code",
+                                "name"
+                              ],
+                              "target": {
+                                "dataPath": "modeId"
+                              }
+                            },
+                            {
+                              "label": "State",
+                              "uniqueValidationEnabled": false,
+                              "validation": {
+                                "required": false
+                              },
+                              "dataPath": "state",
+                              "field": "state",
+                              "description": "Select the detailed operational state. States provide granular insight into equipment condition: Running, Running Slow, Blocked, Starved, Faulted, Emergency Stop, Maintenance, Offline, etc.",
+                              "element": "SelectInput",
+                              "type": "select",
+                              "api": "Application",
+                              "dataModel": "State",
+                              "labelField": "name",
+                              "labelPath": "name",
+                              "additionalFields": [
+                                "id",
+                                "code",
+                                "name"
+                              ],
+                              "selectFields": [
+                                "id",
+                                "code",
+                                "name"
+                              ],
+                              "target": {
+                                "dataPath": "stateId"
+                              }
+                            },
+                            {
+                              "label": "Event",
+                              "uniqueValidationEnabled": false,
+                              "validation": {
+                                "required": false
+                              },
+                              "dataPath": "event",
+                              "field": "event",
+                              "description": "Select the event or reason code for this state. Events categorize what happened (e.g., maintenance, changeover, breakdown). Start typing to search. Leave blank if no specific event applies.",
+                              "element": "SelectInput",
+                              "type": "select",
+                              "api": "Application",
+                              "dataModel": "Event",
+                              "labelField": "name",
+                              "labelPath": "name",
+                              "additionalFields": [
+                                "id",
+                                "code",
+                                "name"
+                              ],
+                              "selectFields": [
+                                "id",
+                                "code",
+                                "name"
+                              ],
+                              "target": {
+                                "dataPath": "eventId"
+                              }
+                            },
+                            {
+                              "label": "Work Order",
+                              "uniqueValidationEnabled": false,
+                              "validation": {
+                                "required": false
+                              },
+                              "dataPath": "workOrder",
+                              "field": "workOrder",
+                              "description": "Select the work order active during this period. This links the state to production context for work order-level analysis. Leave blank during non-production periods.",
+                              "element": "SelectInput",
+                              "type": "select",
+                              "api": "Application",
+                              "dataModel": "WorkOrder",
+                              "labelField": "code",
+                              "labelPath": "code",
+                              "additionalFields": [
+                                "id",
+                                "code"
+                              ],
+                              "selectFields": [
+                                "id",
+                                "code"
+                              ],
+                              "target": {
+                                "dataPath": "workOrderId"
+                              }
+                            },
+                            {
+                              "label": "Schedule",
+                              "uniqueValidationEnabled": false,
+                              "validation": {
+                                "required": false
+                              },
+                              "dataPath": "schedule",
+                              "field": "schedule",
+                              "description": "Select the production schedule or shift. This enables shift-level reporting and comparisons. Leave blank if schedule tracking is not required.",
+                              "element": "SelectInput",
+                              "type": "select",
+                              "api": "Application",
+                              "dataModel": "Schedule",
+                              "labelField": "code",
+                              "labelPath": "code",
+                              "additionalFields": [
+                                "id",
+                                "code"
+                              ],
+                              "selectFields": [
+                                "id",
+                                "code"
+                              ],
+                              "target": {
+                                "dataPath": "scheduleId"
+                              }
+                            },
+                            {
+                              "label": "Duration (minutes)",
+                              "uniqueValidationEnabled": false,
+                              "validation": {
+                                "required": false
+                              },
+                              "dataPath": "durationMinutes",
+                              "field": "durationMinutes",
+                              "description": "Duration in minutes. This is typically auto-calculated from Occur At and End At, but can be manually entered or overridden if needed. Enter decimal values for partial minutes (e.g., 45.5).",
+                              "element": "FloatInput",
+                              "type": "float"
+                            },
+                            {
+                              "label": "Notes",
+                              "uniqueValidationEnabled": false,
+                              "validation": {
+                                "required": false
+                              },
+                              "dataPath": "notes",
+                              "field": "notes",
+                              "description": "Enter any additional comments, observations, or context about this state/event. Include root cause information, actions taken, or follow-up items. This field is searchable for later reference.",
+                              "element": "TextInput",
+                              "type": "text"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "mutation",
+                          "api": "Application",
+                          "mutation": "mutation UpdateWorkcenterHistory($payload: [WorkcenterHistoryUpdatePayloadInput!]!) {\n  mutation: updateWorkcenterHistory(payload: $payload) {\n    id\n    code\n  }\n}",
+                          "transforms": {
+                            "pre": "{\n  \"payload\": rowData.{\n    \"where\": {\n      \"id\": id\n    },\n    \"update\": $$.data\n  }\n}"
+                          },
+                          "message": {
+                            "__transform": "(\"Workcenter History \" & rowData.code) & \" updated successfully.\""
+                          }
+                        },
+                        {
+                          "type": "transformation",
+                          "remote": false,
+                          "transformation": "$components.WorkcenterHistoryTable.fn.search()"
+                        }
+                      ]
+                    },
+                    {
+                      "text": "Delete",
+                      "icon": {
+                        "icon": "trash",
+                        "color": "error",
+                        "variant": "regular",
+                        "size": "small"
+                      },
+                      "action": [
+                        {
+                          "type": "confirmation",
+                          "buttonColor": "error",
+                          "submitIcon": {
+                            "icon": "trash",
+                            "variant": "solid"
+                          },
+                          "message": {
+                            "__transform": "\"Delete Workcenter History \" & data.code & \"?\""
+                          }
+                        },
+                        {
+                          "type": "mutation",
+                          "api": "Application",
+                          "mutation": "mutation DeleteWorkcenterHistory($payload: [WorkcenterHistoryDeletePayloadInput!]!) {\n  mutation: deleteWorkcenterHistory(payload: $payload) {\n    id\n    code\n  }\n}",
+                          "transforms": {
+                            "pre": "{\n  \"payload\": data.{\n    \"where\": {\n      \"id\": id\n    }\n  }\n}"
+                          },
+                          "message": {
+                            "__transform": "\"Workcenter History \" & rowData.code & \" deleted successfully.\""
+                          }
+                        },
+                        {
+                          "type": "transformation",
+                          "remote": false,
+                          "transformation": "$components.WorkcenterHistoryTable.fn.search()"
+                        }
+                      ]
+                    }
+                  ],
+                  "isFlow": false,
+                  "menuIcon": "ellipsis-v",
+                  "iconSize": "small",
+                  "query": {
+                    "fields": []
+                  },
+                  "showColumnSuppressMenu": false,
+                  "editable": false,
+                  "sortAsNumber": false,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "description": "Row actions menu. Click to view details, edit, or delete."
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnActions"
+                },
+                "parent": "WorkcenterHistoryTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "FormFilterPanel": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "isCanvas": true,
+                "props": {
+                  "query": {
+                    "api": "Application",
+                    "query": null,
+                    "dataPath": "edges[0]",
+                    "dataTransform": {
+                      "transform": null,
+                      "remote": true
+                    },
+                    "dataSubscription": {
+                      "enabled": false
+                    },
+                    "autoLoad": false,
+                    "parameters": "{\n  \"filter\": {\n    \"id\": {\n      \"_eq\": id\n    }\n  },\n  \"first\": 1\n}",
+                    "fields": [
+                      "id"
+                    ],
+                    "disableDataChangeIndicator": false,
+                    "dataChangeIndicatorSize": "normal",
+                    "model": "ProductionLog"
+                  },
+                  "blockNavigationWhenDirty": false,
+                  "enableConfirmOnDataChanged": false,
+                  "description": "Use filters to narrow down production log records."
+                },
+                "displayName": "Form",
+                "custom": {
+                  "elementName": "FormFilterPanel"
+                },
+                "parent": "ContainerFilterOuter",
+                "hidden": false,
+                "nodes": [
+                  "FilterFormContainer"
+                ],
+                "linkedNodes": {}
+              },
+              "FilterFormContainer": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "0px",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {},
+                  "data": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "FilterFormContainer"
+                },
+                "parent": "FormFilterPanel",
+                "hidden": false,
+                "nodes": [
+                  "SelectOccurAtRange",
+                  "SelectWorkOrder",
+                  "SelectSchedule",
+                  "D7KWofsFRM",
+                  "GraphQLAdvancedFilter"
+                ],
+                "linkedNodes": {}
+              },
+              "SelectOccurAtRange": {
+                "type": {
+                  "resolvedName": "DateRangeInput"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "datetimeRange",
+                  "label": "Date Range",
+                  "target": {
+                    "dataPath": "occurAt"
+                  },
+                  "dataPath": "occurAtRange",
+                  "formElement": "FormFilterPanel",
+                  "disabled": false,
+                  "description": "Filter by production occurrence date range."
+                },
+                "displayName": "Date Range",
+                "custom": {
+                  "elementName": "SelectOccurAtRange"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "SelectWorkOrder": {
+                "type": {
+                  "resolvedName": "SelectInput"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "select",
+                  "label": "Workcenter",
+                  "dialogMode": "never",
+                  "multiselect": true,
+                  "isClearable": true,
+                  "selectAll": true,
+                  "searchPredicate": "contains",
+                  "api": "Application",
+                  "stateTracking": "full",
+                  "optionLimit": 20,
+                  "optionLimitFlex": 10,
+                  "alwaysReloadOptions": false,
+                  "target": {
+                    "dataPath": "workcenterId._in"
+                  },
+                  "dataPath": "workcenter",
+                  "formElement": "FormFilterPanel",
+                  "variant": "filled",
+                  "disabled": false,
+                  "description": "Filter results to show only records associated with selected work orders. Useful for analyzing state changes during specific production runs.",
+                  "query": {
+                    "api": "Application",
+                    "model": "WorkOrder",
+                    "dataPath": "edges",
+                    "fields": [
+                      "workcenter.id",
+                      "workcenter.name"
+                    ],
+                    "parameters": "{\n  \"orderBy\": {\n    \"code\": \"ASC\"\n  }\n}"
+                  },
+                  "optionLabelPath": "code",
+                  "optionValuePath": "id",
+                  "optionSecondaryLabelPath": "status",
+                  "field": "workcenter",
+                  "predicate": "_in",
+                  "labelPath": "name",
+                  "orderByField": "name",
+                  "dataModel": "Workcenter",
+                  "selectFields": [
+                    "name",
+                    "code"
+                  ],
+                  "additionalFields": [],
+                  "orderByDirection": "asc"
+                },
+                "displayName": "Select",
+                "custom": {
+                  "elementName": "SelectWorkOrder"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "GraphQLAdvancedFilter": {
+                "type": {
+                  "resolvedName": "WrappedGraphQLPredicate"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "graphqlWhere",
+                  "dataPath": "predicate",
+                  "target": {
+                    "dataPath": "_and.0"
+                  },
+                  "formElement": "FormFilterPanel",
+                  "label": "Advanced Filter",
+                  "disabled": false,
+                  "description": "Advanced GraphQL where clause for complex filtering."
+                },
+                "displayName": "GraphQL Where Input",
+                "custom": {
+                  "elementName": "GraphQLAdvancedFilter"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TopActionBar": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "35px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0px undefined ",
+                    "borderBottom": "0px none "
+                  },
+                  "justifyItems": "start",
+                  "style": {},
+                  "background": "light",
+                  "customBackground": "#f0f0f0"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "TopActionBar"
+                },
+                "parent": "ContainerBody",
+                "hidden": false,
+                "nodes": [
+                  "ContainerActionsStandard",
+                  "ContainerActionsCustom"
+                ],
+                "linkedNodes": {}
+              },
+              "ContainerActionsStandard": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 12,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "space-between",
+                  "alignItems": "center",
+                  "width": "80px",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0px undefined ",
+                    "borderRight": "0px none "
+                  },
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "ContainerActionsStandard"
+                },
+                "parent": "TopActionBar",
+                "hidden": false,
+                "nodes": [
+                  "ActionCreateEntry"
+                ],
+                "linkedNodes": {}
+              },
+              "ActionCreateEntry": {
+                "type": {
+                  "resolvedName": "ActionButton"
+                },
+                "isCanvas": false,
+                "props": {
+                  "margin": 0,
+                  "buttonColor": "primary",
+                  "icon": {
+                    "icon": "plus",
+                    "color": "success",
+                    "variant": "regular",
+                    "size": "icon"
+                  },
+                  "width": "40px",
+                  "height": "30px",
+                  "disabled": false,
+                  "hidden": false,
+                  "useIconButton": true,
+                  "disableHover": false,
+                  "disableRipple": false,
+                  "action": [
+                    {
+                      "type": "form",
+                      "submitIcon": "plus",
+                      "title": "Create Workcenter History",
+                      "fields": [
+                        {
+                          "label": "Code",
+                          "dataPath": "code",
+                          "field": "code",
+                          "description": "Enter a unique identifier for this new workcenter history record. Follow your organization's naming convention (e.g., WCH-DET-00001). If left blank, the system may auto-generate a code.",
+                          "element": "TextInput",
+                          "type": "text",
+                          "validation": {
+                            "required": true
+                          }
+                        },
+                        {
+                          "label": "Occur At",
+                          "dataPath": "occurAt",
+                          "field": "occurAt",
+                          "description": "When did this operational state or event begin? Select the date and time. This is required and marks the start of the state period for duration and timeline calculations.",
+                          "element": "DateTimeInput",
+                          "type": "datetime",
+                          "validation": {
+                            "required": true
+                          }
+                        },
+                        {
+                          "label": "End At",
+                          "dataPath": "endAt",
+                          "field": "endAt",
+                          "description": "When did this operational state or event end? Leave blank if the state is still ongoing or if you want the system to close it later. Setting this enables immediate duration calculation.",
+                          "element": "DateTimeInput",
+                          "type": "datetime",
+                          "validation": {
+                            "required": false
+                          }
+                        },
+                        {
+                          "label": "Workcenter",
+                          "dataPath": "workcenter",
+                          "field": "workcenter",
+                          "description": "Select the workcenter where this state/event is occurring. This is required - start typing to search by code or name. The workcenter links this record to equipment master data.",
+                          "element": "SelectInput",
+                          "type": "select",
+                          "api": "Application",
+                          "dataModel": "Workcenter",
+                          "labelField": "code",
+                          "labelPath": "code",
+                          "additionalFields": [
+                            "id",
+                            "code",
+                            "name"
+                          ],
+                          "selectFields": [
+                            "id",
+                            "code",
+                            "name"
+                          ],
+                          "target": {
+                            "dataPath": "workcenterId"
+                          },
+                          "validation": {
+                            "required": true
+                          }
+                        },
+                        {
+                          "label": "Mode",
+                          "dataPath": "mode",
+                          "field": "mode",
+                          "description": "Select the operational mode. Standard modes include: Production (actively manufacturing), Idle (available but not producing), Maintenance, Setup/Changeover, and Disabled (unavailable/down).",
+                          "element": "SelectInput",
+                          "type": "select",
+                          "api": "Application",
+                          "dataModel": "Mode",
+                          "labelField": "name",
+                          "labelPath": "name",
+                          "additionalFields": [
+                            "id",
+                            "code",
+                            "name"
+                          ],
+                          "selectFields": [
+                            "id",
+                            "code",
+                            "name"
+                          ],
+                          "target": {
+                            "dataPath": "modeId"
+                          },
+                          "validation": {
+                            "required": false
+                          }
+                        },
+                        {
+                          "label": "State",
+                          "dataPath": "state",
+                          "field": "state",
+                          "description": "Select the detailed operational state. States provide granular insight: Running, Running Slow, Blocked, Starved, Faulted, Emergency Stop, Maintenance, Offline, etc.",
+                          "element": "SelectInput",
+                          "type": "select",
+                          "api": "Application",
+                          "dataModel": "State",
+                          "labelField": "name",
+                          "labelPath": "name",
+                          "additionalFields": [
+                            "id",
+                            "code",
+                            "name"
+                          ],
+                          "selectFields": [
+                            "id",
+                            "code",
+                            "name"
+                          ],
+                          "target": {
+                            "dataPath": "stateId"
+                          },
+                          "validation": {
+                            "required": false
+                          }
+                        },
+                        {
+                          "label": "Event",
+                          "dataPath": "event",
+                          "field": "event",
+                          "description": "Select an event or reason code if applicable. Events explain why this state occurred. Start typing to search available events. Leave blank if no specific event applies to this state change.",
+                          "element": "SelectInput",
+                          "type": "select",
+                          "api": "Application",
+                          "dataModel": "Event",
+                          "labelField": "name",
+                          "labelPath": "name",
+                          "additionalFields": [
+                            "id",
+                            "code",
+                            "name"
+                          ],
+                          "selectFields": [
+                            "id",
+                            "code",
+                            "name"
+                          ],
+                          "target": {
+                            "dataPath": "eventId"
+                          },
+                          "validation": {
+                            "required": false
+                          }
+                        },
+                        {
+                          "label": "Work Order",
+                          "dataPath": "workOrder",
+                          "field": "workOrder",
+                          "description": "Select the work order if this state occurs during production. This enables work order-level tracking and OEE analysis. Leave blank for non-production states like maintenance.",
+                          "element": "SelectInput",
+                          "type": "select",
+                          "api": "Application",
+                          "dataModel": "WorkOrder",
+                          "labelField": "code",
+                          "labelPath": "code",
+                          "additionalFields": [
+                            "id",
+                            "code"
+                          ],
+                          "selectFields": [
+                            "id",
+                            "code"
+                          ],
+                          "target": {
+                            "dataPath": "workOrderId"
+                          },
+                          "validation": {
+                            "required": false
+                          }
+                        },
+                        {
+                          "label": "Schedule",
+                          "dataPath": "schedule",
+                          "field": "schedule",
+                          "description": "Select the production schedule or shift if applicable. This enables shift-based reporting and analysis. Leave blank if schedule tracking is not used at your facility.",
+                          "element": "SelectInput",
+                          "type": "select",
+                          "api": "Application",
+                          "dataModel": "Schedule",
+                          "labelField": "code",
+                          "labelPath": "code",
+                          "additionalFields": [
+                            "id",
+                            "code",
+                            "name"
+                          ],
+                          "selectFields": [
+                            "id",
+                            "code",
+                            "name"
+                          ],
+                          "target": {
+                            "dataPath": "scheduleId"
+                          },
+                          "validation": {
+                            "required": false
+                          }
+                        },
+                        {
+                          "label": "Duration (minutes)",
+                          "dataPath": "durationMinutes",
+                          "field": "durationMinutes",
+                          "description": "Optionally enter the duration in minutes if known. Otherwise, leave blank and the system will calculate duration when End At is set. Accepts decimal values (e.g., 45.5 for 45 minutes 30 seconds).",
+                          "element": "FloatInput",
+                          "type": "float",
+                          "validation": {
+                            "required": false
+                          }
+                        },
+                        {
+                          "label": "Notes",
+                          "dataPath": "notes",
+                          "field": "notes",
+                          "description": "Enter any relevant comments, observations, or context. Include details like root cause, operator observations, or follow-up actions needed. This information is searchable and valuable for analysis.",
+                          "element": "TextInput",
+                          "type": "text",
+                          "validation": {
+                            "required": false
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "mutation",
+                      "api": "Application",
+                      "mutation": "mutation CreateWorkcenterHistory($payload: [WorkcenterHistoryCreatePayloadInput!]!) {\n  mutation: createWorkcenterHistory(payload: $payload) {\n    id\n    code\n  }\n}",
+                      "transforms": {
+                        "pre": "{\n  \"payload\": {\n    \"create\": data\n  }\n}"
+                      },
+                      "message": {
+                        "__transform": "\"Workcenter History \" & data.mutation[0].code & \" created successfully.\""
+                      }
+                    },
+                    {
+                      "type": "transformation",
+                      "remote": false,
+                      "transformation": "$components.WorkcenterHistoryTable.fn.search()"
+                    }
+                  ],
+                  "title": "Create Workcenter History Entry",
+                  "customTextSize": 10,
+                  "customIconSize": 0
+                },
+                "displayName": "Action",
+                "custom": {
+                  "editor": {
+                    "category": "Buttons",
+                    "description": "Create production log entry.",
+                    "color": "#9c5a94",
+                    "elementName": "Create production log entry.",
+                    "icon": "plus",
+                    "requiresTable": true
+                  },
+                  "elementName": "ActionCreateEntry"
+                },
+                "parent": "ContainerActionsStandard",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ContainerActionsCustom": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 12,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "center",
+                  "width": "200px",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0px undefined ",
+                    "borderRight": "undefinedpx none "
+                  },
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "ContainerActionsCustom"
+                },
+                "parent": "TopActionBar",
+                "hidden": false,
+                "nodes": [
+                  "ActionRefresh"
+                ],
+                "linkedNodes": {}
+              },
+              "FilterPanelHeader": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "40px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0px undefined ",
+                    "borderBottom": "0px none "
+                  },
+                  "justifyItems": "start",
+                  "style": {},
+                  "background": "light",
+                  "customBackground": "#f0f0f0"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "FilterPanelHeader"
+                },
+                "parent": "ContainerFilterOuter",
+                "hidden": false,
+                "nodes": [
+                  "FilterPanelHeaderInner",
+                  "FilterBrandSeparator"
+                ],
+                "linkedNodes": {}
+              },
+              "FilterPanelHeaderInner": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 4,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "space-between",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "35px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0px undefined ",
+                    "borderBottom": "undefinedpx none "
+                  },
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "FilterPanelHeaderInner"
+                },
+                "parent": "FilterPanelHeader",
+                "hidden": false,
+                "nodes": [
+                  "FilterPanelTitle",
+                  "FilterSearchContainer"
+                ],
+                "linkedNodes": {}
+              },
+              "FilterPanelTitle": {
+                "type": {
+                  "resolvedName": "RichText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "width": "180px",
+                  "height": "40px",
+                  "content": {
+                    "blocks": [
+                      {
+                        "key": "filterPanelTitle",
+                        "text": "Workcenter History Filters",
+                        "type": "unstyled",
+                        "depth": 0,
+                        "inlineStyleRanges": [
+                          {
+                            "offset": 0,
+                            "length": 26,
+                            "style": "fontfamily-Roboto"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 26,
+                            "style": "fontsize-14"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 26,
+                            "style": "color-rgb(44,130,201)"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 26,
+                            "style": "BOLD"
+                          }
+                        ],
+                        "entityRanges": [],
+                        "data": {}
+                      }
+                    ],
+                    "entityMap": {}
+                  }
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "FilterPanelTitle"
+                },
+                "parent": "FilterPanelHeaderInner",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "FilterSearchContainer": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "center",
+                  "width": "30px",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "FilterSearchContainer"
+                },
+                "parent": "FilterPanelHeaderInner",
+                "hidden": false,
+                "nodes": [
+                  "ActionSearch"
+                ],
+                "linkedNodes": {}
+              },
+              "ActionSearch": {
+                "type": {
+                  "resolvedName": "ActionButton"
+                },
+                "isCanvas": false,
+                "props": {
+                  "margin": 0,
+                  "buttonColor": "primary",
+                  "icon": {
+                    "icon": "magnifying-glass",
+                    "color": "info",
+                    "variant": "regular",
+                    "size": "icon"
+                  },
+                  "width": "24px",
+                  "height": "24px",
+                  "disabled": false,
+                  "hidden": false,
+                  "useIconButton": true,
+                  "disableHover": false,
+                  "disableRipple": false,
+                  "action": [
+                    {
+                      "type": "transformation",
+                      "transformation": "$components.WorkcenterHistoryTable.fn.search()",
+                      "remote": false
+                    }
+                  ],
+                  "title": "Search Using Filters"
+                },
+                "displayName": "Action",
+                "custom": {
+                  "elementName": "ActionSearch"
+                },
+                "parent": "FilterSearchContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "FilterBrandSeparator": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "4px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {
+                    "background-image": "linear-gradient(90deg, #39005a,#5b30df, #03caaf)"
+                  }
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "FilterBrandSeparator"
+                },
+                "parent": "FilterPanelHeader",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "BrandBandSeparator": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "4px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {
+                    "background-image": "linear-gradient(90deg, #39005a,#5b30df, #03caaf)"
+                  }
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "BrandBandSeparator"
+                },
+                "parent": "ContainerBody",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "D7KWofsFRM": {
+                "type": {
+                  "resolvedName": "OptionsInput"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "options",
+                  "label": "Mode",
+                  "multiselect": true,
+                  "isClearable": true,
+                  "selectAll": true,
+                  "searchPredicate": "contains",
+                  "stateTracking": "id",
+                  "optionLimit": 10,
+                  "optionLimitFlex": 5,
+                  "description": "Filter results by operational mode. Select one or more modes to focus on specific operational states:\n• Production - Active manufacturing periods\n• Idle - Available but not producing\n• Disabled - Downtime and maintenance periods",
+                  "formElement": "FormFilterPanel",
+                  "variant": "filled",
+                  "options": [
+                    {
+                      "id": "Production",
+                      "label": "Production"
+                    },
+                    {
+                      "id": "Idle",
+                      "label": "Idle"
+                    },
+                    {
+                      "id": "disabled",
+                      "label": "Disabled"
+                    }
+                  ],
+                  "disabled": false,
+                  "target": {
+                    "dataPath": "modeId._in"
+                  },
+                  "dataPath": "modeId",
+                  "labelPath": "label"
+                },
+                "displayName": "Options",
+                "custom": {
+                  "elementName": "ModeOptions"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ActionRefresh": {
+                "type": {
+                  "resolvedName": "ActionButton"
+                },
+                "isCanvas": false,
+                "props": {
+                  "margin": 0,
+                  "buttonColor": "primary",
+                  "icon": {
+                    "icon": "arrows-rotate",
+                    "color": "secondary",
+                    "variant": "regular",
+                    "size": "icon"
+                  },
+                  "width": "40px",
+                  "height": "30px",
+                  "disabled": false,
+                  "hidden": false,
+                  "useIconButton": true,
+                  "disableHover": false,
+                  "disableRipple": false,
+                  "action": [
+                    {
+                      "type": "transformation",
+                      "transformation": "$components.WorkcenterHistoryTable.fn.search()",
+                      "remote": false
+                    }
+                  ],
+                  "title": "Refresh Data",
+                  "customTextSize": 10,
+                  "customIconSize": 0
+                },
+                "displayName": "Action",
+                "custom": {
+                  "editor": {
+                    "category": "Buttons",
+                    "description": "Refresh table data.",
+                    "color": "#9c5a94",
+                    "elementName": "Refresh Button",
+                    "icon": "arrows-rotate",
+                    "requiresTable": true
+                  },
+                  "elementName": "ActionRefresh"
+                },
+                "parent": "ContainerActionsCustom",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "SelectSchedule": {
+                "type": {
+                  "resolvedName": "SelectInput"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "select",
+                  "label": "Schedule",
+                  "dialogMode": "never",
+                  "multiselect": true,
+                  "isClearable": true,
+                  "selectAll": true,
+                  "searchPredicate": "contains",
+                  "api": "Application",
+                  "stateTracking": "full",
+                  "optionLimit": 20,
+                  "optionLimitFlex": 10,
+                  "alwaysReloadOptions": false,
+                  "description": "Filter results by production schedule or shift. Select one or more schedules to compare performance across shifts or analyze specific time periods.",
+                  "target": {
+                    "dataPath": "scheduleId._in"
+                  },
+                  "dataPath": "schedule",
+                  "formElement": "FormFilterPanel",
+                  "variant": "filled",
+                  "disabled": false,
+                  "query": {
+                    "api": "Application",
+                    "model": "Schedule",
+                    "dataPath": "edges",
+                    "fields": [
+                      "schedule.id",
+                      "schedule.code"
+                    ],
+                    "parameters": "{\n  \"orderBy\": {\n    \"code\": \"ASC\"\n  }\n}"
+                  },
+                  "optionLabelPath": "code",
+                  "optionValuePath": "id",
+                  "field": "schedule",
+                  "predicate": "_in",
+                  "labelPath": "code",
+                  "orderByField": "code",
+                  "dataModel": "Schedule",
+                  "selectFields": [
+                    "code"
+                  ],
+                  "additionalFields": [],
+                  "orderByDirection": "asc"
+                },
+                "displayName": "Select",
+                "custom": {
+                  "elementName": "SelectSchedule"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "WorkcenterHistoryTable": {
+                "type": {
+                  "resolvedName": "Table"
+                },
+                "isCanvas": true,
+                "props": {
+                  "margin": 0,
+                  "width": "100%",
+                  "height": "0px",
+                  "flexGrow": true,
+                  "query": {
+                    "api": "Application",
+                    "query": null,
+                    "dataPath": "edges",
+                    "dataTransform": {
+                      "transform": "[edges.node~>|$|{\n  \"workOrderDisplay\": workOrder.code ? workOrder.code : \"No Work Order\",\n  \"eventDisplay\": event.name ? event.name : (event.code ? event.code : \"No Event\"),\n  \"eventCategoryDisplay\": event.eventCategory.name ? event.eventCategory.name : \"Uncategorized\",\n  \"scheduleDisplay\": schedule.code ? schedule.code : \"No Schedule\",\n  \"createdByDisplay\": createdByUser.firstName & ' ' & createdByUser.lastName,\n  \"modeColor\": (\n    $modeColors := {\"Production\": \"#2e7d32\", \"production\": \"#2e7d32\", \"Idle\": \"#ed6c02\", \"idle\": \"#ed6c02\", \"disabled\": \"#d32f2f\", \"Disabled\": \"#d32f2f\"};\n    $lookup($modeColors, modeId) ? $lookup($modeColors, modeId) : \"#757575\"\n  ),\n  \"stateColor\": (\n    $stateColors := {\n      \"running\": \"#2e7d32\", \"Running\": \"#2e7d32\", \"RUN\": \"#2e7d32\",\n      \"running-slow\": \"#ff9800\", \"Running Slow\": \"#ff9800\", \"SLOW\": \"#ff9800\",\n      \"stopped\": \"#ed6c02\", \"Stopped\": \"#ed6c02\", \"STOP\": \"#ed6c02\",\n      \"blocked\": \"#f57c00\", \"Blocked\": \"#f57c00\", \"BLKD\": \"#f57c00\",\n      \"starved\": \"#ff9800\", \"Starved\": \"#ff9800\", \"STRV\": \"#ff9800\",\n      \"held\": \"#ed6c02\", \"Held\": \"#ed6c02\", \"HELD\": \"#ed6c02\",\n      \"faulted\": \"#d32f2f\", \"Faulted\": \"#d32f2f\", \"FLT\": \"#d32f2f\",\n      \"e-stopped\": \"#d32f2f\", \"Emergency Stop\": \"#d32f2f\", \"ESTOP\": \"#d32f2f\",\n      \"changeover\": \"#1976d2\", \"Changeover\": \"#1976d2\", \"CHGV\": \"#1976d2\",\n      \"warmup\": \"#1976d2\", \"Warming Up\": \"#1976d2\", \"WARM\": \"#1976d2\",\n      \"cleaning\": \"#1976d2\", \"Cleaning\": \"#1976d2\", \"CLN\": \"#1976d2\",\n      \"maintenance\": \"#7b1fa2\", \"Under Maintenance\": \"#7b1fa2\", \"MAINT\": \"#7b1fa2\",\n      \"offline\": \"#757575\", \"Offline\": \"#757575\", \"OFF\": \"#757575\",\n      \"unknown\": \"#757575\", \"Unknown\": \"#757575\", \"UNK\": \"#757575\"\n    };\n    $lookup($stateColors, stateId) ? $lookup($stateColors, stateId) : \"#757575\"\n  )\n}|]",
+                      "remote": true
+                    },
+                    "dataSubscription": {
+                      "enabled": false
+                    },
+                    "autoLoad": true,
+                    "fields": [
+                      "id",
+                      "code",
+                      "occurAt",
+                      "endAt",
+                      "duration",
+                      "notes",
+                      "modeId",
+                      "mode.code",
+                      "mode.name",
+                      "mode.id",
+                      "stateId",
+                      "state.code",
+                      "state.name",
+                      "state.id",
+                      "createdAt",
+                      "workcenter.id",
+                      "workcenter.code",
+                      "workcenter.name",
+                      "event.id",
+                      "event.code",
+                      "event.name",
+                      "event.eventCategory.id",
+                      "event.eventCategory.code",
+                      "event.eventCategory.name",
+                      "schedule.id",
+                      "schedule.code",
+                      "createdByUser.id",
+                      "createdByUser.firstName",
+                      "createdByUser.lastName"
+                    ],
+                    "disableDataChangeIndicator": false,
+                    "selectedDataChangeIndicator": null,
+                    "model": "WorkcenterHistory",
+                    "readPreference": "primaryPreferred",
+                    "parameters": "{\r\n  \"orderBy\": [\r\n    {\r\n      \"field\": \"occurAt\",\r\n      \"direction\": \"desc\"\r\n    }\r\n  ]\r\n}"
+                  },
+                  "selectable": "none",
+                  "showToolPanels": true,
+                  "showStatusBar": true,
+                  "enableGrouping": true,
+                  "enableCharts": true,
+                  "showColumnMenu": true,
+                  "enableRowDragging": false,
+                  "disableColumnDragging": false,
+                  "disableDragLeaveHidesColumns": false,
+                  "masterDetail": false,
+                  "hideTableHeader": false,
+                  "description": "Workcenter History tracks all operational state changes, modes, and events for workcenters over time. Each record represents a discrete time period when a workcenter was in a specific operational state.\n\n**Key Use Cases:**\n• OEE Availability Analysis - Track production vs downtime\n• Downtime Pareto Analysis - Identify top loss reasons\n• State Timeline Visualization - See equipment behavior over time\n• Shift Performance Comparison - Compare across schedules\n\n**Data Flow:**\nRecords are created automatically by equipment integrations or manually by operators. Duration is calculated from occurAt and endAt timestamps. Events and categories enable drill-down analysis.",
+                  "rowMultiSelectWithClick": false,
+                  "defaultSort": [
+                    {
+                      "field": "TableColumnOccurAt",
+                      "direction": "desc"
+                    }
+                  ],
+                  "limitToOneActiveDetail": false,
+                  "filterFormName": "FormFilterPanel"
+                },
+                "displayName": "Table",
+                "custom": {
+                  "elementName": "WorkcenterHistoryTable"
+                },
+                "parent": "ContainerBody",
+                "hidden": false,
+                "nodes": [
+                  "TableColumnActions",
+                  "TableColumnCode",
+                  "TableColumnOccurAt",
+                  "TableColumnEndAt",
+                  "TableColumnWorkcenter",
+                  "TableColumnMode",
+                  "TableColumnState",
+                  "TableColumnEvent",
+                  "TableColumnEventCategory",
+                  "TableColumnDuration",
+                  "z5pHIKop1v",
+                  "PO-FNDGvtu",
+                  "M5SXEiJRU1",
+                  "TableColumnSchedule",
+                  "TableColumnNotes",
+                  "TableColumnCreatedAt",
+                  "TableColumnCreatedBy",
+                  "CustomFieldsColumn"
+                ],
+                "linkedNodes": {}
+              },
+              "TableColumnCode": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Code",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "code",
+                  "width": "150px",
+                  "query": {
+                    "fields": [
+                      "code"
+                    ]
+                  },
+                  "sortAsNumber": false,
+                  "editable": false,
+                  "description": "**`code`** (`String!`)\nUnique identifier for this workcenter history record.\n\n- Auto-generated or manually assigned.\n- Format: `WCH-{SITE}-{SEQ}` (e.g., `WCH-DET-00001`).\n- Used for audit trails and record lookups."
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnCode"
+                },
+                "parent": "WorkcenterHistoryTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnOccurAt": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Occur At",
+                  "format": "datetime",
+                  "sortable": true,
+                  "formatString": "MM/DD/YYYY h:mm A",
+                  "dataPath": "occurAt",
+                  "width": "180px",
+                  "query": {
+                    "fields": [
+                      "occurAt"
+                    ]
+                  },
+                  "sortAsNumber": false,
+                  "editable": false,
+                  "timeZone": "setting",
+                  "description": "**`occurAt`** (`DateTime!`)\nTimestamp when this operational state or event began.\n\n- Critical for duration calculations and timeline analysis.\n- Used in OEE availability calculations.\n- Timezone-aware display based on user settings."
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnOccurAt"
+                },
+                "parent": "WorkcenterHistoryTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnEndAt": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "End At",
+                  "format": "datetime",
+                  "sortable": true,
+                  "formatString": "MM/DD/YYYY h:mm A",
+                  "dataPath": "endAt",
+                  "width": "180px",
+                  "query": {
+                    "fields": [
+                      "endAt"
+                    ]
+                  },
+                  "sortAsNumber": false,
+                  "editable": false,
+                  "timeZone": "setting",
+                  "description": "**`endAt`** (`DateTime`)\nTimestamp when this operational state or event ended.\n\n- Null if state is still active/ongoing.\n- Used with occurAt to calculate duration.\n- Essential for closed-loop state tracking."
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnEndAt"
+                },
+                "parent": "WorkcenterHistoryTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnWorkcenter": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Workcenter",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "workcenter.code",
+                  "query": {},
+                  "sortAsNumber": false,
+                  "editable": false,
+                  "description": "**`workcenter.code`** (`String!`)\nThe workcenter where this state/event occurred.\n\n- Links to Workcenter master data.\n- Required field - every history record must have a workcenter.\n- Example: `WC-PRESS-01`, `WC-FILL-A`.",
+                  "field": "workcenter.code"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnWorkcenter"
+                },
+                "parent": "WorkcenterHistoryTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnMode": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Mode",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "modeId",
+                  "width": "120px",
+                  "query": {
+                    "fields": [
+                      "modeId",
+                      "mode.id",
+                      "mode.code"
+                    ]
+                  },
+                  "sortAsNumber": false,
+                  "editable": false,
+                  "description": "**`modeId`** (`String`)\nOperational mode of the workcenter during this period.\n\n**ISA-101 Color Coding:**\n• 🟢 **Production** (Green #2e7d32) - Active manufacturing\n• 🟡 **Idle** (Amber #ed6c02) - Standby, available\n• 🔴 **Disabled** (Red #d32f2f) - Unavailable, down\n\nMode determines OEE Availability calculation.",
+                  "style": {
+                    "__transform": "{\n  \"color\": data.modeColor\n}",
+                    "__dynamicFields": {
+                      "payload": null,
+                      "context": []
+                    },
+                    "__cacheKey": "",
+                    "__remote": false
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnMode"
+                },
+                "parent": "WorkcenterHistoryTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnState": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "State",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "stateId",
+                  "width": "120px",
+                  "query": {
+                    "fields": [
+                      "stateId",
+                      "state.id",
+                      "state.code"
+                    ]
+                  },
+                  "sortAsNumber": false,
+                  "editable": false,
+                  "description": "**`stateId`** (`String`)\nDetailed operational state within the current mode.\n\n**ISA-101 Color Coding:**\n• 🟢 **running** (Green) - Normal production\n• 🟠 **running-slow** (Orange) - Producing with performance loss\n• 🟠 **blocked** (Orange) - Downstream constraint\n• 🟠 **starved** (Orange) - Upstream constraint\n• 🟡 **stopped** (Amber) - Not producing, no fault\n• 🟡 **held** (Amber) - Production hold\n• 🔴 **faulted** (Red) - Equipment fault\n• 🔴 **e-stopped** (Red) - Emergency stop\n• 🔵 **changeover** (Blue) - Product changeover\n• 🔵 **warmup** (Blue) - Equipment warming up\n• 🔵 **cleaning** (Blue) - Cleaning cycle\n• 🟣 **maintenance** (Purple) - Under maintenance\n• ⚫ **offline/unknown** (Gray) - Unavailable or unknown\n\nStates drive OEE Performance and Availability analysis.",
+                  "style": {
+                    "__transform": "{\n  \"color\": data.stateColor\n}",
+                    "__dynamicFields": {
+                      "payload": null,
+                      "context": []
+                    },
+                    "__cacheKey": "",
+                    "__remote": false
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnState"
+                },
+                "parent": "WorkcenterHistoryTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnEvent": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Event",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "eventDisplay",
+                  "query": {
+                    "fields": [
+                      "event.id",
+                      "event.name",
+                      "event.code"
+                    ]
+                  },
+                  "sortAsNumber": false,
+                  "editable": false,
+                  "description": "**`event.name`** (`String`)\nSpecific event or reason code for this state.\n\n- Links to Event master data.\n- Examples: `Scheduled Maintenance`, `Tool Change`, `Material Shortage`.\n- Required for downtime analysis and Pareto charts.\n- Displays 'No Event' when not applicable."
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnEvent"
+                },
+                "parent": "WorkcenterHistoryTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnEventCategory": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Event Category",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "eventCategoryDisplay",
+                  "width": "150px",
+                  "query": {
+                    "fields": [
+                      "event.eventCategory.id",
+                      "event.eventCategory.name"
+                    ]
+                  },
+                  "sortAsNumber": false,
+                  "editable": false,
+                  "description": "**`event.eventCategory.name`** (`String`)\nHigh-level classification of the event.\n\n- Groups events for reporting (e.g., Planned vs Unplanned).\n- Examples: `Planned Downtime`, `Unplanned Downtime`, `Setup`, `Changeover`.\n- Affects OEE calculations based on `affectsOee` flag.\n- Displays 'Uncategorized' when not set."
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnEventCategory"
+                },
+                "parent": "WorkcenterHistoryTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnDuration": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Duration",
+                  "format": "duration",
+                  "sortable": true,
+                  "dataPath": "duration",
+                  "width": "120px",
+                  "query": {},
+                  "sortAsNumber": false,
+                  "editable": false,
+                  "description": "**`duration`** (`Duration`)\nCalculated duration of this state period.\n\n- Computed from occurAt and endAt timestamps.\n- Displayed in abbreviated format (e.g., `45m`, `2h 30m`).\n- Used for downtime totals and OEE calculations.\n- Null/N/A if state is still active.",
+                  "field": "duration",
+                  "durationMode": "time",
+                  "timeUnit": "minute",
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnDuration"
+                },
+                "parent": "WorkcenterHistoryTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnSchedule": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Schedule",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "scheduleDisplay",
+                  "width": "120px",
+                  "query": {
+                    "fields": [
+                      "schedule.id",
+                      "schedule.code"
+                    ]
+                  },
+                  "sortAsNumber": false,
+                  "editable": false,
+                  "description": "**`schedule.code`** (`String`)\nProduction schedule or shift during this period.\n\n- Links to Schedule master data.\n- Examples: `First`, `Second`, `Third`, `Weekend`.\n- Enables shift-level performance analysis.\n- Displays 'No Schedule' when not assigned."
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnSchedule"
+                },
+                "parent": "WorkcenterHistoryTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnNotes": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Notes",
+                  "format": "text",
+                  "sortable": false,
+                  "dataPath": "notes",
+                  "width": "200px",
+                  "query": {
+                    "fields": [
+                      "notes"
+                    ]
+                  },
+                  "sortAsNumber": false,
+                  "editable": false,
+                  "description": "**`notes`** (`String`)\nFree-text comments or observations.\n\n- Operator-entered context about the state/event.\n- May include root cause notes, actions taken, or follow-up items.\n- Searchable for incident investigation."
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnNotes"
+                },
+                "parent": "WorkcenterHistoryTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnCreatedAt": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Created At",
+                  "format": "datetime",
+                  "sortable": true,
+                  "formatString": "MM/DD/YYYY h:mm A",
+                  "dataPath": "createdAt",
+                  "width": "180px",
+                  "query": {
+                    "fields": [
+                      "createdAt"
+                    ]
+                  },
+                  "sortAsNumber": false,
+                  "editable": false,
+                  "timeZone": "setting",
+                  "description": "**`createdAt`** (`DateTime!`)\nSystem timestamp when this record was created.\n\n- Auto-populated by the system.\n- Used for audit trails and data integrity.\n- Cannot be modified after creation."
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnCreatedAt"
+                },
+                "parent": "WorkcenterHistoryTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnCreatedBy": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Created By",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "createdByDisplay",
+                  "width": "150px",
+                  "query": {
+                    "fields": [
+                      "createdByUser.id",
+                      "createdByUser.firstName",
+                      "createdByUser.lastName"
+                    ]
+                  },
+                  "sortAsNumber": false,
+                  "editable": false,
+                  "description": "**`createdByUser`** (`User!`)\nUser who created this record.\n\n- Auto-populated based on logged-in user.\n- Displays full name (First Last).\n- Used for accountability and audit trails."
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnCreatedBy"
+                },
+                "parent": "WorkcenterHistoryTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "CustomFieldsColumn": {
+                "type": {
+                  "resolvedName": "CustomFieldsTableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Custom Fields",
+                  "expandGroups": false,
+                  "dataPath": "_customFields",
+                  "dataModel": "WorkcenterHistory",
+                  "field": "_customFields"
+                },
+                "displayName": "Custom Column",
+                "custom": {
+                  "elementName": "CustomFieldsColumn"
+                },
+                "parent": "WorkcenterHistoryTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "z5pHIKop1v": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Planned Downtime (Ms)",
+                  "format": "integer",
+                  "sortable": true,
+                  "dataPath": "plannedDowntime",
+                  "description": "planned downtime in milliseconds for aggregation",
+                  "query": {},
+                  "field": "plannedDowntime",
+                  "durationMode": "time",
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn17"
+                },
+                "parent": "WorkcenterHistoryTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "PO-FNDGvtu": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Unplanned Downtime (Ms)",
+                  "format": "integer",
+                  "sortable": true,
+                  "dataPath": "unplannedDowntime",
+                  "description": "unplanned downtime in milliseconds for aggregation",
+                  "query": {},
+                  "field": "unplannedDowntime",
+                  "durationMode": "time",
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn18"
+                },
+                "parent": "WorkcenterHistoryTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "M5SXEiJRU1": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Run Time (Ms)",
+                  "format": "integer",
+                  "sortable": true,
+                  "dataPath": "runTime",
+                  "description": "runtime in milliseconds for aggregation",
+                  "query": {},
+                  "field": "runTime",
+                  "durationMode": "time",
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn19"
+                },
+                "parent": "WorkcenterHistoryTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "routes": [
+    {
+      "id": "cmk4fevnb0ao2015z34i9crjn",
+      "title": "Workcenter History",
+      "path": "/machineTelemetrySiteApplication/machineDataApp/workcenterHistories",
+      "moduleId": "machineDataApp",
+      "screenId": "workcenterHistory",
+      "isMenuAccessible": true,
+      "submenu": ""
+    }
+  ]
+}

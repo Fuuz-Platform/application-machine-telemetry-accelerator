@@ -1,0 +1,680 @@
+{
+  "header": {
+    "id": "telemetryDaily",
+    "name": "TelemetryDaily",
+    "description": "Represents daily aggregated telemetry statistics for a DataPoint, including summary metrics like average, min, max, and standard deviation. Used for reporting, trend analysis, and performance dashboards.\n\n**Typical Use Cases**\n\n- Summarize raw telemetry into daily intervals for analytics.\n- Support shift-based reporting and KPI calculations.\n- Reduce storage overhead compared to raw telemetry while retaining essential insights.",
+    "dataModelKindId": "reference",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cml5prkp9bm2u01a55iiz4aae",
+    "number": "4",
+    "dataModelId": "telemetryDaily",
+    "modelDefinition": {
+      "name": "TelemetryDaily",
+      "metadata": {
+        "mfgx": {
+          "module": {
+            "id": "machineDataApp",
+            "group": {
+              "id": "machineTelemetrySiteApplication"
+            }
+          },
+          "exposed": true,
+          "mutable": true,
+          "mutations": {
+            "create": true,
+            "update": true,
+            "del": true
+          },
+          "dataChangeCapture": {
+            "exposed": false,
+            "retentionDays": 1
+          },
+          "customFields": {
+            "exposed": true
+          },
+          "editor": {
+            "autosort": true
+          },
+          "labelField": "id"
+        },
+        "mongo": {
+          "collection": "telemetryDaily"
+        },
+        "graphql": {
+          "type": "Object"
+        }
+      },
+      "kind": "Reference",
+      "fields": [
+        {
+          "name": "id",
+          "type": "ID!",
+          "description": "**`id`** (`ID!`)\nPrimary unique identifier for the TelemetryDaily record.\n\n- Required on creation; cannot be updated.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": false
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": true
+          }
+        },
+        {
+          "name": "count",
+          "type": "Int",
+          "description": "**`count`** (`Int`)\nTotal number of telemetry samples aggregated for the day.\n\n- Default: `0`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": "0"
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "countBad",
+          "description": "",
+          "type": "Int",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "countFalse",
+          "description": "",
+          "type": "Int",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "countGood",
+          "description": "",
+          "type": "Int",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "countTrue",
+          "description": "",
+          "type": "Int",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "avg",
+          "type": "Float",
+          "description": "**`avg`** (`Float`)\nAverage value of all samples for the day.\n\n- Default: `0.0`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": "0.0"
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "cv",
+          "type": "Float",
+          "description": "**`cv`** (`Float`)\nCoefficient of variation (ratio of standard deviation to mean).\n\n- Default: `0.0`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": "0.0"
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "first",
+          "description": "",
+          "type": "Float",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "last",
+          "description": "",
+          "type": "Float",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "max",
+          "type": "Float",
+          "description": "**`max`** (`Float`)\nMaximum recorded value for the day.\n\n- Default: `0.0`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": "0.0"
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "min",
+          "type": "Float",
+          "description": "**`min`** (`Float`)\nMinimum recorded value for the day.\n\n- Default: `0.0`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": "0.0"
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "p05",
+          "description": "",
+          "type": "Float",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "p25",
+          "description": "",
+          "type": "Float",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "p50",
+          "description": "",
+          "type": "Float",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "p75",
+          "description": "",
+          "type": "Float",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "p95",
+          "description": "",
+          "type": "Float",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "pctTrue",
+          "description": "",
+          "type": "Float",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "range",
+          "type": "Float",
+          "description": "**`range`** (`Float`)\nDifference between max and min values for the day.\n\n- Default: `0.0`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": "0.0"
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "std",
+          "type": "Float",
+          "description": "**`std`** (`Float`)\nStandard deviation of all samples for the day.\n\n- Default: `0.0`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": "0.0"
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "sum",
+          "type": "Float",
+          "description": "**`sum`** (`Float`)\nSum of all recorded values for the day.\n\n- Default: `0.0`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": "0.0"
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "periodAt",
+          "type": "Date!",
+          "description": "**`periodAt`** (`Date!`)\nThe date representing the aggregation period (daily bucket).",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "dataPointId",
+          "type": "ID!",
+          "description": "**`dataPointId`** (`ID!`)\n\nForeign key linking the TelemetryDaily record to its parent DataPoint.\n\n- **Usage:** Ensures hierarchical integrity between aggregated daily telemetry and the originating DataPoint.\n- **Behavior:** Required for creation; included in queries and filters.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "dataPoint",
+          "description": "**`dataPoint`** (`DataPoint!`)\n\nThe related DataPoint object for this daily telemetry record.\n\n- **Behavior:**Relation enforced via `dataPointId → DataPoint.id`.\nCascade deletion: TelemetryDaily records are removed if the parent DataPoint is deleted.\n\n- **Usage:** Enables nested queries and contextual reporting.",
+          "type": "DataPoint!",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "deletionReferenceBehavior": "cascade",
+                "fields": {
+                  "from": "dataPointId",
+                  "to": "id"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        }
+      ],
+      "description": "Represents daily aggregated telemetry statistics for a DataPoint, including summary metrics like average, min, max, and standard deviation. Used for reporting, trend analysis, and performance dashboards.\n\n**Typical Use Cases**\n\n- Summarize raw telemetry into daily intervals for analytics.\n- Support shift-based reporting and KPI calculations.\n- Reduce storage overhead compared to raw telemetry while retaining essential insights."
+    },
+    "dataModelTypeId": "transactional"
+  },
+  "migration": "$",
+  "migrations": [
+    {
+      "dataModelVersionId": "cml5prkp9bm2u01a55iiz4aae",
+      "dataModelVersion": {
+        "number": "4"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cml5pov6ubly001a58gyv17s6",
+      "dataModelVersion": {
+        "number": "3"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmjzzeh192ohk017jhj7g1gis",
+      "dataModelVersion": {
+        "number": "2"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmjzze3bt2avm016cc02t5xax",
+      "dataModelVersion": {
+        "number": "1"
+      },
+      "mappingExpression": "$"
+    }
+  ]
+}

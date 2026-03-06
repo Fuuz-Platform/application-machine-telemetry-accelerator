@@ -1,0 +1,23 @@
+{
+  "header": {
+    "id": "visualizationDatasourceHourlyOeeTrend",
+    "name": "Visualization Datasource: Hourly OEE Trend",
+    "description": "Auto-generated saved transform to drive visualization \"Hourly OEE Trend\".",
+    "substitutesSavedTransformId": null,
+    "active": true,
+    "deprecated": false,
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cmku7f3ju09e801djdi7ehloi",
+    "number": "1.0.0",
+    "description": "Auto-generated saved transform version to drive visualization \"Hourly OEE Trend\".",
+    "savedTransformId": "visualizationDatasourceHourlyOeeTrend",
+    "scriptLanguageId": "JSONata",
+    "transform": "{}",
+    "inputSchema": {},
+    "outputSchema": {}
+  }
+}

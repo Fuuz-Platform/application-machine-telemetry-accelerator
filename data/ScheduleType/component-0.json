@@ -1,0 +1,37 @@
+{
+  "api": "application",
+  "modelName": "ScheduleType",
+  "payload": [
+    {
+      "id": "cron",
+      "name": "Cron",
+      "configSchema": {
+        "type": "object",
+        "properties": {
+          "cronString": {
+            "title": "Schedule",
+            "description": "The cron schedule on which to execute this node.",
+            "type": "string",
+            "format": "cron"
+          },
+          "timezone": {
+            "title": "Timezone",
+            "description": "The timezone to run the schedule in.",
+            "type": "string",
+            "format": "timezone",
+            "inputProps": {
+              "type": "combobox",
+              "options": {
+                "__transform": "$momentTzTimezones().{\"id\": $, \"label\": $}"
+              }
+            }
+          }
+        },
+        "required": [
+          "cronString"
+        ]
+      }
+    }
+  ],
+  "metadata": {}
+}

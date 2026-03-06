@@ -1,0 +1,2698 @@
+{
+  "header": {
+    "id": "products",
+    "name": "Products",
+    "description": "",
+    "active": true,
+    "edgeScreen": false,
+    "forceFullscreen": false,
+    "moduleId": "machineDataApp",
+    "substitutesScreenId": null,
+    "isWidget": false
+  },
+  "version": {
+    "id": "cmk4f4p680ev6017nbl60hx30",
+    "number": "0.0.1",
+    "description": "",
+    "screenId": "products",
+    "design": {
+      "components": [
+        {
+          "name": "Products",
+          "tabTitle": "Products",
+          "type": "canvas",
+          "props": {
+            "design": {
+              "ROOT": {
+                "type": {
+                  "resolvedName": "Screen"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexDirection": "column",
+                  "flexWrap": false,
+                  "alignItems": "stretch",
+                  "justifyContent": "flex-start",
+                  "width": "100%",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "flowsDelay": 0,
+                  "removeOuterMargin": true,
+                  "background": "paper"
+                },
+                "displayName": "Screen",
+                "custom": {
+                  "elementName": "Screen",
+                  "elementCounts": {
+                    "Container": 16,
+                    "Action": 4,
+                    "Resizable Panel": 1,
+                    "Form": 1,
+                    "Select": 1,
+                    "GraphQL Where Input": 1,
+                    "Table": 1,
+                    "Table Column": 13,
+                    "Text": 2,
+                    "Custom Column": 1,
+                    "Options": 2
+                  },
+                  "module": {
+                    "id": "machineDataApp",
+                    "group": {
+                      "id": "machineTelemetrySiteApplication"
+                    }
+                  },
+                  "dataModel": "Product",
+                  "template": "master"
+                },
+                "parent": null,
+                "hidden": false,
+                "nodes": [
+                  "ContainerOuter"
+                ],
+                "linkedNodes": {}
+              },
+              "ContainerOuter": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": true,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "0px",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "ContainerOuter"
+                },
+                "parent": "ROOT",
+                "hidden": false,
+                "nodes": [
+                  "ResizableFilterPanel",
+                  "ContainerBody"
+                ],
+                "linkedNodes": {}
+              },
+              "ContainerBody": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "0px",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0.5px solid #5b30df"
+                  },
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "ContainerBody"
+                },
+                "parent": "ContainerOuter",
+                "hidden": false,
+                "nodes": [
+                  "TopActionBar",
+                  "BrandBandSeparator",
+                  "ProductTable"
+                ],
+                "linkedNodes": {}
+              },
+              "ResizableFilterPanel": {
+                "type": {
+                  "resolvedName": "ResizablePanelLayout"
+                },
+                "isCanvas": true,
+                "props": {
+                  "handle": "right",
+                  "toggleHotkey": "",
+                  "defaultSize": 320,
+                  "axis": false,
+                  "minSize": 0,
+                  "maxSize": 400
+                },
+                "displayName": "Resizable Panel",
+                "custom": {
+                  "elementName": "ResizableFilterPanel"
+                },
+                "parent": "ContainerOuter",
+                "hidden": false,
+                "nodes": [
+                  "ContainerFilterOuter"
+                ],
+                "linkedNodes": {}
+              },
+              "ContainerFilterOuter": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": true,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "ContainerFilterOuter"
+                },
+                "parent": "ResizableFilterPanel",
+                "hidden": false,
+                "nodes": [
+                  "FilterPanelHeader",
+                  "FormFilterPanel"
+                ],
+                "linkedNodes": {}
+              },
+              "FilterPanelHeader": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "40px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0px undefined ",
+                    "borderBottom": "0px none "
+                  },
+                  "justifyItems": "start",
+                  "style": {},
+                  "background": "light",
+                  "customBackground": "#f0f0f0"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "FilterPanelHeader"
+                },
+                "parent": "ContainerFilterOuter",
+                "hidden": false,
+                "nodes": [
+                  "FilterPanelHeaderInner",
+                  "FilterBrandSeparator"
+                ],
+                "linkedNodes": {}
+              },
+              "FilterPanelHeaderInner": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 4,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "space-between",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "35px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0px undefined ",
+                    "borderBottom": "undefinedpx none "
+                  },
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "FilterPanelHeaderInner"
+                },
+                "parent": "FilterPanelHeader",
+                "hidden": false,
+                "nodes": [
+                  "FilterPanelTitle",
+                  "FilterSearchContainer"
+                ],
+                "linkedNodes": {}
+              },
+              "FilterPanelTitle": {
+                "type": {
+                  "resolvedName": "RichText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "width": "180px",
+                  "height": "40px",
+                  "content": {
+                    "blocks": [
+                      {
+                        "key": "filterPanelTitle",
+                        "text": "Product Filters",
+                        "type": "unstyled",
+                        "depth": 0,
+                        "inlineStyleRanges": [
+                          {
+                            "offset": 0,
+                            "length": 15,
+                            "style": "fontfamily-Roboto"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 15,
+                            "style": "fontsize-14"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 15,
+                            "style": "color-rgb(44,130,201)"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 15,
+                            "style": "BOLD"
+                          }
+                        ],
+                        "entityRanges": [],
+                        "data": {}
+                      }
+                    ],
+                    "entityMap": {}
+                  }
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "FilterPanelTitle"
+                },
+                "parent": "FilterPanelHeaderInner",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "FilterSearchContainer": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "center",
+                  "width": "30px",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "FilterSearchContainer"
+                },
+                "parent": "FilterPanelHeaderInner",
+                "hidden": false,
+                "nodes": [
+                  "ActionSearch"
+                ],
+                "linkedNodes": {}
+              },
+              "ActionSearch": {
+                "type": {
+                  "resolvedName": "ActionButton"
+                },
+                "isCanvas": false,
+                "props": {
+                  "margin": 0,
+                  "buttonColor": "primary",
+                  "icon": {
+                    "icon": "magnifying-glass",
+                    "color": "info",
+                    "variant": "regular",
+                    "size": "icon"
+                  },
+                  "width": "24px",
+                  "height": "24px",
+                  "disabled": false,
+                  "hidden": false,
+                  "useIconButton": true,
+                  "disableHover": false,
+                  "disableRipple": false,
+                  "action": [
+                    {
+                      "type": "transformation",
+                      "transformation": "$components.ProductTable.fn.search()",
+                      "remote": false
+                    }
+                  ],
+                  "title": "Search Using Filters"
+                },
+                "displayName": "Action",
+                "custom": {
+                  "elementName": "ActionSearch"
+                },
+                "parent": "FilterSearchContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "FilterBrandSeparator": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "4px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {
+                    "background-image": "linear-gradient(90deg, #39005a,#5b30df, #03caaf)"
+                  }
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "FilterBrandSeparator"
+                },
+                "parent": "FilterPanelHeader",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "FormFilterPanel": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "isCanvas": true,
+                "props": {
+                  "query": {
+                    "api": "Application",
+                    "query": null,
+                    "dataPath": "edges[0]",
+                    "dataTransform": {
+                      "transform": null,
+                      "remote": true
+                    },
+                    "dataSubscription": {
+                      "enabled": false
+                    },
+                    "autoLoad": false,
+                    "parameters": "{\n  \"filter\": {\n    \"id\": {\n      \"_eq\": id\n    }\n  },\n  \"first\": 1\n}",
+                    "fields": [
+                      "id"
+                    ],
+                    "disableDataChangeIndicator": false,
+                    "dataChangeIndicatorSize": "normal",
+                    "model": "Product"
+                  },
+                  "blockNavigationWhenDirty": false,
+                  "enableConfirmOnDataChanged": false,
+                  "description": "Use filters to narrow down product records."
+                },
+                "displayName": "Form",
+                "custom": {
+                  "elementName": "FormFilterPanel"
+                },
+                "parent": "ContainerFilterOuter",
+                "hidden": false,
+                "nodes": [
+                  "FilterFormContainer"
+                ],
+                "linkedNodes": {}
+              },
+              "FilterFormContainer": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "0px",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {},
+                  "data": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "FilterFormContainer"
+                },
+                "parent": "FormFilterPanel",
+                "hidden": false,
+                "nodes": [
+                  "TextInputCode",
+                  "OptionsProductFamily",
+                  "SelectUnit",
+                  "OptionsActiveStatus",
+                  "GraphQLWhereInput"
+                ],
+                "linkedNodes": {}
+              },
+              "OptionsProductFamily": {
+                "type": {
+                  "resolvedName": "OptionsInput"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "options",
+                  "label": "Product Family",
+                  "multiselect": true,
+                  "isClearable": true,
+                  "selectAll": true,
+                  "searchPredicate": "contains",
+                  "stateTracking": "id",
+                  "optionLimit": 10,
+                  "optionLimitFlex": 5,
+                  "description": "Filter by product family grouping. Select one or more families to narrow results.",
+                  "formElement": "FormFilterPanel",
+                  "variant": "filled",
+                  "disabled": false,
+                  "options": [
+                    {
+                      "id": "Brake Components",
+                      "label": "Brake Components"
+                    },
+                    {
+                      "id": "Suspension Components",
+                      "label": "Suspension Components"
+                    },
+                    {
+                      "id": "Engine Components",
+                      "label": "Engine Components"
+                    },
+                    {
+                      "id": "Body Components",
+                      "label": "Body Components"
+                    },
+                    {
+                      "id": "Transmission Components",
+                      "label": "Transmission Components"
+                    },
+                    {
+                      "id": "General Components",
+                      "label": "General Components"
+                    },
+                    {
+                      "id": "Solvents",
+                      "label": "Solvents"
+                    },
+                    {
+                      "id": "Catalysts",
+                      "label": "Catalysts"
+                    },
+                    {
+                      "id": "Additives",
+                      "label": "Additives"
+                    },
+                    {
+                      "id": "Resins",
+                      "label": "Resins"
+                    },
+                    {
+                      "id": "Polymers",
+                      "label": "Polymers"
+                    },
+                    {
+                      "id": "Intermediates",
+                      "label": "Intermediates"
+                    },
+                    {
+                      "id": "Finished Chemicals",
+                      "label": "Finished Chemicals"
+                    },
+                    {
+                      "id": "Sauces",
+                      "label": "Sauces"
+                    },
+                    {
+                      "id": "Dressings",
+                      "label": "Dressings"
+                    },
+                    {
+                      "id": "Beverages",
+                      "label": "Beverages"
+                    },
+                    {
+                      "id": "Syrups",
+                      "label": "Syrups"
+                    },
+                    {
+                      "id": "Concentrates",
+                      "label": "Concentrates"
+                    }
+                  ],
+                  "target": {
+                    "dataPath": "productFamily._in"
+                  },
+                  "dataPath": "productFamily",
+                  "labelPath": "label",
+                  "field": "productFamily"
+                },
+                "displayName": "Options",
+                "custom": {
+                  "elementName": "OptionsProductFamily"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "SelectUnit": {
+                "type": {
+                  "resolvedName": "SelectInput"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "select",
+                  "label": "Unit of Measure",
+                  "dialogMode": "never",
+                  "multiselect": true,
+                  "isClearable": true,
+                  "selectAll": true,
+                  "searchPredicate": "contains",
+                  "api": "Application",
+                  "stateTracking": "full",
+                  "optionLimit": 20,
+                  "optionLimitFlex": 10,
+                  "alwaysReloadOptions": false,
+                  "description": "Filter by unit of measure (each, kg, L, etc.). Multi-select enabled.",
+                  "target": {
+                    "dataPath": "unitId._in"
+                  },
+                  "dataPath": "unit",
+                  "formElement": "FormFilterPanel",
+                  "variant": "filled",
+                  "disabled": false,
+                  "query": {
+                    "api": "Application",
+                    "model": "Unit",
+                    "dataPath": "edges",
+                    "fields": [
+                      "unit.id",
+                      "unit.name",
+                      "unit.code"
+                    ],
+                    "parameters": "{\n  \"orderBy\": {\n    \"name\": \"ASC\"\n  }\n}"
+                  },
+                  "optionLabelPath": "name",
+                  "optionValuePath": "id",
+                  "optionSecondaryLabelPath": "code",
+                  "field": "unit",
+                  "predicate": "_in",
+                  "labelPath": "name",
+                  "orderByField": "name",
+                  "dataModel": "Unit",
+                  "selectFields": [
+                    "name",
+                    "code"
+                  ],
+                  "additionalFields": [
+                    "code"
+                  ],
+                  "orderByDirection": "asc"
+                },
+                "displayName": "Select",
+                "custom": {
+                  "elementName": "SelectUnit"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "OptionsActiveStatus": {
+                "type": {
+                  "resolvedName": "OptionsInput"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "options",
+                  "label": "Status",
+                  "multiselect": false,
+                  "isClearable": true,
+                  "selectAll": false,
+                  "searchPredicate": "contains",
+                  "stateTracking": "id",
+                  "optionLimit": 10,
+                  "optionLimitFlex": 5,
+                  "description": "Filter by active/inactive status. Active products are available for production.",
+                  "formElement": "FormFilterPanel",
+                  "variant": "filled",
+                  "disabled": false,
+                  "options": [
+                    {
+                      "id": true,
+                      "label": "Active"
+                    },
+                    {
+                      "id": false,
+                      "label": "Inactive"
+                    }
+                  ],
+                  "target": {
+                    "dataPath": "isActive._eq"
+                  },
+                  "dataPath": "isActive",
+                  "labelPath": "label",
+                  "field": "isActive"
+                },
+                "displayName": "Options",
+                "custom": {
+                  "elementName": "OptionsActiveStatus"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "GraphQLWhereInput": {
+                "type": {
+                  "resolvedName": "WrappedGraphQLPredicate"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "graphqlWhere",
+                  "dataPath": "predicate",
+                  "target": {
+                    "dataPath": "_and.0"
+                  },
+                  "formElement": "FormFilterPanel",
+                  "label": "Advanced Filter",
+                  "disabled": false,
+                  "description": "Advanced GraphQL where clause for complex filtering."
+                },
+                "displayName": "GraphQL Where Input",
+                "custom": {
+                  "elementName": "GraphQLWhereInput"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TopActionBar": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "35px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0px undefined ",
+                    "borderBottom": "0px none "
+                  },
+                  "justifyItems": "start",
+                  "style": {},
+                  "background": "light",
+                  "customBackground": "#f0f0f0"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "TopActionBar"
+                },
+                "parent": "ContainerBody",
+                "hidden": false,
+                "nodes": [
+                  "ContainerActionsStandard",
+                  "ContainerActionsCustom"
+                ],
+                "linkedNodes": {}
+              },
+              "ContainerActionsStandard": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 12,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "space-between",
+                  "alignItems": "center",
+                  "width": "80px",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0px undefined ",
+                    "borderRight": "0px none "
+                  },
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "ContainerActionsStandard"
+                },
+                "parent": "TopActionBar",
+                "hidden": false,
+                "nodes": [
+                  "ActionCreateProduct"
+                ],
+                "linkedNodes": {}
+              },
+              "ContainerActionsCustom": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 12,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "center",
+                  "width": "200px",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0px undefined ",
+                    "borderRight": "undefinedpx none "
+                  },
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "ContainerActionsCustom"
+                },
+                "parent": "TopActionBar",
+                "hidden": false,
+                "nodes": [
+                  "ActionRefresh"
+                ],
+                "linkedNodes": {}
+              },
+              "BrandBandSeparator": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "4px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {
+                    "background-image": "linear-gradient(90deg, #39005a,#5b30df, #03caaf)"
+                  }
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "BrandBandSeparator"
+                },
+                "parent": "ContainerBody",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ActionCreateProduct": {
+                "type": {
+                  "resolvedName": "ActionButton"
+                },
+                "isCanvas": false,
+                "props": {
+                  "margin": 0,
+                  "buttonColor": "primary",
+                  "icon": {
+                    "icon": "plus",
+                    "color": "success",
+                    "variant": "regular",
+                    "size": "icon"
+                  },
+                  "width": "40px",
+                  "height": "30px",
+                  "disabled": false,
+                  "hidden": false,
+                  "useIconButton": true,
+                  "disableHover": false,
+                  "disableRipple": false,
+                  "action": [
+                    {
+                      "type": "form",
+                      "submitIcon": "plus",
+                      "title": "Create New Product",
+                      "fields": [
+                        {
+                          "label": "Code",
+                          "dataPath": "code",
+                          "field": "code",
+                          "description": "Enter a unique product identifier (e.g., BRK-PAD-001). Must be unique across all products.",
+                          "element": "TextInput",
+                          "type": "text",
+                          "validation": {
+                            "required": true
+                          }
+                        },
+                        {
+                          "label": "Name",
+                          "dataPath": "name",
+                          "field": "name",
+                          "description": "Enter a descriptive product name that will display in lists and reports.",
+                          "element": "TextInput",
+                          "type": "text",
+                          "validation": {
+                            "required": true
+                          }
+                        },
+                        {
+                          "label": "Description",
+                          "dataPath": "description",
+                          "field": "description",
+                          "description": "Enter detailed product description including specifications or notes.",
+                          "element": "TextInput",
+                          "type": "text",
+                          "validation": {
+                            "required": false
+                          }
+                        },
+                        {
+                          "label": "Product Family",
+                          "dataPath": "productFamily",
+                          "field": "productFamily",
+                          "description": "Select the product family grouping.",
+                          "element": "OptionsInput",
+                          "type": "options",
+                          "validation": {
+                            "required": false
+                          },
+                          "options": [
+                            {
+                              "id": "Brake Components",
+                              "label": "Brake Components"
+                            },
+                            {
+                              "id": "Suspension Components",
+                              "label": "Suspension Components"
+                            },
+                            {
+                              "id": "Engine Components",
+                              "label": "Engine Components"
+                            },
+                            {
+                              "id": "Body Components",
+                              "label": "Body Components"
+                            },
+                            {
+                              "id": "Transmission Components",
+                              "label": "Transmission Components"
+                            },
+                            {
+                              "id": "General Components",
+                              "label": "General Components"
+                            },
+                            {
+                              "id": "Solvents",
+                              "label": "Solvents"
+                            },
+                            {
+                              "id": "Catalysts",
+                              "label": "Catalysts"
+                            },
+                            {
+                              "id": "Additives",
+                              "label": "Additives"
+                            },
+                            {
+                              "id": "Resins",
+                              "label": "Resins"
+                            },
+                            {
+                              "id": "Polymers",
+                              "label": "Polymers"
+                            },
+                            {
+                              "id": "Intermediates",
+                              "label": "Intermediates"
+                            },
+                            {
+                              "id": "Finished Chemicals",
+                              "label": "Finished Chemicals"
+                            },
+                            {
+                              "id": "Sauces",
+                              "label": "Sauces"
+                            },
+                            {
+                              "id": "Dressings",
+                              "label": "Dressings"
+                            },
+                            {
+                              "id": "Beverages",
+                              "label": "Beverages"
+                            },
+                            {
+                              "id": "Syrups",
+                              "label": "Syrups"
+                            },
+                            {
+                              "id": "Concentrates",
+                              "label": "Concentrates"
+                            }
+                          ],
+                          "multiselect": false,
+                          "isClearable": true,
+                          "stateTracking": "id",
+                          "labelPath": "label"
+                        },
+                        {
+                          "label": "Unit of Measure",
+                          "dataPath": "unit",
+                          "field": "unit",
+                          "description": "Select the unit for counting/measuring this product.",
+                          "element": "SelectInput",
+                          "type": "select",
+                          "api": "Application",
+                          "dataModel": "Unit",
+                          "labelField": "name",
+                          "labelPath": "name",
+                          "additionalFields": [
+                            "name",
+                            "code"
+                          ],
+                          "selectFields": [
+                            "name",
+                            "code"
+                          ],
+                          "target": {
+                            "dataPath": "unitId"
+                          },
+                          "validation": {
+                            "required": true
+                          }
+                        },
+                        {
+                          "label": "Standard Cycle Time (sec)",
+                          "dataPath": "standardCycleTime",
+                          "field": "standardCycleTime",
+                          "description": "Ideal cycle time in seconds for producing one unit. Used for OEE Performance.",
+                          "element": "FloatInput",
+                          "type": "float",
+                          "validation": {
+                            "required": false
+                          }
+                        },
+                        {
+                          "label": "Target Yield (%)",
+                          "dataPath": "targetYield",
+                          "field": "targetYield",
+                          "description": "Target quality yield percentage (e.g., 98.5). Used for quality metrics.",
+                          "element": "FloatInput",
+                          "type": "float",
+                          "validation": {
+                            "required": false
+                          }
+                        },
+                        {
+                          "label": "Setup Time (min)",
+                          "dataPath": "setupTime",
+                          "field": "setupTime",
+                          "description": "Standard setup/changeover time in minutes.",
+                          "element": "FloatInput",
+                          "type": "float",
+                          "validation": {
+                            "required": false
+                          }
+                        },
+                        {
+                          "label": "Active",
+                          "dataPath": "isActive",
+                          "field": "isActive",
+                          "description": "Whether this product is active and available for production.",
+                          "element": "Switch",
+                          "type": "switch",
+                          "validation": {
+                            "required": false
+                          },
+                          "defaultValue": true
+                        }
+                      ]
+                    },
+                    {
+                      "type": "mutation",
+                      "api": "Application",
+                      "mutation": "mutation CreateProduct($payload: [ProductCreatePayloadInput!]!) {\n  mutation: createProduct(payload: $payload) {\n    id\n    code\n  }\n}",
+                      "transforms": {
+                        "pre": "{\n  \"payload\": {\n    \"create\": data\n  }\n}"
+                      },
+                      "message": {
+                        "__transform": "\"Product \" & data.mutation[0].code & \" created successfully.\""
+                      }
+                    },
+                    {
+                      "type": "transformation",
+                      "remote": false,
+                      "transformation": "$components.ProductTable.fn.search()"
+                    }
+                  ],
+                  "title": "Create New Product",
+                  "customTextSize": 10,
+                  "customIconSize": 0
+                },
+                "displayName": "Action",
+                "custom": {
+                  "editor": {
+                    "category": "Buttons",
+                    "description": "Create new product.",
+                    "color": "#9c5a94",
+                    "elementName": "Create Product",
+                    "icon": "plus",
+                    "requiresTable": true
+                  },
+                  "elementName": "ActionCreateProduct"
+                },
+                "parent": "ContainerActionsStandard",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ActionRefresh": {
+                "type": {
+                  "resolvedName": "ActionButton"
+                },
+                "isCanvas": false,
+                "props": {
+                  "margin": 0,
+                  "buttonColor": "primary",
+                  "icon": {
+                    "icon": "arrows-rotate",
+                    "color": "secondary",
+                    "variant": "regular",
+                    "size": "icon"
+                  },
+                  "width": "40px",
+                  "height": "30px",
+                  "disabled": false,
+                  "hidden": false,
+                  "useIconButton": true,
+                  "disableHover": false,
+                  "disableRipple": false,
+                  "action": [
+                    {
+                      "type": "transformation",
+                      "transformation": "$components.ProductTable.fn.search()",
+                      "remote": false
+                    }
+                  ],
+                  "title": "Refresh Data",
+                  "customTextSize": 10,
+                  "customIconSize": 0
+                },
+                "displayName": "Action",
+                "custom": {
+                  "editor": {
+                    "category": "Buttons",
+                    "description": "Refresh table data.",
+                    "color": "#9c5a94",
+                    "elementName": "Refresh Button",
+                    "icon": "arrows-rotate",
+                    "requiresTable": true
+                  },
+                  "elementName": "ActionRefresh"
+                },
+                "parent": "ContainerActionsCustom",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ProductTable": {
+                "type": {
+                  "resolvedName": "Table"
+                },
+                "isCanvas": true,
+                "props": {
+                  "margin": 0,
+                  "width": "100%",
+                  "height": "0px",
+                  "flexGrow": true,
+                  "query": {
+                    "api": "Application",
+                    "query": null,
+                    "dataPath": "edges",
+                    "dataTransform": {
+                      "transform": "[edges.node~>|$|{\n  \"unitDisplay\": unit.name ? unit.name & \" (\" & unit.code & \")\" : \"N/A\",\n  \"createdByDisplay\": createdByUser.firstName & ' ' & createdByUser.lastName,\n  \"activeColor\": (\n    $activeColors := {\"true\": \"#2e7d32\", \"false\": \"#d32f2f\"};\n    $lookup($activeColors, $string(isActive)) ? $lookup($activeColors, $string(isActive)) : \"#757575\"\n  ),\n  \"yieldColor\": (\n    targetYield >= 98.5 ? \"#2e7d32\" : (targetYield >= 95 ? \"#ed6c02\" : \"#d32f2f\")\n  ),\n  \"activeDisplay\": isActive ? \"Active\" : \"Inactive\"\n}|]",
+                      "remote": true
+                    },
+                    "dataSubscription": {
+                      "enabled": false
+                    },
+                    "autoLoad": true,
+                    "fields": [
+                      "id",
+                      "code",
+                      "name",
+                      "description",
+                      "productFamily",
+                      "standardCycleTime",
+                      "targetYield",
+                      "setupTime",
+                      "isActive",
+                      "createdAt",
+                      "unit.id",
+                      "unit.name",
+                      "unit.code",
+                      "createdByUser.id",
+                      "createdByUser.firstName",
+                      "createdByUser.lastName"
+                    ],
+                    "disableDataChangeIndicator": false,
+                    "selectedDataChangeIndicator": null,
+                    "model": "Product",
+                    "readPreference": "primaryPreferred",
+                    "parameters": "{\n  \"orderBy\": [\n    {\n      \"field\": \"code\",\n      \"direction\": \"asc\"\n    }\n  ]\n}"
+                  },
+                  "selectable": "none",
+                  "showToolPanels": true,
+                  "showStatusBar": true,
+                  "enableGrouping": true,
+                  "enableCharts": true,
+                  "showColumnMenu": true,
+                  "enableRowDragging": false,
+                  "disableColumnDragging": false,
+                  "disableDragLeaveHidesColumns": false,
+                  "masterDetail": false,
+                  "hideTableHeader": false,
+                  "description": "Product master data for manufacturing operations. Each product represents an item that can be produced, with associated cycle times, yields, and specifications.\n\n**Key Use Cases:**\n• Product catalog management\n• OEE target configuration (cycle time, yield)\n• Work order product selection\n• Quality and production reporting",
+                  "rowMultiSelectWithClick": false,
+                  "defaultSort": [
+                    {
+                      "field": "TableColumnCode",
+                      "direction": "asc"
+                    }
+                  ],
+                  "limitToOneActiveDetail": false,
+                  "filterFormName": "FormFilterPanel"
+                },
+                "displayName": "Table",
+                "custom": {
+                  "elementName": "ProductTable"
+                },
+                "parent": "ContainerBody",
+                "hidden": false,
+                "nodes": [
+                  "TableColumnActions",
+                  "TableColumnCode",
+                  "TableColumnName",
+                  "A6CJLSqa3v",
+                  "TableColumnProductFamily",
+                  "TableColumnUnit",
+                  "TableColumnCycleTime",
+                  "TableColumnTargetYield",
+                  "TableColumnSetupTime",
+                  "TableColumnActive",
+                  "TableColumnCreatedAt",
+                  "TableColumnCreatedBy",
+                  "CustomFieldsColumn"
+                ],
+                "linkedNodes": {}
+              },
+              "TableColumnActions": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": " ",
+                  "format": "menu",
+                  "sortable": false,
+                  "dataPath": "actions",
+                  "width": "50px",
+                  "flows": [],
+                  "actions": [
+                    {
+                      "text": "View Details",
+                      "icon": {
+                        "icon": "eye",
+                        "color": "info",
+                        "variant": "regular",
+                        "size": "small"
+                      },
+                      "action": [
+                        {
+                          "type": "query",
+                          "api": "Application",
+                          "query": "query GetProduct($where: ProductWhereInput) {\n  query: product(where: $where) {\n    edges {\n      node {\n        id\n        code\n        name\n        description\n        productFamily\n        unitId\n        unit {\n          id\n          name\n          code\n        }\n        standardCycleTime\n        targetYield\n        setupTime\n        isActive\n        createdAt\n        createdByUser {\n          id\n          firstName\n          lastName\n        }\n      }\n    }\n  }\n}",
+                          "transforms": {
+                            "pre": "{ \"where\": { \"id\": { \"_eq\": data.id } } }",
+                            "post": "data.query.edges[0].node ~> |$|{\n  \"unitDisplay\": unit.name ? unit.name & \" (\" & unit.code & \")\" : \"N/A\",\n  \"createdByDisplay\": createdByUser.firstName & \" \" & createdByUser.lastName,\n  \"activeDisplay\": isActive ? \"Active\" : \"Inactive\",\n  \"activeColor\": isActive ? \"#2e7d32\" : \"#d32f2f\",\n  \"yieldColor\": targetYield >= 98.5 ? \"#2e7d32\" : (targetYield >= 95 ? \"#ed6c02\" : \"#d32f2f\")\n}|"
+                          }
+                        },
+                        {
+                          "type": "form",
+                          "submitIcon": "check",
+                          "submitLabel": "Close",
+                          "title": {
+                            "__transform": "\"Product: \" & data.code"
+                          },
+                          "transforms": {
+                            "pre": "data"
+                          },
+                          "fields": [
+                            {
+                              "label": "Code",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "Unique product identifier.",
+                              "field": "code",
+                              "dataPath": "code",
+                              "target": {
+                                "dataPath": "code"
+                              }
+                            },
+                            {
+                              "label": "Name",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "Product display name.",
+                              "field": "name",
+                              "dataPath": "name",
+                              "target": {
+                                "dataPath": "name"
+                              }
+                            },
+                            {
+                              "label": "Description",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "Detailed product description.",
+                              "field": "description",
+                              "dataPath": "description",
+                              "target": {
+                                "dataPath": "description"
+                              }
+                            },
+                            {
+                              "label": "Product Family",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "Product grouping category.",
+                              "field": "productFamily",
+                              "dataPath": "productFamily",
+                              "target": {
+                                "dataPath": "productFamily"
+                              }
+                            },
+                            {
+                              "label": "Unit of Measure",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "Unit for counting/measuring.",
+                              "field": "unitDisplay",
+                              "dataPath": "unitDisplay",
+                              "target": {
+                                "dataPath": "unitDisplay"
+                              }
+                            },
+                            {
+                              "label": "Standard Cycle Time (sec)",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "Ideal cycle time in seconds.",
+                              "field": "standardCycleTime",
+                              "dataPath": "standardCycleTime",
+                              "target": {
+                                "dataPath": "standardCycleTime"
+                              }
+                            },
+                            {
+                              "label": "Target Yield (%)",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "Target quality yield percentage.",
+                              "field": "targetYield",
+                              "dataPath": "targetYield",
+                              "target": {
+                                "dataPath": "targetYield"
+                              },
+                              "style": {
+                                "__transform": "{ \"color\": data.yieldColor }",
+                                "__dynamicFields": {
+                                  "payload": null,
+                                  "context": []
+                                },
+                                "__cacheKey": "",
+                                "__remote": false
+                              }
+                            },
+                            {
+                              "label": "Setup Time (min)",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "Standard setup time in minutes.",
+                              "field": "setupTime",
+                              "dataPath": "setupTime",
+                              "target": {
+                                "dataPath": "setupTime"
+                              }
+                            },
+                            {
+                              "label": "Status",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "Active or Inactive status.",
+                              "field": "activeDisplay",
+                              "dataPath": "activeDisplay",
+                              "target": {
+                                "dataPath": "activeDisplay"
+                              },
+                              "style": {
+                                "__transform": "{ \"color\": data.activeColor }",
+                                "__dynamicFields": {
+                                  "payload": null,
+                                  "context": []
+                                },
+                                "__cacheKey": "",
+                                "__remote": false
+                              }
+                            },
+                            {
+                              "label": "Created At",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "Record creation timestamp.",
+                              "format": "datetime",
+                              "formatString": "MM/DD/YYYY h:mm A",
+                              "timeZone": "setting",
+                              "field": "createdAt",
+                              "dataPath": "createdAt",
+                              "target": {
+                                "dataPath": "createdAt"
+                              }
+                            },
+                            {
+                              "label": "Created By",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "User who created this product.",
+                              "field": "createdByDisplay",
+                              "dataPath": "createdByDisplay",
+                              "target": {
+                                "dataPath": "createdByDisplay"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "text": "Edit",
+                      "icon": {
+                        "icon": "pencil",
+                        "color": "warning",
+                        "variant": "regular",
+                        "size": "small"
+                      },
+                      "action": [
+                        {
+                          "type": "query",
+                          "api": "Application",
+                          "query": "query GetProduct($where: ProductWhereInput) {\n  query: product(where: $where) {\n    edges {\n      node {\n        id\n        code\n        name\n        description\n        productFamily\n        unitId\n        unit {\n          id\n          name\n          code\n        }\n        standardCycleTime\n        targetYield\n        setupTime\n        isActive\n        createdAt\n        createdByUser {\n          id\n          firstName\n          lastName\n        }\n      }\n    }\n  }\n}",
+                          "transforms": {
+                            "pre": "{ \"where\": { \"id\": { \"_eq\": data.id } } }",
+                            "post": "data.query.edges[0].node"
+                          }
+                        },
+                        {
+                          "type": "form",
+                          "submitIcon": "save",
+                          "title": {
+                            "__transform": "\"Edit Product: \" & data.code"
+                          },
+                          "transforms": {
+                            "pre": "data"
+                          },
+                          "fields": [
+                            {
+                              "label": "Code",
+                              "dataPath": "code",
+                              "field": "code",
+                              "description": "Unique product identifier.",
+                              "element": "TextInput",
+                              "type": "text",
+                              "validation": {
+                                "required": true
+                              }
+                            },
+                            {
+                              "label": "Name",
+                              "dataPath": "name",
+                              "field": "name",
+                              "description": "Product display name.",
+                              "element": "TextInput",
+                              "type": "text",
+                              "validation": {
+                                "required": true
+                              }
+                            },
+                            {
+                              "label": "Description",
+                              "dataPath": "description",
+                              "field": "description",
+                              "description": "Detailed product description.",
+                              "element": "TextInput",
+                              "type": "text",
+                              "validation": {
+                                "required": false
+                              }
+                            },
+                            {
+                              "label": "Product Family",
+                              "dataPath": "productFamily",
+                              "field": "productFamily",
+                              "description": "Select the product family grouping.",
+                              "element": "OptionsInput",
+                              "type": "options",
+                              "options": [
+                                {
+                                  "id": "Brake Components",
+                                  "label": "Brake Components"
+                                },
+                                {
+                                  "id": "Suspension Components",
+                                  "label": "Suspension Components"
+                                },
+                                {
+                                  "id": "Engine Components",
+                                  "label": "Engine Components"
+                                },
+                                {
+                                  "id": "Body Components",
+                                  "label": "Body Components"
+                                },
+                                {
+                                  "id": "Transmission Components",
+                                  "label": "Transmission Components"
+                                },
+                                {
+                                  "id": "General Components",
+                                  "label": "General Components"
+                                },
+                                {
+                                  "id": "Solvents",
+                                  "label": "Solvents"
+                                },
+                                {
+                                  "id": "Catalysts",
+                                  "label": "Catalysts"
+                                },
+                                {
+                                  "id": "Additives",
+                                  "label": "Additives"
+                                },
+                                {
+                                  "id": "Resins",
+                                  "label": "Resins"
+                                },
+                                {
+                                  "id": "Polymers",
+                                  "label": "Polymers"
+                                },
+                                {
+                                  "id": "Intermediates",
+                                  "label": "Intermediates"
+                                },
+                                {
+                                  "id": "Finished Chemicals",
+                                  "label": "Finished Chemicals"
+                                },
+                                {
+                                  "id": "Sauces",
+                                  "label": "Sauces"
+                                },
+                                {
+                                  "id": "Dressings",
+                                  "label": "Dressings"
+                                },
+                                {
+                                  "id": "Beverages",
+                                  "label": "Beverages"
+                                },
+                                {
+                                  "id": "Syrups",
+                                  "label": "Syrups"
+                                },
+                                {
+                                  "id": "Concentrates",
+                                  "label": "Concentrates"
+                                }
+                              ],
+                              "multiselect": false,
+                              "isClearable": true,
+                              "stateTracking": "id",
+                              "labelPath": "label",
+                              "validation": {
+                                "required": false
+                              }
+                            },
+                            {
+                              "label": "Unit of Measure",
+                              "dataPath": "unit",
+                              "field": "unit",
+                              "description": "Unit for counting/measuring.",
+                              "element": "SelectInput",
+                              "type": "select",
+                              "api": "Application",
+                              "dataModel": "Unit",
+                              "labelField": "name",
+                              "labelPath": "name",
+                              "additionalFields": [
+                                "name",
+                                "code"
+                              ],
+                              "selectFields": [
+                                "name",
+                                "code"
+                              ],
+                              "target": {
+                                "dataPath": "unitId"
+                              },
+                              "validation": {
+                                "required": true
+                              }
+                            },
+                            {
+                              "label": "Standard Cycle Time (sec)",
+                              "dataPath": "standardCycleTime",
+                              "field": "standardCycleTime",
+                              "description": "Ideal cycle time in seconds.",
+                              "element": "FloatInput",
+                              "type": "float",
+                              "validation": {
+                                "required": false
+                              }
+                            },
+                            {
+                              "label": "Target Yield (%)",
+                              "dataPath": "targetYield",
+                              "field": "targetYield",
+                              "description": "Target quality yield percentage.",
+                              "element": "FloatInput",
+                              "type": "float",
+                              "validation": {
+                                "required": false
+                              }
+                            },
+                            {
+                              "label": "Setup Time (min)",
+                              "dataPath": "setupTime",
+                              "field": "setupTime",
+                              "description": "Standard setup time in minutes.",
+                              "element": "FloatInput",
+                              "type": "float",
+                              "validation": {
+                                "required": false
+                              }
+                            },
+                            {
+                              "label": "Active",
+                              "dataPath": "isActive",
+                              "field": "isActive",
+                              "description": "Whether this product is active.",
+                              "element": "Switch",
+                              "type": "switch",
+                              "validation": {
+                                "required": false
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "mutation",
+                          "api": "Application",
+                          "mutation": "mutation UpdateProduct($payload: [ProductUpdatePayloadInput!]!) {\n  mutation: updateProduct(payload: $payload) {\n    id\n    code\n  }\n}",
+                          "transforms": {
+                            "pre": "{\n  \"payload\": rowData.{\n    \"where\": {\n      \"id\": id\n    },\n    \"update\": $$.data\n  }\n}"
+                          },
+                          "message": {
+                            "__transform": "\"Product \" & rowData.code & \" updated successfully.\""
+                          }
+                        },
+                        {
+                          "type": "transformation",
+                          "remote": false,
+                          "transformation": "$components.ProductTable.fn.search()"
+                        }
+                      ]
+                    },
+                    {
+                      "text": "Duplicate",
+                      "icon": {
+                        "icon": "copy",
+                        "color": "primary",
+                        "variant": "regular",
+                        "size": "small"
+                      },
+                      "action": [
+                        {
+                          "type": "query",
+                          "api": "Application",
+                          "query": "query GetProduct($where: ProductWhereInput) {\n  query: product(where: $where) {\n    edges {\n      node {\n        id\n        code\n        name\n        description\n        productFamily\n        unitId\n        unit {\n          id\n          name\n          code\n        }\n        standardCycleTime\n        targetYield\n        setupTime\n        isActive\n        createdAt\n        createdByUser {\n          id\n          firstName\n          lastName\n        }\n      }\n    }\n  }\n}",
+                          "transforms": {
+                            "pre": "{ \"where\": { \"id\": { \"_eq\": data.id } } }",
+                            "post": "data.query.edges[0].node"
+                          }
+                        },
+                        {
+                          "type": "form",
+                          "submitIcon": "copy",
+                          "title": {
+                            "__transform": "\"Duplicate Product: \" & data.code"
+                          },
+                          "transforms": {
+                            "pre": "data ~> |$|{\"code\": code & \"-COPY\"}|"
+                          },
+                          "fields": [
+                            {
+                              "label": "New Code",
+                              "dataPath": "code",
+                              "field": "code",
+                              "description": "Enter a unique code for the duplicated product.",
+                              "element": "TextInput",
+                              "type": "text",
+                              "validation": {
+                                "required": true
+                              }
+                            },
+                            {
+                              "label": "Name",
+                              "dataPath": "name",
+                              "field": "name",
+                              "description": "Product name (modify if needed).",
+                              "element": "TextInput",
+                              "type": "text",
+                              "validation": {
+                                "required": true
+                              }
+                            },
+                            {
+                              "label": "Description",
+                              "dataPath": "description",
+                              "field": "description",
+                              "description": "Product description.",
+                              "element": "TextInput",
+                              "type": "text",
+                              "validation": {
+                                "required": false
+                              }
+                            },
+                            {
+                              "label": "Product Family",
+                              "dataPath": "productFamily",
+                              "field": "productFamily",
+                              "description": "Select the product family grouping.",
+                              "element": "OptionsInput",
+                              "type": "options",
+                              "options": [
+                                {
+                                  "id": "Brake Components",
+                                  "label": "Brake Components"
+                                },
+                                {
+                                  "id": "Suspension Components",
+                                  "label": "Suspension Components"
+                                },
+                                {
+                                  "id": "Engine Components",
+                                  "label": "Engine Components"
+                                },
+                                {
+                                  "id": "Body Components",
+                                  "label": "Body Components"
+                                },
+                                {
+                                  "id": "Transmission Components",
+                                  "label": "Transmission Components"
+                                },
+                                {
+                                  "id": "General Components",
+                                  "label": "General Components"
+                                },
+                                {
+                                  "id": "Solvents",
+                                  "label": "Solvents"
+                                },
+                                {
+                                  "id": "Catalysts",
+                                  "label": "Catalysts"
+                                },
+                                {
+                                  "id": "Additives",
+                                  "label": "Additives"
+                                },
+                                {
+                                  "id": "Resins",
+                                  "label": "Resins"
+                                },
+                                {
+                                  "id": "Polymers",
+                                  "label": "Polymers"
+                                },
+                                {
+                                  "id": "Intermediates",
+                                  "label": "Intermediates"
+                                },
+                                {
+                                  "id": "Finished Chemicals",
+                                  "label": "Finished Chemicals"
+                                },
+                                {
+                                  "id": "Sauces",
+                                  "label": "Sauces"
+                                },
+                                {
+                                  "id": "Dressings",
+                                  "label": "Dressings"
+                                },
+                                {
+                                  "id": "Beverages",
+                                  "label": "Beverages"
+                                },
+                                {
+                                  "id": "Syrups",
+                                  "label": "Syrups"
+                                },
+                                {
+                                  "id": "Concentrates",
+                                  "label": "Concentrates"
+                                }
+                              ],
+                              "multiselect": false,
+                              "isClearable": true,
+                              "stateTracking": "id",
+                              "labelPath": "label",
+                              "validation": {
+                                "required": false
+                              }
+                            },
+                            {
+                              "label": "Unit of Measure",
+                              "dataPath": "unit",
+                              "field": "unit",
+                              "description": "Select the unit for counting/measuring this product.",
+                              "element": "SelectInput",
+                              "type": "select",
+                              "api": "Application",
+                              "dataModel": "Unit",
+                              "labelField": "name",
+                              "labelPath": "name",
+                              "additionalFields": [
+                                "name",
+                                "code"
+                              ],
+                              "selectFields": [
+                                "name",
+                                "code"
+                              ],
+                              "target": {
+                                "dataPath": "unitId"
+                              },
+                              "validation": {
+                                "required": true
+                              }
+                            },
+                            {
+                              "label": "Standard Cycle Time (sec)",
+                              "dataPath": "standardCycleTime",
+                              "field": "standardCycleTime",
+                              "description": "Cycle time in seconds.",
+                              "element": "FloatInput",
+                              "type": "float",
+                              "validation": {
+                                "required": false
+                              }
+                            },
+                            {
+                              "label": "Target Yield (%)",
+                              "dataPath": "targetYield",
+                              "field": "targetYield",
+                              "description": "Target yield percentage.",
+                              "element": "FloatInput",
+                              "type": "float",
+                              "validation": {
+                                "required": false
+                              }
+                            },
+                            {
+                              "label": "Setup Time (min)",
+                              "dataPath": "setupTime",
+                              "field": "setupTime",
+                              "description": "Setup time in minutes.",
+                              "element": "FloatInput",
+                              "type": "float",
+                              "validation": {
+                                "required": false
+                              }
+                            },
+                            {
+                              "label": "Active",
+                              "dataPath": "isActive",
+                              "field": "isActive",
+                              "description": "Product active status.",
+                              "element": "Switch",
+                              "type": "switch",
+                              "validation": {
+                                "required": false
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "mutation",
+                          "api": "Application",
+                          "mutation": "mutation CreateProduct($payload: [ProductCreatePayloadInput!]!) {\n  mutation: createProduct(payload: $payload) {\n    id\n    code\n  }\n}",
+                          "transforms": {
+                            "pre": "{\n  \"payload\": {\n    \"create\": data\n  }\n}"
+                          },
+                          "message": {
+                            "__transform": "\"Product \" & data.mutation[0].code & \" created successfully.\""
+                          }
+                        },
+                        {
+                          "type": "transformation",
+                          "remote": false,
+                          "transformation": "$components.ProductTable.fn.search()"
+                        }
+                      ]
+                    },
+                    {
+                      "text": "Deactivate",
+                      "icon": {
+                        "icon": "ban",
+                        "color": "error",
+                        "variant": "regular",
+                        "size": "small"
+                      },
+                      "action": [
+                        {
+                          "type": "confirmation",
+                          "buttonColor": "warning",
+                          "submitIcon": {
+                            "icon": "ban",
+                            "variant": "solid"
+                          },
+                          "message": {
+                            "__transform": "\"Deactivate product \" & data.code & \"? This will make it unavailable for new work orders.\""
+                          }
+                        },
+                        {
+                          "type": "mutation",
+                          "api": "Application",
+                          "mutation": "mutation DeactivateProduct($payload: [ProductUpdatePayloadInput!]!) {\n  mutation: updateProduct(payload: $payload) {\n    id\n    code\n    isActive\n  }\n}",
+                          "transforms": {
+                            "pre": "{\n  \"payload\": data.{\n    \"where\": {\n      \"id\": id\n    },\n    \"update\": {\n      \"isActive\": false\n    }\n  }\n}"
+                          },
+                          "message": {
+                            "__transform": "\"Product \" & rowData.code & \" deactivated.\""
+                          }
+                        },
+                        {
+                          "type": "transformation",
+                          "remote": false,
+                          "transformation": "$components.ProductTable.fn.search()"
+                        }
+                      ]
+                    },
+                    {
+                      "text": "Delete",
+                      "icon": {
+                        "icon": "trash",
+                        "color": "error",
+                        "variant": "regular",
+                        "size": "small"
+                      },
+                      "action": [
+                        {
+                          "type": "confirmation",
+                          "buttonColor": "error",
+                          "submitIcon": {
+                            "icon": "trash",
+                            "variant": "solid"
+                          },
+                          "message": {
+                            "__transform": "\"Delete product \" & data.code & \"? This action cannot be undone.\""
+                          }
+                        },
+                        {
+                          "type": "mutation",
+                          "api": "Application",
+                          "mutation": "mutation DeleteProduct($payload: [ProductDeletePayloadInput!]!) {\n  mutation: deleteProduct(payload: $payload) {\n    id\n    code\n  }\n}",
+                          "transforms": {
+                            "pre": "{\n  \"payload\": data.{\n    \"where\": {\n      \"id\": id\n    }\n  }\n}"
+                          },
+                          "message": {
+                            "__transform": "\"Product \" & rowData.code & \" deleted.\""
+                          },
+                          "errorMessage": {
+                            "__transform": "data.message ? data.message : \"Unable to delete product. It may be referenced by other records.\""
+                          }
+                        },
+                        {
+                          "type": "transformation",
+                          "remote": false,
+                          "transformation": "$components.ProductTable.fn.search()"
+                        }
+                      ]
+                    }
+                  ],
+                  "sortAsNumber": false,
+                  "editable": false,
+                  "query": {
+                    "fields": []
+                  },
+                  "menuIcon": "ellipsis-v",
+                  "iconSize": "small",
+                  "isFlow": false,
+                  "style": {
+                    "alignItems": "center",
+                    "justifyContent": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnActions"
+                },
+                "parent": "ProductTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnCode": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Code",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "code",
+                  "width": "150px",
+                  "query": {
+                    "fields": [
+                      "code"
+                    ]
+                  },
+                  "sortAsNumber": false,
+                  "editable": false,
+                  "description": "**`code`** (`String!`)\nUnique product identifier.\n\n- Must be unique across all products.\n- Format: `{FAMILY}-{TYPE}-{SEQ}` (e.g., BRK-PAD-001).\n- Used in work orders and production logs."
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnCode"
+                },
+                "parent": "ProductTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnName": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Name",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "name",
+                  "width": "250px",
+                  "query": {
+                    "fields": [
+                      "name"
+                    ]
+                  },
+                  "sortAsNumber": false,
+                  "editable": false,
+                  "description": "**`name`** (`String!`)\nDescriptive product name.\n\n- Displayed in selection lists and reports.\n- Should be human-readable and descriptive."
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnName"
+                },
+                "parent": "ProductTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnProductFamily": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Product Family",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "productFamily",
+                  "width": "180px",
+                  "query": {
+                    "fields": [
+                      "productFamily"
+                    ]
+                  },
+                  "sortAsNumber": false,
+                  "editable": false,
+                  "description": "**`productFamily`** (`String`)\nProduct grouping category.\n\n- Examples: Brake Components, Sauces, Polymers.\n- Used for filtering and reporting by product category."
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnProductFamily"
+                },
+                "parent": "ProductTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnUnit": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Unit",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "unit.name",
+                  "query": {},
+                  "sortAsNumber": false,
+                  "editable": false,
+                  "description": "**`unit`** (`Unit`)\nUnit of measure for this product.\n\n- Examples: Each (ea), Kilograms (kg), Liters (L).\n- Used for quantity tracking and inventory.",
+                  "field": "unit.name"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnUnit"
+                },
+                "parent": "ProductTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnCycleTime": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Cycle Time (s)",
+                  "format": "number",
+                  "sortable": true,
+                  "dataPath": "standardCycleTime",
+                  "query": {
+                    "fields": [
+                      "standardCycleTime"
+                    ]
+                  },
+                  "sortAsNumber": true,
+                  "editable": false,
+                  "precision": 1,
+                  "description": "**`standardCycleTime`** (`Float`)\nIdeal cycle time in seconds.\n\n- Time to produce one unit at standard rate.\n- Used for OEE Performance calculations.\n- Lower = faster production."
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnCycleTime"
+                },
+                "parent": "ProductTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnTargetYield": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Target Yield (%)",
+                  "format": "number",
+                  "sortable": true,
+                  "dataPath": "targetYield",
+                  "query": {
+                    "fields": [
+                      "targetYield"
+                    ]
+                  },
+                  "sortAsNumber": true,
+                  "editable": false,
+                  "precision": 1,
+                  "description": "**`targetYield`** (`Float`)\nTarget quality yield percentage.\n\n**Color Coding:**\n• 🟢 ≥98.5% (Green) - Excellent\n• 🟡 95-98.5% (Amber) - Acceptable\n• 🔴 <95% (Red) - Below target\n\nUsed for OEE Quality calculations.",
+                  "style": {
+                    "__transform": "{\n  \"color\": data.yieldColor\n}",
+                    "__dynamicFields": {
+                      "payload": null,
+                      "context": []
+                    },
+                    "__cacheKey": "",
+                    "__remote": false
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnTargetYield"
+                },
+                "parent": "ProductTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnSetupTime": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Setup Time (min)",
+                  "format": "number",
+                  "sortable": true,
+                  "dataPath": "setupTime",
+                  "query": {
+                    "fields": [
+                      "setupTime"
+                    ]
+                  },
+                  "sortAsNumber": true,
+                  "editable": false,
+                  "precision": 0,
+                  "description": "**`setupTime`** (`Float`)\nStandard setup/changeover time.\n\n- Time in minutes to changeover to this product.\n- Used for production planning and scheduling.\n- Impacts OEE Availability during changeovers."
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnSetupTime"
+                },
+                "parent": "ProductTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnActive": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Status",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "activeDisplay",
+                  "width": "100px",
+                  "query": {
+                    "fields": [
+                      "isActive"
+                    ]
+                  },
+                  "sortAsNumber": false,
+                  "editable": false,
+                  "description": "**`isActive`** (`Boolean`)\nProduct active status.\n\n**Color Coding:**\n• 🟢 **Active** (Green) - Available for production\n• 🔴 **Inactive** (Red) - Not available\n\nInactive products cannot be selected for new work orders.",
+                  "style": {
+                    "__transform": "{\n  \"color\": data.activeColor\n}",
+                    "__dynamicFields": {
+                      "payload": null,
+                      "context": []
+                    },
+                    "__cacheKey": "",
+                    "__remote": false
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnActive"
+                },
+                "parent": "ProductTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnCreatedAt": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Created At",
+                  "format": "datetime",
+                  "sortable": true,
+                  "formatString": "MM/DD/YYYY h:mm A",
+                  "dataPath": "createdAt",
+                  "width": "180px",
+                  "query": {
+                    "fields": [
+                      "createdAt"
+                    ]
+                  },
+                  "sortAsNumber": false,
+                  "editable": false,
+                  "timeZone": "setting",
+                  "description": "**`createdAt`** (`DateTime!`)\nRecord creation timestamp.\n\n- Auto-generated when product is created.\n- Used for audit trails."
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnCreatedAt"
+                },
+                "parent": "ProductTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnCreatedBy": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Created By",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "createdByDisplay",
+                  "width": "150px",
+                  "query": {
+                    "fields": [
+                      "createdByUser.id",
+                      "createdByUser.firstName",
+                      "createdByUser.lastName"
+                    ]
+                  },
+                  "sortAsNumber": false,
+                  "editable": false,
+                  "description": "**`createdByUser`** (`User!`)\nUser who created this product.\n\n- Auto-populated from logged-in user.\n- Displays full name."
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnCreatedBy"
+                },
+                "parent": "ProductTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "CustomFieldsColumn": {
+                "type": {
+                  "resolvedName": "CustomFieldsTableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Custom Fields",
+                  "expandGroups": false,
+                  "dataPath": "_customFields",
+                  "dataModel": "Product",
+                  "field": "_customFields"
+                },
+                "displayName": "Custom Column",
+                "custom": {
+                  "elementName": "CustomFieldsColumn"
+                },
+                "parent": "ProductTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TextInputCode": {
+                "type": {
+                  "resolvedName": "TextInput"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "text",
+                  "label": "Product Code",
+                  "variant": "standard",
+                  "formElement": "FormFilterPanel",
+                  "disabled": false,
+                  "description": "Filter by product code. Partial match supported.",
+                  "target": {
+                    "dataPath": "code._contains"
+                  },
+                  "dataPath": "code",
+                  "field": "code"
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "TextInputCode"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "A6CJLSqa3v": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Description",
+                  "format": "markdown",
+                  "sortable": true,
+                  "dataPath": "description",
+                  "description": "**`description`** (`String`)\nDetailed product description including specifications.\n\n- May include dimensions, materials, or customer-specific details.",
+                  "query": {},
+                  "field": "description"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn13"
+                },
+                "parent": "ProductTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "routes": [
+    {
+      "id": "cmk4f573q0aii015zemog3p9f",
+      "title": "Products",
+      "path": "/machineTelemetrySiteApplication/machineDataApp/products",
+      "moduleId": "machineDataApp",
+      "screenId": "products",
+      "isMenuAccessible": true,
+      "submenu": ""
+    }
+  ]
+}

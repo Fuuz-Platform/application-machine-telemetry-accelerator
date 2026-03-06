@@ -1,0 +1,1005 @@
+{
+  "header": {
+    "id": "dataPoint",
+    "name": "DataPoint",
+    "description": "Represents a single telemetry or process variable associated with an Asset. DataPoints define how values are collected, scaled, validated, and monitored for alarms and historical tracking.\n\n**Typical Use Cases**\n\n- Capture real-time sensor readings or machine parameters.\n- Apply scaling, limits, and deadband for accurate data acquisition.\n- Enable alarms and warnings for critical thresholds.\n- Historize data for trend analysis and reporting.\n- Associate DataPoints with Assets and Units for contextual meaning.",
+    "dataModelKindId": "reference",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cmkvuq5n38q0u017q9b7d37o4",
+    "number": "10",
+    "dataModelId": "dataPoint",
+    "modelDefinition": {
+      "name": "DataPoint",
+      "metadata": {
+        "mfgx": {
+          "module": {
+            "id": "machineDataApp",
+            "group": {
+              "id": "machineTelemetrySiteApplication"
+            }
+          },
+          "exposed": true,
+          "mutable": true,
+          "mutations": {
+            "create": true,
+            "update": true,
+            "del": true
+          },
+          "dataChangeCapture": {
+            "exposed": true,
+            "retentionDays": 120
+          },
+          "customFields": {
+            "exposed": true
+          },
+          "editor": {
+            "autosort": true
+          },
+          "labelField": "code",
+          "indices": [
+            {
+              "name": "dataType",
+              "unique": false,
+              "fields": [
+                "dataType",
+                "historize",
+                "enabled"
+              ]
+            }
+          ]
+        },
+        "mongo": {
+          "collection": "dataPoint"
+        },
+        "graphql": {
+          "type": "Object"
+        }
+      },
+      "kind": "Reference",
+      "fields": [
+        {
+          "name": "id",
+          "type": "ID!",
+          "description": "**`id`** (`ID!`)\nThe immutable, primary unique identifier for the DataPoint record.\n\n- **Behavior:** Required on creation; cannot be updated.\n- **Usage:** Used for queries, filters, and as a foreign key in related models.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": false
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": true
+          }
+        },
+        {
+          "name": "code",
+          "type": "String!",
+          "description": "**`code`** (`String!`)\nUnique identifier for the DataPoint within its Asset.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "sequence": {
+                "id": "dataPointCode"
+              },
+              "dataChangeCapture": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "frequency",
+          "type": "Int!",
+          "description": "**`frequency`** (`Int!`)\nSampling frequency in milliseconds for periodic data collection.\n\n- **Default:** `5000` (5 seconds).\n- **Usage:** Determines how often the value is read when `isOnChange = false`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 60000
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "precision",
+          "type": "Int!",
+          "description": "**`precision`** (`Int!`)\nNumber of decimal places for the recorded value.\n\n- **Default:** `2`.\n- **Usage:** Controls rounding for display and storage.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 2
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "deadband",
+          "type": "Float!",
+          "description": "**`deadband`** (`Float!`)\nMinimum change required to record a new value (for OnChange mode).\n\n- **Default:** `0.0`.\n- **Usage:** Reduces noise by ignoring insignificant changes.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 0
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "lowerLimit",
+          "type": "Float!",
+          "description": "**`lowerLimit`** (`Float`)\nMinimum acceptable value for the DataPoint.\n\n- **Default:** `0`.\n- **Usage:** Used for validation and alarms.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 0
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "lowerWarning",
+          "type": "Float!",
+          "description": "**`lowerWarning`** (`Float`)\nWarning threshold below normal operating range.\n\n- **Default:** `0`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 0
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "scaleFactor",
+          "type": "Float!",
+          "description": "**`scaleFactor`** (`Float!`)\nFactor applied to raw values for scaling.\n\n- **Default:** `1.0`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 1
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "setPoint",
+          "type": "Float",
+          "description": "**`setPoint`** (`Float`)\nTarget value for control or monitoring purposes.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "tolerance",
+          "type": "Float!",
+          "description": "**`tolerance`** (`Float!`)\nAcceptable deviation from the setPoint.\n\n- **Default:** `0.0`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 0
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "upperLimit",
+          "type": "Float",
+          "description": "**`upperLimit`** (`Float`)\nMaximum acceptable value for the DataPoint.\n\n- **Usage:** Used for validation and alarms.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "upperWarning",
+          "type": "Float",
+          "description": "**`upperWarning`** (`Float`)\nWarning threshold above normal operating range.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "alarmEnabled",
+          "type": "Boolean!",
+          "description": "**`alarmEnabled`** (`Boolean!`)\nIndicates if alarms are active for this DataPoint.\n\n- **Default:** `false`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": false
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "enabled",
+          "type": "Boolean!",
+          "description": "**`enabled`** (`Boolean!`)\nIndicates if the DataPoint is active for collection.\n\n- **Default:** `true`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": true
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "historize",
+          "type": "Boolean!",
+          "description": "**`historize`** (`Boolean!`)\nIndicates if values should be stored historically.\n\n- **Default:** `true`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": true
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "isCritical",
+          "type": "Boolean!",
+          "description": "**`isCritical`** (`Boolean!`)\nMarks the DataPoint as critical for operations.\n\n- **Default:** `false`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": false
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "isOnChange",
+          "type": "Boolean!",
+          "description": "**`isOnChange`** (`Boolean!`)\nDetermines collection mode:\n\n- `true` = OnChange (record only when value changes beyond deadband).\n- `false` = Periodic (based on frequency).\n- **Default:** `false`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": false
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "alarmPriority",
+          "type": "String!",
+          "description": "**`alarmPriority`** (`String!`)\nPriority level for alarms.\n\n- **Default:** `Warning`.\n- **Example:** `Critical`, `High`, `Medium`, `Low`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": "Warning"
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "category",
+          "type": "String!",
+          "description": "**`category`** (`String!`)\nLogical grouping for the DataPoint.\n\n- **Default:** `General`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": "General"
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "dataType",
+          "type": "String!",
+          "description": "**`dataType`** (`String!`)\nData type of the value.\n\n- **Default:** `float`.\n- **Example:** `int`, `boolean`, `string`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": "Float"
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "description",
+          "type": "String",
+          "description": "**`description`** (`String`)\nDetailed description of the DataPoint.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "displayName",
+          "type": "String",
+          "description": "**`displayName`** (`String`)\nFriendly name for UI display.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "description": "**`name`** (`String`)\nInternal name for the DataPoint.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "assetId",
+          "type": "ID!",
+          "description": "**`assetId`** (`ID!`)\nForeign key linking the DataPoint to its parent Asset.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "asset",
+          "description": "**`asset`** (`Asset!`)\nThe related Asset object.\n\n- **Behavior:** Relation enforced via `assetId → Asset.id`.\n- **Deletion:** Cascade behavior (DataPoints removed if Asset is deleted).",
+          "type": "Asset!",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "deletionReferenceBehavior": "cascade",
+                "fields": {
+                  "from": "assetId",
+                  "to": "id"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "unitId",
+          "type": "ID!",
+          "description": "**`unitId`** (`ID!`)\nForeign key linking the DataPoint to a Unit of measure.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "unit",
+          "description": "**`unit`** (`Unit!`)\nThe related Unit object.\n\n- **Behavior:** Relation enforced via `unitId → Unit.id`.\n- **Deletion:** Prevent behavior (cannot delete Unit if DataPoints exist).",
+          "type": "Unit!",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "deletionReferenceBehavior": "prevent",
+                "fields": {
+                  "from": "unitId",
+                  "to": "id"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "alarms",
+          "description": "**`alarms`** (`[Alarm!]!`) Collection of alarms associated with this DataPoint.\n\n- **Behavior:**Relation enforced via `DataPoint.id → Alarm.dataPointId`. Included in queries and mutations for nested operations.\n- **Usage:** Enables grouping alarms by state for dashboards and workflows.\n- **Example:** `[ { id: \"...\", code: \"ALM-001\", description: \"High Temperature\" }, ... ]`.",
+          "type": "[Alarm!]!",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "fields": {
+                  "from": "id",
+                  "to": "dataPointId"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "telemetryRaws",
+          "description": "**`telemetryRaws`** (`[TelemetryRaw!]!`)\n\nCollection of raw telemetry records associated with this DataPoint.\n\n- **Behavior:**Relation enforced via `DataPoint.id → TelemetryRaw.dataPointId`.\nIncluded in queries and mutations for nested operations.\n\n- **Usage:**Stores unprocessed or raw sensor values before scaling, filtering, or historization.\nUseful for diagnostics, troubleshooting, and validating processed data against original readings.\n",
+          "type": "[TelemetryRaw!]!",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "fields": {
+                  "from": "id",
+                  "to": "dataPointId"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "telemetryHourlies",
+          "description": "**`telemetryHourlies`** (`[TelemetryHourly!]!`)\n\nCollection of hourly aggregated telemetry records associated with this DataPoint.\n\n- **Behavior:**Relation enforced via `DataPoint.id → TelemetryHourly.dataPointId`.\nIncluded in queries and mutations for nested operations.\n\n- **Usage:**Stores summarized telemetry data at an hourly interval for trend analysis, reporting, and performance dashboards.\nUseful for reducing storage overhead compared to raw telemetry while retaining time-series insights.\n",
+          "type": "[TelemetryHourly!]!",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "fields": {
+                  "from": "id",
+                  "to": "dataPointId"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "telemetryDailies",
+          "description": "**`telemetryDailies`** (`[TelemetryDaily!]!`)\n\nCollection of daily aggregated telemetry records associated with this DataPoint.\n\n- **Behavior:**Relation enforced via `DataPoint.id → TelemetryDaily.dataPointId`.\nIncluded in queries and mutations for nested operations.\n\n- **Usage:**Stores summarized telemetry data at a daily interval for trend analysis, reporting, and KPI dashboards.\nUseful for reducing storage overhead compared to raw telemetry while retaining essential insights for long-term analytics.\n",
+          "type": "[TelemetryDaily!]!",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "fields": {
+                  "from": "id",
+                  "to": "dataPointId"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "telemetryRawBools",
+          "description": "",
+          "type": "[TelemetryRawBool!]!",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "fields": {
+                  "from": "id",
+                  "to": "dataPointId"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "telemetryRawStrings",
+          "description": "",
+          "type": "[TelemetryRawString!]!",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "fields": {
+                  "from": "id",
+                  "to": "dataPointId"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        }
+      ],
+      "description": "Represents a single telemetry or process variable associated with an Asset. DataPoints define how values are collected, scaled, validated, and monitored for alarms and historical tracking.\n\n**Typical Use Cases**\n\n- Capture real-time sensor readings or machine parameters.\n- Apply scaling, limits, and deadband for accurate data acquisition.\n- Enable alarms and warnings for critical thresholds.\n- Historize data for trend analysis and reporting.\n- Associate DataPoints with Assets and Units for contextual meaning."
+    },
+    "dataModelTypeId": "master"
+  },
+  "migration": "$",
+  "migrations": [
+    {
+      "dataModelVersionId": "cmkvuq5n38q0u017q9b7d37o4",
+      "dataModelVersion": {
+        "number": "10"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkvujpyjfut601a42g5w6cma",
+      "dataModelVersion": {
+        "number": "9"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkbbsiyvcwrh017lepvqfk8o",
+      "dataModelVersion": {
+        "number": "8"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkbb0rivm37k016f3vffhws7",
+      "dataModelVersion": {
+        "number": "7"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmk8prrzg0auu019sbo0dglzo",
+      "dataModelVersion": {
+        "number": "6"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmk8ponvc0aqa019s574xen1e",
+      "dataModelVersion": {
+        "number": "5"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmk8om55c0c0j01999vbh7goc",
+      "dataModelVersion": {
+        "number": "4"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmk8oiauf0bxr019905vze59g",
+      "dataModelVersion": {
+        "number": "3"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmjzusk2c2fnh017jd9gp0xis",
+      "dataModelVersion": {
+        "number": "2"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmjzul23t2fjt017j2wky61tr",
+      "dataModelVersion": {
+        "number": "1"
+      },
+      "mappingExpression": "$"
+    }
+  ]
+}

@@ -1,0 +1,1359 @@
+{
+  "header": {
+    "id": "productionSimulatorDaily",
+    "name": "Production Simulator (Daily)",
+    "description": "",
+    "active": true,
+    "substitutesDataFlowId": null,
+    "dataFlowTypeId": "System",
+    "logLevelId": "Info",
+    "mcpToolConfiguration": null,
+    "moduleId": "machineDataApp",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cml8jmo27aiwe019hg14wah5c",
+    "number": "0.0.16",
+    "description": "",
+    "dataFlowId": "productionSimulatorDaily",
+    "flow": {
+      "id": "cml8jmo27aiwe019hg14wah5c",
+      "name": "Production Simulator (Daily)",
+      "type": "System",
+      "nodes": [
+        {
+          "id": "bfd0942f-0601-48bd-b12b-074a42a8b160",
+          "name": "Calculate Production Output",
+          "type": "javascriptTransform",
+          "data": {
+            "transform": "'use strict';\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// PRODUCTION SIMULATOR - TIME-CONSTRAINED WITH HISTORY AWARENESS\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// Generates simulated production records with realistic constraints:\r\n// - Single random time window (0-10 minutes) applied to all workcenters\r\n// - Round-robin workcenter assignment for unassigned work orders\r\n// - Respects time since workcenter entered production mode\r\n// - Respects time since last production log per work order\r\n// - Processes oldest work orders first (by scheduledStartAt)\r\n// - ISO 22400 performance calculation as decimal ratio\r\n// ═══════════════════════════════════════════════════════════════════════\r\n\r\n// Access data from payload\r\nconst workcenterHistoryEdges = $.workcenterHistory?.edges || [];\r\nconst workOrderEdges = $.workOrder?.edges || [];\r\nconst timezoneEdges = $.setting?.edges || [];\r\n\r\n// Get tenant timezone\r\nconst tenantTimezone = timezoneEdges.length > 0 \r\n  ? timezoneEdges[0].node.defaultValue \r\n  : 'America/New_York';\r\n\r\n// Current time in tenant timezone\r\nconst nowLocal = $moment().tz(tenantTimezone);\r\nconst nowUtc = nowLocal.utc();\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// GENERATE SINGLE RANDOM TIME WINDOW (0-10 MINUTES)\r\n// ═══════════════════════════════════════════════════════════════════════\r\nconst minSeconds = 0;\r\nconst maxSeconds = 600;  // 10 minutes\r\nconst randomWindowSeconds = Math.floor(Math.random() * (maxSeconds - minSeconds + 1)) + minSeconds;\r\n\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\nconsole.log('PRODUCTION SIMULATION - TIME-CONSTRAINED');\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\nconsole.log('Random time window: ' + randomWindowSeconds + ' seconds (' + (randomWindowSeconds / 60).toFixed(2) + ' minutes)');\r\nconsole.log('Tenant timezone: ' + tenantTimezone);\r\nconsole.log('Current time: ' + nowLocal.format());\r\nconsole.log('───────────────────────────────────────────────────────────');\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// CONFIGURATION\r\n// ═══════════════════════════════════════════════════════════════════════\r\nconst config = {\r\n  defaultYield: 0.95,\r\n  \r\n  // Cycle time variability settings\r\n  cycleTime: {\r\n    minMultiplier: 0.70,\r\n    maxMultiplier: 1.40,\r\n    distribution: [\r\n      { min: 0.70, max: 0.80, weight: 5 },\r\n      { min: 0.80, max: 0.90, weight: 10 },\r\n      { min: 0.90, max: 0.95, weight: 20 },\r\n      { min: 0.95, max: 1.05, weight: 30 },\r\n      { min: 1.05, max: 1.15, weight: 20 },\r\n      { min: 1.15, max: 1.25, weight: 10 },\r\n      { min: 1.25, max: 1.40, weight: 5 }\r\n    ]\r\n  }\r\n};\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// HELPER FUNCTIONS\r\n// ═══════════════════════════════════════════════════════════════════════\r\n\r\nfunction generateProductionCode() {\r\n  const timeComponent = $moment().tz(tenantTimezone).format('YYYYMMDDHHmmss');\r\n  const randomComponent = Math.random().toString(36).substr(2, 5).toUpperCase();\r\n  return 'PROD-' + timeComponent + '-' + randomComponent;\r\n}\r\n\r\nfunction getLocalTimestamp() {\r\n  return $moment().tz(tenantTimezone).utc().toISOString();\r\n}\r\n\r\nfunction generatePerformanceMultiplier() {\r\n  const distribution = config.cycleTime.distribution;\r\n  const totalWeight = distribution.reduce((sum, bucket) => sum + bucket.weight, 0);\r\n  let random = Math.random() * totalWeight;\r\n  let selectedBucket = distribution[distribution.length - 1];\r\n  \r\n  for (const bucket of distribution) {\r\n    random -= bucket.weight;\r\n    if (random <= 0) {\r\n      selectedBucket = bucket;\r\n      break;\r\n    }\r\n  }\r\n  \r\n  const multiplier = selectedBucket.min + Math.random() * (selectedBucket.max - selectedBucket.min);\r\n  return multiplier;\r\n}\r\n\r\nfunction getActualCycleTime(standardCycleTime) {\r\n  const multiplier = generatePerformanceMultiplier();\r\n  const actualCycleTime = standardCycleTime * multiplier;\r\n  const performancePercent = (standardCycleTime / actualCycleTime) * 100;\r\n  \r\n  return {\r\n    actualCycleTime: Math.round(actualCycleTime * 100) / 100,\r\n    performanceMultiplier: Math.round(multiplier * 1000) / 1000,\r\n    performancePercent: Math.round(performancePercent * 10) / 10\r\n  };\r\n}\r\n\r\nfunction validateProductionData(workOrder, workcenterId) {\r\n  const errors = [];\r\n  \r\n  if (!workcenterId) errors.push('Missing workcenterId');\r\n  if (!workOrder.id) errors.push('Missing workOrder.id');\r\n  if (!workOrder.productId) errors.push('Missing workOrder.productId');\r\n  if (!workOrder.product) {\r\n    errors.push('Missing workOrder.product');\r\n  } else {\r\n    if (!workOrder.product.standardCycleTime || workOrder.product.standardCycleTime <= 0) {\r\n      errors.push('Invalid or missing product.standardCycleTime');\r\n    }\r\n  }\r\n  if (!workOrder.quantityTarget || workOrder.quantityTarget <= 0) {\r\n    errors.push('Invalid or missing quantityTarget');\r\n  }\r\n  \r\n  return errors;\r\n}\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// EXTRACT PRODUCTION-CAPABLE WORKCENTERS\r\n// ═══════════════════════════════════════════════════════════════════════\r\nconst productionWorkcenters = [];\r\nconst workcenterInfoMap = new Map();\r\n\r\nworkcenterHistoryEdges.forEach(edge => {\r\n  const wch = edge?.node;\r\n  if (!wch || !wch.workcenterId) return;\r\n  \r\n  // Only include if state indicates production capability\r\n  if (wch.state?.isProducing !== true) {\r\n    console.log(`Skipping workcenter ${wch.workcenterId}: not producing (state: ${wch.state?.code})`);\r\n    return;\r\n  }\r\n  \r\n  // Calculate time in production mode\r\n  const modeStartTime = $moment(wch.occurAt);\r\n  const timeInProductionSeconds = nowUtc.diff(modeStartTime, 'seconds');\r\n  \r\n  // Available time is minimum of random window and time in production mode\r\n  const availableSeconds = Math.min(randomWindowSeconds, timeInProductionSeconds);\r\n  \r\n  if (availableSeconds <= 0) {\r\n    console.log(`Skipping workcenter ${wch.workcenterId}: no available time (entered production ${timeInProductionSeconds}s ago)`);\r\n    return;\r\n  }\r\n  \r\n  productionWorkcenters.push(wch.workcenterId);\r\n  workcenterInfoMap.set(wch.workcenterId, {\r\n    historyId: wch.id,\r\n    modeStartTime: modeStartTime,\r\n    timeInProductionSeconds: timeInProductionSeconds,\r\n    availableSeconds: availableSeconds,\r\n    scheduleId: wch.scheduleId,\r\n    stateCode: wch.state?.code || 'UNKNOWN',\r\n    isProducing: wch.state?.isProducing || false\r\n  });\r\n  \r\n  console.log(`Workcenter ${wch.workcenterId}: ${availableSeconds}s available (in production for ${timeInProductionSeconds}s, state: ${wch.state?.code})`);\r\n});\r\n\r\nconsole.log('───────────────────────────────────────────────────────────');\r\nconsole.log('Production-capable workcenters: ' + productionWorkcenters.length);\r\n\r\nif (productionWorkcenters.length === 0) {\r\n  console.log('WARNING: No production-capable workcenters found. Exiting.');\r\n  return {\r\n    productionRecords: [],\r\n    workOrderUpdates: [],\r\n    summary: {\r\n      timezone: tenantTimezone,\r\n      executedAt: getLocalTimestamp(),\r\n      randomWindowSeconds: randomWindowSeconds,\r\n      error: 'No production-capable workcenters available'\r\n    }\r\n  };\r\n}\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// EXTRACT AND PREPARE WORK ORDERS\r\n// ═══════════════════════════════════════════════════════════════════════\r\nconst allWorkOrders = [];\r\nconst invalidWorkOrders = [];\r\n\r\nworkOrderEdges.forEach((edge, index) => {\r\n  const wo = edge?.node;\r\n  if (!wo) {\r\n    console.warn(`Skipping edge at index ${index}: no node found`);\r\n    return;\r\n  }\r\n  \r\n  allWorkOrders.push(wo);\r\n});\r\n\r\nconsole.log('Total work orders received: ' + allWorkOrders.length);\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// ROUND-ROBIN WORKCENTER ASSIGNMENT\r\n// ═══════════════════════════════════════════════════════════════════════\r\nlet roundRobinIndex = 0;\r\nlet assignedCount = 0;\r\n\r\nallWorkOrders.forEach(wo => {\r\n  if (!wo.workcenterId || wo.workcenterId === null) {\r\n    wo.workcenterId = productionWorkcenters[roundRobinIndex];\r\n    wo.wasAssigned = true;\r\n    assignedCount++;\r\n    roundRobinIndex = (roundRobinIndex + 1) % productionWorkcenters.length;\r\n  } else {\r\n    wo.wasAssigned = false;\r\n  }\r\n});\r\n\r\nconsole.log('Work orders assigned to workcenters: ' + assignedCount);\r\nconsole.log('───────────────────────────────────────────────────────────');\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// SORT WORK ORDERS BY SCHEDULED START (OLDEST FIRST)\r\n// ═══════════════════════════════════════════════════════════════════════\r\nallWorkOrders.sort((a, b) => {\r\n  const dateA = new Date(a.scheduledStartAt);\r\n  const dateB = new Date(b.scheduledStartAt);\r\n  return dateA - dateB;\r\n});\r\n\r\nconsole.log('Work orders sorted by scheduledStartAt (oldest first)');\r\nconsole.log('Oldest WO: ' + allWorkOrders[0]?.code + ' (' + allWorkOrders[0]?.scheduledStartAt + ')');\r\nconsole.log('Newest WO: ' + allWorkOrders[allWorkOrders.length - 1]?.code + ' (' + allWorkOrders[allWorkOrders.length - 1]?.scheduledStartAt + ')');\r\nconsole.log('───────────────────────────────────────────────────────────');\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// GROUP WORK ORDERS BY WORKCENTER\r\n// ═══════════════════════════════════════════════════════════════════════\r\nconst workOrdersByWorkcenter = new Map();\r\n\r\nallWorkOrders.forEach((wo, index) => {\r\n  if (!wo.workcenterId) {\r\n    invalidWorkOrders.push({\r\n      index: index,\r\n      workOrderId: wo.id,\r\n      workOrderCode: wo.code,\r\n      issue: 'NULL_WORKCENTER_ID',\r\n      message: 'Work order has null workcenterId after assignment'\r\n    });\r\n    return;\r\n  }\r\n  \r\n  if (!workOrdersByWorkcenter.has(wo.workcenterId)) {\r\n    workOrdersByWorkcenter.set(wo.workcenterId, []);\r\n  }\r\n  workOrdersByWorkcenter.get(wo.workcenterId).push(wo);\r\n});\r\n\r\nconsole.log('Work orders grouped by workcenter: ' + workOrdersByWorkcenter.size + ' workcenters');\r\nconsole.log('Invalid work orders: ' + invalidWorkOrders.length);\r\nconsole.log('───────────────────────────────────────────────────────────');\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// PROCESS RESULTS\r\n// ═══════════════════════════════════════════════════════════════════════\r\nconst productionRecords = [];\r\nconst workOrderUpdates = [];\r\nconst validationIssues = [];\r\n\r\nconst performanceStats = {\r\n  records: [],\r\n  minPerformance: 1.0,\r\n  maxPerformance: 1.0,\r\n  totalPerformance: 0,\r\n  minIso22400: 1.0,\r\n  maxIso22400: 1.0,\r\n  totalIso22400: 0,\r\n  count: 0\r\n};\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// PROCESS EACH WORKCENTER\r\n// ═══════════════════════════════════════════════════════════════════════\r\nworkOrdersByWorkcenter.forEach((workOrders, workcenterId) => {\r\n  const wcInfo = workcenterInfoMap.get(workcenterId);\r\n  \r\n  if (!wcInfo) {\r\n    console.log(`Skipping workcenter ${workcenterId}: not in production mode`);\r\n    return;\r\n  }\r\n  \r\n  let timeRemainingSeconds = wcInfo.availableSeconds;\r\n  \r\n  console.log(`\\nProcessing workcenter ${workcenterId}:`);\r\n  console.log(`  Available time: ${timeRemainingSeconds}s (${(timeRemainingSeconds / 60).toFixed(2)} min)`);\r\n  console.log(`  Work orders: ${workOrders.length}`);\r\n  console.log(`  State: ${wcInfo.stateCode}`);\r\n  \r\n  for (let woIndex = 0; woIndex < workOrders.length; woIndex++) {\r\n    const workOrder = workOrders[woIndex];\r\n    \r\n    // ═══════════════════════════════════════════════════════════════════\r\n    // VALIDATION\r\n    // ═══════════════════════════════════════════════════════════════════\r\n    const validationErrors = validateProductionData(workOrder, workcenterId);\r\n    \r\n    if (validationErrors.length > 0) {\r\n      validationIssues.push({\r\n        workcenterId: workcenterId,\r\n        workOrderId: workOrder.id,\r\n        workOrderCode: workOrder.code,\r\n        issue: 'VALIDATION_FAILED',\r\n        errors: validationErrors\r\n      });\r\n      console.log(`  ✗ WO ${workOrder.code}: Validation failed - ${validationErrors.join(', ')}`);\r\n      continue;\r\n    }\r\n    \r\n    // ═══════════════════════════════════════════════════════════════════\r\n    // CHECK TIME SINCE LAST PRODUCTION\r\n    // ═══════════════════════════════════════════════════════════════════\r\n    let maxProductionTime = timeRemainingSeconds;\r\n    \r\n    if (workOrder.productionLogs && workOrder.productionLogs.total > 0) {\r\n      // Has production logs - check time since last production\r\n      const logs = workOrder.productionLogs.edges;\r\n      if (logs && logs.length > 0) {\r\n        // Find most recent log\r\n        const sortedLogs = logs.slice().sort((a, b) => {\r\n          return new Date(b.node.occurAt) - new Date(a.node.occurAt);\r\n        });\r\n        const lastLog = sortedLogs[0].node;\r\n        const lastProductionTime = $moment(lastLog.occurAt);\r\n        const timeSinceLastProduction = nowUtc.diff(lastProductionTime, 'seconds');\r\n        \r\n        // Cap production time by time since last production\r\n        maxProductionTime = Math.min(maxProductionTime, timeSinceLastProduction);\r\n        \r\n        console.log(`  WO ${workOrder.code}: Last production ${timeSinceLastProduction}s ago, max time: ${maxProductionTime}s`);\r\n      }\r\n    } else {\r\n      console.log(`  WO ${workOrder.code}: No production logs, max time: ${maxProductionTime}s`);\r\n    }\r\n    \r\n    // Skip if no time available\r\n    if (maxProductionTime <= 0) {\r\n      console.log(`  ✗ WO ${workOrder.code}: No production time available`);\r\n      continue;\r\n    }\r\n    \r\n    // ═══════════════════════════════════════════════════════════════════\r\n    // EXTRACT WORK ORDER DATA\r\n    // ═══════════════════════════════════════════════════════════════════\r\n    const { standardCycleTime, targetYield } = workOrder.product;\r\n    const yieldDecimal = targetYield ? targetYield / 100 : config.defaultYield;\r\n    \r\n    const existingCompleted = workOrder.quantityCompleted || 0;\r\n    const existingScrap = workOrder.quantityScrap || 0;\r\n    const remainingGood = workOrder.quantityTarget - existingCompleted;\r\n    \r\n    // Skip if already complete\r\n    if (remainingGood <= 0) {\r\n      console.log(`  ✗ WO ${workOrder.code}: Already complete`);\r\n      continue;\r\n    }\r\n    \r\n    // ═══════════════════════════════════════════════════════════════════\r\n    // GENERATE CYCLE TIME WITH VARIABILITY\r\n    // ═══════════════════════════════════════════════════════════════════\r\n    const cycleTimeResult = getActualCycleTime(standardCycleTime);\r\n    const actualCycleTime = cycleTimeResult.actualCycleTime;\r\n    \r\n    // ═══════════════════════════════════════════════════════════════════\r\n    // CALCULATE PRODUCTION QUANTITY\r\n    // ═══════════════════════════════════════════════════════════════════\r\n    const totalUnitsNeededToComplete = Math.ceil(remainingGood / yieldDecimal);\r\n    const secondsNeededToComplete = totalUnitsNeededToComplete * actualCycleTime;\r\n    \r\n    let totalUnitsProduced, actualGood, actualScrap, newStatus;\r\n    \r\n    if (secondsNeededToComplete <= maxProductionTime) {\r\n      // Can complete this work order\r\n      totalUnitsProduced = totalUnitsNeededToComplete;\r\n      actualGood = remainingGood;\r\n      actualScrap = totalUnitsProduced - actualGood;\r\n      newStatus = 'Completed';\r\n    } else {\r\n      // Partial production - use all available time\r\n      totalUnitsProduced = Math.floor(maxProductionTime / actualCycleTime);\r\n      actualGood = Math.floor(totalUnitsProduced * yieldDecimal);\r\n      actualScrap = totalUnitsProduced - actualGood;\r\n      newStatus = 'InProgress';\r\n    }\r\n    \r\n    // Skip if can't produce at least 1 unit\r\n    if (totalUnitsProduced < 1) {\r\n      console.log(`  ✗ WO ${workOrder.code}: Insufficient time (need ${actualCycleTime}s, have ${maxProductionTime}s)`);\r\n      break;\r\n    }\r\n    \r\n    const cycleTime = totalUnitsProduced * actualCycleTime;\r\n    \r\n    // ═══════════════════════════════════════════════════════════════════\r\n    // CALCULATE IDEAL UNITS AND ISO 22400 PERFORMANCE\r\n    // ═══════════════════════════════════════════════════════════════════\r\n    let idealCycleTimeMs;\r\n    if (workOrder.product.idealCycleTime && workOrder.product.idealCycleTime > 0) {\r\n      idealCycleTimeMs = workOrder.product.idealCycleTime;\r\n    } else {\r\n      idealCycleTimeMs = standardCycleTime * 1000;\r\n    }\r\n    \r\n    const cycleTimeMs = cycleTime * 1000;\r\n    const idealUnits = cycleTimeMs / idealCycleTimeMs;\r\n    \r\n    const actualOutput = totalUnitsProduced;\r\n    const iso22400Performance = idealUnits > 0 ? actualOutput / idealUnits : 0;\r\n    \r\n    // Track performance stats\r\n    performanceStats.records.push({\r\n      workOrderCode: workOrder.code,\r\n      standardCycleTime: standardCycleTime,\r\n      actualCycleTime: actualCycleTime,\r\n      performancePercent: cycleTimeResult.performancePercent,\r\n      iso22400Performance: iso22400Performance\r\n    });\r\n    performanceStats.minPerformance = Math.min(performanceStats.minPerformance, cycleTimeResult.performancePercent);\r\n    performanceStats.maxPerformance = Math.max(performanceStats.maxPerformance, cycleTimeResult.performancePercent);\r\n    performanceStats.totalPerformance += cycleTimeResult.performancePercent;\r\n    performanceStats.minIso22400 = Math.min(performanceStats.minIso22400, iso22400Performance);\r\n    performanceStats.maxIso22400 = Math.max(performanceStats.maxIso22400, iso22400Performance);\r\n    performanceStats.totalIso22400 += iso22400Performance;\r\n    performanceStats.count++;\r\n    \r\n    // ═══════════════════════════════════════════════════════════════════\r\n    // CREATE PRODUCTION RECORD\r\n    // ═══════════════════════════════════════════════════════════════════\r\n    const productionRecord = {\r\n      code: generateProductionCode(),\r\n      workcenterId: workcenterId,\r\n      workOrderId: workOrder.id,\r\n      workOrderCode: workOrder.code || 'UNKNOWN',\r\n      productId: workOrder.productId,\r\n      productCode: workOrder.product?.code || 'UNKNOWN',\r\n      scheduleId: wcInfo.scheduleId,\r\n      quantityGood: actualGood,\r\n      quantityScrap: actualScrap,\r\n      idealUnits: idealUnits,\r\n      cycleTime: Math.round(cycleTime * 100) / 100,\r\n      standardCycleTime: standardCycleTime * totalUnitsProduced,\r\n      occurAt: getLocalTimestamp(),\r\n      source: 'Integration',\r\n      performanceMultiplier: cycleTimeResult.performanceMultiplier,\r\n      performancePercent: cycleTimeResult.performancePercent,\r\n      performance: Math.round(iso22400Performance * 10000) / 10000\r\n    };\r\n    \r\n    // Final validation\r\n    if (!productionRecord.workcenterId || !productionRecord.workOrderId || !productionRecord.productId) {\r\n      console.log(`  ✗ WO ${workOrder.code}: Final validation failed`);\r\n      validationIssues.push({\r\n        workcenterId: workcenterId,\r\n        workOrderId: workOrder.id,\r\n        issue: 'FINAL_VALIDATION_FAILED',\r\n        message: 'Production record has null required fields'\r\n      });\r\n      continue;\r\n    }\r\n    \r\n    productionRecords.push(productionRecord);\r\n    \r\n    // ═══════════════════════════════════════════════════════════════════\r\n    // CREATE WORK ORDER UPDATE\r\n    // ═══════════════════════════════════════════════════════════════════\r\n    const newCompleted = existingCompleted + actualGood;\r\n    const newScrap = existingScrap + actualScrap;\r\n    \r\n    workOrderUpdates.push({\r\n      id: workOrder.id,\r\n      code: workOrder.code,\r\n      wasAssigned: workOrder.wasAssigned,\r\n      workcenterId: workcenterId,\r\n      previousCompleted: existingCompleted,\r\n      previousScrap: existingScrap,\r\n      addedGood: actualGood,\r\n      addedScrap: actualScrap,\r\n      quantityCompleted: newCompleted,\r\n      quantityScrap: newScrap,\r\n      quantityTarget: workOrder.quantityTarget,\r\n      status: newStatus\r\n    });\r\n    \r\n    console.log(`  ✓ WO ${workOrder.code}: ${actualGood} good, ${actualScrap} scrap, ${(iso22400Performance * 100).toFixed(1)}% perf, ${newStatus}`);\r\n    \r\n    // Update remaining time\r\n    timeRemainingSeconds -= cycleTime;\r\n    \r\n    // Move to next work order if completed\r\n    if (newStatus === 'Completed') {\r\n      // Continue to next work order\r\n    } else {\r\n      // Partial completion, this workcenter is done\r\n      break;\r\n    }\r\n  }\r\n});\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// BUILD SUMMARY\r\n// ═══════════════════════════════════════════════════════════════════════\r\nconst avgPerformance = performanceStats.count > 0 \r\n  ? Math.round(performanceStats.totalPerformance / performanceStats.count * 10) / 10 \r\n  : 100;\r\n\r\nconst avgIso22400 = performanceStats.count > 0 \r\n  ? Math.round((performanceStats.totalIso22400 / performanceStats.count) * 10000) / 10000\r\n  : 1.0;\r\n\r\nconst summary = {\r\n  timezone: tenantTimezone,\r\n  executedAt: getLocalTimestamp(),\r\n  randomWindowSeconds: randomWindowSeconds,\r\n  randomWindowMinutes: Math.round(randomWindowSeconds / 60 * 100) / 100,\r\n  input: {\r\n    workcenterHistoryTotal: workcenterHistoryEdges.length,\r\n    productionCapableWorkcenters: productionWorkcenters.length,\r\n    workOrdersTotal: allWorkOrders.length,\r\n    workOrdersAssigned: assignedCount,\r\n    workOrdersInvalid: invalidWorkOrders.length\r\n  },\r\n  output: {\r\n    productionRecordsCreated: productionRecords.length,\r\n    workOrdersUpdated: workOrderUpdates.length,\r\n    workOrdersCompleted: workOrderUpdates.filter(wo => wo.status === 'Completed').length,\r\n    totalGoodUnits: productionRecords.reduce((sum, r) => sum + r.quantityGood, 0),\r\n    totalScrapUnits: productionRecords.reduce((sum, r) => sum + r.quantityScrap, 0),\r\n    totalActualUnits: productionRecords.reduce((sum, r) => sum + r.quantityGood + r.quantityScrap, 0),\r\n    totalIdealUnits: Math.round(productionRecords.reduce((sum, r) => sum + r.idealUnits, 0) * 100) / 100,\r\n    totalCycleTimeSeconds: Math.round(productionRecords.reduce((sum, r) => sum + r.cycleTime, 0) * 100) / 100,\r\n    totalStandardCycleTimeSeconds: productionRecords.reduce((sum, r) => sum + r.standardCycleTime, 0)\r\n  },\r\n  performance: {\r\n    cycleTimeVariability: {\r\n      minPerformancePercent: performanceStats.minPerformance,\r\n      maxPerformancePercent: performanceStats.maxPerformance,\r\n      avgPerformancePercent: avgPerformance\r\n    },\r\n    iso22400: {\r\n      minPerformance: Math.round(performanceStats.minIso22400 * 10000) / 10000,\r\n      maxPerformance: Math.round(performanceStats.maxIso22400 * 10000) / 10000,\r\n      avgPerformance: avgIso22400\r\n    },\r\n    recordsWithVariability: performanceStats.count\r\n  },\r\n  validation: {\r\n    invalidWorkOrders: invalidWorkOrders.length,\r\n    validationIssues: validationIssues.length,\r\n    totalIssues: invalidWorkOrders.length + validationIssues.length\r\n  }\r\n};\r\n\r\nif (invalidWorkOrders.length > 0) {\r\n  summary.invalidWorkOrders = invalidWorkOrders;\r\n}\r\n\r\nif (validationIssues.length > 0) {\r\n  summary.validationIssues = validationIssues;\r\n}\r\n\r\nif (productionRecords.length === 0) {\r\n  if (allWorkOrders.length === 0) {\r\n    summary.zeroOutputReason = 'No work orders provided';\r\n  } else if (productionWorkcenters.length === 0) {\r\n    summary.zeroOutputReason = 'No production-capable workcenters available';\r\n  } else if (randomWindowSeconds === 0) {\r\n    summary.zeroOutputReason = 'Random time window is zero';\r\n  } else {\r\n    summary.zeroOutputReason = 'No production possible - check work order status, cycle times, and time constraints';\r\n  }\r\n}\r\n\r\nconsole.log('\\n═══════════════════════════════════════════════════════════');\r\nconsole.log('PRODUCTION SIMULATION COMPLETE');\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\nconsole.log('Time window: ' + randomWindowSeconds + 's (' + (randomWindowSeconds / 60).toFixed(2) + ' min)');\r\nconsole.log('Input: ' + allWorkOrders.length + ' work orders');\r\nconsole.log('Output: ' + productionRecords.length + ' production records');\r\nconsole.log('Updates: ' + workOrderUpdates.length + ' work orders');\r\nconsole.log('Completed: ' + workOrderUpdates.filter(wo => wo.status === 'Completed').length + ' work orders');\r\nconsole.log('───────────────────────────────────────────────────────────');\r\nconsole.log('ISO 22400 Performance (Actual vs Ideal - as decimal):');\r\nconsole.log('  Min: ' + Math.round(performanceStats.minIso22400 * 10000) / 10000);\r\nconsole.log('  Max: ' + Math.round(performanceStats.maxIso22400 * 10000) / 10000);\r\nconsole.log('  Avg: ' + avgIso22400);\r\nconsole.log('───────────────────────────────────────────────────────────');\r\nconsole.log('Units Summary:');\r\nconsole.log('  Total Actual: ' + productionRecords.reduce((sum, r) => sum + r.quantityGood + r.quantityScrap, 0));\r\nconsole.log('  Total Ideal: ' + (Math.round(productionRecords.reduce((sum, r) => sum + r.idealUnits, 0) * 100) / 100));\r\nconsole.log('  Total Good: ' + productionRecords.reduce((sum, r) => sum + r.quantityGood, 0));\r\nconsole.log('  Total Scrap: ' + productionRecords.reduce((sum, r) => sum + r.quantityScrap, 0));\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\n\r\nreturn {\r\n  productionRecords,\r\n  workOrderUpdates,\r\n  summary\r\n};",
+            "nextNodes": [
+              "5c380685-3f28-4e1a-a139-7f73c871a38c",
+              "5b6cdbf0-5c89-4ee7-8d98-97fe05b85b6e"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "c2481e70-ae14-44e9-8cc5-eda44fc5ef49",
+          "name": "Create Production Logs",
+          "type": "mutate",
+          "data": {
+            "api": "Application",
+            "variablesTransform": "{\r\n  \"payload\": $ ? $.{\r\n    \"create\": {\r\n      \"code\": code,\r\n      \"workcenterId\": workcenterId,\r\n      \"workOrderId\": workOrderId,\r\n      \"productId\": productId,\r\n      \"scheduleId\": scheduleId,\r\n      \"quantityGood\": quantityGood,\r\n      \"quantityScrap\": quantityScrap,\r\n      \"occurAt\": occurAt,\r\n      \"cycleTime\": cycleTime,\r\n      \"source\": source,\r\n      \"idealUnits\": idealUnits,\r\n      \"performance\": performance\r\n    }\r\n  } : []\r\n}",
+            "mutation": "mutation CreateProductionLog($payload: [ProductionLogCreatePayloadInput!]!) {\n  createProductionLog(payload: $payload) {\n    id\n    code\n    quantityGood\n    quantityScrap\n    occurAt\n    idealUnits\n  }\n}",
+            "nextNodes": [
+              "73e0316f-40a7-4b50-8d09-7c3ef2e63886"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": true,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "abe149ed-766a-441c-90cf-65ec801be629",
+          "name": "Update Work Orders",
+          "type": "mutate",
+          "data": {
+            "api": "Application",
+            "variablesTransform": "{\r\n  \"payload\": $ ? $.{\r\n    \"where\": {\r\n      \"id\": id\r\n    },\r\n    \"update\": {\r\n      \"quantityCompleted\": quantityCompleted,\r\n      \"quantityScrap\": quantityScrap,\r\n      \"status\": status,\r\n      \"actualEndAt\": status = \"Completed\" ? $now() : null\r\n    }\r\n  } : []\r\n}",
+            "mutation": "mutation UpdateWorkOrder($payload: [WorkOrderUpdatePayloadInput!]!) {\r\n  updateWorkOrder(payload: $payload) {\r\n    id\r\n    code\r\n    quantityCompleted\r\n    quantityScrap\r\n    status\r\n    actualEndAt\r\n  }\r\n}",
+            "nextNodes": [
+              "1157e359-5a06-4e54-81c7-4084a505ccad"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": true,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "f7b29d47-006e-4a8d-9675-aa4f5c18d2fe",
+          "name": "JSONata",
+          "type": "transform",
+          "data": {
+            "nextNodes": [
+              "bfd0942f-0601-48bd-b12b-074a42a8b160"
+            ],
+            "transform": "(\r\n  $now := $moment();\r\n  $workcenters := $state.context.activeWorkOrders.edges.node.workcenter;\r\n  \r\n  /* Get unique scheduleGroupIds */\r\n  $scheduleGroupIds := $distinct($workcenters.scheduleGroupId)[$ != null];\r\n  \r\n  /* Build mapping: scheduleGroupId → current active scheduleId */\r\n  $currentScheduleByGroup := $merge($scheduleGroupIds.(\r\n    $groupId := $;\r\n    $currentSchedules := $scheduleGroup($groupId).getCurrentSchedules($now, $now, { \"inclusive\": true });\r\n    $activeSchedule := $currentSchedules[0];\r\n    { ($groupId): $activeSchedule.scheduleId }\r\n  ));\r\n  \r\n  /* Return original payload with schedule mapping added */\r\n  $merge([$, { \"currentScheduleByGroup\": $currentScheduleByGroup }])\r\n)"
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "5c380685-3f28-4e1a-a139-7f73c871a38c",
+          "name": "Filter Array",
+          "type": "filterArray",
+          "data": {
+            "inputTransform": "$.productionRecords",
+            "outputTransform": "$",
+            "enableAdvancedConfiguration": true,
+            "filterTransform": "$",
+            "nextNodes": [
+              "c2481e70-ae14-44e9-8cc5-eda44fc5ef49"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "5b6cdbf0-5c89-4ee7-8d98-97fe05b85b6e",
+          "name": "Filter Array",
+          "type": "filterArray",
+          "data": {
+            "inputTransform": "$.workOrderUpdates",
+            "outputTransform": "$",
+            "enableAdvancedConfiguration": true,
+            "filterTransform": "$",
+            "nextNodes": [
+              "abe149ed-766a-441c-90cf-65ec801be629"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "138266d9-6b54-452b-9259-b98bf3fd5727",
+          "name": "Schedule",
+          "type": "schedule",
+          "data": {
+            "configure": "Open Schedule Editor",
+            "nextNodes": [
+              "d33bc668-4816-431e-861e-9cc00a7548b7"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "d33bc668-4816-431e-861e-9cc00a7548b7",
+          "name": "GetProductionWorkcentersAndActiveWorkOrders",
+          "type": "query",
+          "data": {
+            "api": "application",
+            "variablesTransform": "{\r\n  \"now\": $moment()\r\n}",
+            "query": "query GetProductionWorkcentersAndActiveWorkOrders($now: DateTime!) {\r\n  # Get workcenters currently in production mode\r\n  workcenterHistory(\r\n    where: {\r\n      endAt: { _isNull: true }\r\n      workcenterId: { _isNull: false }\r\n      modeId: { _eq: \"production\" }\r\n    }\r\n    first: 10000\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        workcenterId\r\n        modeId\r\n        occurAt\r\n        scheduleId\r\n        mode {\r\n          countAsDowntime\r\n          countAsProductionTime\r\n          countAsPlannedDowntime\r\n        }\r\n        state{\r\n            \r\n                code\r\n        isProducing\r\n        isPerformanceLoss\r\n        isFault\r\n        }\r\n      }\r\n    }\r\n  }\r\n  \r\n  # Get all active work orders\r\n  workOrder(\r\n    where: {\r\n      status: { _in: [\"Released\", \"InProgress\"] }\r\n      scheduledStartAt: { _lte: $now }\r\n    }\r\n    first: 1000\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        code\r\n        status\r\n        quantityTarget\r\n        quantityCompleted\r\n        productionLogs{\r\n          total\r\n           edges {\r\n            node{\r\n              createdAt\r\n              quantityGood\r\n              quantityScrap\r\n              occurAt\r\n            }\r\n\r\n           }\r\n        }\r\n        quantityScrap\r\n        scheduledStartAt\r\n        scheduledEndAt\r\n        productId\r\n        workcenterId\r\n        product {\r\n          id\r\n          code\r\n          standardCycleTime\r\n          idealCycleTime (format: milliseconds)\r\n          targetYield\r\n        }\r\n        workcenter {\r\n          id\r\n          code\r\n          name\r\n          scheduleGroupId\r\n        }\r\n      }\r\n    }\r\n  }\r\n  \r\n  # Get timezone setting\r\n  setting(where: { id: { _eq: \"TimeZone\" } }) {\r\n    edges {\r\n      node {\r\n        id\r\n        defaultValue\r\n      }\r\n    }\r\n  }\r\n}",
+            "nextNodes": [
+              "d8b337a4-ec5f-4ec1-855d-9bcd98873e59"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "d8b337a4-ec5f-4ec1-855d-9bcd98873e59",
+          "name": "Set Context",
+          "type": "setContext",
+          "data": {
+            "transform": "{\r\n  \"tenantTimezone\": $.setting.edges.node.defaultValue,\r\n    \"activeWorkOrders\": $.workOrder\r\n}",
+            "nextNodes": [
+              "f7b29d47-006e-4a8d-9675-aa4f5c18d2fe"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "84df0965-7b78-45d0-9647-1a7dbab10e77",
+          "name": "Request",
+          "type": "request",
+          "data": {
+            "nextNodes": [
+              "d33bc668-4816-431e-861e-9cc00a7548b7"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "1157e359-5a06-4e54-81c7-4084a505ccad",
+          "name": "Response",
+          "type": "response",
+          "data": {
+            "responseTransform": "$",
+            "nextNodes": []
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "73e0316f-40a7-4b50-8d09-7c3ef2e63886",
+          "name": "Response",
+          "type": "response",
+          "data": {
+            "responseTransform": "$",
+            "nextNodes": []
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        }
+      ],
+      "version": "0.0.16"
+    },
+    "diagram": {
+      "id": "cml8jmo27aiwe019hg14wah5c",
+      "offsetX": -79.83,
+      "offsetY": 218.87,
+      "zoom": 99.26,
+      "gridSize": 5,
+      "layers": [
+        {
+          "id": "d5554007-ddb7-4aaf-a841-2b4f8e99430b",
+          "type": "diagram-links",
+          "isSvg": true,
+          "transformed": true,
+          "models": {
+            "a795978e-a9e5-4aae-89a0-b2ef0d9508df": {
+              "points": [
+                {
+                  "id": "fead2bd5-dbfb-47df-94e1-662ae79a0830",
+                  "type": "point",
+                  "x": 1089,
+                  "y": 219.73
+                },
+                {
+                  "id": "5b8d8238-0554-4aaa-a031-d92be59b5db3",
+                  "type": "point",
+                  "x": 1140,
+                  "y": 219.73
+                }
+              ],
+              "id": "a795978e-a9e5-4aae-89a0-b2ef0d9508df",
+              "type": "default",
+              "selected": false,
+              "source": "f7b29d47-006e-4a8d-9675-aa4f5c18d2fe",
+              "sourcePort": "cmkfzesvp00a5356rch3poyg3",
+              "target": "bfd0942f-0601-48bd-b12b-074a42a8b160",
+              "targetPort": "cmkd1obgi01op356r3ba6vrmy",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "90ca43da-4fba-4c2d-ac00-22bdd962fb6d": {
+              "points": [
+                {
+                  "id": "8d69b43b-8142-4633-af9c-6e92377c7ea7",
+                  "type": "point",
+                  "x": 1337.65,
+                  "y": 219.73
+                },
+                {
+                  "id": "d76fa0da-9f92-4838-8734-c0649ddc0f72",
+                  "type": "point",
+                  "x": 1375,
+                  "y": 164.73
+                }
+              ],
+              "id": "90ca43da-4fba-4c2d-ac00-22bdd962fb6d",
+              "type": "default",
+              "selected": false,
+              "source": "bfd0942f-0601-48bd-b12b-074a42a8b160",
+              "sourcePort": "cmkd1obgi01or356ri6gmndys",
+              "target": "5c380685-3f28-4e1a-a139-7f73c871a38c",
+              "targetPort": "cmkgzputw00i4356r87q8i40c",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "eba38d0c-aecd-47d9-b747-de359302fb6e": {
+              "points": [
+                {
+                  "id": "98ce56e9-ee18-4c06-bebe-a59ebad6dd2f",
+                  "type": "point",
+                  "x": 1337.65,
+                  "y": 219.73
+                },
+                {
+                  "id": "ea169105-e237-4c10-9906-2fa1acb0c166",
+                  "type": "point",
+                  "x": 1380,
+                  "y": 284.73
+                }
+              ],
+              "id": "eba38d0c-aecd-47d9-b747-de359302fb6e",
+              "type": "default",
+              "selected": false,
+              "source": "bfd0942f-0601-48bd-b12b-074a42a8b160",
+              "sourcePort": "cmkd1obgi01or356ri6gmndys",
+              "target": "5b6cdbf0-5c89-4ee7-8d98-97fe05b85b6e",
+              "targetPort": "cmkgzqift00j2356r8fa8fffm",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "bed01562-36e0-45e3-bad8-7e35523d3ca7": {
+              "points": [
+                {
+                  "id": "28c3c7cc-eed9-49e8-b51d-17ade60c1a39",
+                  "type": "point",
+                  "x": 279,
+                  "y": 219.73
+                },
+                {
+                  "id": "4475cc49-8b30-41c1-b467-b4223d274b2c",
+                  "type": "point",
+                  "x": 370,
+                  "y": 219.73
+                }
+              ],
+              "id": "bed01562-36e0-45e3-bad8-7e35523d3ca7",
+              "type": "default",
+              "selected": false,
+              "source": "138266d9-6b54-452b-9259-b98bf3fd5727",
+              "sourcePort": "cmkn2ip2t008r356oln5cquf8",
+              "target": "d33bc668-4816-431e-861e-9cc00a7548b7",
+              "targetPort": "cmkx5vbo50102356rpbjjihsb",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "64d0e5d9-31f6-488f-9f86-7b4879a268e7": {
+              "points": [
+                {
+                  "id": "9d095374-d9da-4786-8105-81396c53afee",
+                  "type": "point",
+                  "x": 279,
+                  "y": 144.73
+                },
+                {
+                  "id": "8a1c0f0d-73dc-4d0a-98e2-3674c509cc4e",
+                  "type": "point",
+                  "x": 370,
+                  "y": 219.73
+                }
+              ],
+              "id": "64d0e5d9-31f6-488f-9f86-7b4879a268e7",
+              "type": "default",
+              "selected": false,
+              "source": "9bf6989a-ab6b-4df6-bcda-1e924f7751eb",
+              "sourcePort": "cmkd121b20178356rgs66sxyl",
+              "target": "d33bc668-4816-431e-861e-9cc00a7548b7",
+              "targetPort": "cmkx5vbo50102356rpbjjihsb",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "4d4f44db-4b23-47c2-a912-2c4dae903117": {
+              "points": [
+                {
+                  "id": "cee20f12-186d-4af1-9032-fa28d41963b3",
+                  "type": "point",
+                  "x": 680.7,
+                  "y": 219.73
+                },
+                {
+                  "id": "4fcb4b1a-23d0-44ec-8c15-acbdfdd2fb94",
+                  "type": "point",
+                  "x": 730,
+                  "y": 219.73
+                }
+              ],
+              "id": "4d4f44db-4b23-47c2-a912-2c4dae903117",
+              "type": "default",
+              "selected": false,
+              "source": "d33bc668-4816-431e-861e-9cc00a7548b7",
+              "sourcePort": "cmkx5vbo50104356rt61moxzq",
+              "target": "d8b337a4-ec5f-4ec1-855d-9bcd98873e59",
+              "targetPort": "cmkx5vlx1010e356r0lkv8xnu",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "db8059d9-b6ca-48d6-9c01-4dc5de0e70a8": {
+              "points": [
+                {
+                  "id": "e415b15e-4201-4b89-b64e-893a7c837e3b",
+                  "type": "point",
+                  "x": 884,
+                  "y": 219.73
+                },
+                {
+                  "id": "aa7bdc00-6df5-4085-ac4f-0e3e5a22221a",
+                  "type": "point",
+                  "x": 935,
+                  "y": 219.73
+                }
+              ],
+              "id": "db8059d9-b6ca-48d6-9c01-4dc5de0e70a8",
+              "type": "default",
+              "selected": false,
+              "source": "d8b337a4-ec5f-4ec1-855d-9bcd98873e59",
+              "sourcePort": "cmkx5vlx1010g356rk1vhsne0",
+              "target": "f7b29d47-006e-4a8d-9675-aa4f5c18d2fe",
+              "targetPort": "cmkfzesvp00a3356r44gr3nmm",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "482b7fe0-f4c0-4191-bf32-5b014a93d7dd": {
+              "points": [
+                {
+                  "id": "469bc769-c790-4fa3-976f-a30ffb9250b3",
+                  "type": "point",
+                  "x": 1529,
+                  "y": 164.73
+                },
+                {
+                  "id": "f381222a-ec27-4ed8-9033-1caaf99e7f7a",
+                  "type": "point",
+                  "x": 1610,
+                  "y": 164.73
+                }
+              ],
+              "id": "482b7fe0-f4c0-4191-bf32-5b014a93d7dd",
+              "type": "default",
+              "selected": false,
+              "source": "5c380685-3f28-4e1a-a139-7f73c871a38c",
+              "sourcePort": "cmkgzputw00i6356r6copqxru",
+              "target": "c2481e70-ae14-44e9-8cc5-eda44fc5ef49",
+              "targetPort": "cmkd3ywm301yf356r3czw5wnu",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "8de33b05-8f59-4fa0-8c78-dbc29f3cf72f": {
+              "points": [
+                {
+                  "id": "b9baf7f6-9142-4600-b704-cd378b7adf4d",
+                  "type": "point",
+                  "x": 1534,
+                  "y": 284.73
+                },
+                {
+                  "id": "7c75c8d7-a16c-4407-b54c-cbb5f221d6a4",
+                  "type": "point",
+                  "x": 1610,
+                  "y": 284.73
+                }
+              ],
+              "id": "8de33b05-8f59-4fa0-8c78-dbc29f3cf72f",
+              "type": "default",
+              "selected": false,
+              "source": "5b6cdbf0-5c89-4ee7-8d98-97fe05b85b6e",
+              "sourcePort": "cmkgzqift00j4356r637jujus",
+              "target": "abe149ed-766a-441c-90cf-65ec801be629",
+              "targetPort": "cmkd4a9ta021h356rjzldx7mt",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "1b3ec425-d1dd-4262-a4d8-f861185d80d0": {
+              "points": [
+                {
+                  "id": "915e0085-961d-4a44-87e5-04c15fa86743",
+                  "type": "point",
+                  "x": 279,
+                  "y": 304.72
+                },
+                {
+                  "id": "8f71b6c5-ef93-4d39-8ef9-af9f133fb150",
+                  "type": "point",
+                  "x": 370,
+                  "y": 219.73
+                }
+              ],
+              "id": "1b3ec425-d1dd-4262-a4d8-f861185d80d0",
+              "type": "default",
+              "selected": false,
+              "source": "84df0965-7b78-45d0-9647-1a7dbab10e77",
+              "sourcePort": "cml8jmbza04pz356raakoljrf",
+              "target": "d33bc668-4816-431e-861e-9cc00a7548b7",
+              "targetPort": "cmkx5vbo50102356rpbjjihsb",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "a8a49636-c025-43db-a5b7-6902fb1530fa": {
+              "points": [
+                {
+                  "id": "63ad01e1-e013-471f-be2b-a852ff741e58",
+                  "type": "point",
+                  "x": 1764,
+                  "y": 284.73
+                },
+                {
+                  "id": "c673c3f7-624b-4609-9ab7-6d8201cb1e45",
+                  "type": "point",
+                  "x": 1855,
+                  "y": 284.73
+                }
+              ],
+              "id": "a8a49636-c025-43db-a5b7-6902fb1530fa",
+              "type": "default",
+              "selected": false,
+              "source": "abe149ed-766a-441c-90cf-65ec801be629",
+              "sourcePort": "cmkd4a9ta021j356rnb7e2447",
+              "target": "1157e359-5a06-4e54-81c7-4084a505ccad",
+              "targetPort": "cml8jmfyl04q3356rgj3vvxm3",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "510d8b6a-eae1-4aca-a17a-3225a143e4e3": {
+              "points": [
+                {
+                  "id": "f1aaac8b-361f-4b35-ab0a-ce32108f892e",
+                  "type": "point",
+                  "x": 1782.24,
+                  "y": 164.73
+                },
+                {
+                  "id": "371bfee0-6626-4209-bc37-31b134e09560",
+                  "type": "point",
+                  "x": 1844.99,
+                  "y": 164.72
+                }
+              ],
+              "id": "510d8b6a-eae1-4aca-a17a-3225a143e4e3",
+              "type": "default",
+              "selected": false,
+              "source": "c2481e70-ae14-44e9-8cc5-eda44fc5ef49",
+              "sourcePort": "cmkd3ywm301yh356rc35npb5j",
+              "target": "73e0316f-40a7-4b50-8d09-7c3ef2e63886",
+              "targetPort": "cml8jmkla04qb356r9zwqimg2",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            }
+          }
+        },
+        {
+          "id": "71453ca0-143d-408b-925d-ec9009278b0c",
+          "type": "diagram-nodes",
+          "isSvg": false,
+          "transformed": true,
+          "models": {
+            "9bf6989a-ab6b-4df6-bcda-1e924f7751eb": {
+              "id": "9bf6989a-ab6b-4df6-bcda-1e924f7751eb",
+              "type": "debugSource",
+              "selected": false,
+              "x": 125,
+              "y": 105,
+              "ports": [
+                {
+                  "id": "cmkd121b20178356rgs66sxyl",
+                  "type": "default",
+                  "x": 271,
+                  "y": 136.73,
+                  "name": "cmkd121b20179356r9zn77ais",
+                  "parentNode": "9bf6989a-ab6b-4df6-bcda-1e924f7751eb",
+                  "links": [
+                    "64d0e5d9-31f6-488f-9f86-7b4879a268e7"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "payload": {},
+                "context": {},
+                "nextNodes": [
+                  "d33bc668-4816-431e-861e-9cc00a7548b7"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Source"
+            },
+            "bfd0942f-0601-48bd-b12b-074a42a8b160": {
+              "id": "bfd0942f-0601-48bd-b12b-074a42a8b160",
+              "type": "javascriptTransform",
+              "selected": false,
+              "x": 1140,
+              "y": 180,
+              "ports": [
+                {
+                  "id": "cmkd1obgi01op356r3ba6vrmy",
+                  "type": "default",
+                  "x": 1132,
+                  "y": 211.73,
+                  "name": "cmkd1obgi01oq356rp3osgx3z",
+                  "parentNode": "bfd0942f-0601-48bd-b12b-074a42a8b160",
+                  "links": [
+                    "a795978e-a9e5-4aae-89a0-b2ef0d9508df"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkd1obgi01or356ri6gmndys",
+                  "type": "default",
+                  "x": 1329.65,
+                  "y": 211.73,
+                  "name": "cmkd1obgi01os356r4mb6gbmt",
+                  "parentNode": "bfd0942f-0601-48bd-b12b-074a42a8b160",
+                  "links": [
+                    "90ca43da-4fba-4c2d-ac00-22bdd962fb6d",
+                    "eba38d0c-aecd-47d9-b747-de359302fb6e"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "'use strict';\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// PRODUCTION SIMULATOR - TIME-CONSTRAINED WITH HISTORY AWARENESS\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// Generates simulated production records with realistic constraints:\r\n// - Single random time window (0-10 minutes) applied to all workcenters\r\n// - Round-robin workcenter assignment for unassigned work orders\r\n// - Respects time since workcenter entered production mode\r\n// - Respects time since last production log per work order\r\n// - Processes oldest work orders first (by scheduledStartAt)\r\n// - ISO 22400 performance calculation as decimal ratio\r\n// ═══════════════════════════════════════════════════════════════════════\r\n\r\n// Access data from payload\r\nconst workcenterHistoryEdges = $.workcenterHistory?.edges || [];\r\nconst workOrderEdges = $.workOrder?.edges || [];\r\nconst timezoneEdges = $.setting?.edges || [];\r\n\r\n// Get tenant timezone\r\nconst tenantTimezone = timezoneEdges.length > 0 \r\n  ? timezoneEdges[0].node.defaultValue \r\n  : 'America/New_York';\r\n\r\n// Current time in tenant timezone\r\nconst nowLocal = $moment().tz(tenantTimezone);\r\nconst nowUtc = nowLocal.utc();\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// GENERATE SINGLE RANDOM TIME WINDOW (0-10 MINUTES)\r\n// ═══════════════════════════════════════════════════════════════════════\r\nconst minSeconds = 0;\r\nconst maxSeconds = 600;  // 10 minutes\r\nconst randomWindowSeconds = Math.floor(Math.random() * (maxSeconds - minSeconds + 1)) + minSeconds;\r\n\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\nconsole.log('PRODUCTION SIMULATION - TIME-CONSTRAINED');\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\nconsole.log('Random time window: ' + randomWindowSeconds + ' seconds (' + (randomWindowSeconds / 60).toFixed(2) + ' minutes)');\r\nconsole.log('Tenant timezone: ' + tenantTimezone);\r\nconsole.log('Current time: ' + nowLocal.format());\r\nconsole.log('───────────────────────────────────────────────────────────');\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// CONFIGURATION\r\n// ═══════════════════════════════════════════════════════════════════════\r\nconst config = {\r\n  defaultYield: 0.95,\r\n  \r\n  // Cycle time variability settings\r\n  cycleTime: {\r\n    minMultiplier: 0.70,\r\n    maxMultiplier: 1.40,\r\n    distribution: [\r\n      { min: 0.70, max: 0.80, weight: 5 },\r\n      { min: 0.80, max: 0.90, weight: 10 },\r\n      { min: 0.90, max: 0.95, weight: 20 },\r\n      { min: 0.95, max: 1.05, weight: 30 },\r\n      { min: 1.05, max: 1.15, weight: 20 },\r\n      { min: 1.15, max: 1.25, weight: 10 },\r\n      { min: 1.25, max: 1.40, weight: 5 }\r\n    ]\r\n  }\r\n};\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// HELPER FUNCTIONS\r\n// ═══════════════════════════════════════════════════════════════════════\r\n\r\nfunction generateProductionCode() {\r\n  const timeComponent = $moment().tz(tenantTimezone).format('YYYYMMDDHHmmss');\r\n  const randomComponent = Math.random().toString(36).substr(2, 5).toUpperCase();\r\n  return 'PROD-' + timeComponent + '-' + randomComponent;\r\n}\r\n\r\nfunction getLocalTimestamp() {\r\n  return $moment().tz(tenantTimezone).utc().toISOString();\r\n}\r\n\r\nfunction generatePerformanceMultiplier() {\r\n  const distribution = config.cycleTime.distribution;\r\n  const totalWeight = distribution.reduce((sum, bucket) => sum + bucket.weight, 0);\r\n  let random = Math.random() * totalWeight;\r\n  let selectedBucket = distribution[distribution.length - 1];\r\n  \r\n  for (const bucket of distribution) {\r\n    random -= bucket.weight;\r\n    if (random <= 0) {\r\n      selectedBucket = bucket;\r\n      break;\r\n    }\r\n  }\r\n  \r\n  const multiplier = selectedBucket.min + Math.random() * (selectedBucket.max - selectedBucket.min);\r\n  return multiplier;\r\n}\r\n\r\nfunction getActualCycleTime(standardCycleTime) {\r\n  const multiplier = generatePerformanceMultiplier();\r\n  const actualCycleTime = standardCycleTime * multiplier;\r\n  const performancePercent = (standardCycleTime / actualCycleTime) * 100;\r\n  \r\n  return {\r\n    actualCycleTime: Math.round(actualCycleTime * 100) / 100,\r\n    performanceMultiplier: Math.round(multiplier * 1000) / 1000,\r\n    performancePercent: Math.round(performancePercent * 10) / 10\r\n  };\r\n}\r\n\r\nfunction validateProductionData(workOrder, workcenterId) {\r\n  const errors = [];\r\n  \r\n  if (!workcenterId) errors.push('Missing workcenterId');\r\n  if (!workOrder.id) errors.push('Missing workOrder.id');\r\n  if (!workOrder.productId) errors.push('Missing workOrder.productId');\r\n  if (!workOrder.product) {\r\n    errors.push('Missing workOrder.product');\r\n  } else {\r\n    if (!workOrder.product.standardCycleTime || workOrder.product.standardCycleTime <= 0) {\r\n      errors.push('Invalid or missing product.standardCycleTime');\r\n    }\r\n  }\r\n  if (!workOrder.quantityTarget || workOrder.quantityTarget <= 0) {\r\n    errors.push('Invalid or missing quantityTarget');\r\n  }\r\n  \r\n  return errors;\r\n}\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// EXTRACT PRODUCTION-CAPABLE WORKCENTERS\r\n// ═══════════════════════════════════════════════════════════════════════\r\nconst productionWorkcenters = [];\r\nconst workcenterInfoMap = new Map();\r\n\r\nworkcenterHistoryEdges.forEach(edge => {\r\n  const wch = edge?.node;\r\n  if (!wch || !wch.workcenterId) return;\r\n  \r\n  // Only include if state indicates production capability\r\n  if (wch.state?.isProducing !== true) {\r\n    console.log(`Skipping workcenter ${wch.workcenterId}: not producing (state: ${wch.state?.code})`);\r\n    return;\r\n  }\r\n  \r\n  // Calculate time in production mode\r\n  const modeStartTime = $moment(wch.occurAt);\r\n  const timeInProductionSeconds = nowUtc.diff(modeStartTime, 'seconds');\r\n  \r\n  // Available time is minimum of random window and time in production mode\r\n  const availableSeconds = Math.min(randomWindowSeconds, timeInProductionSeconds);\r\n  \r\n  if (availableSeconds <= 0) {\r\n    console.log(`Skipping workcenter ${wch.workcenterId}: no available time (entered production ${timeInProductionSeconds}s ago)`);\r\n    return;\r\n  }\r\n  \r\n  productionWorkcenters.push(wch.workcenterId);\r\n  workcenterInfoMap.set(wch.workcenterId, {\r\n    historyId: wch.id,\r\n    modeStartTime: modeStartTime,\r\n    timeInProductionSeconds: timeInProductionSeconds,\r\n    availableSeconds: availableSeconds,\r\n    scheduleId: wch.scheduleId,\r\n    stateCode: wch.state?.code || 'UNKNOWN',\r\n    isProducing: wch.state?.isProducing || false\r\n  });\r\n  \r\n  console.log(`Workcenter ${wch.workcenterId}: ${availableSeconds}s available (in production for ${timeInProductionSeconds}s, state: ${wch.state?.code})`);\r\n});\r\n\r\nconsole.log('───────────────────────────────────────────────────────────');\r\nconsole.log('Production-capable workcenters: ' + productionWorkcenters.length);\r\n\r\nif (productionWorkcenters.length === 0) {\r\n  console.log('WARNING: No production-capable workcenters found. Exiting.');\r\n  return {\r\n    productionRecords: [],\r\n    workOrderUpdates: [],\r\n    summary: {\r\n      timezone: tenantTimezone,\r\n      executedAt: getLocalTimestamp(),\r\n      randomWindowSeconds: randomWindowSeconds,\r\n      error: 'No production-capable workcenters available'\r\n    }\r\n  };\r\n}\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// EXTRACT AND PREPARE WORK ORDERS\r\n// ═══════════════════════════════════════════════════════════════════════\r\nconst allWorkOrders = [];\r\nconst invalidWorkOrders = [];\r\n\r\nworkOrderEdges.forEach((edge, index) => {\r\n  const wo = edge?.node;\r\n  if (!wo) {\r\n    console.warn(`Skipping edge at index ${index}: no node found`);\r\n    return;\r\n  }\r\n  \r\n  allWorkOrders.push(wo);\r\n});\r\n\r\nconsole.log('Total work orders received: ' + allWorkOrders.length);\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// ROUND-ROBIN WORKCENTER ASSIGNMENT\r\n// ═══════════════════════════════════════════════════════════════════════\r\nlet roundRobinIndex = 0;\r\nlet assignedCount = 0;\r\n\r\nallWorkOrders.forEach(wo => {\r\n  if (!wo.workcenterId || wo.workcenterId === null) {\r\n    wo.workcenterId = productionWorkcenters[roundRobinIndex];\r\n    wo.wasAssigned = true;\r\n    assignedCount++;\r\n    roundRobinIndex = (roundRobinIndex + 1) % productionWorkcenters.length;\r\n  } else {\r\n    wo.wasAssigned = false;\r\n  }\r\n});\r\n\r\nconsole.log('Work orders assigned to workcenters: ' + assignedCount);\r\nconsole.log('───────────────────────────────────────────────────────────');\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// SORT WORK ORDERS BY SCHEDULED START (OLDEST FIRST)\r\n// ═══════════════════════════════════════════════════════════════════════\r\nallWorkOrders.sort((a, b) => {\r\n  const dateA = new Date(a.scheduledStartAt);\r\n  const dateB = new Date(b.scheduledStartAt);\r\n  return dateA - dateB;\r\n});\r\n\r\nconsole.log('Work orders sorted by scheduledStartAt (oldest first)');\r\nconsole.log('Oldest WO: ' + allWorkOrders[0]?.code + ' (' + allWorkOrders[0]?.scheduledStartAt + ')');\r\nconsole.log('Newest WO: ' + allWorkOrders[allWorkOrders.length - 1]?.code + ' (' + allWorkOrders[allWorkOrders.length - 1]?.scheduledStartAt + ')');\r\nconsole.log('───────────────────────────────────────────────────────────');\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// GROUP WORK ORDERS BY WORKCENTER\r\n// ═══════════════════════════════════════════════════════════════════════\r\nconst workOrdersByWorkcenter = new Map();\r\n\r\nallWorkOrders.forEach((wo, index) => {\r\n  if (!wo.workcenterId) {\r\n    invalidWorkOrders.push({\r\n      index: index,\r\n      workOrderId: wo.id,\r\n      workOrderCode: wo.code,\r\n      issue: 'NULL_WORKCENTER_ID',\r\n      message: 'Work order has null workcenterId after assignment'\r\n    });\r\n    return;\r\n  }\r\n  \r\n  if (!workOrdersByWorkcenter.has(wo.workcenterId)) {\r\n    workOrdersByWorkcenter.set(wo.workcenterId, []);\r\n  }\r\n  workOrdersByWorkcenter.get(wo.workcenterId).push(wo);\r\n});\r\n\r\nconsole.log('Work orders grouped by workcenter: ' + workOrdersByWorkcenter.size + ' workcenters');\r\nconsole.log('Invalid work orders: ' + invalidWorkOrders.length);\r\nconsole.log('───────────────────────────────────────────────────────────');\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// PROCESS RESULTS\r\n// ═══════════════════════════════════════════════════════════════════════\r\nconst productionRecords = [];\r\nconst workOrderUpdates = [];\r\nconst validationIssues = [];\r\n\r\nconst performanceStats = {\r\n  records: [],\r\n  minPerformance: 1.0,\r\n  maxPerformance: 1.0,\r\n  totalPerformance: 0,\r\n  minIso22400: 1.0,\r\n  maxIso22400: 1.0,\r\n  totalIso22400: 0,\r\n  count: 0\r\n};\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// PROCESS EACH WORKCENTER\r\n// ═══════════════════════════════════════════════════════════════════════\r\nworkOrdersByWorkcenter.forEach((workOrders, workcenterId) => {\r\n  const wcInfo = workcenterInfoMap.get(workcenterId);\r\n  \r\n  if (!wcInfo) {\r\n    console.log(`Skipping workcenter ${workcenterId}: not in production mode`);\r\n    return;\r\n  }\r\n  \r\n  let timeRemainingSeconds = wcInfo.availableSeconds;\r\n  \r\n  console.log(`\\nProcessing workcenter ${workcenterId}:`);\r\n  console.log(`  Available time: ${timeRemainingSeconds}s (${(timeRemainingSeconds / 60).toFixed(2)} min)`);\r\n  console.log(`  Work orders: ${workOrders.length}`);\r\n  console.log(`  State: ${wcInfo.stateCode}`);\r\n  \r\n  for (let woIndex = 0; woIndex < workOrders.length; woIndex++) {\r\n    const workOrder = workOrders[woIndex];\r\n    \r\n    // ═══════════════════════════════════════════════════════════════════\r\n    // VALIDATION\r\n    // ═══════════════════════════════════════════════════════════════════\r\n    const validationErrors = validateProductionData(workOrder, workcenterId);\r\n    \r\n    if (validationErrors.length > 0) {\r\n      validationIssues.push({\r\n        workcenterId: workcenterId,\r\n        workOrderId: workOrder.id,\r\n        workOrderCode: workOrder.code,\r\n        issue: 'VALIDATION_FAILED',\r\n        errors: validationErrors\r\n      });\r\n      console.log(`  ✗ WO ${workOrder.code}: Validation failed - ${validationErrors.join(', ')}`);\r\n      continue;\r\n    }\r\n    \r\n    // ═══════════════════════════════════════════════════════════════════\r\n    // CHECK TIME SINCE LAST PRODUCTION\r\n    // ═══════════════════════════════════════════════════════════════════\r\n    let maxProductionTime = timeRemainingSeconds;\r\n    \r\n    if (workOrder.productionLogs && workOrder.productionLogs.total > 0) {\r\n      // Has production logs - check time since last production\r\n      const logs = workOrder.productionLogs.edges;\r\n      if (logs && logs.length > 0) {\r\n        // Find most recent log\r\n        const sortedLogs = logs.slice().sort((a, b) => {\r\n          return new Date(b.node.occurAt) - new Date(a.node.occurAt);\r\n        });\r\n        const lastLog = sortedLogs[0].node;\r\n        const lastProductionTime = $moment(lastLog.occurAt);\r\n        const timeSinceLastProduction = nowUtc.diff(lastProductionTime, 'seconds');\r\n        \r\n        // Cap production time by time since last production\r\n        maxProductionTime = Math.min(maxProductionTime, timeSinceLastProduction);\r\n        \r\n        console.log(`  WO ${workOrder.code}: Last production ${timeSinceLastProduction}s ago, max time: ${maxProductionTime}s`);\r\n      }\r\n    } else {\r\n      console.log(`  WO ${workOrder.code}: No production logs, max time: ${maxProductionTime}s`);\r\n    }\r\n    \r\n    // Skip if no time available\r\n    if (maxProductionTime <= 0) {\r\n      console.log(`  ✗ WO ${workOrder.code}: No production time available`);\r\n      continue;\r\n    }\r\n    \r\n    // ═══════════════════════════════════════════════════════════════════\r\n    // EXTRACT WORK ORDER DATA\r\n    // ═══════════════════════════════════════════════════════════════════\r\n    const { standardCycleTime, targetYield } = workOrder.product;\r\n    const yieldDecimal = targetYield ? targetYield / 100 : config.defaultYield;\r\n    \r\n    const existingCompleted = workOrder.quantityCompleted || 0;\r\n    const existingScrap = workOrder.quantityScrap || 0;\r\n    const remainingGood = workOrder.quantityTarget - existingCompleted;\r\n    \r\n    // Skip if already complete\r\n    if (remainingGood <= 0) {\r\n      console.log(`  ✗ WO ${workOrder.code}: Already complete`);\r\n      continue;\r\n    }\r\n    \r\n    // ═══════════════════════════════════════════════════════════════════\r\n    // GENERATE CYCLE TIME WITH VARIABILITY\r\n    // ═══════════════════════════════════════════════════════════════════\r\n    const cycleTimeResult = getActualCycleTime(standardCycleTime);\r\n    const actualCycleTime = cycleTimeResult.actualCycleTime;\r\n    \r\n    // ═══════════════════════════════════════════════════════════════════\r\n    // CALCULATE PRODUCTION QUANTITY\r\n    // ═══════════════════════════════════════════════════════════════════\r\n    const totalUnitsNeededToComplete = Math.ceil(remainingGood / yieldDecimal);\r\n    const secondsNeededToComplete = totalUnitsNeededToComplete * actualCycleTime;\r\n    \r\n    let totalUnitsProduced, actualGood, actualScrap, newStatus;\r\n    \r\n    if (secondsNeededToComplete <= maxProductionTime) {\r\n      // Can complete this work order\r\n      totalUnitsProduced = totalUnitsNeededToComplete;\r\n      actualGood = remainingGood;\r\n      actualScrap = totalUnitsProduced - actualGood;\r\n      newStatus = 'Completed';\r\n    } else {\r\n      // Partial production - use all available time\r\n      totalUnitsProduced = Math.floor(maxProductionTime / actualCycleTime);\r\n      actualGood = Math.floor(totalUnitsProduced * yieldDecimal);\r\n      actualScrap = totalUnitsProduced - actualGood;\r\n      newStatus = 'InProgress';\r\n    }\r\n    \r\n    // Skip if can't produce at least 1 unit\r\n    if (totalUnitsProduced < 1) {\r\n      console.log(`  ✗ WO ${workOrder.code}: Insufficient time (need ${actualCycleTime}s, have ${maxProductionTime}s)`);\r\n      break;\r\n    }\r\n    \r\n    const cycleTime = totalUnitsProduced * actualCycleTime;\r\n    \r\n    // ═══════════════════════════════════════════════════════════════════\r\n    // CALCULATE IDEAL UNITS AND ISO 22400 PERFORMANCE\r\n    // ═══════════════════════════════════════════════════════════════════\r\n    let idealCycleTimeMs;\r\n    if (workOrder.product.idealCycleTime && workOrder.product.idealCycleTime > 0) {\r\n      idealCycleTimeMs = workOrder.product.idealCycleTime;\r\n    } else {\r\n      idealCycleTimeMs = standardCycleTime * 1000;\r\n    }\r\n    \r\n    const cycleTimeMs = cycleTime * 1000;\r\n    const idealUnits = cycleTimeMs / idealCycleTimeMs;\r\n    \r\n    const actualOutput = totalUnitsProduced;\r\n    const iso22400Performance = idealUnits > 0 ? actualOutput / idealUnits : 0;\r\n    \r\n    // Track performance stats\r\n    performanceStats.records.push({\r\n      workOrderCode: workOrder.code,\r\n      standardCycleTime: standardCycleTime,\r\n      actualCycleTime: actualCycleTime,\r\n      performancePercent: cycleTimeResult.performancePercent,\r\n      iso22400Performance: iso22400Performance\r\n    });\r\n    performanceStats.minPerformance = Math.min(performanceStats.minPerformance, cycleTimeResult.performancePercent);\r\n    performanceStats.maxPerformance = Math.max(performanceStats.maxPerformance, cycleTimeResult.performancePercent);\r\n    performanceStats.totalPerformance += cycleTimeResult.performancePercent;\r\n    performanceStats.minIso22400 = Math.min(performanceStats.minIso22400, iso22400Performance);\r\n    performanceStats.maxIso22400 = Math.max(performanceStats.maxIso22400, iso22400Performance);\r\n    performanceStats.totalIso22400 += iso22400Performance;\r\n    performanceStats.count++;\r\n    \r\n    // ═══════════════════════════════════════════════════════════════════\r\n    // CREATE PRODUCTION RECORD\r\n    // ═══════════════════════════════════════════════════════════════════\r\n    const productionRecord = {\r\n      code: generateProductionCode(),\r\n      workcenterId: workcenterId,\r\n      workOrderId: workOrder.id,\r\n      workOrderCode: workOrder.code || 'UNKNOWN',\r\n      productId: workOrder.productId,\r\n      productCode: workOrder.product?.code || 'UNKNOWN',\r\n      scheduleId: wcInfo.scheduleId,\r\n      quantityGood: actualGood,\r\n      quantityScrap: actualScrap,\r\n      idealUnits: idealUnits,\r\n      cycleTime: Math.round(cycleTime * 100) / 100,\r\n      standardCycleTime: standardCycleTime * totalUnitsProduced,\r\n      occurAt: getLocalTimestamp(),\r\n      source: 'Integration',\r\n      performanceMultiplier: cycleTimeResult.performanceMultiplier,\r\n      performancePercent: cycleTimeResult.performancePercent,\r\n      performance: Math.round(iso22400Performance * 10000) / 10000\r\n    };\r\n    \r\n    // Final validation\r\n    if (!productionRecord.workcenterId || !productionRecord.workOrderId || !productionRecord.productId) {\r\n      console.log(`  ✗ WO ${workOrder.code}: Final validation failed`);\r\n      validationIssues.push({\r\n        workcenterId: workcenterId,\r\n        workOrderId: workOrder.id,\r\n        issue: 'FINAL_VALIDATION_FAILED',\r\n        message: 'Production record has null required fields'\r\n      });\r\n      continue;\r\n    }\r\n    \r\n    productionRecords.push(productionRecord);\r\n    \r\n    // ═══════════════════════════════════════════════════════════════════\r\n    // CREATE WORK ORDER UPDATE\r\n    // ═══════════════════════════════════════════════════════════════════\r\n    const newCompleted = existingCompleted + actualGood;\r\n    const newScrap = existingScrap + actualScrap;\r\n    \r\n    workOrderUpdates.push({\r\n      id: workOrder.id,\r\n      code: workOrder.code,\r\n      wasAssigned: workOrder.wasAssigned,\r\n      workcenterId: workcenterId,\r\n      previousCompleted: existingCompleted,\r\n      previousScrap: existingScrap,\r\n      addedGood: actualGood,\r\n      addedScrap: actualScrap,\r\n      quantityCompleted: newCompleted,\r\n      quantityScrap: newScrap,\r\n      quantityTarget: workOrder.quantityTarget,\r\n      status: newStatus\r\n    });\r\n    \r\n    console.log(`  ✓ WO ${workOrder.code}: ${actualGood} good, ${actualScrap} scrap, ${(iso22400Performance * 100).toFixed(1)}% perf, ${newStatus}`);\r\n    \r\n    // Update remaining time\r\n    timeRemainingSeconds -= cycleTime;\r\n    \r\n    // Move to next work order if completed\r\n    if (newStatus === 'Completed') {\r\n      // Continue to next work order\r\n    } else {\r\n      // Partial completion, this workcenter is done\r\n      break;\r\n    }\r\n  }\r\n});\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// BUILD SUMMARY\r\n// ═══════════════════════════════════════════════════════════════════════\r\nconst avgPerformance = performanceStats.count > 0 \r\n  ? Math.round(performanceStats.totalPerformance / performanceStats.count * 10) / 10 \r\n  : 100;\r\n\r\nconst avgIso22400 = performanceStats.count > 0 \r\n  ? Math.round((performanceStats.totalIso22400 / performanceStats.count) * 10000) / 10000\r\n  : 1.0;\r\n\r\nconst summary = {\r\n  timezone: tenantTimezone,\r\n  executedAt: getLocalTimestamp(),\r\n  randomWindowSeconds: randomWindowSeconds,\r\n  randomWindowMinutes: Math.round(randomWindowSeconds / 60 * 100) / 100,\r\n  input: {\r\n    workcenterHistoryTotal: workcenterHistoryEdges.length,\r\n    productionCapableWorkcenters: productionWorkcenters.length,\r\n    workOrdersTotal: allWorkOrders.length,\r\n    workOrdersAssigned: assignedCount,\r\n    workOrdersInvalid: invalidWorkOrders.length\r\n  },\r\n  output: {\r\n    productionRecordsCreated: productionRecords.length,\r\n    workOrdersUpdated: workOrderUpdates.length,\r\n    workOrdersCompleted: workOrderUpdates.filter(wo => wo.status === 'Completed').length,\r\n    totalGoodUnits: productionRecords.reduce((sum, r) => sum + r.quantityGood, 0),\r\n    totalScrapUnits: productionRecords.reduce((sum, r) => sum + r.quantityScrap, 0),\r\n    totalActualUnits: productionRecords.reduce((sum, r) => sum + r.quantityGood + r.quantityScrap, 0),\r\n    totalIdealUnits: Math.round(productionRecords.reduce((sum, r) => sum + r.idealUnits, 0) * 100) / 100,\r\n    totalCycleTimeSeconds: Math.round(productionRecords.reduce((sum, r) => sum + r.cycleTime, 0) * 100) / 100,\r\n    totalStandardCycleTimeSeconds: productionRecords.reduce((sum, r) => sum + r.standardCycleTime, 0)\r\n  },\r\n  performance: {\r\n    cycleTimeVariability: {\r\n      minPerformancePercent: performanceStats.minPerformance,\r\n      maxPerformancePercent: performanceStats.maxPerformance,\r\n      avgPerformancePercent: avgPerformance\r\n    },\r\n    iso22400: {\r\n      minPerformance: Math.round(performanceStats.minIso22400 * 10000) / 10000,\r\n      maxPerformance: Math.round(performanceStats.maxIso22400 * 10000) / 10000,\r\n      avgPerformance: avgIso22400\r\n    },\r\n    recordsWithVariability: performanceStats.count\r\n  },\r\n  validation: {\r\n    invalidWorkOrders: invalidWorkOrders.length,\r\n    validationIssues: validationIssues.length,\r\n    totalIssues: invalidWorkOrders.length + validationIssues.length\r\n  }\r\n};\r\n\r\nif (invalidWorkOrders.length > 0) {\r\n  summary.invalidWorkOrders = invalidWorkOrders;\r\n}\r\n\r\nif (validationIssues.length > 0) {\r\n  summary.validationIssues = validationIssues;\r\n}\r\n\r\nif (productionRecords.length === 0) {\r\n  if (allWorkOrders.length === 0) {\r\n    summary.zeroOutputReason = 'No work orders provided';\r\n  } else if (productionWorkcenters.length === 0) {\r\n    summary.zeroOutputReason = 'No production-capable workcenters available';\r\n  } else if (randomWindowSeconds === 0) {\r\n    summary.zeroOutputReason = 'Random time window is zero';\r\n  } else {\r\n    summary.zeroOutputReason = 'No production possible - check work order status, cycle times, and time constraints';\r\n  }\r\n}\r\n\r\nconsole.log('\\n═══════════════════════════════════════════════════════════');\r\nconsole.log('PRODUCTION SIMULATION COMPLETE');\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\nconsole.log('Time window: ' + randomWindowSeconds + 's (' + (randomWindowSeconds / 60).toFixed(2) + ' min)');\r\nconsole.log('Input: ' + allWorkOrders.length + ' work orders');\r\nconsole.log('Output: ' + productionRecords.length + ' production records');\r\nconsole.log('Updates: ' + workOrderUpdates.length + ' work orders');\r\nconsole.log('Completed: ' + workOrderUpdates.filter(wo => wo.status === 'Completed').length + ' work orders');\r\nconsole.log('───────────────────────────────────────────────────────────');\r\nconsole.log('ISO 22400 Performance (Actual vs Ideal - as decimal):');\r\nconsole.log('  Min: ' + Math.round(performanceStats.minIso22400 * 10000) / 10000);\r\nconsole.log('  Max: ' + Math.round(performanceStats.maxIso22400 * 10000) / 10000);\r\nconsole.log('  Avg: ' + avgIso22400);\r\nconsole.log('───────────────────────────────────────────────────────────');\r\nconsole.log('Units Summary:');\r\nconsole.log('  Total Actual: ' + productionRecords.reduce((sum, r) => sum + r.quantityGood + r.quantityScrap, 0));\r\nconsole.log('  Total Ideal: ' + (Math.round(productionRecords.reduce((sum, r) => sum + r.idealUnits, 0) * 100) / 100));\r\nconsole.log('  Total Good: ' + productionRecords.reduce((sum, r) => sum + r.quantityGood, 0));\r\nconsole.log('  Total Scrap: ' + productionRecords.reduce((sum, r) => sum + r.quantityScrap, 0));\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\n\r\nreturn {\r\n  productionRecords,\r\n  workOrderUpdates,\r\n  summary\r\n};",
+                "nextNodes": [
+                  "5c380685-3f28-4e1a-a139-7f73c871a38c",
+                  "5b6cdbf0-5c89-4ee7-8d98-97fe05b85b6e"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Calculate Production Output"
+            },
+            "c2481e70-ae14-44e9-8cc5-eda44fc5ef49": {
+              "id": "c2481e70-ae14-44e9-8cc5-eda44fc5ef49",
+              "type": "mutate",
+              "selected": false,
+              "x": 1610,
+              "y": 125,
+              "ports": [
+                {
+                  "id": "cmkd3ywm301yf356r3czw5wnu",
+                  "type": "default",
+                  "x": 1602,
+                  "y": 156.73,
+                  "name": "cmkd3ywm301yg356rugcuupxz",
+                  "parentNode": "c2481e70-ae14-44e9-8cc5-eda44fc5ef49",
+                  "links": [
+                    "482b7fe0-f4c0-4191-bf32-5b014a93d7dd"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkd3ywm301yh356rc35npb5j",
+                  "type": "default",
+                  "x": 1774.24,
+                  "y": 156.73,
+                  "name": "cmkd3ywm301yi356r3f3f73ij",
+                  "parentNode": "c2481e70-ae14-44e9-8cc5-eda44fc5ef49",
+                  "links": [
+                    "510d8b6a-eae1-4aca-a17a-3225a143e4e3"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "Application",
+                "variablesTransform": "{\r\n  \"payload\": $ ? $.{\r\n    \"create\": {\r\n      \"code\": code,\r\n      \"workcenterId\": workcenterId,\r\n      \"workOrderId\": workOrderId,\r\n      \"productId\": productId,\r\n      \"scheduleId\": scheduleId,\r\n      \"quantityGood\": quantityGood,\r\n      \"quantityScrap\": quantityScrap,\r\n      \"occurAt\": occurAt,\r\n      \"cycleTime\": cycleTime,\r\n      \"source\": source,\r\n      \"idealUnits\": idealUnits,\r\n      \"performance\": performance\r\n    }\r\n  } : []\r\n}",
+                "mutation": "mutation CreateProductionLog($payload: [ProductionLogCreatePayloadInput!]!) {\n  createProductionLog(payload: $payload) {\n    id\n    code\n    quantityGood\n    quantityScrap\n    occurAt\n    idealUnits\n  }\n}",
+                "nextNodes": [
+                  "73e0316f-40a7-4b50-8d09-7c3ef2e63886"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": true,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Create Production Logs"
+            },
+            "abe149ed-766a-441c-90cf-65ec801be629": {
+              "id": "abe149ed-766a-441c-90cf-65ec801be629",
+              "type": "mutate",
+              "selected": false,
+              "x": 1610,
+              "y": 245,
+              "ports": [
+                {
+                  "id": "cmkd4a9ta021h356rjzldx7mt",
+                  "type": "default",
+                  "x": 1602,
+                  "y": 276.73,
+                  "name": "cmkd4a9ta021i356rb1pkx0fj",
+                  "parentNode": "abe149ed-766a-441c-90cf-65ec801be629",
+                  "links": [
+                    "8de33b05-8f59-4fa0-8c78-dbc29f3cf72f"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkd4a9ta021j356rnb7e2447",
+                  "type": "default",
+                  "x": 1756,
+                  "y": 276.73,
+                  "name": "cmkd4a9ta021k356r499wmqpa",
+                  "parentNode": "abe149ed-766a-441c-90cf-65ec801be629",
+                  "links": [
+                    "a8a49636-c025-43db-a5b7-6902fb1530fa"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "Application",
+                "variablesTransform": "{\r\n  \"payload\": $ ? $.{\r\n    \"where\": {\r\n      \"id\": id\r\n    },\r\n    \"update\": {\r\n      \"quantityCompleted\": quantityCompleted,\r\n      \"quantityScrap\": quantityScrap,\r\n      \"status\": status,\r\n      \"actualEndAt\": status = \"Completed\" ? $now() : null\r\n    }\r\n  } : []\r\n}",
+                "mutation": "mutation UpdateWorkOrder($payload: [WorkOrderUpdatePayloadInput!]!) {\r\n  updateWorkOrder(payload: $payload) {\r\n    id\r\n    code\r\n    quantityCompleted\r\n    quantityScrap\r\n    status\r\n    actualEndAt\r\n  }\r\n}",
+                "nextNodes": [
+                  "1157e359-5a06-4e54-81c7-4084a505ccad"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": true,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Update Work Orders"
+            },
+            "f7b29d47-006e-4a8d-9675-aa4f5c18d2fe": {
+              "id": "f7b29d47-006e-4a8d-9675-aa4f5c18d2fe",
+              "type": "transform",
+              "selected": false,
+              "x": 935,
+              "y": 180,
+              "ports": [
+                {
+                  "id": "cmkfzesvp00a3356r44gr3nmm",
+                  "type": "default",
+                  "x": 927,
+                  "y": 211.73,
+                  "name": "cmkfzesvp00a4356rmisqqq81",
+                  "parentNode": "f7b29d47-006e-4a8d-9675-aa4f5c18d2fe",
+                  "links": [
+                    "db8059d9-b6ca-48d6-9c01-4dc5de0e70a8"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkfzesvp00a5356rch3poyg3",
+                  "type": "default",
+                  "x": 1081,
+                  "y": 211.73,
+                  "name": "cmkfzesvp00a6356rvlbaoav1",
+                  "parentNode": "f7b29d47-006e-4a8d-9675-aa4f5c18d2fe",
+                  "links": [
+                    "a795978e-a9e5-4aae-89a0-b2ef0d9508df"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "bfd0942f-0601-48bd-b12b-074a42a8b160"
+                ],
+                "transform": "(\r\n  $now := $moment();\r\n  $workcenters := $state.context.activeWorkOrders.edges.node.workcenter;\r\n  \r\n  /* Get unique scheduleGroupIds */\r\n  $scheduleGroupIds := $distinct($workcenters.scheduleGroupId)[$ != null];\r\n  \r\n  /* Build mapping: scheduleGroupId → current active scheduleId */\r\n  $currentScheduleByGroup := $merge($scheduleGroupIds.(\r\n    $groupId := $;\r\n    $currentSchedules := $scheduleGroup($groupId).getCurrentSchedules($now, $now, { \"inclusive\": true });\r\n    $activeSchedule := $currentSchedules[0];\r\n    { ($groupId): $activeSchedule.scheduleId }\r\n  ));\r\n  \r\n  /* Return original payload with schedule mapping added */\r\n  $merge([$, { \"currentScheduleByGroup\": $currentScheduleByGroup }])\r\n)"
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "JSONata"
+            },
+            "5c380685-3f28-4e1a-a139-7f73c871a38c": {
+              "id": "5c380685-3f28-4e1a-a139-7f73c871a38c",
+              "type": "filterArray",
+              "selected": false,
+              "x": 1375,
+              "y": 125,
+              "ports": [
+                {
+                  "id": "cmkgzputw00i4356r87q8i40c",
+                  "type": "default",
+                  "x": 1367,
+                  "y": 156.73,
+                  "name": "cmkgzputw00i5356rgvuwv8uk",
+                  "parentNode": "5c380685-3f28-4e1a-a139-7f73c871a38c",
+                  "links": [
+                    "90ca43da-4fba-4c2d-ac00-22bdd962fb6d"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkgzputw00i6356r6copqxru",
+                  "type": "default",
+                  "x": 1521,
+                  "y": 156.73,
+                  "name": "cmkgzputw00i7356r5mucf4ev",
+                  "parentNode": "5c380685-3f28-4e1a-a139-7f73c871a38c",
+                  "links": [
+                    "482b7fe0-f4c0-4191-bf32-5b014a93d7dd"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "inputTransform": "$.productionRecords",
+                "outputTransform": "$",
+                "enableAdvancedConfiguration": true,
+                "filterTransform": "$",
+                "nextNodes": [
+                  "c2481e70-ae14-44e9-8cc5-eda44fc5ef49"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Filter Array"
+            },
+            "5b6cdbf0-5c89-4ee7-8d98-97fe05b85b6e": {
+              "id": "5b6cdbf0-5c89-4ee7-8d98-97fe05b85b6e",
+              "type": "filterArray",
+              "selected": false,
+              "x": 1380,
+              "y": 245,
+              "ports": [
+                {
+                  "id": "cmkgzqift00j2356r8fa8fffm",
+                  "type": "default",
+                  "x": 1372,
+                  "y": 276.73,
+                  "name": "cmkgzqift00j3356rh3mmi94j",
+                  "parentNode": "5b6cdbf0-5c89-4ee7-8d98-97fe05b85b6e",
+                  "links": [
+                    "eba38d0c-aecd-47d9-b747-de359302fb6e"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkgzqift00j4356r637jujus",
+                  "type": "default",
+                  "x": 1526,
+                  "y": 276.73,
+                  "name": "cmkgzqift00j5356r74hx6an6",
+                  "parentNode": "5b6cdbf0-5c89-4ee7-8d98-97fe05b85b6e",
+                  "links": [
+                    "8de33b05-8f59-4fa0-8c78-dbc29f3cf72f"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "inputTransform": "$.workOrderUpdates",
+                "outputTransform": "$",
+                "enableAdvancedConfiguration": true,
+                "filterTransform": "$",
+                "nextNodes": [
+                  "abe149ed-766a-441c-90cf-65ec801be629"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Filter Array"
+            },
+            "138266d9-6b54-452b-9259-b98bf3fd5727": {
+              "id": "138266d9-6b54-452b-9259-b98bf3fd5727",
+              "type": "schedule",
+              "selected": false,
+              "x": 125,
+              "y": 180,
+              "ports": [
+                {
+                  "id": "cmkn2ip2t008r356oln5cquf8",
+                  "type": "default",
+                  "x": 271,
+                  "y": 211.73,
+                  "name": "cmkn2ip2t008s356o8wa0bx4g",
+                  "parentNode": "138266d9-6b54-452b-9259-b98bf3fd5727",
+                  "links": [
+                    "bed01562-36e0-45e3-bad8-7e35523d3ca7"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Payload",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "configure": "Open Schedule Editor",
+                "nextNodes": [
+                  "d33bc668-4816-431e-861e-9cc00a7548b7"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Schedule"
+            },
+            "d33bc668-4816-431e-861e-9cc00a7548b7": {
+              "id": "d33bc668-4816-431e-861e-9cc00a7548b7",
+              "type": "query",
+              "selected": false,
+              "x": 370,
+              "y": 180,
+              "ports": [
+                {
+                  "id": "cmkx5vbo50102356rpbjjihsb",
+                  "type": "default",
+                  "x": 362,
+                  "y": 211.73,
+                  "name": "cmkx5vbo50103356rhim64ov6",
+                  "parentNode": "d33bc668-4816-431e-861e-9cc00a7548b7",
+                  "links": [
+                    "bed01562-36e0-45e3-bad8-7e35523d3ca7",
+                    "64d0e5d9-31f6-488f-9f86-7b4879a268e7",
+                    "1b3ec425-d1dd-4262-a4d8-f861185d80d0"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkx5vbo50104356rt61moxzq",
+                  "type": "default",
+                  "x": 672.7,
+                  "y": 211.73,
+                  "name": "cmkx5vbo50105356rvvwj2owh",
+                  "parentNode": "d33bc668-4816-431e-861e-9cc00a7548b7",
+                  "links": [
+                    "4d4f44db-4b23-47c2-a912-2c4dae903117"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "application",
+                "variablesTransform": "{\r\n  \"now\": $moment()\r\n}",
+                "query": "query GetProductionWorkcentersAndActiveWorkOrders($now: DateTime!) {\r\n  # Get workcenters currently in production mode\r\n  workcenterHistory(\r\n    where: {\r\n      endAt: { _isNull: true }\r\n      workcenterId: { _isNull: false }\r\n      modeId: { _eq: \"production\" }\r\n    }\r\n    first: 10000\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        workcenterId\r\n        modeId\r\n        occurAt\r\n        scheduleId\r\n        mode {\r\n          countAsDowntime\r\n          countAsProductionTime\r\n          countAsPlannedDowntime\r\n        }\r\n        state{\r\n            \r\n                code\r\n        isProducing\r\n        isPerformanceLoss\r\n        isFault\r\n        }\r\n      }\r\n    }\r\n  }\r\n  \r\n  # Get all active work orders\r\n  workOrder(\r\n    where: {\r\n      status: { _in: [\"Released\", \"InProgress\"] }\r\n      scheduledStartAt: { _lte: $now }\r\n    }\r\n    first: 1000\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        code\r\n        status\r\n        quantityTarget\r\n        quantityCompleted\r\n        productionLogs{\r\n          total\r\n           edges {\r\n            node{\r\n              createdAt\r\n              quantityGood\r\n              quantityScrap\r\n              occurAt\r\n            }\r\n\r\n           }\r\n        }\r\n        quantityScrap\r\n        scheduledStartAt\r\n        scheduledEndAt\r\n        productId\r\n        workcenterId\r\n        product {\r\n          id\r\n          code\r\n          standardCycleTime\r\n          idealCycleTime (format: milliseconds)\r\n          targetYield\r\n        }\r\n        workcenter {\r\n          id\r\n          code\r\n          name\r\n          scheduleGroupId\r\n        }\r\n      }\r\n    }\r\n  }\r\n  \r\n  # Get timezone setting\r\n  setting(where: { id: { _eq: \"TimeZone\" } }) {\r\n    edges {\r\n      node {\r\n        id\r\n        defaultValue\r\n      }\r\n    }\r\n  }\r\n}",
+                "nextNodes": [
+                  "d8b337a4-ec5f-4ec1-855d-9bcd98873e59"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "GetProductionWorkcentersAndActiveWorkOrders"
+            },
+            "d8b337a4-ec5f-4ec1-855d-9bcd98873e59": {
+              "id": "d8b337a4-ec5f-4ec1-855d-9bcd98873e59",
+              "type": "setContext",
+              "selected": false,
+              "x": 730,
+              "y": 180,
+              "ports": [
+                {
+                  "id": "cmkx5vlx1010e356r0lkv8xnu",
+                  "type": "default",
+                  "x": 722,
+                  "y": 211.73,
+                  "name": "cmkx5vlx1010f356roej2see2",
+                  "parentNode": "d8b337a4-ec5f-4ec1-855d-9bcd98873e59",
+                  "links": [
+                    "4d4f44db-4b23-47c2-a912-2c4dae903117"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkx5vlx1010g356rk1vhsne0",
+                  "type": "default",
+                  "x": 876,
+                  "y": 211.73,
+                  "name": "cmkx5vlx1010h356rwwyd84zi",
+                  "parentNode": "d8b337a4-ec5f-4ec1-855d-9bcd98873e59",
+                  "links": [
+                    "db8059d9-b6ca-48d6-9c01-4dc5de0e70a8"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "{\r\n  \"tenantTimezone\": $.setting.edges.node.defaultValue,\r\n    \"activeWorkOrders\": $.workOrder\r\n}",
+                "nextNodes": [
+                  "f7b29d47-006e-4a8d-9675-aa4f5c18d2fe"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Set Context"
+            },
+            "84df0965-7b78-45d0-9647-1a7dbab10e77": {
+              "id": "84df0965-7b78-45d0-9647-1a7dbab10e77",
+              "type": "request",
+              "selected": false,
+              "x": 125,
+              "y": 265,
+              "ports": [
+                {
+                  "id": "cml8jmbza04pz356raakoljrf",
+                  "type": "default",
+                  "x": 271,
+                  "y": 296.72,
+                  "name": "cml8jmbza04q0356rf9w4y35o",
+                  "parentNode": "84df0965-7b78-45d0-9647-1a7dbab10e77",
+                  "links": [
+                    "1b3ec425-d1dd-4262-a4d8-f861185d80d0"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Payload",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "d33bc668-4816-431e-861e-9cc00a7548b7"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Request"
+            },
+            "1157e359-5a06-4e54-81c7-4084a505ccad": {
+              "id": "1157e359-5a06-4e54-81c7-4084a505ccad",
+              "type": "response",
+              "selected": false,
+              "x": 1855,
+              "y": 245,
+              "ports": [
+                {
+                  "id": "cml8jmfyl04q3356rgj3vvxm3",
+                  "type": "default",
+                  "x": 1847,
+                  "y": 276.73,
+                  "name": "cml8jmfyl04q4356rtocuu492",
+                  "parentNode": "1157e359-5a06-4e54-81c7-4084a505ccad",
+                  "links": [
+                    "a8a49636-c025-43db-a5b7-6902fb1530fa"
+                  ],
+                  "in": true,
+                  "fieldLabel": "Response"
+                },
+                {
+                  "id": "cml8jmfyl04q5356r9fglv1v6",
+                  "type": "default",
+                  "x": 2001,
+                  "y": 276.73,
+                  "name": "cml8jmfyl04q6356rssvv8eep",
+                  "parentNode": "1157e359-5a06-4e54-81c7-4084a505ccad",
+                  "links": [],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "responseTransform": "$",
+                "nextNodes": []
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Response"
+            },
+            "73e0316f-40a7-4b50-8d09-7c3ef2e63886": {
+              "id": "73e0316f-40a7-4b50-8d09-7c3ef2e63886",
+              "type": "response",
+              "selected": false,
+              "x": 1845,
+              "y": 125,
+              "ports": [
+                {
+                  "id": "cml8jmkla04qb356r9zwqimg2",
+                  "type": "default",
+                  "x": 1836.99,
+                  "y": 156.72,
+                  "name": "cml8jmkla04qc356rhbnii554",
+                  "parentNode": "73e0316f-40a7-4b50-8d09-7c3ef2e63886",
+                  "links": [
+                    "510d8b6a-eae1-4aca-a17a-3225a143e4e3"
+                  ],
+                  "in": true,
+                  "fieldLabel": "Response"
+                },
+                {
+                  "id": "cml8jmkla04qd356rgv2voo2a",
+                  "type": "default",
+                  "x": 1990.99,
+                  "y": 156.72,
+                  "name": "cml8jmkla04qe356r7zusa9e7",
+                  "parentNode": "73e0316f-40a7-4b50-8d09-7c3ef2e63886",
+                  "links": [],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "responseTransform": "$",
+                "nextNodes": []
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Response"
+            }
+          }
+        }
+      ],
+      "name": "Production Simulator (Daily)",
+      "type": "System",
+      "version": "0.0.16",
+      "walkthrough": {
+        "steps": []
+      }
+    }
+  }
+}

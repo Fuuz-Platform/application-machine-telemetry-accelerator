@@ -1,0 +1,18 @@
+{
+  "api": "application",
+  "modelName": "ModuleGroup",
+  "payload": [
+    {
+      "id": "machineTelemetrySiteApplication",
+      "name": "Machine Telemetry Site Application",
+      "icon": "g",
+      "description": "For testing and user support.",
+      "_customFields": {
+        "_externalId": null
+      }
+    }
+  ],
+  "metadata": {
+    "insertEarly": true
+  }
+}

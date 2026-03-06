@@ -1,0 +1,615 @@
+{
+  "api": "application",
+  "modelName": "WorkOrder",
+  "payload": [
+    {
+      "id": "wo-det-0014",
+      "code": "WO-DET-0014",
+      "priority": 3,
+      "quantityCompleted": 9245,
+      "quantityScrap": 83,
+      "quantityTarget": 9245,
+      "notes": "Currently in production",
+      "status": "Completed",
+      "actualEndAt": "2026-01-27T03:39:26.431Z",
+      "actualStartAt": "2024-12-20T06:00:00.000Z",
+      "scheduledEndAt": "2024-12-22T05:00:00.000Z",
+      "scheduledStartAt": "2024-12-20T06:00:00.000Z",
+      "productId": "prd-det-010",
+      "workcenterId": "wc-fa-c2",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wo-det-0016",
+      "code": "WO-DET-0016",
+      "priority": 1,
+      "quantityCompleted": 3220,
+      "quantityScrap": 123,
+      "quantityTarget": 3220,
+      "notes": "Ready for scheduling",
+      "status": "Completed",
+      "actualEndAt": "2026-01-27T15:34:51.174Z",
+      "actualStartAt": null,
+      "scheduledEndAt": "2025-01-11T04:00:00.000Z",
+      "scheduledStartAt": "2025-01-08T06:00:00.000Z",
+      "productId": "prd-det-014",
+      "workcenterId": "wc-wld-c1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wo-det-0021",
+      "code": "WO-DET-0021",
+      "priority": 2,
+      "quantityCompleted": 11365,
+      "quantityScrap": 145.60000000000073,
+      "quantityTarget": 11365,
+      "notes": "Production underway",
+      "status": "Completed",
+      "actualEndAt": "2026-01-23T02:01:21.988Z",
+      "actualStartAt": "2024-12-24T06:00:00.000Z",
+      "scheduledEndAt": "2024-12-26T14:00:00.000Z",
+      "scheduledStartAt": "2024-12-24T06:00:00.000Z",
+      "productId": "prd-det-010",
+      "workcenterId": "wc-pd-c2",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wo-det-0034",
+      "code": "WO-DET-0034",
+      "priority": 1,
+      "quantityCompleted": 5399,
+      "quantityScrap": 69.40000000000036,
+      "quantityTarget": 5399,
+      "notes": "Production running smoothly",
+      "status": "Completed",
+      "actualEndAt": "2026-01-20T21:04:31.615Z",
+      "actualStartAt": "2024-10-07T06:00:00.000Z",
+      "scheduledEndAt": "2024-10-08T15:00:00.000Z",
+      "scheduledStartAt": "2024-10-07T06:00:00.000Z",
+      "productId": "prd-det-016",
+      "workcenterId": "wc-hp-c2",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wo-det-0037",
+      "code": "WO-DET-0037",
+      "priority": 1,
+      "quantityCompleted": 3453,
+      "quantityScrap": 63.09999999999991,
+      "quantityTarget": 3453,
+      "notes": "In progress - on track",
+      "status": "Completed",
+      "actualEndAt": "2026-01-26T19:21:23.685Z",
+      "actualStartAt": "2024-12-14T06:00:00.000Z",
+      "scheduledEndAt": "2024-12-16T04:00:00.000Z",
+      "scheduledStartAt": "2024-12-14T06:00:00.000Z",
+      "productId": "prd-det-014",
+      "workcenterId": "wc-fa-c2",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wo-det-0065",
+      "code": "WO-DET-0065",
+      "priority": 1,
+      "quantityCompleted": 7488,
+      "quantityScrap": 153,
+      "quantityTarget": 7488,
+      "notes": "Scheduled for production",
+      "status": "Completed",
+      "actualEndAt": "2026-01-23T11:01:19.567Z",
+      "actualStartAt": null,
+      "scheduledEndAt": "2024-10-09T03:00:00.000Z",
+      "scheduledStartAt": "2024-10-07T06:00:00.000Z",
+      "productId": "prd-det-006",
+      "workcenterId": "wc-hmc-c1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wo-det-0069",
+      "code": "WO-DET-0069",
+      "priority": 2,
+      "quantityCompleted": 610,
+      "quantityScrap": 27.9,
+      "quantityTarget": 610,
+      "notes": "Active production",
+      "status": "Completed",
+      "actualEndAt": "2026-01-27T15:28:52.498Z",
+      "actualStartAt": "2025-01-25T06:00:00.000Z",
+      "scheduledEndAt": "2025-01-27T22:00:00.000Z",
+      "scheduledStartAt": "2025-01-25T06:00:00.000Z",
+      "productId": "prd-det-013",
+      "workcenterId": "wc-pd-c1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wo-det-0089",
+      "code": "WO-DET-0089",
+      "priority": 1,
+      "quantityCompleted": 1941,
+      "quantityScrap": 35.799999999999955,
+      "quantityTarget": 1941,
+      "notes": "Production underway",
+      "status": "Completed",
+      "actualEndAt": "2026-01-26T08:30:30.881Z",
+      "actualStartAt": "2024-12-17T06:00:00.000Z",
+      "scheduledEndAt": "2024-12-17T19:00:00.000Z",
+      "scheduledStartAt": "2024-12-17T06:00:00.000Z",
+      "productId": "prd-det-011",
+      "workcenterId": "wc-hp-c1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wo-det-0094",
+      "code": "WO-DET-0094",
+      "priority": 3,
+      "quantityCompleted": 5341,
+      "quantityScrap": 58.299999999999635,
+      "quantityTarget": 5341,
+      "notes": "Currently in production",
+      "status": "Completed",
+      "actualEndAt": "2026-01-26T10:30:30.997Z",
+      "actualStartAt": "2025-01-01T06:00:00.000Z",
+      "scheduledEndAt": "2025-01-01T22:00:00.000Z",
+      "scheduledStartAt": "2025-01-01T06:00:00.000Z",
+      "productId": "prd-det-001",
+      "workcenterId": "wc-vmc-c1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wo-det-0123",
+      "code": "WO-DET-0123",
+      "priority": 3,
+      "quantityCompleted": 2623,
+      "quantityScrap": 105.70000000000009,
+      "quantityTarget": 2623,
+      "notes": "In progress - shift handoff",
+      "status": "Completed",
+      "actualEndAt": "2026-01-26T19:51:23.618Z",
+      "actualStartAt": "2025-01-01T06:00:00.000Z",
+      "scheduledEndAt": "2025-01-03T10:00:00.000Z",
+      "scheduledStartAt": "2025-01-01T06:00:00.000Z",
+      "productId": "prd-det-004",
+      "workcenterId": "wc-fa-c1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wo-det-0127",
+      "code": "WO-DET-0127",
+      "priority": 2,
+      "quantityCompleted": 9665,
+      "quantityScrap": 128.8,
+      "quantityTarget": 9665,
+      "notes": "Batch in progress",
+      "status": "Completed",
+      "actualEndAt": "2026-01-22T16:31:19.070Z",
+      "actualStartAt": "2024-11-13T06:00:00.000Z",
+      "scheduledEndAt": "2024-11-15T03:00:00.000Z",
+      "scheduledStartAt": "2024-11-13T06:00:00.000Z",
+      "productId": "prd-det-006",
+      "workcenterId": "wc-hp-c1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wo-det-0133",
+      "code": "WO-DET-0133",
+      "priority": 3,
+      "quantityCompleted": 939,
+      "quantityScrap": 41.2,
+      "quantityTarget": 939,
+      "notes": "Currently in production",
+      "status": "Completed",
+      "actualEndAt": "2026-01-21T12:32:57.106Z",
+      "actualStartAt": "2024-10-02T06:00:00.000Z",
+      "scheduledEndAt": "2024-10-04T16:00:00.000Z",
+      "scheduledStartAt": "2024-10-02T06:00:00.000Z",
+      "productId": "prd-det-017",
+      "workcenterId": "wc-hp-c1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wo-det-0144",
+      "code": "WO-DET-0144",
+      "priority": 3,
+      "quantityCompleted": 8950,
+      "quantityScrap": 182,
+      "quantityTarget": 8950,
+      "notes": "Ready to start",
+      "status": "Completed",
+      "actualEndAt": "2026-01-26T23:57:22.627Z",
+      "actualStartAt": null,
+      "scheduledEndAt": "2025-01-13T19:00:00.000Z",
+      "scheduledStartAt": "2025-01-12T06:00:00.000Z",
+      "productId": "prd-det-006",
+      "workcenterId": "wc-pd-c1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wo-det-0161",
+      "code": "WO-DET-0161",
+      "priority": 3,
+      "quantityCompleted": 2096,
+      "quantityScrap": 86.5,
+      "quantityTarget": 2096,
+      "notes": "Running at target rate",
+      "status": "Completed",
+      "actualEndAt": "2026-01-24T02:31:50.997Z",
+      "actualStartAt": "2024-11-25T06:00:00.000Z",
+      "scheduledEndAt": "2024-11-25T21:00:00.000Z",
+      "scheduledStartAt": "2024-11-25T06:00:00.000Z",
+      "productId": "prd-det-005",
+      "workcenterId": "wc-hp-c2",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wo-det-0187",
+      "code": "WO-DET-0187",
+      "priority": 1,
+      "quantityCompleted": 989,
+      "quantityScrap": 59.99999999999996,
+      "quantityTarget": 989,
+      "notes": "Production running smoothly",
+      "status": "Completed",
+      "actualEndAt": "2026-01-27T23:52:51.019Z",
+      "actualStartAt": "2025-01-29T06:00:00.000Z",
+      "scheduledEndAt": "2025-01-31T04:00:00.000Z",
+      "scheduledStartAt": "2025-01-29T06:00:00.000Z",
+      "productId": "prd-det-017",
+      "workcenterId": "wc-wld-c2",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wo-det-1797",
+      "code": "WO-DET-1797",
+      "priority": 1,
+      "quantityCompleted": 1584,
+      "quantityScrap": 82,
+      "quantityTarget": 1584,
+      "notes": "Scheduled - next in queue",
+      "status": "Completed",
+      "actualEndAt": "2026-01-27T11:21:22.528Z",
+      "actualStartAt": null,
+      "scheduledEndAt": "2026-01-02T07:00:00.000Z",
+      "scheduledStartAt": "2025-12-31T06:00:00.000Z",
+      "productId": "prd-det-011",
+      "workcenterId": "wc-wld-c1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wo-hou-0247",
+      "code": "WO-HOU-0247",
+      "priority": 1,
+      "quantityCompleted": 2130,
+      "quantityScrap": 124,
+      "quantityTarget": 2130,
+      "notes": "Scheduled - next in queue",
+      "status": "Completed",
+      "actualEndAt": "2026-01-15T21:55:07.824Z",
+      "actualStartAt": null,
+      "scheduledEndAt": "2024-10-25T20:00:00.000Z",
+      "scheduledStartAt": "2024-10-25T06:00:00.000Z",
+      "productId": "prd-hou-010",
+      "workcenterId": "wc-bmx-c2",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wo-hou-0248",
+      "code": "WO-HOU-0248",
+      "priority": 2,
+      "quantityCompleted": 2685,
+      "quantityScrap": 70,
+      "quantityTarget": 2685,
+      "notes": "Awaiting line availability",
+      "status": "Completed",
+      "actualEndAt": "2026-01-21T04:03:58.514Z",
+      "actualStartAt": null,
+      "scheduledEndAt": "2025-01-09T22:00:00.000Z",
+      "scheduledStartAt": "2025-01-08T06:00:00.000Z",
+      "productId": "prd-hou-013",
+      "workcenterId": "wc-br-c1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wo-hou-0277",
+      "code": "WO-HOU-0277",
+      "priority": 1,
+      "quantityCompleted": 1970,
+      "quantityScrap": 40,
+      "quantityTarget": 1970,
+      "notes": "Ready to start",
+      "status": "Completed",
+      "actualEndAt": "2026-01-20T21:33:58.571Z",
+      "actualStartAt": null,
+      "scheduledEndAt": "2025-01-05T18:00:00.000Z",
+      "scheduledStartAt": "2025-01-05T06:00:00.000Z",
+      "productId": "prd-hou-006",
+      "workcenterId": "wc-cbl-c1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wo-hou-0296",
+      "code": "WO-HOU-0296",
+      "priority": 3,
+      "quantityCompleted": 4688,
+      "quantityScrap": 61.899999999999636,
+      "quantityTarget": 4688,
+      "notes": "Running at target rate",
+      "status": "Completed",
+      "actualEndAt": "2026-01-15T21:38:17.153Z",
+      "actualStartAt": "2024-10-20T06:00:00.000Z",
+      "scheduledEndAt": "2024-10-20T19:00:00.000Z",
+      "scheduledStartAt": "2024-10-20T06:00:00.000Z",
+      "productId": "prd-hou-011",
+      "workcenterId": "wc-cr-c1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wo-hou-0300",
+      "code": "WO-HOU-0300",
+      "priority": 3,
+      "quantityCompleted": 3984,
+      "quantityScrap": 237,
+      "quantityTarget": 3984,
+      "notes": "Ready to start",
+      "status": "Completed",
+      "actualEndAt": "2026-01-20T21:03:58.858Z",
+      "actualStartAt": null,
+      "scheduledEndAt": "2024-10-27T07:00:00.000Z",
+      "scheduledStartAt": "2024-10-26T06:00:00.000Z",
+      "productId": "prd-hou-010",
+      "workcenterId": "wc-bmx-c2",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wo-hou-0347",
+      "code": "WO-HOU-0347",
+      "priority": 3,
+      "quantityCompleted": 3842,
+      "quantityScrap": 63.500000000000185,
+      "quantityTarget": 3842,
+      "notes": "Currently running",
+      "status": "Completed",
+      "actualEndAt": "2026-01-15T21:38:17.153Z",
+      "actualStartAt": "2024-10-19T06:00:00.000Z",
+      "scheduledEndAt": "2024-10-20T17:00:00.000Z",
+      "scheduledStartAt": "2024-10-19T06:00:00.000Z",
+      "productId": "prd-hou-006",
+      "workcenterId": "wc-cbl-c1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wo-mke-0368",
+      "code": "WO-MKE-0368",
+      "priority": 1,
+      "quantityCompleted": 12477,
+      "quantityScrap": 193.59999999999928,
+      "quantityTarget": 12477,
+      "notes": "Currently in production",
+      "status": "Completed",
+      "actualEndAt": "2026-01-21T08:03:58.794Z",
+      "actualStartAt": "2024-12-08T06:00:00.000Z",
+      "scheduledEndAt": "2024-12-08T21:00:00.000Z",
+      "scheduledStartAt": "2024-12-08T06:00:00.000Z",
+      "productId": "prd-mke-007",
+      "workcenterId": "wc-fil-c1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wo-mke-0370",
+      "code": "WO-MKE-0370",
+      "priority": 1,
+      "quantityCompleted": 33747,
+      "quantityScrap": 187.20000000000147,
+      "quantityTarget": 33747,
+      "notes": "Currently running",
+      "status": "Completed",
+      "actualEndAt": "2026-01-21T02:33:58.515Z",
+      "actualStartAt": "2024-11-07T06:00:00.000Z",
+      "scheduledEndAt": "2024-11-09T05:00:00.000Z",
+      "scheduledStartAt": "2024-11-07T06:00:00.000Z",
+      "productId": "prd-mke-015",
+      "workcenterId": "wc-crt-c1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wo-mke-0383",
+      "code": "WO-MKE-0383",
+      "priority": 2,
+      "quantityCompleted": 21039,
+      "quantityScrap": 212,
+      "quantityTarget": 21039,
+      "notes": "Awaiting line availability",
+      "status": "Completed",
+      "actualEndAt": "2026-01-21T19:02:57.852Z",
+      "actualStartAt": null,
+      "scheduledEndAt": "2025-01-29T19:00:00.000Z",
+      "scheduledStartAt": "2025-01-29T06:00:00.000Z",
+      "productId": "prd-mke-003",
+      "workcenterId": "wc-fil-c1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wo-mke-0418",
+      "code": "WO-MKE-0418",
+      "priority": 2,
+      "quantityCompleted": 17356,
+      "quantityScrap": 109.09999999999854,
+      "quantityTarget": 17356,
+      "notes": "Running - minor adjustments made",
+      "status": "Completed",
+      "actualEndAt": "2026-02-05T09:57:05.450Z",
+      "actualStartAt": "2025-01-15T06:00:00.000Z",
+      "scheduledEndAt": "2025-01-15T18:00:00.000Z",
+      "scheduledStartAt": "2025-01-15T06:00:00.000Z",
+      "productId": "prd-mke-015",
+      "workcenterId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wo-mke-0421",
+      "code": "WO-MKE-0421",
+      "priority": 3,
+      "quantityCompleted": 20764,
+      "quantityScrap": 181,
+      "quantityTarget": 20764,
+      "notes": "Released for production",
+      "status": "Completed",
+      "actualEndAt": "2026-02-05T21:06:25.220Z",
+      "actualStartAt": null,
+      "scheduledEndAt": "2025-01-30T09:00:00.000Z",
+      "scheduledStartAt": "2025-01-29T06:00:00.000Z",
+      "productId": "prd-mke-009",
+      "workcenterId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wo-mke-0428",
+      "code": "WO-MKE-0428",
+      "priority": 1,
+      "quantityCompleted": 15891,
+      "quantityScrap": 413,
+      "quantityTarget": 15891,
+      "notes": "Pending start",
+      "status": "Completed",
+      "actualEndAt": "2026-02-05T16:06:25.893Z",
+      "actualStartAt": null,
+      "scheduledEndAt": "2024-11-06T13:00:00.000Z",
+      "scheduledStartAt": "2024-11-04T06:00:00.000Z",
+      "productId": "prd-mke-008",
+      "workcenterId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wo-mke-0443",
+      "code": "WO-MKE-0443",
+      "priority": 2,
+      "quantityCompleted": 37605,
+      "quantityScrap": 250,
+      "quantityTarget": 37605,
+      "notes": "Scheduled for production",
+      "status": "Completed",
+      "actualEndAt": "2026-02-05T15:24:25.621Z",
+      "actualStartAt": null,
+      "scheduledEndAt": "2024-12-13T07:00:00.000Z",
+      "scheduledStartAt": "2024-12-12T06:00:00.000Z",
+      "productId": "prd-mke-015",
+      "workcenterId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wo-mke-0454",
+      "code": "WO-MKE-0454",
+      "priority": 3,
+      "quantityCompleted": 15900,
+      "quantityScrap": 115,
+      "quantityTarget": 15900,
+      "notes": "Pending start",
+      "status": "Completed",
+      "actualEndAt": "2026-02-05T05:51:04.858Z",
+      "actualStartAt": null,
+      "scheduledEndAt": "2024-10-16T06:00:00.000Z",
+      "scheduledStartAt": "2024-10-14T06:00:00.000Z",
+      "productId": "prd-mke-005",
+      "workcenterId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wo-mke-0493",
+      "code": "WO-MKE-0493",
+      "priority": 1,
+      "quantityCompleted": 41627,
+      "quantityScrap": 373.7999999999971,
+      "quantityTarget": 41627,
+      "notes": "Running at target rate",
+      "status": "Completed",
+      "actualEndAt": "2026-02-05T23:48:24.743Z",
+      "actualStartAt": "2025-01-14T06:00:00.000Z",
+      "scheduledEndAt": "2025-01-16T03:00:00.000Z",
+      "scheduledStartAt": "2025-01-14T06:00:00.000Z",
+      "productId": "prd-mke-009",
+      "workcenterId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wo-mke-1797",
+      "code": "WO-MKE-1797",
+      "priority": 2,
+      "quantityCompleted": 11349,
+      "quantityScrap": 144.50000000000037,
+      "quantityTarget": 11349,
+      "notes": "Batch in progress",
+      "status": "Completed",
+      "actualEndAt": "2026-02-05T16:48:25.098Z",
+      "actualStartAt": "2025-12-29T06:00:00.000Z",
+      "scheduledEndAt": "2025-12-30T09:00:00.000Z",
+      "scheduledStartAt": "2025-12-29T06:00:00.000Z",
+      "productId": "prd-mke-006",
+      "workcenterId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    }
+  ],
+  "metadata": {}
+}

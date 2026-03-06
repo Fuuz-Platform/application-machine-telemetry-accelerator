@@ -1,0 +1,1060 @@
+{
+  "header": {
+    "id": "oeeHourly",
+    "name": "OeeHourly",
+    "description": "**`periodAt`** (`DateTime!`)\\nStart timestamp of the hour bucket.\\n\\n- Always aligned to hour boundary (e.g., `2026-01-15T14:00:00.000Z`).\\n- Used for time-based queries and aggregations.",
+    "dataModelKindId": "reference",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cmkwyc5a9rsvc0129byive8qf",
+    "number": "29",
+    "dataModelId": "oeeHourly",
+    "modelDefinition": {
+      "name": "OeeHourly",
+      "metadata": {
+        "mfgx": {
+          "module": {
+            "id": "machineDataApp",
+            "group": {
+              "id": "machineTelemetrySiteApplication"
+            }
+          },
+          "exposed": true,
+          "mutable": true,
+          "mutations": {
+            "create": true,
+            "update": true,
+            "del": true
+          },
+          "dataChangeCapture": {
+            "exposed": false,
+            "retentionDays": 1
+          },
+          "customFields": {
+            "exposed": false
+          },
+          "editor": {
+            "autosort": true
+          },
+          "labelField": "id",
+          "indices": [],
+          "triggers": {
+            "update": "$after~>| $ | {\r\n \r\n    \"oee\": $after.availability * \r\n    $after.performance * \r\n    $after.quality \r\n    \r\n    \r\n    }|"
+          }
+        },
+        "mongo": {
+          "collection": "oeeHourly"
+        },
+        "graphql": {
+          "type": "Object"
+        }
+      },
+      "kind": "Reference",
+      "fields": [
+        {
+          "name": "id",
+          "type": "ID!",
+          "description": "The primary unique ID of the record.  Every model should have an id field.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": false
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": true
+          }
+        },
+        {
+          "name": "dayHour",
+          "type": "Int!",
+          "description": "**`dayHour`** (`Int!`)\\n24-hour clock hour (0-23).\\n\\n- Represents the hour of the day in local/site timezone.\\n- Example: \\`14\\` for 2:00 PM. ",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "modeChanges",
+          "type": "Int!",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 0
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "shiftHour",
+          "type": "Int!",
+          "description": "**`shiftHour`** (`Int`)\\nHour number within the shift (1-N).\\n\\n- Calculated from shift start time.\\n- Example: If shift starts at 6:00 AM, then 8:00 AM = shiftHour 3.\\n- Null if no schedule assigned.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "stateChanges",
+          "type": "Int!",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 0
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "availability",
+          "type": "Float",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "goodUnits",
+          "type": "Float",
+          "description": "changed from goodCount to goodUnits",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 0
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "idealUnits",
+          "type": "Float",
+          "description": "Changed from idealCount to idealUnits for clarity.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 0
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "oee",
+          "type": "Float",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "performance",
+          "type": "Float",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "quality",
+          "type": "Float",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "scrapUnits",
+          "type": "Float",
+          "description": "chnged from scrapCount to scrapUnits.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 0
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "totalUnits",
+          "type": "Float",
+          "description": "changed from totalCount to totalUnits",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": 0
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "isPartialHour",
+          "type": "Boolean!",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": false
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "shift",
+          "type": "String!",
+          "description": "**`shift`** (`String`)\\nShift name or identifier.\\n\\n- Derived from Schedule name/code.\\n- Example: `First Shift`, `Day Shift`, `A Crew`.\\n- Null if unscheduled production.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "periodEndAt",
+          "type": "DateTime",
+          "description": "24H based on tenant timezone, or UTC if not provided.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "periodStartAt",
+          "type": "DateTime!",
+          "description": "24H based on tenant timezone, or UTC if not provided.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "dataChangeCapture": {
+                "include": false
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "scheduleHourEndAt",
+          "type": "DateTime",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "scheduleHourStartAt",
+          "type": "DateTime",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "actualCycleTime",
+          "type": "Duration!",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "downtimeMinutes",
+          "type": "Duration!",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "idealCycleTime",
+          "type": "Duration!",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "plannedDowntimeMinutes",
+          "description": "Planned downtime for the hour, can be scheduled maintenance, or non-scheduled production time. this is derived from the Schedulegroup, schedule, events (exception types) OR manually via generating a mainteinance work order/etc.",
+          "type": "Duration",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "plannedMinutes",
+          "type": "Duration!",
+          "description": "Planned or Scheduled Production Time, this is derived from the schedulegroup, Schedules and events.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "runMinutes",
+          "type": "Duration!",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "scheduledTime",
+          "type": "Duration",
+          "description": "Time for scheduled production of this asset.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "setupMinutes",
+          "type": "Duration!",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "topDowntime",
+          "type": "Duration!",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "workcenterId",
+          "type": "ID!",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "workcenter",
+          "description": "",
+          "type": "Workcenter!",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "deletionReferenceBehavior": "prevent",
+                "fields": {
+                  "from": "workcenterId",
+                  "to": "id"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "scheduleId",
+          "type": "ID",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "schedule",
+          "description": "",
+          "type": "Schedule",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "deletionReferenceBehavior": "prevent",
+                "fields": {
+                  "from": "scheduleId",
+                  "to": "id"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        }
+      ],
+      "description": "**`periodAt`** (`DateTime!`)\\nStart timestamp of the hour bucket.\\n\\n- Always aligned to hour boundary (e.g., `2026-01-15T14:00:00.000Z`).\\n- Used for time-based queries and aggregations."
+    },
+    "dataModelTypeId": "transactional"
+  },
+  "migration": "$",
+  "migrations": [
+    {
+      "dataModelVersionId": "cmkwyc5a9rsvc0129byive8qf",
+      "dataModelVersion": {
+        "number": "29"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkwy9awvrrmd01397njy1m4x",
+      "dataModelVersion": {
+        "number": "28"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkwo5ixk7zjs012bb5cwc2xz",
+      "dataModelVersion": {
+        "number": "27"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkwm327w43b70139hic732u9",
+      "dataModelVersion": {
+        "number": "26"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkwlkmxb3ftg0129fzisgu1m",
+      "dataModelVersion": {
+        "number": "25"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkvbx7mydke201804ui3hh50",
+      "dataModelVersion": {
+        "number": "24"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkvbtlvcd3e20180eqb1bnj9",
+      "dataModelVersion": {
+        "number": "23"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkvbq8l1d3d001807uly3noi",
+      "dataModelVersion": {
+        "number": "22"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkv6qdlh2qlr019tbcp59cfw",
+      "dataModelVersion": {
+        "number": "21"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkv6hvcj2227019tg7wy1yih",
+      "dataModelVersion": {
+        "number": "20"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkv6dsvt21wv019tfcacfw5e",
+      "dataModelVersion": {
+        "number": "19"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkv6cdds2g3k0180d223h5cm",
+      "dataModelVersion": {
+        "number": "18"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkrg9bvw860f01bcedkicxw9",
+      "dataModelVersion": {
+        "number": "17"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkrfw0ci7ba801bc6mda1p4z",
+      "dataModelVersion": {
+        "number": "16"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkrfuly40kxi01982hmtf0rt",
+      "dataModelVersion": {
+        "number": "15"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkrfojvq80ma018dcetjfdz2",
+      "dataModelVersion": {
+        "number": "14"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkrfj6hx6j1g017wbnyg31qb",
+      "dataModelVersion": {
+        "number": "13"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkrf9d7u632e017w27g82p9e",
+      "dataModelVersion": {
+        "number": "12"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkrcob4y1a7t017wdwq6ca0g",
+      "dataModelVersion": {
+        "number": "11"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkquc86i1czb018d62ap3ryf",
+      "dataModelVersion": {
+        "number": "10"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmklev212jzbc019h14e2gkhi",
+      "dataModelVersion": {
+        "number": "9"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkk8xi8i5mi5019777ob2pfi",
+      "dataModelVersion": {
+        "number": "8"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkirvjedn207017a4l1n3u73",
+      "dataModelVersion": {
+        "number": "7"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkh5lz3jm9x30148f5304y1c",
+      "dataModelVersion": {
+        "number": "6"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkh0v9ikceer0148fhfn8tc1",
+      "dataModelVersion": {
+        "number": "5"
+      },
+      "mappingExpression": "{ \n\n  /* - To populate a default value into a newly required field: */\n  \"isPartialHour\": $coalesce([field, false])\n}"
+    },
+    {
+      "dataModelVersionId": "cmkh0s0v3clio01768nn3eb5x",
+      "dataModelVersion": {
+        "number": "4"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkh0o9wucc3a01765apheomz",
+      "dataModelVersion": {
+        "number": "3"
+      },
+      "mappingExpression": "{ \n  /* - To rename a field: */\n  \"periodStartAt\": periodAt\n\n}"
+    },
+    {
+      "dataModelVersionId": "cmkfkx37wdlgv017r83li5pyn",
+      "dataModelVersion": {
+        "number": "2"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkfkg9lbcex3017rag2e6euq",
+      "dataModelVersion": {
+        "number": "1"
+      },
+      "mappingExpression": "$"
+    }
+  ]
+}

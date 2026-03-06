@@ -1,0 +1,286 @@
+{
+  "api": "application",
+  "modelName": "Unit",
+  "payload": [
+    {
+      "id": "A",
+      "unitTypeId": "Electrical",
+      "name": "Amps",
+      "code": "A",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "bar",
+      "unitTypeId": "Pressure",
+      "name": "Bar",
+      "code": "bar",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "C",
+      "unitTypeId": "Temperature",
+      "name": "Celsius",
+      "code": "°C",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "d",
+      "unitTypeId": "Time",
+      "name": "Days",
+      "code": "d",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "ea",
+      "unitTypeId": "Amount",
+      "name": "Each",
+      "code": "ea",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "F",
+      "unitTypeId": "Temperature",
+      "name": "Fahrenheit",
+      "code": "°F",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "ft",
+      "unitTypeId": "Length",
+      "name": "Feet",
+      "code": "ft",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "g",
+      "unitTypeId": "Weight",
+      "name": "Grams",
+      "code": "g",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "GPM",
+      "unitTypeId": "FlowRate",
+      "name": "Gallons Per Minute",
+      "code": "GPM",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "h",
+      "unitTypeId": "Time",
+      "name": "Hours",
+      "code": "h",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "Hz",
+      "unitTypeId": "Frequency",
+      "name": "Hertz",
+      "code": "Hz",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "in",
+      "unitTypeId": "Length",
+      "name": "Inches",
+      "code": "in",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "kg",
+      "unitTypeId": "Weight",
+      "name": "Kilograms",
+      "code": "kg",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "kN",
+      "unitTypeId": "Force",
+      "name": "Kilonewtons",
+      "code": "kN",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "kW",
+      "unitTypeId": "Electrical",
+      "name": "Kilowatts",
+      "code": "kW",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "lb",
+      "unitTypeId": "Weight",
+      "name": "Pounds",
+      "code": "lb",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "Lmin",
+      "unitTypeId": "FlowRate",
+      "name": "Liters Per Minute",
+      "code": "L/min",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "min",
+      "unitTypeId": "Time",
+      "name": "Minutes",
+      "code": "min",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "mm",
+      "unitTypeId": "Length",
+      "name": "Millimeters",
+      "code": "mm",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "mo",
+      "unitTypeId": "Time",
+      "name": "Months",
+      "code": "mo",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "oz",
+      "unitTypeId": "Weight",
+      "name": "Ounces",
+      "code": "oz",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "pc",
+      "unitTypeId": "Amount",
+      "name": "Pieces",
+      "code": "pc",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "pct",
+      "unitTypeId": "Ratio",
+      "name": "Percent",
+      "code": "%",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "RPM",
+      "unitTypeId": "Speed",
+      "name": "Revolutions Per Minute",
+      "code": "RPM",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "s",
+      "unitTypeId": "Time",
+      "name": "Seconds",
+      "code": "s",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "st",
+      "unitTypeId": "Weight",
+      "name": "Short Ton",
+      "code": "st",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "tlb",
+      "unitTypeId": "Weight",
+      "name": "Troy Pounds",
+      "code": "t lb",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "toz",
+      "unitTypeId": "Weight",
+      "name": "Troy Ounces",
+      "code": "t oz",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "USD",
+      "unitTypeId": "Currency",
+      "name": "US Dollar",
+      "code": "USD",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "wk",
+      "unitTypeId": "Time",
+      "name": "Weeks",
+      "code": "wk",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "yr",
+      "unitTypeId": "Time",
+      "name": "Years",
+      "code": "yr",
+      "_customFields": {
+        "_externalId": null
+      }
+    }
+  ],
+  "metadata": {}
+}

@@ -1,0 +1,339 @@
+{
+  "header": {
+    "id": "telemetryRawString",
+    "name": "TelemetryRawString",
+    "description": "",
+    "dataModelKindId": "reference",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cmke1t94700dm013q5lqm8krl",
+    "number": "6",
+    "dataModelId": "telemetryRawString",
+    "modelDefinition": {
+      "name": "TelemetryRawString",
+      "metadata": {
+        "mfgx": {
+          "module": {
+            "id": "machineDataApp",
+            "group": {
+              "id": "machineTelemetrySiteApplication"
+            }
+          },
+          "indices": [
+            {
+              "name": "TTLIndex",
+              "unique": false,
+              "ttl": 14400,
+              "fields": [
+                "createdAt"
+              ]
+            }
+          ],
+          "exposed": true,
+          "mutable": true,
+          "mutations": {
+            "create": true,
+            "update": true,
+            "del": true
+          },
+          "dataChangeCapture": {
+            "exposed": false,
+            "retentionDays": 120
+          },
+          "customFields": {
+            "exposed": false
+          },
+          "labelField": "id",
+          "editor": {
+            "autosort": true
+          }
+        },
+        "mongo": {
+          "collection": "telemetryRawString"
+        },
+        "graphql": {
+          "type": "Object"
+        }
+      },
+      "kind": "Reference",
+      "fields": [
+        {
+          "name": "id",
+          "type": "ID!",
+          "description": "The primary unique ID of the record.  Every model should have an id field.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": false
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "dataChangeCapture": {
+                "include": false
+              }
+            },
+            "unique": true
+          }
+        },
+        {
+          "name": "isAgg",
+          "type": "Boolean!",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": false,
+              "dataChangeCapture": {
+                "include": false
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "quality",
+          "type": "String!",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": "Good",
+              "dataChangeCapture": {
+                "include": false
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "qualityCode",
+          "type": "String!",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": "192",
+              "dataChangeCapture": {
+                "include": false
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "value",
+          "type": "String!",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "dataChangeCapture": {
+                "include": false
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "recordedAt",
+          "type": "DateTime!",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "dataChangeCapture": {
+                "include": false
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "dataPointId",
+          "type": "ID!",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "dataChangeCapture": {
+                "include": false
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "dataPoint",
+          "description": "",
+          "type": "DataPoint!",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "deletionReferenceBehavior": "cascade",
+                "fields": {
+                  "from": "dataPointId",
+                  "to": "id"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "dataChangeCapture": {
+                "include": false
+              }
+            },
+            "unique": false
+          }
+        }
+      ],
+      "description": ""
+    },
+    "dataModelTypeId": "transactional"
+  },
+  "migration": "$",
+  "migrations": [
+    {
+      "dataModelVersionId": "cmke1t94700dm013q5lqm8krl",
+      "dataModelVersion": {
+        "number": "6"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmke0eqm7ipte016hgkak8e3f",
+      "dataModelVersion": {
+        "number": "5"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkcp0zidpgps016h2cfohzry",
+      "dataModelVersion": {
+        "number": "4"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkbfz27xf1db01a85wi7b3xt",
+      "dataModelVersion": {
+        "number": "3"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkbb11thcwm4017lf4oi6dyz",
+      "dataModelVersion": {
+        "number": "2"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmkbaz80bpkek015xcgwcg4c5",
+      "dataModelVersion": {
+        "number": "1"
+      },
+      "mappingExpression": "$"
+    }
+  ]
+}

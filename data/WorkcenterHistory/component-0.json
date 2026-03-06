@@ -1,0 +1,5027 @@
+{
+  "api": "application",
+  "modelName": "WorkcenterHistory",
+  "payload": [
+    {
+      "id": "cmkcr9s2bphya016hcrlibmev",
+      "code": "WCH-MKCR9RJS",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-01-13T10:55:16.000Z",
+      "occurAt": "2026-01-13T10:30:56.000Z",
+      "processedInOeeHourlyAt": null,
+      "duration": "PT0H24M20S",
+      "modeId": "setup",
+      "stateId": "running",
+      "workcenterId": "wc-br-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmkcr9s2bphyb016hgktjaunf",
+      "code": "WCH-MKCR9RJT",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-01-13T10:39:44.000Z",
+      "occurAt": "2026-01-13T10:30:56.000Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "cleaning",
+      "stateId": "running-slow",
+      "workcenterId": "wc-cbl-c2",
+      "eventId": null,
+      "scheduleId": "third",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmkcr9s2ephyc016h10g4a1tv",
+      "code": "WCH-MKCR9RJU",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-01-13T10:55:16.000Z",
+      "occurAt": "2026-01-13T10:30:56.000Z",
+      "processedInOeeHourlyAt": null,
+      "duration": "PT0H24M20S",
+      "modeId": "disabled",
+      "stateId": "running-slow",
+      "workcenterId": "wc-cipm-c2",
+      "eventId": "matl-001",
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmkcr9s2ephyd016hfxxq30u2",
+      "code": "WCH-MKCR9RJV",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-01-13T10:51:41.000Z",
+      "occurAt": "2026-01-13T10:30:56.000Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "maintenance",
+      "stateId": "stopped",
+      "workcenterId": "wc-cips-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmkcr9s2fphye016h2dw5543z",
+      "code": "WCH-MKCR9RJW",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-01-13T10:51:41.000Z",
+      "occurAt": "2026-01-13T10:30:56.000Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "no-schedule",
+      "stateId": "unknown",
+      "workcenterId": "wc-cr-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmkcrcjej20kx016f7n9d4tby",
+      "code": "WCH-MKCRCJ8S",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-01-13T10:51:41.000Z",
+      "occurAt": "2026-01-13T10:39:44.000Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "setup",
+      "stateId": "running-slow",
+      "workcenterId": "wc-bmx-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmkcrcjek20ky016fecw2d3rb",
+      "code": "WCH-MKCRCJ8T",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-01-13T10:55:16.000Z",
+      "occurAt": "2026-01-13T10:39:44.000Z",
+      "processedInOeeHourlyAt": null,
+      "duration": "PT0H15M32S",
+      "modeId": "maintenance",
+      "stateId": "cleaning",
+      "workcenterId": "wc-br-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmkcrcjel20kz016fdpzxfi8f",
+      "code": "WCH-MKCRCJ8U",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-01-13T12:37:23.000Z",
+      "occurAt": "2026-01-13T10:39:44.000Z",
+      "processedInOeeHourlyAt": null,
+      "duration": "PT1H57M39S",
+      "modeId": "setup",
+      "stateId": "running-slow",
+      "workcenterId": "wc-cbl-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmkcrcjel20l0016fa1xf3mtx",
+      "code": "WCH-MKCRCJ8V",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-01-13T10:55:16.000Z",
+      "occurAt": "2026-01-13T10:39:44.000Z",
+      "processedInOeeHourlyAt": null,
+      "duration": "PT0H15M32S",
+      "modeId": "disabled",
+      "stateId": "running",
+      "workcenterId": "wc-cbl-c2",
+      "eventId": "elec-002",
+      "scheduleId": "third",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmkcrck4ftpm10196an0sg4vo",
+      "code": "WCH-MKCRCJWA",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-01-13T12:37:23.000Z",
+      "occurAt": "2026-01-13T10:39:44.000Z",
+      "processedInOeeHourlyAt": null,
+      "duration": "PT1H57M39S",
+      "modeId": "disabled",
+      "stateId": "running-slow",
+      "workcenterId": "wc-fa-c2",
+      "eventId": "umnt-003",
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmkcrck4gtpm20196781f0yd0",
+      "code": "WCH-MKCRCJWB",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-01-13T12:37:23.000Z",
+      "occurAt": "2026-01-13T10:39:44.000Z",
+      "processedInOeeHourlyAt": null,
+      "duration": "PT1H57M39S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-fil-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmkcrcl77tpmb0196ar7a74rk",
+      "code": "WCH-MKCRCL1N",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-01-13T10:51:41.000Z",
+      "occurAt": "2026-01-13T10:39:44.000Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "maintenance",
+      "stateId": "warmup",
+      "workcenterId": "wc-flt-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6o5xj5sqjl01a50x5oar3k",
+      "code": "WCH-ML6O5XCV",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T18:24:43.457Z",
+      "occurAt": "2026-02-03T14:03:43.514Z",
+      "processedInOeeHourlyAt": "2026-02-03T18:24:44.548Z",
+      "duration": "PT4H20M59.943S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-cr-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6pwy0vtnzw01a5ehwi8y8w",
+      "code": "WCH-ML6PWXT8",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T17:59:43.485Z",
+      "occurAt": "2026-02-03T14:52:43.428Z",
+      "processedInOeeHourlyAt": "2026-02-03T17:59:44.411Z",
+      "duration": "PT3H7M0.057S",
+      "modeId": "engineering",
+      "stateId": "changeover",
+      "workcenterId": "wc-pd-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6qb37ltyd701a58jisfu5w",
+      "code": "WCH-ML6QB324",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T17:59:43.485Z",
+      "occurAt": "2026-02-03T15:03:43.414Z",
+      "processedInOeeHourlyAt": "2026-02-03T17:59:44.635Z",
+      "duration": "PT2H56M0.071S",
+      "modeId": "disabled",
+      "stateId": "e-stopped",
+      "workcenterId": "wc-hex-c1",
+      "eventId": "mech-002",
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6rk3k6krjb016869dqcjuk",
+      "code": "WCH-ML6RK3D3",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T19:10:43.484Z",
+      "occurAt": "2026-02-03T15:38:43.329Z",
+      "processedInOeeHourlyAt": "2026-02-03T19:10:44.592Z",
+      "duration": "PT3H32M0.155S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-bmx-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6rk3k7krjc016846nkerei",
+      "code": "WCH-ML6RK3D4",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T18:10:43.487Z",
+      "occurAt": "2026-02-03T15:38:43.329Z",
+      "processedInOeeHourlyAt": "2026-02-03T18:10:44.510Z",
+      "duration": "PT2H32M0.158S",
+      "modeId": "disabled",
+      "stateId": "starved",
+      "workcenterId": "wc-hmc-c1",
+      "eventId": "pmnt-001",
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6rt3ozevvx017042blg2df",
+      "code": "WCH-ML6RT3HM",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T19:38:45.693Z",
+      "occurAt": "2026-02-03T15:45:43.395Z",
+      "processedInOeeHourlyAt": "2026-02-03T19:38:46.516Z",
+      "duration": "PT3H53M2.298S",
+      "modeId": "cleaning",
+      "stateId": "offline",
+      "workcenterId": "wc-wld-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6s23y9eydq017041iy5gjk",
+      "code": "WCH-ML6S23NL",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T19:03:43.436Z",
+      "occurAt": "2026-02-03T15:52:43.514Z",
+      "processedInOeeHourlyAt": "2026-02-03T19:03:44.413Z",
+      "duration": "PT3H10M59.922S",
+      "modeId": "cleaning",
+      "stateId": "offline",
+      "workcenterId": "wc-pd-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6sg957v2jw01a5f5orcf81",
+      "code": "WCH-ML6SG8W7",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T18:38:47.714Z",
+      "occurAt": "2026-02-03T16:03:43.489Z",
+      "processedInOeeHourlyAt": "2026-02-03T18:38:48.681Z",
+      "duration": "PT2H35M4.225S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-dst-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6sp97zfdag0170fksnbtwp",
+      "code": "WCH-ML6SP8YV",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T18:31:43.390Z",
+      "occurAt": "2026-02-03T16:10:43.490Z",
+      "processedInOeeHourlyAt": "2026-02-03T18:31:44.348Z",
+      "duration": "PT2H20M59.9S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-fa-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6sp97zfdah0170asrxg2ts",
+      "code": "WCH-ML6SP8YW",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T18:24:43.457Z",
+      "occurAt": "2026-02-03T16:10:43.490Z",
+      "processedInOeeHourlyAt": "2026-02-03T18:24:44.434Z",
+      "duration": "PT2H13M59.967S",
+      "modeId": "disabled",
+      "stateId": "starved",
+      "workcenterId": "wc-vmc-c2",
+      "eventId": "qual-001",
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6t7a52fm3601702mqv67jm",
+      "code": "WCH-ML6T79VR",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T18:31:43.390Z",
+      "occurAt": "2026-02-03T16:24:44.481Z",
+      "processedInOeeHourlyAt": "2026-02-03T18:31:44.324Z",
+      "duration": "PT2H6M58.909S",
+      "modeId": "engineering",
+      "stateId": "offline",
+      "workcenterId": "wc-vmc-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6tg9kovf4501a5517u1uji",
+      "code": "WCH-ML6TG9B1",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T18:59:43.568Z",
+      "occurAt": "2026-02-03T16:31:43.638Z",
+      "processedInOeeHourlyAt": "2026-02-03T18:59:44.549Z",
+      "duration": "PT2H27M59.93S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-crt-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6tg9kovf4601a557nhd292",
+      "code": "WCH-ML6TG9B2",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T19:10:43.484Z",
+      "occurAt": "2026-02-03T16:31:43.638Z",
+      "processedInOeeHourlyAt": "2026-02-03T19:10:44.590Z",
+      "duration": "PT2H38M59.846S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-crt-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6tg9kovf4701a58n6uexe4",
+      "code": "WCH-ML6TG9B3",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T18:03:43.455Z",
+      "occurAt": "2026-02-03T16:31:43.638Z",
+      "processedInOeeHourlyAt": "2026-02-03T18:03:44.558Z",
+      "duration": "PT1H31M59.817S",
+      "modeId": "engineering",
+      "stateId": "changeover",
+      "workcenterId": "wc-fil-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6tg9kovf4801a56nal1850",
+      "code": "WCH-ML6TG9B4",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T17:45:43.491Z",
+      "occurAt": "2026-02-03T16:31:43.638Z",
+      "processedInOeeHourlyAt": "2026-02-03T17:45:44.575Z",
+      "duration": "PT1H13M59.853S",
+      "modeId": "disabled",
+      "stateId": "offline",
+      "workcenterId": "wc-flt-c1",
+      "eventId": "mech-003",
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6tp9kjfvo80170go934fih",
+      "code": "WCH-ML6TP97W",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T18:03:43.455Z",
+      "occurAt": "2026-02-03T16:38:43.431Z",
+      "processedInOeeHourlyAt": "2026-02-03T18:03:44.479Z",
+      "duration": "PT1H25M0.024S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-br-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6tp9kjfvoa017046s28cu5",
+      "code": "WCH-ML6TP97Y",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T19:10:43.484Z",
+      "occurAt": "2026-02-03T16:38:43.431Z",
+      "processedInOeeHourlyAt": "2026-02-03T19:10:44.460Z",
+      "duration": "PT2H32M0.053S",
+      "modeId": "engineering",
+      "stateId": "stopped",
+      "workcenterId": "wc-pmp-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6tp9kjfvob0170gi008q3r",
+      "code": "WCH-ML6TP97Z",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T17:45:43.491Z",
+      "occurAt": "2026-02-03T16:38:43.431Z",
+      "processedInOeeHourlyAt": "2026-02-03T17:45:44.541Z",
+      "duration": "PT1H7M0.06S",
+      "modeId": "disabled",
+      "stateId": "faulted",
+      "workcenterId": "wc-pmp-c2",
+      "eventId": "pmnt-001",
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6ty9jbg0hm017065i85u0v",
+      "code": "WCH-ML6TY9AB",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T18:10:43.487Z",
+      "occurAt": "2026-02-03T16:45:43.422Z",
+      "processedInOeeHourlyAt": "2026-02-03T18:10:44.429Z",
+      "duration": "PT1H25M0.065S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-cbl-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6u79l1vsqe01a546ao80mo",
+      "code": "WCH-ML6U79CP",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T18:52:43.472Z",
+      "occurAt": "2026-02-03T16:52:43.413Z",
+      "processedInOeeHourlyAt": "2026-02-03T18:52:44.413Z",
+      "duration": "PT2H0.059S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-cr-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6ug9rkgcba01709xg306h6",
+      "code": "WCH-ML6UG9IP",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T18:59:43.568Z",
+      "occurAt": "2026-02-03T16:59:43.487Z",
+      "processedInOeeHourlyAt": "2026-02-03T18:59:44.557Z",
+      "duration": "PT2H0.081S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-hp-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6ulevemoj901688va2ajls",
+      "code": "WCH-ML6ULENU",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T19:10:43.484Z",
+      "occurAt": "2026-02-03T17:03:43.479Z",
+      "processedInOeeHourlyAt": "2026-02-03T19:10:44.583Z",
+      "duration": "PT2H7M0.005S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-cips-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6ulevfmojb016844qm2r03",
+      "code": "WCH-ML6ULENW",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T18:24:43.457Z",
+      "occurAt": "2026-02-03T17:03:43.479Z",
+      "processedInOeeHourlyAt": "2026-02-03T18:24:44.396Z",
+      "duration": "PT1H20M59.978S",
+      "modeId": "cleaning",
+      "stateId": "offline",
+      "workcenterId": "wc-wld-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6uuf7zms750168a6488h0b",
+      "code": "WCH-ML6UUF0J",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T18:38:47.714Z",
+      "occurAt": "2026-02-03T17:10:43.837Z",
+      "processedInOeeHourlyAt": "2026-02-03T18:38:48.566Z",
+      "duration": "PT1H28M3.877S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-cipm-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6v3f6rw9tv01a5aelghfvw",
+      "code": "WCH-ML6V3EY3",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T19:52:43.431Z",
+      "occurAt": "2026-02-03T17:17:43.653Z",
+      "processedInOeeHourlyAt": "2026-02-03T19:52:44.408Z",
+      "duration": "PT2H34M59.778S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-fil-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6v3f6sw9tw01a55ix923hb",
+      "code": "WCH-ML6V3EY4",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T19:03:43.436Z",
+      "occurAt": "2026-02-03T17:17:43.653Z",
+      "processedInOeeHourlyAt": "2026-02-03T19:03:44.319Z",
+      "duration": "PT1H45M59.783S",
+      "modeId": "engineering",
+      "stateId": "offline",
+      "workcenterId": "wc-hex-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6vcfelwd4w01a572qx1lz9",
+      "code": "WCH-ML6VCF30",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T19:52:43.431Z",
+      "occurAt": "2026-02-03T17:24:43.730Z",
+      "processedInOeeHourlyAt": "2026-02-03T19:52:44.470Z",
+      "duration": "PT2H27M59.701S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-cips-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6vcfelwd4x01a53awx6wwb",
+      "code": "WCH-ML6VCF31",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T17:45:43.491Z",
+      "occurAt": "2026-02-03T17:24:43.730Z",
+      "processedInOeeHourlyAt": "2026-02-03T17:45:44.558Z",
+      "duration": "PT20M59.761S",
+      "modeId": "disabled",
+      "stateId": "starved",
+      "workcenterId": "wc-hmc-c2",
+      "eventId": "oper-001",
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6vlfnywggq01a5g0xt7q4y",
+      "code": "WCH-ML6VLFER",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T19:31:43.604Z",
+      "occurAt": "2026-02-03T17:31:44.064Z",
+      "processedInOeeHourlyAt": "2026-02-03T19:31:44.676Z",
+      "duration": "PT1H59M59.54S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-cbl-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6vlfnzwggr01a5h3w23r1z",
+      "code": "WCH-ML6VLFES",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T19:31:43.604Z",
+      "occurAt": "2026-02-03T17:31:44.064Z",
+      "processedInOeeHourlyAt": "2026-02-03T19:31:44.805Z",
+      "duration": "PT1H59M59.54S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-cipm-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6vlfnzwggs01a5ec3s8seh",
+      "code": "WCH-ML6VLFET",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T18:24:43.457Z",
+      "occurAt": "2026-02-03T17:31:44.064Z",
+      "processedInOeeHourlyAt": "2026-02-03T18:24:44.370Z",
+      "duration": "PT52M59.393S",
+      "modeId": "engineering",
+      "stateId": "stopped",
+      "workcenterId": "wc-dst-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6vlfo1wggt01a533sgbxk9",
+      "code": "WCH-ML6VLFEU",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T18:59:43.568Z",
+      "occurAt": "2026-02-03T17:31:44.064Z",
+      "processedInOeeHourlyAt": "2026-02-03T18:59:44.645Z",
+      "duration": "PT1H27M59.504S",
+      "modeId": "disabled",
+      "stateId": "faulted",
+      "workcenterId": "wc-fa-c2",
+      "eventId": "qual-001",
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6vlfo2wggu01a51ndq72zf",
+      "code": "WCH-ML6VLFEV",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T19:03:43.436Z",
+      "occurAt": "2026-02-03T17:31:44.064Z",
+      "processedInOeeHourlyAt": "2026-02-03T19:03:44.384Z",
+      "duration": "PT1H31M59.372S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-hp-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6vuf9rwlbr01a59rb8b4wv",
+      "code": "WCH-ML6VUEZK",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T20:45:43.449Z",
+      "occurAt": "2026-02-03T17:38:43.420Z",
+      "processedInOeeHourlyAt": null,
+      "duration": "PT3H7M0.029S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-bmx-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6vuf9rwlbs01a50mgnaecm",
+      "code": "WCH-ML6VUEZL",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T19:52:43.431Z",
+      "occurAt": "2026-02-03T17:38:43.420Z",
+      "processedInOeeHourlyAt": "2026-02-03T19:52:44.406Z",
+      "duration": "PT2H14M0.011S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-br-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml6vuf9rwlbt01a5dr0v8o2t",
+      "code": "WCH-ML6VUEZM",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": "2026-02-03T19:03:43.436Z",
+      "occurAt": "2026-02-03T17:38:43.420Z",
+      "processedInOeeHourlyAt": "2026-02-03T19:03:44.392Z",
+      "duration": "PT1H25M0.016S",
+      "modeId": "cleaning",
+      "stateId": "cleaning",
+      "workcenterId": "wc-flt-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlb89ynl7200018t61ve6l3k",
+      "code": "WCH-MLB89YEN",
+      "plannedDowntime": 0,
+      "runTime": 11219572,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T21:44:48.095Z",
+      "occurAt": "2026-02-06T18:37:48.523Z",
+      "processedInOeeHourlyAt": "2026-02-06T21:44:49.068Z",
+      "duration": "PT3H6M59.572S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-dst-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlb89ynl7201018t8ghmct5n",
+      "code": "WCH-MLB89YEO",
+      "plannedDowntime": 0,
+      "runTime": 11639643,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T21:51:48.166Z",
+      "occurAt": "2026-02-06T18:37:48.523Z",
+      "processedInOeeHourlyAt": "2026-02-06T21:51:48.987Z",
+      "duration": "PT3H13M59.643S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-fa-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlb90ym17d97018t16wj2u04",
+      "code": "WCH-MLB90YCU",
+      "plannedDowntime": 0,
+      "runTime": 11880733,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T22:16:48.895Z",
+      "occurAt": "2026-02-06T18:58:48.162Z",
+      "processedInOeeHourlyAt": "2026-02-06T22:16:50.073Z",
+      "duration": "PT3H18M0.733S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-br-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlb963vk7fnv018t3dybf26l",
+      "code": "WCH-MLB963NK",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T22:02:49.608Z",
+      "occurAt": "2026-02-06T19:02:48.315Z",
+      "processedInOeeHourlyAt": "2026-02-06T22:02:50.593Z",
+      "duration": "PT3H1.293S",
+      "modeId": "engineering",
+      "stateId": "offline",
+      "workcenterId": "wc-fil-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlb963vl7fnx018t8do89kj0",
+      "code": "WCH-MLB963NM",
+      "plannedDowntime": 0,
+      "runTime": 10801293,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T22:02:49.608Z",
+      "occurAt": "2026-02-06T19:02:48.315Z",
+      "processedInOeeHourlyAt": "2026-02-06T22:02:50.455Z",
+      "duration": "PT3H1.293S",
+      "modeId": "disabled",
+      "stateId": "offline",
+      "workcenterId": "wc-wld-c2",
+      "eventId": "proc-004",
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbaf86o8ih501as0vq4cuwu",
+      "code": "WCH-MLBAF7W0",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T22:37:49.673Z",
+      "occurAt": "2026-02-06T19:37:53.318Z",
+      "processedInOeeHourlyAt": "2026-02-06T22:37:50.979Z",
+      "duration": "PT2H59M56.355S",
+      "modeId": "engineering",
+      "stateId": "offline",
+      "workcenterId": "wc-fil-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbax4eda8aj01ba5sjabhac",
+      "code": "WCH-MLBAX44J",
+      "plannedDowntime": 0,
+      "runTime": 9542878,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T22:30:51.129Z",
+      "occurAt": "2026-02-06T19:51:48.251Z",
+      "processedInOeeHourlyAt": "2026-02-06T22:30:52.580Z",
+      "duration": "PT2H39M2.878S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-dst-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbb65sfa9yo01ba4dn2awy2",
+      "code": "WCH-MLBB65L2",
+      "plannedDowntime": 0,
+      "runTime": 10378464,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T22:51:48.503Z",
+      "occurAt": "2026-02-06T19:58:50.039Z",
+      "processedInOeeHourlyAt": "2026-02-06T22:51:49.695Z",
+      "duration": "PT2H52M58.464S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-crt-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbb65sga9yq01ba8a3f809y",
+      "code": "WCH-MLBB65L4",
+      "plannedDowntime": 0,
+      "runTime": 10798544,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T22:58:48.583Z",
+      "occurAt": "2026-02-06T19:58:50.039Z",
+      "processedInOeeHourlyAt": "2026-02-06T22:58:49.644Z",
+      "duration": "PT2H59M58.544S",
+      "modeId": "cleaning",
+      "stateId": "offline",
+      "workcenterId": "wc-pmp-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbb65sga9yr01ba0oex0zse",
+      "code": "WCH-MLBB65L5",
+      "plannedDowntime": 0,
+      "runTime": 9121090,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T22:30:51.129Z",
+      "occurAt": "2026-02-06T19:58:50.039Z",
+      "processedInOeeHourlyAt": "2026-02-06T22:30:52.636Z",
+      "duration": "PT2H32M1.09S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-vmc-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbbbhsm8xgu018tarem9w36",
+      "code": "WCH-MLBBBHHV",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T00:37:48.114Z",
+      "occurAt": "2026-02-06T20:02:58.763Z",
+      "processedInOeeHourlyAt": "2026-02-07T00:37:49.025Z",
+      "duration": "PT4H34M49.351S",
+      "modeId": "engineering",
+      "stateId": "offline",
+      "workcenterId": "wc-pd-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbbkl0q9180018t27vk9kd7",
+      "code": "WCH-MLBBKKP4",
+      "plannedDowntime": 0,
+      "runTime": 13725342,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T23:58:48.162Z",
+      "occurAt": "2026-02-06T20:10:02.820Z",
+      "processedInOeeHourlyAt": "2026-02-06T23:58:49.009Z",
+      "duration": "PT3H48M45.342S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-cipm-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbbkl0r9181018t0dqj550c",
+      "code": "WCH-MLBBKKP5",
+      "plannedDowntime": 0,
+      "runTime": 5685275,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T21:44:48.095Z",
+      "occurAt": "2026-02-06T20:10:02.820Z",
+      "processedInOeeHourlyAt": "2026-02-06T21:44:49.014Z",
+      "duration": "PT1H34M45.275S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-hmc-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbbte4jafs801ba2iy6gpga",
+      "code": "WCH-MLBBTDVP",
+      "plannedDowntime": 0,
+      "runTime": 5274208,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T21:44:48.095Z",
+      "occurAt": "2026-02-06T20:16:53.887Z",
+      "processedInOeeHourlyAt": "2026-02-06T21:44:49.099Z",
+      "duration": "PT1H27M54.208S",
+      "modeId": "disabled",
+      "stateId": "e-stopped",
+      "workcenterId": "wc-hp-c1",
+      "eventId": "chgv-006",
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbckb3uapno01ba0b5u8lrs",
+      "code": "WCH-MLBCKAU3",
+      "plannedDowntime": 0,
+      "runTime": 7200017,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T22:37:49.673Z",
+      "occurAt": "2026-02-06T20:37:49.656Z",
+      "processedInOeeHourlyAt": "2026-02-06T22:37:50.987Z",
+      "duration": "PT2H0.017S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-bmx-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbckb3uapnp01ba2hsq8j2z",
+      "code": "WCH-MLBCKAU4",
+      "plannedDowntime": 0,
+      "runTime": 8038847,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T22:51:48.503Z",
+      "occurAt": "2026-02-06T20:37:49.656Z",
+      "processedInOeeHourlyAt": "2026-02-06T22:51:49.748Z",
+      "duration": "PT2H13M58.847S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-cbl-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbckb3vapnq01ba00xv9bjj",
+      "code": "WCH-MLBCKAU5",
+      "plannedDowntime": 0,
+      "runTime": 8038847,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T22:51:48.503Z",
+      "occurAt": "2026-02-06T20:37:49.656Z",
+      "processedInOeeHourlyAt": "2026-02-06T22:51:49.633Z",
+      "duration": "PT2H13M58.847S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-cbl-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbcta349q9r01as7a0xafc2",
+      "code": "WCH-MLBCT9TQ",
+      "plannedDowntime": 0,
+      "runTime": 6781428,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T22:37:49.673Z",
+      "occurAt": "2026-02-06T20:44:48.245Z",
+      "processedInOeeHourlyAt": "2026-02-06T22:37:50.829Z",
+      "duration": "PT1H53M1.428S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-bmx-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbcta349q9s01as80um2y54",
+      "code": "WCH-MLBCT9TR",
+      "plannedDowntime": 0,
+      "runTime": 8281653,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T23:02:49.898Z",
+      "occurAt": "2026-02-06T20:44:48.245Z",
+      "processedInOeeHourlyAt": "2026-02-06T23:02:51.619Z",
+      "duration": "PT2H18M1.653S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-cips-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbcta359q9v01as2sjx1yrz",
+      "code": "WCH-MLBCT9TU",
+      "plannedDowntime": 0,
+      "runTime": 6362884,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T22:30:51.129Z",
+      "occurAt": "2026-02-06T20:44:48.245Z",
+      "processedInOeeHourlyAt": "2026-02-06T22:30:52.688Z",
+      "duration": "PT1H46M2.884S",
+      "modeId": "disabled",
+      "stateId": "starved",
+      "workcenterId": "wc-wld-c1",
+      "eventId": "chgv-001",
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbd2bfnb02g01baarb2b58m",
+      "code": "WCH-MLBD2B6T",
+      "plannedDowntime": 0,
+      "runTime": 7618718,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T22:58:48.583Z",
+      "occurAt": "2026-02-06T20:51:49.865Z",
+      "processedInOeeHourlyAt": "2026-02-06T22:58:49.548Z",
+      "duration": "PT2H6M58.718S",
+      "modeId": "disabled",
+      "stateId": "faulted",
+      "workcenterId": "wc-hex-c1",
+      "eventId": "proc-004",
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbd2bfqb02h01baaxdx0091",
+      "code": "WCH-MLBD2B6U",
+      "plannedDowntime": 0,
+      "runTime": 8698251,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T23:16:48.116Z",
+      "occurAt": "2026-02-06T20:51:49.865Z",
+      "processedInOeeHourlyAt": "2026-02-06T23:16:48.897Z",
+      "duration": "PT2H24M58.251S",
+      "modeId": "cleaning",
+      "stateId": "cleaning",
+      "workcenterId": "wc-hp-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbd2bfqb02i01bab86o80ib",
+      "code": "WCH-MLBD2B6V",
+      "plannedDowntime": 0,
+      "runTime": 9958282,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T23:37:48.147Z",
+      "occurAt": "2026-02-06T20:51:49.865Z",
+      "processedInOeeHourlyAt": "2026-02-06T23:37:48.973Z",
+      "duration": "PT2H45M58.282S",
+      "modeId": "disabled",
+      "stateId": "faulted",
+      "workcenterId": "wc-vmc-c2",
+      "eventId": "oper-002",
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbdba4a9ybv01ash1wyeymn",
+      "code": "WCH-MLBDB9UN",
+      "plannedDowntime": 0,
+      "runTime": 5101373,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T22:23:49.448Z",
+      "occurAt": "2026-02-06T20:58:48.075Z",
+      "processedInOeeHourlyAt": "2026-02-06T22:23:53.189Z",
+      "duration": "PT1H25M1.373S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-fa-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbdba4b9ybw01asdzxfawej",
+      "code": "WCH-MLBDB9UO",
+      "plannedDowntime": 0,
+      "runTime": 3180091,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T21:51:48.166Z",
+      "occurAt": "2026-02-06T20:58:48.075Z",
+      "processedInOeeHourlyAt": "2026-02-06T21:51:48.955Z",
+      "duration": "PT53M0.091S",
+      "modeId": "disabled",
+      "stateId": "e-stopped",
+      "workcenterId": "wc-pd-c1",
+      "eventId": "elec-010",
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbdgfe2baf701bac9vca2lj",
+      "code": "WCH-MLBDGF55",
+      "plannedDowntime": 0,
+      "runTime": 4021431,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T22:09:49.658Z",
+      "occurAt": "2026-02-06T21:02:48.227Z",
+      "processedInOeeHourlyAt": "2026-02-06T22:09:51.572Z",
+      "duration": "PT1H7M1.431S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-br-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbdgfe5baf901ba2vz69h64",
+      "code": "WCH-MLBDGF57",
+      "plannedDowntime": 0,
+      "runTime": 2519868,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T21:44:48.095Z",
+      "occurAt": "2026-02-06T21:02:48.227Z",
+      "processedInOeeHourlyAt": "2026-02-06T21:44:49.046Z",
+      "duration": "PT41M59.868S",
+      "modeId": "cleaning",
+      "stateId": "cleaning",
+      "workcenterId": "wc-flt-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbdpfdsbdd901baa7lg6xou",
+      "code": "WCH-MLBDPF7K",
+      "plannedDowntime": 0,
+      "runTime": 4020676,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T22:16:48.895Z",
+      "occurAt": "2026-02-06T21:09:48.219Z",
+      "processedInOeeHourlyAt": "2026-02-06T22:16:50.019Z",
+      "duration": "PT1H7M0.676S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-hmc-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbdyfioac0d01as7wpjcsm9",
+      "code": "WCH-MLBDYFAU",
+      "plannedDowntime": 0,
+      "runTime": 9719928,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T23:58:48.162Z",
+      "occurAt": "2026-02-06T21:16:48.234Z",
+      "processedInOeeHourlyAt": "2026-02-06T23:58:49.110Z",
+      "duration": "PT2H41M59.928S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-cips-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbdyfioac0e01as6iw549ii",
+      "code": "WCH-MLBDYFAV",
+      "plannedDowntime": 0,
+      "runTime": 9719928,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T23:58:48.162Z",
+      "occurAt": "2026-02-06T21:16:48.234Z",
+      "processedInOeeHourlyAt": "2026-02-06T23:58:49.208Z",
+      "duration": "PT2H41M59.928S",
+      "modeId": "cleaning",
+      "stateId": "offline",
+      "workcenterId": "wc-crt-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbe7g6xbnp101ba0iio4o44",
+      "code": "WCH-MLBE7FZG",
+      "plannedDowntime": 0,
+      "runTime": 7199182,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T23:23:48.141Z",
+      "occurAt": "2026-02-06T21:23:48.959Z",
+      "processedInOeeHourlyAt": "2026-02-06T23:23:49.053Z",
+      "duration": "PT1H59M59.182S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-cr-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbe7g6xbnp201badyi27w3v",
+      "code": "WCH-MLBE7FZH",
+      "plannedDowntime": 0,
+      "runTime": 3179936,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T22:16:48.895Z",
+      "occurAt": "2026-02-06T21:23:48.959Z",
+      "processedInOeeHourlyAt": "2026-02-06T22:16:50.055Z",
+      "duration": "PT52M59.936S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-hex-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbe7g6xbnp301badsw01q1y",
+      "code": "WCH-MLBE7FZI",
+      "plannedDowntime": 0,
+      "runTime": 3600489,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T22:23:49.448Z",
+      "occurAt": "2026-02-06T21:23:48.959Z",
+      "processedInOeeHourlyAt": "2026-02-06T22:23:53.293Z",
+      "duration": "PT1H0.489S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-pmp-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbegfzqbvmg01bahj3vecne",
+      "code": "WCH-MLBEGFLK",
+      "plannedDowntime": 0,
+      "runTime": 8039749,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T23:44:48.186Z",
+      "occurAt": "2026-02-06T21:30:48.437Z",
+      "processedInOeeHourlyAt": "2026-02-06T23:44:49.173Z",
+      "duration": "PT2H13M59.749S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-cr-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbegfzrbvmh01baeccr8cy7",
+      "code": "WCH-MLBEGFLL",
+      "plannedDowntime": 0,
+      "runTime": 4440415,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T22:44:48.852Z",
+      "occurAt": "2026-02-06T21:30:48.437Z",
+      "processedInOeeHourlyAt": "2026-02-06T22:44:49.803Z",
+      "duration": "PT1H14M0.415S",
+      "modeId": "disabled",
+      "stateId": "blocked",
+      "workcenterId": "wc-flt-c2",
+      "eventId": "proc-001",
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbepfpoc0fw01baco4q4lsz",
+      "code": "WCH-MLBEPFI1",
+      "plannedDowntime": 0,
+      "runTime": 11220191,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T00:44:48.403Z",
+      "occurAt": "2026-02-06T21:37:48.212Z",
+      "processedInOeeHourlyAt": "2026-02-07T00:44:49.526Z",
+      "duration": "PT3H7M0.191S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-cipm-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbeyfpob6v5018the21c4fr",
+      "code": "WCH-MLBEYFHH",
+      "plannedDowntime": 0,
+      "runTime": 3181577,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T22:37:49.673Z",
+      "occurAt": "2026-02-06T21:44:48.096Z",
+      "processedInOeeHourlyAt": "2026-02-06T22:37:50.892Z",
+      "duration": "PT53M1.577S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-dst-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbeyfpqb6v6018tf6it4wyc",
+      "code": "WCH-MLBEYFHI",
+      "plannedDowntime": 0,
+      "runTime": 2341352,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T22:23:49.448Z",
+      "occurAt": "2026-02-06T21:44:48.096Z",
+      "processedInOeeHourlyAt": "2026-02-06T22:23:53.290Z",
+      "duration": "PT39M1.352S",
+      "modeId": "cleaning",
+      "stateId": "offline",
+      "workcenterId": "wc-flt-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbeyfprb6v7018td0v5cg6b",
+      "code": "WCH-MLBEYFHJ",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T00:02:48.185Z",
+      "occurAt": "2026-02-06T21:44:48.096Z",
+      "processedInOeeHourlyAt": "2026-02-07T00:02:49.343Z",
+      "duration": "PT2H18M0.089S",
+      "modeId": "engineering",
+      "stateId": "changeover",
+      "workcenterId": "wc-hmc-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbeyfprb6v8018tel63ho5b",
+      "code": "WCH-MLBEYFHK",
+      "plannedDowntime": 0,
+      "runTime": 7619922,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T23:51:48.018Z",
+      "occurAt": "2026-02-06T21:44:48.096Z",
+      "processedInOeeHourlyAt": "2026-02-06T23:51:48.974Z",
+      "duration": "PT2H6M59.922S",
+      "modeId": "idle",
+      "stateId": "offline",
+      "workcenterId": "wc-hp-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbflm8fcld301ba7ooh6678",
+      "code": "WCH-MLBFLLZJ",
+      "plannedDowntime": 0,
+      "runTime": 7198576,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T00:02:48.185Z",
+      "occurAt": "2026-02-06T22:02:49.609Z",
+      "processedInOeeHourlyAt": "2026-02-07T00:02:49.217Z",
+      "duration": "PT1H59M58.576S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-wld-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbfumn0bzkv018tb8ra0sf6",
+      "code": "WCH-MLBFUM3K",
+      "plannedDowntime": 0,
+      "runTime": 11638479,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T01:23:48.138Z",
+      "occurAt": "2026-02-06T22:09:49.659Z",
+      "processedInOeeHourlyAt": "2026-02-07T01:23:49.248Z",
+      "duration": "PT3H13M58.479S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-br-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbg3ltbc0if018t8ffdejms",
+      "code": "WCH-MLBG3LL4",
+      "plannedDowntime": 0,
+      "runTime": 5279290,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T23:44:48.186Z",
+      "occurAt": "2026-02-06T22:16:48.896Z",
+      "processedInOeeHourlyAt": "2026-02-06T23:44:49.005Z",
+      "duration": "PT1H27M59.29S",
+      "modeId": "disabled",
+      "stateId": "blocked",
+      "workcenterId": "wc-hex-c2",
+      "eventId": "util-004",
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbgcmdfcwfs01ba80it13pz",
+      "code": "WCH-MLBGCM32",
+      "plannedDowntime": 0,
+      "runTime": 5938736,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T00:02:48.185Z",
+      "occurAt": "2026-02-06T22:23:49.449Z",
+      "processedInOeeHourlyAt": "2026-02-07T00:02:49.188Z",
+      "duration": "PT1H38M58.736S",
+      "modeId": "disabled",
+      "stateId": "offline",
+      "workcenterId": "wc-fa-c1",
+      "eventId": "matl-004",
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbglo3kc4o7018t2fg2f0we",
+      "code": "WCH-MLBGLNGH",
+      "plannedDowntime": 0,
+      "runTime": 6776959,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T00:23:48.089Z",
+      "occurAt": "2026-02-06T22:30:51.130Z",
+      "processedInOeeHourlyAt": "2026-02-07T00:23:49.021Z",
+      "duration": "PT1H52M56.959S",
+      "modeId": "cleaning",
+      "stateId": "offline",
+      "workcenterId": "wc-dst-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbglo3kc4o8018t18610ep9",
+      "code": "WCH-MLBGLNGI",
+      "plannedDowntime": 0,
+      "runTime": 5277032,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T23:58:48.162Z",
+      "occurAt": "2026-02-06T22:30:51.130Z",
+      "processedInOeeHourlyAt": "2026-02-06T23:58:49.220Z",
+      "duration": "PT1H27M57.032S",
+      "modeId": "setup",
+      "stateId": "warmup",
+      "workcenterId": "wc-vmc-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbglo3kc4o9018t505cgjtb",
+      "code": "WCH-MLBGLNGJ",
+      "plannedDowntime": 0,
+      "runTime": 14396874,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T02:30:48.004Z",
+      "occurAt": "2026-02-06T22:30:51.130Z",
+      "processedInOeeHourlyAt": "2026-02-07T02:30:49.261Z",
+      "duration": "PT3H59M56.874S",
+      "modeId": "idle",
+      "stateId": "offline",
+      "workcenterId": "wc-wld-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbgumoyblwq01as710ae6b3",
+      "code": "WCH-MLBGUMEP",
+      "plannedDowntime": 0,
+      "runTime": 3598473,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-06T23:37:48.147Z",
+      "occurAt": "2026-02-06T22:37:49.674Z",
+      "processedInOeeHourlyAt": "2026-02-06T23:37:49.028Z",
+      "duration": "PT59M58.473S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-bmx-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbgump1blws01as97g52i05",
+      "code": "WCH-MLBGUMER",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T00:02:48.185Z",
+      "occurAt": "2026-02-06T22:37:49.674Z",
+      "processedInOeeHourlyAt": "2026-02-07T00:02:49.159Z",
+      "duration": "PT1H24M58.511S",
+      "modeId": "maintenance",
+      "stateId": "maintenance",
+      "workcenterId": "wc-dst-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbgump1blwu01asbnz7ab0c",
+      "code": "WCH-MLBGUMET",
+      "plannedDowntime": 0,
+      "runTime": 7618729,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T00:44:48.403Z",
+      "occurAt": "2026-02-06T22:37:49.674Z",
+      "processedInOeeHourlyAt": "2026-02-07T00:44:49.441Z",
+      "duration": "PT2H6M58.729S",
+      "modeId": "disabled",
+      "stateId": "faulted",
+      "workcenterId": "wc-fil-c2",
+      "eventId": "elec-004",
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbh3m6gc87v018t8ue9fbb6",
+      "code": "WCH-MLBH3LUH",
+      "plannedDowntime": 0,
+      "runTime": 11881759,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T02:02:50.612Z",
+      "occurAt": "2026-02-06T22:44:48.853Z",
+      "processedInOeeHourlyAt": "2026-02-07T02:02:51.405Z",
+      "duration": "PT3H18M1.759S",
+      "modeId": "cleaning",
+      "stateId": "offline",
+      "workcenterId": "wc-flt-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbhclyrbuuu01asejvpbb4j",
+      "code": "WCH-MLBHCLNG",
+      "plannedDowntime": 0,
+      "runTime": 4679565,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T00:09:48.069Z",
+      "occurAt": "2026-02-06T22:51:48.504Z",
+      "processedInOeeHourlyAt": "2026-02-07T00:09:49.027Z",
+      "duration": "PT1H17M59.565S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-cbl-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbhclyrbuuv01asfezghpvi",
+      "code": "WCH-MLBHCLNH",
+      "plannedDowntime": 0,
+      "runTime": 7859697,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T01:02:48.201Z",
+      "occurAt": "2026-02-06T22:51:48.504Z",
+      "processedInOeeHourlyAt": "2026-02-07T01:02:49.347Z",
+      "duration": "PT2H10M59.697S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-cbl-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbhclyrbuuw01as16wp7qrg",
+      "code": "WCH-MLBHCLNI",
+      "plannedDowntime": 0,
+      "runTime": 6779899,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T00:44:48.403Z",
+      "occurAt": "2026-02-06T22:51:48.504Z",
+      "processedInOeeHourlyAt": "2026-02-07T00:44:49.450Z",
+      "duration": "PT1H52M59.899S",
+      "modeId": "cleaning",
+      "stateId": "cleaning",
+      "workcenterId": "wc-crt-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbhlm2ycm22018t812y20t8",
+      "code": "WCH-MLBHLLTB",
+      "plannedDowntime": 0,
+      "runTime": 4679386,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T00:16:47.970Z",
+      "occurAt": "2026-02-06T22:58:48.584Z",
+      "processedInOeeHourlyAt": "2026-02-07T00:16:48.756Z",
+      "duration": "PT1H17M59.386S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-fa-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbhlm2ycm23018thm9jawsz",
+      "code": "WCH-MLBHLLTC",
+      "plannedDowntime": 0,
+      "runTime": 8279734,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T01:16:48.318Z",
+      "occurAt": "2026-02-06T22:58:48.584Z",
+      "processedInOeeHourlyAt": "2026-02-07T01:16:49.118Z",
+      "duration": "PT2H17M59.734S",
+      "modeId": "disabled",
+      "stateId": "offline",
+      "workcenterId": "wc-hex-c1",
+      "eventId": "elec-006",
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbhlm2zcm24018thqbs5yza",
+      "code": "WCH-MLBHLLTD",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T00:37:48.114Z",
+      "occurAt": "2026-02-06T22:58:48.584Z",
+      "processedInOeeHourlyAt": "2026-02-07T00:37:49.008Z",
+      "duration": "PT1H38M59.53S",
+      "modeId": "engineering",
+      "stateId": "offline",
+      "workcenterId": "wc-pd-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbhlm2zcm25018te2padfny",
+      "code": "WCH-MLBHLLTE",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T00:30:48.233Z",
+      "occurAt": "2026-02-06T22:58:48.584Z",
+      "processedInOeeHourlyAt": "2026-02-07T00:30:49.117Z",
+      "duration": "PT1H31M59.649S",
+      "modeId": "engineering",
+      "stateId": "changeover",
+      "workcenterId": "wc-pmp-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbhqscmc72d01as11rw3db1",
+      "code": "WCH-MLBHQS03",
+      "plannedDowntime": 0,
+      "runTime": 6538219,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T00:51:48.118Z",
+      "occurAt": "2026-02-06T23:02:49.899Z",
+      "processedInOeeHourlyAt": "2026-02-07T00:51:49.094Z",
+      "duration": "PT1H48M58.219S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-cips-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbhzrwqdx6p01bahzcp108h",
+      "code": "WCH-MLBHZROK",
+      "plannedDowntime": 0,
+      "runTime": 4438682,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T00:23:48.089Z",
+      "occurAt": "2026-02-06T23:09:49.407Z",
+      "processedInOeeHourlyAt": "2026-02-07T00:23:49.082Z",
+      "duration": "PT1H13M58.682S",
+      "modeId": "cleaning",
+      "stateId": "offline",
+      "workcenterId": "wc-flt-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbi8r09e9gk01bab0aag22j",
+      "code": "WCH-MLBI8QRI",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T00:23:48.089Z",
+      "occurAt": "2026-02-06T23:16:48.117Z",
+      "processedInOeeHourlyAt": "2026-02-07T00:23:49.136Z",
+      "duration": "PT1H6M59.972S",
+      "modeId": "engineering",
+      "stateId": "stopped",
+      "workcenterId": "wc-hp-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbi8r09e9gl01bad8xwcg8m",
+      "code": "WCH-MLBI8QRJ",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T01:58:48.214Z",
+      "occurAt": "2026-02-06T23:16:48.117Z",
+      "processedInOeeHourlyAt": "2026-02-07T01:58:49.118Z",
+      "duration": "PT2H42M0.097S",
+      "modeId": "engineering",
+      "stateId": "changeover",
+      "workcenterId": "wc-pmp-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbihr5qcjil01asab5q148o",
+      "code": "WCH-MLBIHQUS",
+      "plannedDowntime": 0,
+      "runTime": 7199996,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T01:23:48.138Z",
+      "occurAt": "2026-02-06T23:23:48.142Z",
+      "processedInOeeHourlyAt": "2026-02-07T01:23:49.288Z",
+      "duration": "PT1H59M59.996S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-cr-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbiqrbmdju8018t6uq9843h",
+      "code": "WCH-MLBIQQZR",
+      "plannedDowntime": 0,
+      "runTime": 5940620,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T01:09:48.846Z",
+      "occurAt": "2026-02-06T23:30:48.226Z",
+      "processedInOeeHourlyAt": "2026-02-07T01:09:49.765Z",
+      "duration": "PT1H39M0.62S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-bmx-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbiqrbmdju9018tb9l7ehyc",
+      "code": "WCH-MLBIQQZS",
+      "plannedDowntime": 0,
+      "runTime": 4859892,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T00:51:48.118Z",
+      "occurAt": "2026-02-06T23:30:48.226Z",
+      "processedInOeeHourlyAt": "2026-02-07T00:51:48.942Z",
+      "duration": "PT1H20M59.892S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-br-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbiqrbmdjua018tegggecq9",
+      "code": "WCH-MLBIQQZT",
+      "plannedDowntime": 0,
+      "runTime": 2339843,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T00:09:48.069Z",
+      "occurAt": "2026-02-06T23:30:48.226Z",
+      "processedInOeeHourlyAt": "2026-02-07T00:09:48.930Z",
+      "duration": "PT38M59.843S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-fil-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbiqrbndjub018t0v83d56j",
+      "code": "WCH-MLBIQQZU",
+      "plannedDowntime": 0,
+      "runTime": 5940620,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T01:09:48.846Z",
+      "occurAt": "2026-02-06T23:30:48.226Z",
+      "processedInOeeHourlyAt": "2026-02-07T01:09:49.890Z",
+      "duration": "PT1H39M0.62S",
+      "modeId": "disabled",
+      "stateId": "starved",
+      "workcenterId": "wc-hmc-c1",
+      "eventId": "oper-005",
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbizr9ncyw801as3sspcr58",
+      "code": "WCH-MLBIZR09",
+      "plannedDowntime": 0,
+      "runTime": 13559915,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T03:23:48.063Z",
+      "occurAt": "2026-02-06T23:37:48.148Z",
+      "processedInOeeHourlyAt": "2026-02-07T03:23:49.226Z",
+      "duration": "PT3H45M59.915S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-bmx-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbizr9ocyw901as6ppm89z9",
+      "code": "WCH-MLBIZR0A",
+      "plannedDowntime": 0,
+      "runTime": 8039997,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T01:51:48.145Z",
+      "occurAt": "2026-02-06T23:37:48.148Z",
+      "processedInOeeHourlyAt": "2026-02-07T01:51:49.123Z",
+      "duration": "PT2H13M59.997S",
+      "modeId": "disabled",
+      "stateId": "faulted",
+      "workcenterId": "wc-vmc-c2",
+      "eventId": "extl-004",
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbj8rgfd4nw01asg49zc1bb",
+      "code": "WCH-MLBJ8R3Z",
+      "plannedDowntime": 0,
+      "runTime": 5939951,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T01:23:48.138Z",
+      "occurAt": "2026-02-06T23:44:48.187Z",
+      "processedInOeeHourlyAt": "2026-02-07T01:23:49.279Z",
+      "duration": "PT1H38M59.951S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-cr-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbj8rggd4nx01as5di40ekv",
+      "code": "WCH-MLBJ8R40",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T01:51:48.145Z",
+      "occurAt": "2026-02-06T23:44:48.187Z",
+      "processedInOeeHourlyAt": "2026-02-07T01:51:49.085Z",
+      "duration": "PT2H6M59.958S",
+      "modeId": "engineering",
+      "stateId": "stopped",
+      "workcenterId": "wc-hex-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbjhr9vf6zd01ba8dl1agf3",
+      "code": "WCH-MLBJHR20",
+      "plannedDowntime": 0,
+      "runTime": 5940120,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T01:30:48.139Z",
+      "occurAt": "2026-02-06T23:51:48.019Z",
+      "processedInOeeHourlyAt": "2026-02-07T01:30:49.228Z",
+      "duration": "PT1H39M0.12S",
+      "modeId": "disabled",
+      "stateId": "offline",
+      "workcenterId": "wc-hp-c1",
+      "eventId": "proc-003",
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbjqri0fax201bac6cm74wr",
+      "code": "WCH-MLBJQR8O",
+      "plannedDowntime": 0,
+      "runTime": 7859959,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T02:09:48.122Z",
+      "occurAt": "2026-02-06T23:58:48.163Z",
+      "processedInOeeHourlyAt": "2026-02-07T02:09:48.945Z",
+      "duration": "PT2H10M59.959S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-cipm-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbjqri2fax301bag7nj0iqy",
+      "code": "WCH-MLBJQR8P",
+      "plannedDowntime": 0,
+      "runTime": 6779982,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T01:51:48.145Z",
+      "occurAt": "2026-02-06T23:58:48.163Z",
+      "processedInOeeHourlyAt": "2026-02-07T01:51:49.079Z",
+      "duration": "PT1H52M59.982S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-cips-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbjqri2fax401ba1yqk7zbo",
+      "code": "WCH-MLBJQR8Q",
+      "plannedDowntime": 0,
+      "runTime": 6779982,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T01:51:48.145Z",
+      "occurAt": "2026-02-06T23:58:48.163Z",
+      "processedInOeeHourlyAt": "2026-02-07T01:51:49.136Z",
+      "duration": "PT1H52M59.982S",
+      "modeId": "disabled",
+      "stateId": "faulted",
+      "workcenterId": "wc-crt-c2",
+      "eventId": "qual-003",
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbjqri3fax501bac5sw6nte",
+      "code": "WCH-MLBJQR8R",
+      "plannedDowntime": 0,
+      "runTime": 3599902,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T00:58:48.065Z",
+      "occurAt": "2026-02-06T23:58:48.163Z",
+      "processedInOeeHourlyAt": "2026-02-07T00:58:48.848Z",
+      "duration": "PT59M59.902S",
+      "modeId": "disabled",
+      "stateId": "starved",
+      "workcenterId": "wc-vmc-c1",
+      "eventId": "elec-004",
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbjvwredqs901asdq4fahd8",
+      "code": "WCH-MLBJVWG0",
+      "plannedDowntime": 0,
+      "runTime": 5699854,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T01:37:48.040Z",
+      "occurAt": "2026-02-07T00:02:48.186Z",
+      "processedInOeeHourlyAt": "2026-02-07T01:37:50.808Z",
+      "duration": "PT1H34M59.854S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-dst-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbjvwredqsa01ashg2mf2cl",
+      "code": "WCH-MLBJVWG1",
+      "plannedDowntime": 0,
+      "runTime": 6960028,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T01:58:48.214Z",
+      "occurAt": "2026-02-07T00:02:48.186Z",
+      "processedInOeeHourlyAt": "2026-02-07T01:58:49.107Z",
+      "duration": "PT1H56M0.028S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-fa-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbjvwrfdqsb01as6387f31k",
+      "code": "WCH-MLBJVWG2",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T02:30:48.004Z",
+      "occurAt": "2026-02-07T00:02:48.186Z",
+      "processedInOeeHourlyAt": "2026-02-07T02:30:49.385Z",
+      "duration": "PT2H27M59.818S",
+      "modeId": "engineering",
+      "stateId": "offline",
+      "workcenterId": "wc-hmc-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbjvwrfdqsc01as73ag8g97",
+      "code": "WCH-MLBJVWG3",
+      "plannedDowntime": 0,
+      "runTime": 2099928,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T00:37:48.114Z",
+      "occurAt": "2026-02-07T00:02:48.186Z",
+      "processedInOeeHourlyAt": "2026-02-07T00:37:49.041Z",
+      "duration": "PT34M59.928S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-wld-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbk4wo2fhp701ba30h48xta",
+      "code": "WCH-MLBK4WFF",
+      "plannedDowntime": 0,
+      "runTime": 2939995,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T00:58:48.065Z",
+      "occurAt": "2026-02-07T00:09:48.070Z",
+      "processedInOeeHourlyAt": "2026-02-07T00:58:48.855Z",
+      "duration": "PT48M59.995S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-cbl-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbk4wo3fhp801ba8ixudmoy",
+      "code": "WCH-MLBK4WFG",
+      "plannedDowntime": 0,
+      "runTime": 3180131,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T01:02:48.201Z",
+      "occurAt": "2026-02-07T00:09:48.070Z",
+      "processedInOeeHourlyAt": "2026-02-07T01:02:49.237Z",
+      "duration": "PT53M0.131S",
+      "modeId": "disabled",
+      "stateId": "faulted",
+      "workcenterId": "wc-fil-c1",
+      "eventId": "mech-005",
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlbkdwmle96e01as88a94r5r",
+      "code": "WCH-MLBKDWFC",
+      "plannedDowntime": 0,
+      "runTime": 3180875,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-07T01:09:48.846Z",
+      "occurAt": "2026-02-07T00:16:47.971Z",
+      "processedInOeeHourlyAt": "2026-02-07T01:09:50.007Z",
+      "duration": "PT53M0.875S",
+      "modeId": "cleaning",
+      "stateId": "cleaning",
+      "workcenterId": "wc-fa-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc7go5jtok701as1b3ce17o",
+      "code": "WCH-MLC7GNX4",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:11:52.574Z",
+      "occurAt": "2026-02-07T11:02:48.070Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:11:53.203Z",
+      "duration": "PT40H9M4.504S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-bmx-c1",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc7go5ktok801as9m9x2h0q",
+      "code": "WCH-MLC7GNX5",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:11:52.574Z",
+      "occurAt": "2026-02-07T11:02:48.070Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:11:53.460Z",
+      "duration": "PT40H9M4.504S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-cbl-c1",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc7go5ktok901as3nmo6hee",
+      "code": "WCH-MLC7GNX6",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:32:52.412Z",
+      "occurAt": "2026-02-07T11:02:48.070Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:32:53.129Z",
+      "duration": "PT40H30M4.342S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-cips-c1",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc7go5ktoka01as8todfycb",
+      "code": "WCH-MLC7GNX7",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:00:52.428Z",
+      "occurAt": "2026-02-07T11:02:48.070Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:00:53.618Z",
+      "duration": "PT39H58M4.358S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-crt-c2",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc7go5ktokb01as59xnfp1r",
+      "code": "WCH-MLC7GNX8",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:00:52.428Z",
+      "occurAt": "2026-02-07T11:02:48.070Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:00:53.780Z",
+      "duration": "PT39H58M4.358S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-dst-c1",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc7go5mtokc01as49ya5ymt",
+      "code": "WCH-MLC7GNX9",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:39:52.341Z",
+      "occurAt": "2026-02-07T11:02:48.070Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:39:53.286Z",
+      "duration": "PT40H37M4.271S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-fil-c1",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc7go5ntokd01asgxcza4gv",
+      "code": "WCH-MLC7GNXA",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:39:52.341Z",
+      "occurAt": "2026-02-07T11:02:48.070Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:39:53.141Z",
+      "duration": "PT40H37M4.271S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-flt-c1",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc7go5ntoke01asbxzaalxq",
+      "code": "WCH-MLC7GNXB",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:18:52.399Z",
+      "occurAt": "2026-02-07T11:02:48.070Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:18:53.361Z",
+      "duration": "PT40H16M4.329S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-hex-c1",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc7go5ntokf01asa5bxhk5g",
+      "code": "WCH-MLC7GNXC",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:18:52.399Z",
+      "occurAt": "2026-02-07T11:02:48.070Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:18:53.373Z",
+      "duration": "PT40H16M4.329S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-hmc-c1",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc7po6b3uth01932ortd5xw",
+      "code": "WCH-MLC7PNY4",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:32:52.412Z",
+      "occurAt": "2026-02-07T11:09:48.018Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:32:53.135Z",
+      "duration": "PT40H23M4.394S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-br-c1",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc7po6c3uti01930vwn0vv3",
+      "code": "WCH-MLC7PNY5",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:00:52.428Z",
+      "occurAt": "2026-02-07T11:09:48.018Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:00:53.665Z",
+      "duration": "PT39H51M4.41S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-cr-c2",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc7po6c3utj019301qy6nac",
+      "code": "WCH-MLC7PNY6",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:32:52.412Z",
+      "occurAt": "2026-02-07T11:09:48.018Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:32:53.072Z",
+      "duration": "PT40H23M4.394S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-fil-c2",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc7po6d3utk01930wcj0kaa",
+      "code": "WCH-MLC7PNY7",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:00:52.428Z",
+      "occurAt": "2026-02-07T11:09:48.018Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:00:53.742Z",
+      "duration": "PT39H51M4.41S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-flt-c2",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc7po6g3utl01930rhnah3m",
+      "code": "WCH-MLC7PNY8",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:18:52.399Z",
+      "occurAt": "2026-02-07T11:09:48.018Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:18:53.377Z",
+      "duration": "PT40H9M4.381S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-hmc-c2",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc7po6h3utm0193152sb69m",
+      "code": "WCH-MLC7PNY9",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T04:00:52.482Z",
+      "occurAt": "2026-02-07T11:09:48.018Z",
+      "processedInOeeHourlyAt": "2026-02-09T04:01:19.348Z",
+      "duration": "PT40H51M4.464S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-pd-c2",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc7po6h3utn01935t1e1mzk",
+      "code": "WCH-MLC7PNYA",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:00:52.428Z",
+      "occurAt": "2026-02-07T11:09:48.018Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:00:53.677Z",
+      "duration": "PT39H51M4.41S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-pmp-c1",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc7po6i3uto01935jrpfp9u",
+      "code": "WCH-MLC7PNYB",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:00:52.428Z",
+      "occurAt": "2026-02-07T11:09:48.018Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:00:53.784Z",
+      "duration": "PT39H51M4.41S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-wld-c1",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc7yo8g31c9019mci9tdcpv",
+      "code": "WCH-MLC7YNZZ",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:11:52.574Z",
+      "occurAt": "2026-02-07T11:16:47.993Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:11:53.465Z",
+      "duration": "PT39H55M4.581S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-cipm-c2",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc7yo8i31ca019m6mxk0f2r",
+      "code": "WCH-MLC7YO00",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:11:52.574Z",
+      "occurAt": "2026-02-07T11:16:47.993Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:11:53.379Z",
+      "duration": "PT39H55M4.581S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-cips-c2",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc7yo8j31cb019mh2wu6zex",
+      "code": "WCH-MLC7YO01",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:00:52.428Z",
+      "occurAt": "2026-02-07T11:16:47.993Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:00:53.563Z",
+      "duration": "PT39H44M4.435S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-fa-c1",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc7yo8j31cc019mhwhp3mfw",
+      "code": "WCH-MLC7YO02",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:11:52.574Z",
+      "occurAt": "2026-02-07T11:16:47.993Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:11:53.480Z",
+      "duration": "PT39H55M4.581S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-hp-c2",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc7yo8j31cd019mfvo91v5a",
+      "code": "WCH-MLC7YO03",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:00:52.428Z",
+      "occurAt": "2026-02-07T11:16:47.993Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:00:53.726Z",
+      "duration": "PT39H44M4.435S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-pd-c1",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc87oahu034018t3r405gza",
+      "code": "WCH-MLC87O20",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:18:52.399Z",
+      "occurAt": "2026-02-07T11:23:47.971Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:18:53.306Z",
+      "duration": "PT39H55M4.428S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-br-c2",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc87oahu035018t8gye8nub",
+      "code": "WCH-MLC87O21",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:00:52.428Z",
+      "occurAt": "2026-02-07T11:23:47.971Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:00:53.694Z",
+      "duration": "PT39H37M4.457S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-wld-c2",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc8gocjuaau01asesohhgmm",
+      "code": "WCH-MLC8GO5W",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:25:52.470Z",
+      "occurAt": "2026-02-07T11:30:47.962Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:25:53.179Z",
+      "duration": "PT39H55M4.508S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-bmx-c2",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc8gockuaav01asfzbl6e9r",
+      "code": "WCH-MLC8GO5X",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:00:52.428Z",
+      "occurAt": "2026-02-07T11:30:47.962Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:00:53.767Z",
+      "duration": "PT39H30M4.466S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-cbl-c2",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc8gockuaaw01as9iprcni9",
+      "code": "WCH-MLC8GO5Y",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:00:52.428Z",
+      "occurAt": "2026-02-07T11:30:47.962Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:00:53.613Z",
+      "duration": "PT39H30M4.466S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-cipm-c1",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc8gockuaax01asb01t86zt",
+      "code": "WCH-MLC8GO5Z",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T04:00:52.482Z",
+      "occurAt": "2026-02-07T11:30:47.962Z",
+      "processedInOeeHourlyAt": "2026-02-09T04:01:16.367Z",
+      "duration": "PT40H30M4.52S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-fa-c2",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc8gockuaay01as2hxv96ce",
+      "code": "WCH-MLC8GO60",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:46:52.363Z",
+      "occurAt": "2026-02-07T11:30:47.962Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:46:53.070Z",
+      "duration": "PT40H16M4.401S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-vmc-c1",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc8gockuaaz01as4a49022i",
+      "code": "WCH-MLC8GO61",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:00:52.428Z",
+      "occurAt": "2026-02-07T11:30:47.962Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:00:53.698Z",
+      "duration": "PT39H30M4.466S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-vmc-c2",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc8pofi47mk0193fxf63uzb",
+      "code": "WCH-MLC8POA1",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:11:52.574Z",
+      "occurAt": "2026-02-07T11:37:48.064Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:11:53.344Z",
+      "duration": "PT39H34M4.51S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-cr-c1",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc8yomvulwz01as18qhaoyz",
+      "code": "WCH-MLC8YOB1",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T04:00:52.482Z",
+      "occurAt": "2026-02-07T11:44:48.002Z",
+      "processedInOeeHourlyAt": "2026-02-09T04:01:16.824Z",
+      "duration": "PT40H16M4.48S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-hex-c2",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc9gon6v3o401baf0nzfmob",
+      "code": "WCH-MLC9GOFQ",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:00:52.428Z",
+      "occurAt": "2026-02-07T11:58:47.981Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:00:53.741Z",
+      "duration": "PT39H2M4.447S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-hp-c1",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc9x9j603zv016v3awj8x0f",
+      "code": "WCH-MLC9X99G",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:18:52.399Z",
+      "occurAt": "2026-02-07T12:11:41.471Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:18:53.252Z",
+      "duration": "PT39H7M10.928S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-dst-c2",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlc9x9j603zw016va5dp218f",
+      "code": "WCH-MLC9X99H",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:00:52.428Z",
+      "occurAt": "2026-02-07T12:11:41.471Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:00:53.700Z",
+      "duration": "PT38H49M10.957S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-pmp-c2",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlca68ux061y019b060q6bql",
+      "code": "WCH-MLCA68MW",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": "No active schedule defined",
+      "endAt": "2026-02-09T03:00:52.428Z",
+      "occurAt": "2026-02-07T12:18:40.560Z",
+      "processedInOeeHourlyAt": "2026-02-09T03:00:53.514Z",
+      "duration": "PT38H42M11.868S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-crt-c1",
+      "eventId": null,
+      "scheduleId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgft0vh6bx9013devlv46ws",
+      "code": "WCH-MLGFT0OL",
+      "plannedDowntime": 0,
+      "runTime": 13492322,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T13:52:18.450Z",
+      "occurAt": "2026-02-10T10:07:26.128Z",
+      "processedInOeeHourlyAt": "2026-02-10T13:52:19.492Z",
+      "duration": "PT3H44M52.322S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-cipm-c1",
+      "eventId": null,
+      "scheduleId": "third",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlggt2coje9c0164ew3n2zjz",
+      "code": "WCH-MLGGT1CG",
+      "plannedDowntime": 0,
+      "runTime": 11388588,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T13:45:15.192Z",
+      "occurAt": "2026-02-10T10:35:26.604Z",
+      "processedInOeeHourlyAt": "2026-02-10T13:45:16.076Z",
+      "duration": "PT3H9M48.588S",
+      "modeId": "cleaning",
+      "stateId": "cleaning",
+      "workcenterId": "wc-fa-c1",
+      "eventId": null,
+      "scheduleId": "third",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlghy6sx0d53012nce6ucyit",
+      "code": "WCH-MLGHY6M0",
+      "plannedDowntime": 0,
+      "runTime": 11391578,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T14:17:17.878Z",
+      "occurAt": "2026-02-10T11:07:26.300Z",
+      "processedInOeeHourlyAt": "2026-02-10T14:17:18.716Z",
+      "duration": "PT3H9M51.578S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-cr-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlghy6sy0d54012n018b09oh",
+      "code": "WCH-MLGHY6M1",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T13:38:18.926Z",
+      "occurAt": "2026-02-10T11:07:26.300Z",
+      "processedInOeeHourlyAt": "2026-02-10T13:38:19.806Z",
+      "duration": "PT2H30M52.626S",
+      "modeId": "engineering",
+      "stateId": "offline",
+      "workcenterId": "wc-flt-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgip6vo327i01440of0e2v2",
+      "code": "WCH-MLGIP6ON",
+      "plannedDowntime": 0,
+      "runTime": 9048893,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T13:59:15.021Z",
+      "occurAt": "2026-02-10T11:28:26.128Z",
+      "processedInOeeHourlyAt": "2026-02-10T13:59:15.986Z",
+      "duration": "PT2H30M48.893S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-dst-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgiy7dzkm4t0161ds2wemvh",
+      "code": "WCH-MLGIY774",
+      "plannedDowntime": 0,
+      "runTime": 12469027,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T15:03:15.727Z",
+      "occurAt": "2026-02-10T11:35:26.700Z",
+      "processedInOeeHourlyAt": "2026-02-10T15:03:16.493Z",
+      "duration": "PT3H27M49.027S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-cbl-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgj773zksqs01615izo0wlq",
+      "code": "WCH-MLGJ76WN",
+      "plannedDowntime": 0,
+      "runTime": 9708734,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T14:24:14.959Z",
+      "occurAt": "2026-02-10T11:42:26.225Z",
+      "processedInOeeHourlyAt": "2026-02-10T14:24:15.645Z",
+      "duration": "PT2H41M48.734S",
+      "modeId": "setup",
+      "stateId": "warmup",
+      "workcenterId": "wc-hmc-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgjg73q0xqy012nayl7dl23",
+      "code": "WCH-MLGJG6X4",
+      "plannedDowntime": 0,
+      "runTime": 8871732,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T14:17:17.878Z",
+      "occurAt": "2026-02-10T11:49:26.146Z",
+      "processedInOeeHourlyAt": "2026-02-10T14:17:18.772Z",
+      "duration": "PT2H27M51.732S",
+      "modeId": "disabled",
+      "stateId": "e-stopped",
+      "workcenterId": "wc-pmp-c1",
+      "eventId": "extl-001",
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgjstp101xh01475teh9965",
+      "code": "WCH-MLGJSTGH",
+      "plannedDowntime": 0,
+      "runTime": 6783226,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T13:52:18.450Z",
+      "occurAt": "2026-02-10T11:59:15.224Z",
+      "processedInOeeHourlyAt": "2026-02-10T13:52:19.289Z",
+      "duration": "PT1H53M3.226S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-bmx-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgkfyur0cn4014e2z14f9ge",
+      "code": "WCH-MLGKFYLL",
+      "plannedDowntime": 0,
+      "runTime": 4439953,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T13:31:14.930Z",
+      "occurAt": "2026-02-10T12:17:14.977Z",
+      "processedInOeeHourlyAt": "2026-02-10T13:31:15.854Z",
+      "duration": "PT1H13M59.953S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-cipm-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgkfyur0cn5014e51621wn6",
+      "code": "WCH-MLGKFYLM",
+      "plannedDowntime": 0,
+      "runTime": 5703473,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T13:52:18.450Z",
+      "occurAt": "2026-02-10T12:17:14.977Z",
+      "processedInOeeHourlyAt": "2026-02-10T13:52:19.590Z",
+      "duration": "PT1H35M3.473S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-fil-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgkfyus0cn6014egebc1a0l",
+      "code": "WCH-MLGKFYLN",
+      "plannedDowntime": 0,
+      "runTime": 9720300,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T14:59:15.277Z",
+      "occurAt": "2026-02-10T12:17:14.977Z",
+      "processedInOeeHourlyAt": "2026-02-10T14:59:16.274Z",
+      "duration": "PT2H42M0.3S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-pd-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgkp0nw0gzi014e4kso5yl8",
+      "code": "WCH-MLGKP0EI",
+      "plannedDowntime": 0,
+      "runTime": 4017712,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T13:31:14.930Z",
+      "occurAt": "2026-02-10T12:24:17.218Z",
+      "processedInOeeHourlyAt": "2026-02-10T13:31:15.845Z",
+      "duration": "PT1H6M57.712S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-bmx-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgkp0nx0gzj014ef72dbsqz",
+      "code": "WCH-MLGKP0EJ",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T15:17:19.326Z",
+      "occurAt": "2026-02-10T12:24:17.218Z",
+      "processedInOeeHourlyAt": "2026-02-10T15:17:20.551Z",
+      "duration": "PT2H53M2.108S",
+      "modeId": "engineering",
+      "stateId": "changeover",
+      "workcenterId": "wc-pmp-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgkp0nx0gzk014e1cxwhzyi",
+      "code": "WCH-MLGKP0EK",
+      "plannedDowntime": 0,
+      "runTime": 8457913,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T14:45:15.131Z",
+      "occurAt": "2026-02-10T12:24:17.218Z",
+      "processedInOeeHourlyAt": "2026-02-10T14:45:16.411Z",
+      "duration": "PT2H20M57.913S",
+      "modeId": "setup",
+      "stateId": "cleaning",
+      "workcenterId": "wc-wld-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgkxyzz0ca7015v2utx9x43",
+      "code": "WCH-MLGKXYSW",
+      "plannedDowntime": 0,
+      "runTime": 8465380,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T14:52:20.431Z",
+      "occurAt": "2026-02-10T12:31:15.051Z",
+      "processedInOeeHourlyAt": "2026-02-10T14:52:21.485Z",
+      "duration": "PT2H21M5.38S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-br-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgkxz000ca8015vhhpd4xsi",
+      "code": "WCH-MLGKXYSX",
+      "plannedDowntime": 0,
+      "runTime": 5940034,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T14:10:15.085Z",
+      "occurAt": "2026-02-10T12:31:15.051Z",
+      "processedInOeeHourlyAt": "2026-02-10T14:10:16.197Z",
+      "duration": "PT1H39M0.034S",
+      "modeId": "disabled",
+      "stateId": "starved",
+      "workcenterId": "wc-hex-c1",
+      "eventId": "chgv-001",
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgl6yyf0o3v013wfollcqfl",
+      "code": "WCH-MLGL6YT0",
+      "plannedDowntime": 0,
+      "runTime": 4860060,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T13:59:15.021Z",
+      "occurAt": "2026-02-10T12:38:14.961Z",
+      "processedInOeeHourlyAt": "2026-02-10T13:59:16.132Z",
+      "duration": "PT1H21M0.06S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-dst-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlglfzbi0y8i015peamz64pc",
+      "code": "WCH-MLGLFZ2X",
+      "plannedDowntime": 0,
+      "runTime": 3599972,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T13:45:15.192Z",
+      "occurAt": "2026-02-10T12:45:15.220Z",
+      "processedInOeeHourlyAt": "2026-02-10T13:45:16.119Z",
+      "duration": "PT59M59.972S",
+      "modeId": "idle",
+      "stateId": "offline",
+      "workcenterId": "wc-hp-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgloza60ui9015v3as0dx8a",
+      "code": "WCH-MLGLOZ39",
+      "plannedDowntime": 0,
+      "runTime": 8280173,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T15:10:15.308Z",
+      "occurAt": "2026-02-10T12:52:15.135Z",
+      "processedInOeeHourlyAt": "2026-02-10T15:10:16.327Z",
+      "duration": "PT2H18M0.173S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-cips-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgloza60uia015v4rn1f4ew",
+      "code": "WCH-MLGLOZ3A",
+      "plannedDowntime": 0,
+      "runTime": 10806842,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T15:52:21.977Z",
+      "occurAt": "2026-02-10T12:52:15.135Z",
+      "processedInOeeHourlyAt": "2026-02-10T15:52:23.214Z",
+      "duration": "PT3H6.842S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-cr-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgloza70uib015v65tvdcak",
+      "code": "WCH-MLGLOZ3B",
+      "plannedDowntime": 0,
+      "runTime": 5102743,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T14:17:17.878Z",
+      "occurAt": "2026-02-10T12:52:15.135Z",
+      "processedInOeeHourlyAt": "2026-02-10T14:17:18.712Z",
+      "duration": "PT1H25M2.743S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-crt-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlglxzi514vl014eb5l5g4k4",
+      "code": "WCH-MLGLXZ7U",
+      "plannedDowntime": 0,
+      "runTime": 5099757,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T14:24:14.959Z",
+      "occurAt": "2026-02-10T12:59:15.202Z",
+      "processedInOeeHourlyAt": "2026-02-10T14:24:15.997Z",
+      "duration": "PT1H24M59.757S",
+      "modeId": "cleaning",
+      "stateId": "cleaning",
+      "workcenterId": "wc-fa-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlglxzi614vm014e3xid854c",
+      "code": "WCH-MLGLXZ7V",
+      "plannedDowntime": 0,
+      "runTime": 6359929,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T14:45:15.131Z",
+      "occurAt": "2026-02-10T12:59:15.202Z",
+      "processedInOeeHourlyAt": "2026-02-10T14:45:16.245Z",
+      "duration": "PT1H45M59.929S",
+      "modeId": "disabled",
+      "stateId": "offline",
+      "workcenterId": "wc-hmc-c2",
+      "eventId": "chgv-003",
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlglxzi614vn014e61dr7mo0",
+      "code": "WCH-MLGLXZ7W",
+      "plannedDowntime": 0,
+      "runTime": 13570086,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T16:45:25.288Z",
+      "occurAt": "2026-02-10T12:59:15.202Z",
+      "processedInOeeHourlyAt": "2026-02-10T16:45:26.207Z",
+      "duration": "PT3H46M10.086S",
+      "modeId": "idle",
+      "stateId": "offline",
+      "workcenterId": "wc-hp-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlglxzi614vo014e214z8epi",
+      "code": "WCH-MLGLXZ7X",
+      "plannedDowntime": 0,
+      "runTime": 7200075,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T14:59:15.277Z",
+      "occurAt": "2026-02-10T12:59:15.202Z",
+      "processedInOeeHourlyAt": "2026-02-10T14:59:16.521Z",
+      "duration": "PT2H0.075S",
+      "modeId": "cleaning",
+      "stateId": "cleaning",
+      "workcenterId": "wc-vmc-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlglxzi714vp014e16f8bdk4",
+      "code": "WCH-MLGLXZ7Y",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T13:59:15.021Z",
+      "occurAt": "2026-02-10T12:59:15.202Z",
+      "processedInOeeHourlyAt": "2026-02-10T13:59:16.133Z",
+      "duration": "PT59M59.819S",
+      "modeId": "no-schedule",
+      "stateId": "offline",
+      "workcenterId": "wc-wld-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgm34lr110i0147gpua8dra",
+      "code": "WCH-MLGM34D3",
+      "plannedDowntime": 0,
+      "runTime": 6960184,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T14:59:15.277Z",
+      "occurAt": "2026-02-10T13:03:15.093Z",
+      "processedInOeeHourlyAt": "2026-02-10T14:59:16.369Z",
+      "duration": "PT1H56M0.184S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-br-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgm34ls110j0147fgby1m2j",
+      "code": "WCH-MLGM34D4",
+      "plannedDowntime": 0,
+      "runTime": 3359928,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T13:59:15.021Z",
+      "occurAt": "2026-02-10T13:03:15.093Z",
+      "processedInOeeHourlyAt": "2026-02-10T13:59:16.000Z",
+      "duration": "PT55M59.928S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-fil-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgm34ls110k014798eedq49",
+      "code": "WCH-MLGM34D5",
+      "plannedDowntime": 0,
+      "runTime": 6545338,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T14:52:20.431Z",
+      "occurAt": "2026-02-10T13:03:15.093Z",
+      "processedInOeeHourlyAt": "2026-02-10T14:52:21.511Z",
+      "duration": "PT1H49M5.338S",
+      "modeId": "disabled",
+      "stateId": "faulted",
+      "workcenterId": "wc-vmc-c1",
+      "eventId": "pmnt-003",
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgmc4kt1byh015p5h2vfbd4",
+      "code": "WCH-MLGMC4D8",
+      "plannedDowntime": 0,
+      "runTime": 2939958,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T13:59:15.021Z",
+      "occurAt": "2026-02-10T13:10:15.063Z",
+      "processedInOeeHourlyAt": "2026-02-10T13:59:16.003Z",
+      "duration": "PT48M59.958S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-cips-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgmc4kt1byi015p5cs47tcp",
+      "code": "WCH-MLGMC4D9",
+      "plannedDowntime": 0,
+      "runTime": 5700068,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T14:45:15.131Z",
+      "occurAt": "2026-02-10T13:10:15.063Z",
+      "processedInOeeHourlyAt": "2026-02-10T14:45:16.301Z",
+      "duration": "PT1H35M0.068S",
+      "modeId": "cleaning",
+      "stateId": "cleaning",
+      "workcenterId": "wc-hex-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgml4js1ivj015pd0mub9vy",
+      "code": "WCH-MLGML4BO",
+      "plannedDowntime": 0,
+      "runTime": 4440223,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T14:31:15.135Z",
+      "occurAt": "2026-02-10T13:17:14.912Z",
+      "processedInOeeHourlyAt": "2026-02-10T14:31:15.906Z",
+      "duration": "PT1H14M0.223S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-cbl-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgml4js1ivk015pf2yee10h",
+      "code": "WCH-MLGML4BP",
+      "plannedDowntime": 0,
+      "runTime": 420076,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T13:24:14.988Z",
+      "occurAt": "2026-02-10T13:17:14.912Z",
+      "processedInOeeHourlyAt": "2026-02-10T13:24:15.895Z",
+      "duration": "PT7M0.076S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-crt-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgml4js1ivl015pextz3ltc",
+      "code": "WCH-MLGML4BQ",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T15:52:21.977Z",
+      "occurAt": "2026-02-10T13:17:14.912Z",
+      "processedInOeeHourlyAt": "2026-02-10T15:52:23.223Z",
+      "duration": "PT2H35M7.065S",
+      "modeId": "engineering",
+      "stateId": "stopped",
+      "workcenterId": "wc-flt-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgml4js1ivm015pg42b9bv1",
+      "code": "WCH-MLGML4BR",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T13:38:18.926Z",
+      "occurAt": "2026-02-10T13:17:14.912Z",
+      "processedInOeeHourlyAt": "2026-02-10T13:38:19.851Z",
+      "duration": "PT21M4.014S",
+      "modeId": "engineering",
+      "stateId": "offline",
+      "workcenterId": "wc-pd-c2",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgxb2da6rlg013w7a3l6duz",
+      "code": "WCH-MLGXB22Y",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T18:17:21.218Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "disabled",
+      "stateId": "blocked",
+      "workcenterId": "wc-pmp-c2",
+      "eventId": "elec-006",
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgy1xql86d20147ccioeotx",
+      "code": "WCH-MLGY1XLV",
+      "plannedDowntime": 0,
+      "runTime": 10804921,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T21:38:20.053Z",
+      "occurAt": "2026-02-10T18:38:15.132Z",
+      "processedInOeeHourlyAt": "2026-02-10T21:38:20.819Z",
+      "duration": "PT3H4.921S",
+      "modeId": "disabled",
+      "stateId": "faulted",
+      "workcenterId": "wc-cr-c1",
+      "eventId": "proc-002",
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgyjxwi8o8q010efrek6knu",
+      "code": "WCH-MLGYJXMS",
+      "plannedDowntime": 0,
+      "runTime": 10406098,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T21:45:41.075Z",
+      "occurAt": "2026-02-10T18:52:14.977Z",
+      "processedInOeeHourlyAt": "2026-02-10T21:45:43.065Z",
+      "duration": "PT2H53M26.098S",
+      "modeId": "cleaning",
+      "stateId": "offline",
+      "workcenterId": "wc-hmc-c1",
+      "eventId": null,
+      "scheduleId": "first",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgzg7sx8858013wagfn8yzf",
+      "code": "WCH-MLGZG7K1",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T19:17:20.828Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-br-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgzg7sx8859013w1l11819e",
+      "code": "WCH-MLGZG7K2",
+      "plannedDowntime": 0,
+      "runTime": 8459225,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T21:38:20.053Z",
+      "occurAt": "2026-02-10T19:17:20.828Z",
+      "processedInOeeHourlyAt": "2026-02-10T21:38:37.862Z",
+      "duration": "PT2H20M59.225S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-cbl-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgzp6po8cpm013wgaqe6oaj",
+      "code": "WCH-MLGZP6GF",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T19:24:19.306Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-br-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlgzy3lj9f7m0147g0dt025o",
+      "code": "WCH-MLGZY3C5",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T21:45:41.075Z",
+      "occurAt": "2026-02-10T19:31:15.166Z",
+      "processedInOeeHourlyAt": "2026-02-10T21:45:42.414Z",
+      "duration": "PT2H14M25.909S",
+      "modeId": "engineering",
+      "stateId": "stopped",
+      "workcenterId": "wc-flt-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh0g4nn9tde01476zco48hn",
+      "code": "WCH-MLH0G4ER",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T19:45:16.366Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-crt-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh0g4nn9tdf014779dd3by1",
+      "code": "WCH-MLH0G4ES",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T19:45:16.366Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "disabled",
+      "stateId": "starved",
+      "workcenterId": "wc-hex-c1",
+      "eventId": "matl-004",
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh0g4nn9tdi01470b4k4kff",
+      "code": "WCH-MLH0G4EV",
+      "plannedDowntime": 0,
+      "runTime": 7224709,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T21:45:41.075Z",
+      "occurAt": "2026-02-10T19:45:16.366Z",
+      "processedInOeeHourlyAt": "2026-02-10T21:45:42.447Z",
+      "duration": "PT2H24.709S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-wld-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh0p6ar96c4013w0z0gf3ws",
+      "code": "WCH-MLH0P612",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T21:45:41.075Z",
+      "occurAt": "2026-02-10T19:52:18.369Z",
+      "processedInOeeHourlyAt": "2026-02-10T21:45:42.516Z",
+      "duration": "PT1H53M22.706S",
+      "modeId": "engineering",
+      "stateId": "stopped",
+      "workcenterId": "wc-pd-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh0y3raampc015phj0d3e0u",
+      "code": "WCH-MLH0Y3J5",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T19:59:15.021Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-fil-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh0y3raampd015p06cs6rqx",
+      "code": "WCH-MLH0Y3J6",
+      "plannedDowntime": 0,
+      "runTime": 6386054,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T21:45:41.075Z",
+      "occurAt": "2026-02-10T19:59:15.021Z",
+      "processedInOeeHourlyAt": "2026-02-10T21:45:42.295Z",
+      "duration": "PT1H46M26.054S",
+      "modeId": "cleaning",
+      "stateId": "offline",
+      "workcenterId": "wc-hmc-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh1u9ubav4z010e2f7dab0y",
+      "code": "WCH-MLH1U9C2",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T20:24:15.548Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-fa-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh1u9ubav50010e773y40e0",
+      "code": "WCH-MLH1U9C3",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T20:24:15.548Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-vmc-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh2cd2fa8rk013w43cq919n",
+      "code": "WCH-MLH2CCSH",
+      "plannedDowntime": 0,
+      "runTime": 4041240,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T21:45:41.075Z",
+      "occurAt": "2026-02-10T20:38:19.835Z",
+      "processedInOeeHourlyAt": "2026-02-10T21:45:42.511Z",
+      "duration": "PT1H7M21.24S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-cbl-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh2l9jlbhak0147759i6tjx",
+      "code": "WCH-MLH2L970",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T20:45:15.081Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "engineering",
+      "stateId": "stopped",
+      "workcenterId": "wc-pmp-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh2uc45bnbr010e4rxteozg",
+      "code": "WCH-MLH2UBVR",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T20:52:18.463Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "engineering",
+      "stateId": "stopped",
+      "workcenterId": "wc-cips-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh339jdc9m5015p3td04nzb",
+      "code": "WCH-MLH339CP",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T20:59:15.088Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-bmx-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh339jdc9m6015p430mcx4t",
+      "code": "WCH-MLH339CQ",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T20:59:15.088Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "cleaning",
+      "stateId": "offline",
+      "workcenterId": "wc-dst-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh38f2gbx08010e5vkkggnx",
+      "code": "WCH-MLH38ERJ",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T21:03:15.386Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "cleaning",
+      "stateId": "offline",
+      "workcenterId": "wc-crt-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh38f2jbx09010e4szlgof0",
+      "code": "WCH-MLH38ERK",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T21:03:15.386Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "cleaning",
+      "stateId": "cleaning",
+      "workcenterId": "wc-fil-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh3hfjwc1jw010e4k0x6tk4",
+      "code": "WCH-MLH3HFC5",
+      "plannedDowntime": 0,
+      "runTime": 2125044,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T21:45:41.075Z",
+      "occurAt": "2026-02-10T21:10:16.031Z",
+      "processedInOeeHourlyAt": "2026-02-10T21:45:42.526Z",
+      "duration": "PT35M25.044S",
+      "modeId": "setup",
+      "stateId": "changeover",
+      "workcenterId": "wc-hex-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh3hfjxc1jx010ehl9dbnyq",
+      "code": "WCH-MLH3HFC6",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T21:10:16.031Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "engineering",
+      "stateId": "offline",
+      "workcenterId": "wc-hp-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh3qmydcl9c015pb50f2xw1",
+      "code": "WCH-MLH3QMGP",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T21:17:25.174Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-cipm-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh3qmydcl9d015p65ejgmtu",
+      "code": "WCH-MLH3QMGQ",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T21:17:25.174Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-cips-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh3qmydcl9e015p4lu78hqo",
+      "code": "WCH-MLH3QMGR",
+      "plannedDowntime": 0,
+      "runTime": 1695901,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T21:45:41.075Z",
+      "occurAt": "2026-02-10T21:17:25.174Z",
+      "processedInOeeHourlyAt": "2026-02-10T21:45:42.574Z",
+      "duration": "PT28M15.901S",
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-cr-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh3qmyecl9f015p6gnffff8",
+      "code": "WCH-MLH3QMGS",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T21:17:25.174Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "engineering",
+      "stateId": "offline",
+      "workcenterId": "wc-hp-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh3qmyecl9g015p6n5i6faw",
+      "code": "WCH-MLH3QMGT",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T21:17:25.174Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "cleaning",
+      "stateId": "offline",
+      "workcenterId": "wc-pd-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh3zf0ucamf010e5kzb5n3h",
+      "code": "WCH-MLH3ZET6",
+      "plannedDowntime": 0,
+      "runTime": 1285918,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T21:45:41.075Z",
+      "occurAt": "2026-02-10T21:24:15.157Z",
+      "processedInOeeHourlyAt": "2026-02-10T21:45:42.169Z",
+      "duration": "PT21M25.918S",
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-cipm-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh3zf0ucamg010ebbxr1vdw",
+      "code": "WCH-MLH3ZET7",
+      "plannedDowntime": 0,
+      "runTime": 0,
+      "unplannedDowntime": 0,
+      "notes": null,
+      "endAt": "2026-02-10T21:45:41.075Z",
+      "occurAt": "2026-02-10T21:24:15.157Z",
+      "processedInOeeHourlyAt": "2026-02-10T21:45:42.878Z",
+      "duration": "PT21M25.918S",
+      "modeId": "engineering",
+      "stateId": "offline",
+      "workcenterId": "wc-dst-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh48fjhcxpq015p5isqessq",
+      "code": "WCH-MLH48FCH",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T21:31:15.758Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-bmx-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh48fjicxpr015p8l0oehyn",
+      "code": "WCH-MLH48FCI",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T21:31:15.758Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-fa-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh48fjicxps015p3a8s38dm",
+      "code": "WCH-MLH48FCJ",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T21:31:15.758Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-flt-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh48fjicxpt015pesfo6ffm",
+      "code": "WCH-MLH48FCK",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T21:31:15.758Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-vmc-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh48fjicxpu015p8284ccft",
+      "code": "WCH-MLH48FCL",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T21:31:15.758Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "disabled",
+      "stateId": "faulted",
+      "workcenterId": "wc-wld-c1",
+      "eventId": "elec-003",
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh4hj0fcm1a010ebgiidc24",
+      "code": "WCH-MLH4HIQH",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T21:38:20.054Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-cbl-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh4hj0gcm1b010e7idy4www",
+      "code": "WCH-MLH4HIQI",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T21:38:20.054Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-cr-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh4qz9hdg3b015p2a4r9m3s",
+      "code": "WCH-MLH4QZ2B",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T21:45:41.076Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-cbl-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh4qz9hdg3c015p45qu7t48",
+      "code": "WCH-MLH4QZ2C",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T21:45:41.076Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-cipm-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh4qz9hdg3d015p5pr2gtn4",
+      "code": "WCH-MLH4QZ2D",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T21:45:41.076Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "production",
+      "stateId": "running",
+      "workcenterId": "wc-cr-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh4qz9hdg3e015pc8zn8ngu",
+      "code": "WCH-MLH4QZ2E",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T21:45:41.076Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "engineering",
+      "stateId": "changeover",
+      "workcenterId": "wc-dst-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh4qz9hdg3f015pgx8mbwl4",
+      "code": "WCH-MLH4QZ2F",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T21:45:41.076Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "production",
+      "stateId": "running-slow",
+      "workcenterId": "wc-flt-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh4qz9idg3g015pdi8m5hn7",
+      "code": "WCH-MLH4QZ2G",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T21:45:41.076Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "cleaning",
+      "stateId": "cleaning",
+      "workcenterId": "wc-hex-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh4qz9idg3h015p2ekx4dg0",
+      "code": "WCH-MLH4QZ2H",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T21:45:41.076Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "idle",
+      "stateId": "offline",
+      "workcenterId": "wc-hmc-c1",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh4qz9idg3i015pcswc554p",
+      "code": "WCH-MLH4QZ2I",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T21:45:41.076Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "engineering",
+      "stateId": "changeover",
+      "workcenterId": "wc-hmc-c2",
+      "eventId": null,
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh4qz9jdg3j015p7q5dbtjh",
+      "code": "WCH-MLH4QZ2J",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T21:45:41.076Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "disabled",
+      "stateId": "faulted",
+      "workcenterId": "wc-pd-c2",
+      "eventId": "elec-009",
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmlh4qz9jdg3k015p1smu9c2t",
+      "code": "WCH-MLH4QZ2K",
+      "plannedDowntime": null,
+      "runTime": null,
+      "unplannedDowntime": null,
+      "notes": null,
+      "endAt": null,
+      "occurAt": "2026-02-10T21:45:41.076Z",
+      "processedInOeeHourlyAt": null,
+      "duration": null,
+      "modeId": "disabled",
+      "stateId": "offline",
+      "workcenterId": "wc-wld-c2",
+      "eventId": "proc-005",
+      "scheduleId": "second",
+      "_customFields": {
+        "_externalId": null
+      }
+    }
+  ],
+  "metadata": {}
+}

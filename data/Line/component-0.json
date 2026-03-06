@@ -1,0 +1,187 @@
+{
+  "api": "application",
+  "modelName": "Line",
+  "payload": [
+    {
+      "id": "cmmk01grpn00lfm48nad",
+      "code": "HPL",
+      "isActive": true,
+      "name": "Heavy Press Line",
+      "areaId": "cmmk01grpn00lflvh1uz",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfm5byii",
+      "code": "PDL",
+      "isActive": true,
+      "name": "Progressive Die Line",
+      "areaId": "cmmk01grpn00lflvh1uz",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfm6h6ys",
+      "code": "CNCH",
+      "isActive": true,
+      "name": "CNC Horizontal",
+      "areaId": "cmmk01grpn00lflw9mkt",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfm71mrj",
+      "code": "CNCV",
+      "isActive": true,
+      "name": "CNC Vertical",
+      "areaId": "cmmk01grpn00lflw9mkt",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfm8ridv",
+      "code": "WELD",
+      "isActive": true,
+      "name": "Robot Weld Line",
+      "areaId": "cmmk01grpn00lflx5y5v",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfm9p4u1",
+      "code": "FINAL",
+      "isActive": true,
+      "name": "Final Assembly",
+      "areaId": "cmmk01grpn00lflx5y5v",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfman9ns",
+      "code": "BTR",
+      "isActive": true,
+      "name": "Batch Reactor Train",
+      "areaId": "cmmk01grpn00lfly0gin",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfmbfr0h",
+      "code": "CTR",
+      "isActive": true,
+      "name": "Continuous Reactor",
+      "areaId": "cmmk01grpn00lfly0gin",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfmckx2d",
+      "code": "DIST",
+      "isActive": true,
+      "name": "Distillation",
+      "areaId": "cmmk01grpn00lflzwujo",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfmdhmjv",
+      "code": "FILT",
+      "isActive": true,
+      "name": "Filtration",
+      "areaId": "cmmk01grpn00lflzwujo",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfmei9zv",
+      "code": "HEX",
+      "isActive": true,
+      "name": "Heat Exchange",
+      "areaId": "cmmk01grpn00lfm0g56s",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfmfogul",
+      "code": "PUMP",
+      "isActive": true,
+      "name": "Pumping Station",
+      "areaId": "cmmk01grpn00lfm0g56s",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfmggxm4",
+      "code": "BMIX",
+      "isActive": true,
+      "name": "Batch Mixing",
+      "areaId": "cmmk01grpn00lfm1eq3c",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfmh8n3e",
+      "code": "CBLD",
+      "isActive": true,
+      "name": "Continuous Blending",
+      "areaId": "cmmk01grpn00lfm1eq3c",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfmij7hf",
+      "code": "FILL",
+      "isActive": true,
+      "name": "Filling Line",
+      "areaId": "cmmk01grpn00lfm25toe",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfmj7l9d",
+      "code": "CART",
+      "isActive": true,
+      "name": "Cartoning Line",
+      "areaId": "cmmk01grpn00lfm25toe",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfmk51tf",
+      "code": "CIPM",
+      "isActive": true,
+      "name": "CIP Main",
+      "areaId": "cmmk01grpn00lfm3ooh8",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfmldk2g",
+      "code": "CIPS",
+      "isActive": true,
+      "name": "CIP Secondary",
+      "areaId": "cmmk01grpn00lfm3ooh8",
+      "_customFields": {
+        "_externalId": null
+      }
+    }
+  ],
+  "metadata": {}
+}

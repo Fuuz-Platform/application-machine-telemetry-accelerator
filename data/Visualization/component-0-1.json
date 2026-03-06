@@ -1,0 +1,194 @@
+{
+  "api": "application",
+  "modelName": "Visualization",
+  "payload": [
+    {
+      "id": "assetDataPointTelemetryChart",
+      "visualizationTypeId": "MultiAxisLine",
+      "name": "Asset Data Point Telemetry Chart",
+      "configuration": {
+        "categories": {
+          "category": [
+            {}
+          ]
+        },
+        "dataset": {
+          "data": [
+            {},
+            {}
+          ]
+        },
+        "axis": [
+          {}
+        ]
+      },
+      "previewParameters": null,
+      "datasourceSavedTransformId": "visualizationDatasourceAssetDpTrendChart",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "assetDpTrendChart",
+      "visualizationTypeId": "zoomlinedy",
+      "name": "Asset DP Trend Chart",
+      "configuration": {},
+      "previewParameters": {
+        "assetId": "ASSET-0001",
+        "timeFrame": "15m",
+        "timeZone": "America/Detroit"
+      },
+      "datasourceSavedTransformId": "visualizationDatasourceAssetDpTrendChart",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "basicColumn",
+      "visualizationTypeId": "column2d",
+      "name": "Basic Column",
+      "configuration": {
+        "data": [
+          {
+            "label": "A",
+            "value": "10"
+          },
+          {
+            "label": "B",
+            "value": "20"
+          },
+          {
+            "label": "C",
+            "value": "30"
+          }
+        ]
+      },
+      "previewParameters": null,
+      "datasourceSavedTransformId": "workcenterHistoryWinLossChart",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "hourlyOeeComponentTrend",
+      "visualizationTypeId": "MSArea",
+      "name": "Hourly OEE Component Trend",
+      "configuration": {
+        "dataset": {
+          "data": []
+        },
+        "categories": {
+          "category": []
+        },
+        "data": [],
+        "trendlines": {
+          "line": []
+        },
+        "chart": {}
+      },
+      "previewParameters": null,
+      "datasourceSavedTransformId": "hourlyOeeComponents",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "hourlyOeeTrend",
+      "visualizationTypeId": "line",
+      "name": "Hourly OEE Trend",
+      "configuration": {
+        "trendlines": {
+          "line": []
+        },
+        "data": [],
+        "chart": {
+          "caption": "$.chart.caption",
+          "xAxisName": "$.chart.xAxisName",
+          "yAxisName": "$.chart.yAxisName",
+          "lineThickness": 2,
+          "showValues": true,
+          "valueFontSize": 0,
+          "theme": "$.chart.theme"
+        },
+        "FusionCharts": {
+          "loadMessage": "Data is Loading"
+        }
+      },
+      "previewParameters": null,
+      "datasourceSavedTransformId": "hourlyOeeTrend",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "workcenterHistorianTimelineGantt",
+      "visualizationTypeId": "gantt",
+      "name": "Workcenter Historian Timeline Gantt",
+      "configuration": {
+        "tasks": {
+          "task": []
+        },
+        "dataTable": {
+          "dataColumn": []
+        },
+        "categories": {
+          "category": []
+        },
+        "chart": {
+          "exportShowMenuItem": false,
+          "showPrintMenuItem": false,
+          "showToolBarButtonTooltext": false,
+          "showTrendlinesOnTop": false
+        }
+      },
+      "previewParameters": {
+        "wcId": "wc-hmc-c2",
+        "tz": "America/Detroit"
+      },
+      "datasourceSavedTransformId": "workcenterHistorianTimelineGantt",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "workcenterHistoryWinLossChart",
+      "visualizationTypeId": "sparkwinloss",
+      "name": "Workcenter History Win Loss Chart",
+      "configuration": {
+        "dataset": [
+          {
+            "Data": [
+              {
+                "label": "A",
+                "value": "10"
+              },
+              {
+                "label": "B",
+                "value": "20"
+              },
+              {
+                "label": "C",
+                "value": "30"
+              }
+            ]
+          }
+        ],
+        "chart": {
+          "caption": "My Chart",
+          "periodlength": "1",
+          "periodcolor": "#cccccc",
+          "periodalpha": "90",
+          "winColor": "#00cc33",
+          "lossColor": "#cc0000",
+          "drawColor": "#0075c2"
+        }
+      },
+      "previewParameters": {},
+      "datasourceSavedTransformId": "workcenterHistoryWinLossChart",
+      "_customFields": {
+        "_externalId": null
+      }
+    }
+  ],
+  "metadata": {}
+}

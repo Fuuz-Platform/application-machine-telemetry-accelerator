@@ -1,0 +1,420 @@
+{
+  "header": {
+    "id": "updateDataPointFrequencies",
+    "name": "Update Data Point Frequencies",
+    "description": "A Utility that can adjust the data point frequencies, this impacts downstream data generation for the telemetry raw, boolean, string values. ",
+    "active": true,
+    "substitutesDataFlowId": null,
+    "dataFlowTypeId": "System",
+    "logLevelId": "Info",
+    "mcpToolConfiguration": null,
+    "moduleId": "machineDataApp",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cmkedcru9cqym016o0gjlc3xm",
+    "number": "0.0.1",
+    "description": "A Utility that can adjust the data point frequencies, this impacts downstream data generation for the telemetry raw, boolean, string values. ",
+    "dataFlowId": "updateDataPointFrequencies",
+    "flow": {
+      "id": "cmkedcru9cqym016o0gjlc3xm",
+      "name": "Update Data Point Frequencies",
+      "type": "System",
+      "nodes": [
+        {
+          "id": "642f611a-cf05-4602-b326-744db9d6b517",
+          "name": "JavaScript",
+          "type": "javascriptTransform",
+          "data": {
+            "nextNodes": [
+              "f4e901ce-c8e6-4946-acad-894ce26aea6e"
+            ],
+            "transform": "/**\r\n * Generate Mutation Payload to Update DataPoint Frequencies\r\n * \r\n * INPUT:\r\n *   $ (payload): Query response with DataPoint edges\r\n *   {\r\n *     dataPoint: {\r\n *       total: 8153,\r\n *       edges: [{ node: { id, code, frequency } }, ...]\r\n *     }\r\n *   }\r\n * \r\n * OUTPUT:\r\n *   [{ where: { id }, update: { frequency } }, ...]\r\n * \r\n * FREQUENCY DISTRIBUTION (Option C - Reduced Volume):\r\n *   Range: 5 seconds (5000ms) to 60 seconds (60000ms)\r\n *   Target Average: ~41 seconds\r\n *   Target Records/Hour: ~988K\r\n */\r\n\r\n'use strict';\r\n\r\n// Extract DataPoints from query response\r\nvar edges = ($ && $.dataPoint && $.dataPoint.edges) || [];\r\n\r\n// Frequency buckets (milliseconds) with weights\r\n// Weighted heavily toward slower frequencies to reduce data volume\r\nvar frequencyBuckets = [\r\n  { freq: 5000,  weight: 0.02 },  // 5s  -  2% (critical sensors only)\r\n  { freq: 10000, weight: 0.02 },  // 10s -  3% (high-priority sensors)\r\n  { freq: 15000, weight: 0.09 },  // 15s - 10%\r\n  { freq: 30000, weight: 0.25 },  // 30s - 25%\r\n  { freq: 45000, weight: 0.30 },  // 45s - 30%\r\n  { freq: 60000, weight: 0.32 }   // 60s - 30%\r\n];\r\n\r\n// Calculate cumulative weights for weighted random selection\r\nvar cumulativeWeights = [];\r\nvar cumulative = 0;\r\nfor (var i = 0; i < frequencyBuckets.length; i++) {\r\n  cumulative += frequencyBuckets[i].weight;\r\n  cumulativeWeights.push(cumulative);\r\n}\r\n\r\n// Weighted random frequency selection\r\nfunction selectFrequency() {\r\n  var rand = Math.random();\r\n  for (var i = 0; i < cumulativeWeights.length; i++) {\r\n    if (rand <= cumulativeWeights[i]) {\r\n      return frequencyBuckets[i].freq;\r\n    }\r\n  }\r\n  return frequencyBuckets[frequencyBuckets.length - 1].freq;\r\n}\r\n\r\n// Generate update payload\r\nvar payload = [];\r\nvar frequencyStats = {};\r\n\r\nfor (var i = 0; i < edges.length; i++) {\r\n  var dp = edges[i].node;\r\n  var newFrequency = selectFrequency();\r\n  \r\n  payload.push({\r\n    where: { id: dp.id },\r\n    update: { frequency: newFrequency }\r\n  });\r\n  \r\n  // Track stats\r\n  var freqKey = newFrequency.toString();\r\n  if (!frequencyStats[freqKey]) {\r\n    frequencyStats[freqKey] = 0;\r\n  }\r\n  frequencyStats[freqKey]++;\r\n}\r\n\r\n// Calculate and log statistics\r\nvar totalFreq = 0;\r\nvar totalRecordsPerHour = 0;\r\nvar frequencies = Object.keys(frequencyStats).sort(function(a, b) { \r\n  return parseInt(a) - parseInt(b); \r\n});\r\n\r\nconsole.log('Frequency Distribution:');\r\nfor (var i = 0; i < frequencies.length; i++) {\r\n  var freq = parseInt(frequencies[i]);\r\n  var count = frequencyStats[freq];\r\n  var samplesPerHour = 3600000 / freq;\r\n  var recordsPerHour = count * samplesPerHour;\r\n  \r\n  totalFreq += freq * count;\r\n  totalRecordsPerHour += recordsPerHour;\r\n  \r\n  console.log('  ' + (freq / 1000) + 's: ' + count + ' DataPoints (' + \r\n    Math.round(count / edges.length * 100) + '%) → ' + \r\n    Math.round(recordsPerHour).toLocaleString() + ' records/hr');\r\n}\r\n\r\nvar avgFreq = totalFreq / edges.length;\r\n\r\nconsole.log('');\r\nconsole.log('Frequency Update Summary:');\r\nconsole.log('  Total DataPoints: ' + edges.length);\r\nconsole.log('  Average Frequency: ' + (avgFreq / 1000).toFixed(1) + ' seconds');\r\nconsole.log('  Range: 5s - 60s');\r\nconsole.log('');\r\nconsole.log('Projected Data Volume:');\r\nconsole.log('  Records/Hour: ' + Math.round(totalRecordsPerHour).toLocaleString());\r\nconsole.log('  Records/Day: ' + Math.round(totalRecordsPerHour * 24).toLocaleString());\r\nconsole.log('  Records/5min Window: ' + Math.round(totalRecordsPerHour / 12).toLocaleString());\r\n\r\nreturn payload;"
+          },
+          "debug": {
+            "breakpointEnabled": true,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "f4e901ce-c8e6-4946-acad-894ce26aea6e",
+          "name": "Mutate",
+          "type": "mutate",
+          "data": {
+            "api": "Application",
+            "variablesTransform": "{ \"payload\": $ }",
+            "mutation": "mutation UpdateDataPoint($payload: [DataPointUpdatePayloadInput!]!) {\n  updateDataPoint(payload: $payload) {\n    id\n  }\n}",
+            "nextNodes": []
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "3bc94495-3f66-4a35-842b-42f9b2a03e89",
+          "name": "Query",
+          "type": "query",
+          "data": {
+            "api": "application",
+            "variablesTransform": "{\r\n  \"first\": 10000\r\n}",
+            "nextNodes": [
+              "642f611a-cf05-4602-b326-744db9d6b517"
+            ],
+            "query": "query DataPoint($where: DataPointWhereInput, $orderBy: [DataPointOrderByInput!], $first: Int, $after: String) {\n  dataPoint(where: $where, orderBy: $orderBy, first: $first, after: $after) {\n    total\n    edges {\n      node {\n        id\n        code\n        frequency\n      }\n    }\n  }\n}"
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        }
+      ],
+      "version": "0.0.1"
+    },
+    "diagram": {
+      "id": "cmkedcru9cqym016o0gjlc3xm",
+      "offsetX": 0,
+      "offsetY": 0,
+      "zoom": 100,
+      "gridSize": 5,
+      "layers": [
+        {
+          "id": "3ed87040-88bd-4c65-b626-61e3e67246a1",
+          "type": "diagram-links",
+          "isSvg": true,
+          "transformed": true,
+          "models": {
+            "7610e33b-c00b-4177-9e8b-3e5bdbe276dd": {
+              "points": [
+                {
+                  "id": "fbcd9211-34b0-4b4a-aad4-2b887d5e5896",
+                  "type": "point",
+                  "x": 597.98,
+                  "y": 320.73
+                },
+                {
+                  "id": "b12ee935-fca7-4505-b65a-c45466a1fed6",
+                  "type": "point",
+                  "x": 669,
+                  "y": 320.73
+                }
+              ],
+              "id": "7610e33b-c00b-4177-9e8b-3e5bdbe276dd",
+              "type": "default",
+              "source": "c9d1fe64-d2eb-4132-b060-d7c8925e8e82",
+              "sourcePort": "cmkedbzgy0025356riwqp1j2w",
+              "target": "3bc94495-3f66-4a35-842b-42f9b2a03e89",
+              "targetPort": "cmkedbzh20033356rdviv57km",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "f1d17919-3b48-4416-95a9-e5e8e504c251": {
+              "points": [
+                {
+                  "id": "b2aebd57-3f85-4775-a74e-705289cf4dce",
+                  "type": "point",
+                  "x": 1087.99,
+                  "y": 320.73
+                },
+                {
+                  "id": "38f54a54-7523-4393-a3cb-4b79617ac41f",
+                  "type": "point",
+                  "x": 1169,
+                  "y": 320.73
+                }
+              ],
+              "id": "f1d17919-3b48-4416-95a9-e5e8e504c251",
+              "type": "default",
+              "source": "642f611a-cf05-4602-b326-744db9d6b517",
+              "sourcePort": "cmkedbzh0002h356rrkvjo0l5",
+              "target": "f4e901ce-c8e6-4946-acad-894ce26aea6e",
+              "targetPort": "cmkedbzh1002r356r4amb7wvx",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "7b87cba4-150e-4e86-b80d-a411ffe3bb1c": {
+              "points": [
+                {
+                  "id": "5571f3e5-e6fb-484d-a4ab-b93d59eb5068",
+                  "type": "point",
+                  "x": 822.99,
+                  "y": 320.73
+                },
+                {
+                  "id": "e5c22bdd-4c25-4e1f-a163-743e6ed21fbe",
+                  "type": "point",
+                  "x": 934,
+                  "y": 320.73
+                }
+              ],
+              "id": "7b87cba4-150e-4e86-b80d-a411ffe3bb1c",
+              "type": "default",
+              "source": "3bc94495-3f66-4a35-842b-42f9b2a03e89",
+              "sourcePort": "cmkedbzh20035356rqxlvwwit",
+              "target": "642f611a-cf05-4602-b326-744db9d6b517",
+              "targetPort": "cmkedbzh0002f356ritdznqag",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            }
+          }
+        },
+        {
+          "id": "b710b03f-504a-4381-ac21-e78a81ed5bbd",
+          "type": "diagram-nodes",
+          "isSvg": false,
+          "transformed": true,
+          "models": {
+            "c9d1fe64-d2eb-4132-b060-d7c8925e8e82": {
+              "id": "c9d1fe64-d2eb-4132-b060-d7c8925e8e82",
+              "type": "debugSource",
+              "selected": false,
+              "x": 359,
+              "y": 281,
+              "ports": [
+                {
+                  "id": "cmkedbzgy0025356riwqp1j2w",
+                  "type": "default",
+                  "x": 589.98,
+                  "y": 312.73,
+                  "name": "cmkedbzgy0026356rbxlo3dvy",
+                  "parentNode": "c9d1fe64-d2eb-4132-b060-d7c8925e8e82",
+                  "links": [
+                    "7610e33b-c00b-4177-9e8b-3e5bdbe276dd"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "payload": {},
+                "context": {},
+                "nextNodes": [
+                  "3bc94495-3f66-4a35-842b-42f9b2a03e89"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Updates the Data Point Frequencies"
+            },
+            "642f611a-cf05-4602-b326-744db9d6b517": {
+              "id": "642f611a-cf05-4602-b326-744db9d6b517",
+              "type": "javascriptTransform",
+              "selected": false,
+              "x": 934,
+              "y": 281,
+              "ports": [
+                {
+                  "id": "cmkedbzh0002f356ritdznqag",
+                  "type": "default",
+                  "x": 926,
+                  "y": 312.73,
+                  "name": "cmkedbzh0002g356rto8lw2o4",
+                  "parentNode": "642f611a-cf05-4602-b326-744db9d6b517",
+                  "links": [
+                    "7b87cba4-150e-4e86-b80d-a411ffe3bb1c"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkedbzh0002h356rrkvjo0l5",
+                  "type": "default",
+                  "x": 1079.99,
+                  "y": 312.73,
+                  "name": "cmkedbzh0002i356rc7bpiud2",
+                  "parentNode": "642f611a-cf05-4602-b326-744db9d6b517",
+                  "links": [
+                    "f1d17919-3b48-4416-95a9-e5e8e504c251"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "f4e901ce-c8e6-4946-acad-894ce26aea6e"
+                ],
+                "transform": "/**\r\n * Generate Mutation Payload to Update DataPoint Frequencies\r\n * \r\n * INPUT:\r\n *   $ (payload): Query response with DataPoint edges\r\n *   {\r\n *     dataPoint: {\r\n *       total: 8153,\r\n *       edges: [{ node: { id, code, frequency } }, ...]\r\n *     }\r\n *   }\r\n * \r\n * OUTPUT:\r\n *   [{ where: { id }, update: { frequency } }, ...]\r\n * \r\n * FREQUENCY DISTRIBUTION (Option C - Reduced Volume):\r\n *   Range: 5 seconds (5000ms) to 60 seconds (60000ms)\r\n *   Target Average: ~41 seconds\r\n *   Target Records/Hour: ~988K\r\n */\r\n\r\n'use strict';\r\n\r\n// Extract DataPoints from query response\r\nvar edges = ($ && $.dataPoint && $.dataPoint.edges) || [];\r\n\r\n// Frequency buckets (milliseconds) with weights\r\n// Weighted heavily toward slower frequencies to reduce data volume\r\nvar frequencyBuckets = [\r\n  { freq: 5000,  weight: 0.02 },  // 5s  -  2% (critical sensors only)\r\n  { freq: 10000, weight: 0.02 },  // 10s -  3% (high-priority sensors)\r\n  { freq: 15000, weight: 0.09 },  // 15s - 10%\r\n  { freq: 30000, weight: 0.25 },  // 30s - 25%\r\n  { freq: 45000, weight: 0.30 },  // 45s - 30%\r\n  { freq: 60000, weight: 0.32 }   // 60s - 30%\r\n];\r\n\r\n// Calculate cumulative weights for weighted random selection\r\nvar cumulativeWeights = [];\r\nvar cumulative = 0;\r\nfor (var i = 0; i < frequencyBuckets.length; i++) {\r\n  cumulative += frequencyBuckets[i].weight;\r\n  cumulativeWeights.push(cumulative);\r\n}\r\n\r\n// Weighted random frequency selection\r\nfunction selectFrequency() {\r\n  var rand = Math.random();\r\n  for (var i = 0; i < cumulativeWeights.length; i++) {\r\n    if (rand <= cumulativeWeights[i]) {\r\n      return frequencyBuckets[i].freq;\r\n    }\r\n  }\r\n  return frequencyBuckets[frequencyBuckets.length - 1].freq;\r\n}\r\n\r\n// Generate update payload\r\nvar payload = [];\r\nvar frequencyStats = {};\r\n\r\nfor (var i = 0; i < edges.length; i++) {\r\n  var dp = edges[i].node;\r\n  var newFrequency = selectFrequency();\r\n  \r\n  payload.push({\r\n    where: { id: dp.id },\r\n    update: { frequency: newFrequency }\r\n  });\r\n  \r\n  // Track stats\r\n  var freqKey = newFrequency.toString();\r\n  if (!frequencyStats[freqKey]) {\r\n    frequencyStats[freqKey] = 0;\r\n  }\r\n  frequencyStats[freqKey]++;\r\n}\r\n\r\n// Calculate and log statistics\r\nvar totalFreq = 0;\r\nvar totalRecordsPerHour = 0;\r\nvar frequencies = Object.keys(frequencyStats).sort(function(a, b) { \r\n  return parseInt(a) - parseInt(b); \r\n});\r\n\r\nconsole.log('Frequency Distribution:');\r\nfor (var i = 0; i < frequencies.length; i++) {\r\n  var freq = parseInt(frequencies[i]);\r\n  var count = frequencyStats[freq];\r\n  var samplesPerHour = 3600000 / freq;\r\n  var recordsPerHour = count * samplesPerHour;\r\n  \r\n  totalFreq += freq * count;\r\n  totalRecordsPerHour += recordsPerHour;\r\n  \r\n  console.log('  ' + (freq / 1000) + 's: ' + count + ' DataPoints (' + \r\n    Math.round(count / edges.length * 100) + '%) → ' + \r\n    Math.round(recordsPerHour).toLocaleString() + ' records/hr');\r\n}\r\n\r\nvar avgFreq = totalFreq / edges.length;\r\n\r\nconsole.log('');\r\nconsole.log('Frequency Update Summary:');\r\nconsole.log('  Total DataPoints: ' + edges.length);\r\nconsole.log('  Average Frequency: ' + (avgFreq / 1000).toFixed(1) + ' seconds');\r\nconsole.log('  Range: 5s - 60s');\r\nconsole.log('');\r\nconsole.log('Projected Data Volume:');\r\nconsole.log('  Records/Hour: ' + Math.round(totalRecordsPerHour).toLocaleString());\r\nconsole.log('  Records/Day: ' + Math.round(totalRecordsPerHour * 24).toLocaleString());\r\nconsole.log('  Records/5min Window: ' + Math.round(totalRecordsPerHour / 12).toLocaleString());\r\n\r\nreturn payload;"
+              },
+              "debug": {
+                "breakpointEnabled": true,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "JavaScript"
+            },
+            "f4e901ce-c8e6-4946-acad-894ce26aea6e": {
+              "id": "f4e901ce-c8e6-4946-acad-894ce26aea6e",
+              "type": "mutate",
+              "selected": false,
+              "x": 1169,
+              "y": 281,
+              "ports": [
+                {
+                  "id": "cmkedbzh1002r356r4amb7wvx",
+                  "type": "default",
+                  "x": 1161,
+                  "y": 312.73,
+                  "name": "cmkedbzh1002s356rt0en9evh",
+                  "parentNode": "f4e901ce-c8e6-4946-acad-894ce26aea6e",
+                  "links": [
+                    "f1d17919-3b48-4416-95a9-e5e8e504c251"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkedbzh1002t356rtlnyk7tc",
+                  "type": "default",
+                  "x": 1314.99,
+                  "y": 312.73,
+                  "name": "cmkedbzh1002u356rwciplhsu",
+                  "parentNode": "f4e901ce-c8e6-4946-acad-894ce26aea6e",
+                  "links": [],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "Application",
+                "variablesTransform": "{ \"payload\": $ }",
+                "mutation": "mutation UpdateDataPoint($payload: [DataPointUpdatePayloadInput!]!) {\n  updateDataPoint(payload: $payload) {\n    id\n  }\n}",
+                "nextNodes": []
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Mutate"
+            },
+            "3bc94495-3f66-4a35-842b-42f9b2a03e89": {
+              "id": "3bc94495-3f66-4a35-842b-42f9b2a03e89",
+              "type": "query",
+              "selected": false,
+              "x": 669,
+              "y": 281,
+              "ports": [
+                {
+                  "id": "cmkedbzh20033356rdviv57km",
+                  "type": "default",
+                  "x": 661,
+                  "y": 312.73,
+                  "name": "cmkedbzh20034356rqnnt5dfy",
+                  "parentNode": "3bc94495-3f66-4a35-842b-42f9b2a03e89",
+                  "links": [
+                    "7610e33b-c00b-4177-9e8b-3e5bdbe276dd"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkedbzh20035356rqxlvwwit",
+                  "type": "default",
+                  "x": 814.99,
+                  "y": 312.73,
+                  "name": "cmkedbzh20036356rbj8t0j59",
+                  "parentNode": "3bc94495-3f66-4a35-842b-42f9b2a03e89",
+                  "links": [
+                    "7b87cba4-150e-4e86-b80d-a411ffe3bb1c"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "application",
+                "variablesTransform": "{\r\n  \"first\": 10000\r\n}",
+                "nextNodes": [
+                  "642f611a-cf05-4602-b326-744db9d6b517"
+                ],
+                "query": "query DataPoint($where: DataPointWhereInput, $orderBy: [DataPointOrderByInput!], $first: Int, $after: String) {\n  dataPoint(where: $where, orderBy: $orderBy, first: $first, after: $after) {\n    total\n    edges {\n      node {\n        id\n        code\n        frequency\n      }\n    }\n  }\n}"
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Query"
+            }
+          }
+        }
+      ],
+      "name": "Update Data Point Frequencies",
+      "type": "System",
+      "version": "0.0.1",
+      "walkthrough": {
+        "steps": []
+      }
+    }
+  }
+}

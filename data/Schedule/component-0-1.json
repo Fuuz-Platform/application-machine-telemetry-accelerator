@@ -1,0 +1,40 @@
+{
+  "api": "application",
+  "modelName": "Schedule",
+  "payload": [
+    {
+      "id": "first",
+      "code": "First",
+      "sortOrder": null,
+      "name": "1st Shift",
+      "description": null,
+      "scheduleGroupId": "basic",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "second",
+      "code": "Second",
+      "sortOrder": null,
+      "name": "2nd Shift",
+      "description": null,
+      "scheduleGroupId": "basic",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "third",
+      "code": "Third",
+      "sortOrder": null,
+      "name": "3rd Shift",
+      "description": null,
+      "scheduleGroupId": "basic",
+      "_customFields": {
+        "_externalId": null
+      }
+    }
+  ],
+  "metadata": {}
+}

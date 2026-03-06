@@ -1,0 +1,807 @@
+{
+  "header": {
+    "id": "generatePayloadForOeeScheduleTomorrowParentFlowScheduled",
+    "name": "Generate Payload for OEE Schedule Tomorrow (Parent Flow - scheduled)",
+    "description": "",
+    "active": true,
+    "substitutesDataFlowId": null,
+    "dataFlowTypeId": "System",
+    "logLevelId": "Info",
+    "mcpToolConfiguration": null,
+    "moduleId": "machineDataApp",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cml44thh7x8qm01688s55hibv",
+    "number": "0.0.9",
+    "description": "",
+    "dataFlowId": "generatePayloadForOeeScheduleTomorrowParentFlowScheduled",
+    "flow": {
+      "id": "cml44thh7x8qm01688s55hibv",
+      "name": "Generate Payload for OEE Schedule Tomorrow (Parent Flow - scheduled)",
+      "type": "System",
+      "nodes": [
+        {
+          "id": "a05178ff-15fc-4033-9d76-907eb8010fe3",
+          "name": "Schedule",
+          "type": "schedule",
+          "data": {
+            "configure": "Open Schedule Editor",
+            "nextNodes": [
+              "c3e11412-a901-465d-87bb-ca16732be50b"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "c3e11412-a901-465d-87bb-ca16732be50b",
+          "name": "Get Tenant Timezone & Active Workcenters",
+          "type": "query",
+          "data": {
+            "api": "application",
+            "variablesTransform": "{\r\n  \"where\":{\r\n    \"id\":{\r\n       \"_eq\": \"Timezone\"\r\n    }\r\n  }\r\n}",
+            "query": "query GetOeeConfig {\r\n  setting(where: { id: { _eq: \"Timezone\" } }) {\r\n    edges {\r\n      node {\r\n        defaultValue\r\n      }\r\n    }\r\n  }\r\n  workcenter(where: { isActive: { _eq: true } }, first: 1000) {\r\n    edges {\r\n      node {\r\n        scheduleGroupId\r\n        _aggregate {\r\n          id {\r\n            uniqueValues\r\n          }\r\n        }\r\n      }\r\n    }\r\n  }\r\n}",
+            "nextNodes": [
+              "7d0827e4-1a0e-42ba-9c69-de1cfc07c780"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "89c9a742-8b1a-41ad-a3e1-a9c981a7439c",
+          "name": "Create OEE Stubs for Tomorrow",
+          "type": "mutate",
+          "data": {
+            "api": "Application",
+            "variablesTransform": "{\r\n  \"payload\": $ and $count($) > 0 ? $map($, function($r) {\r\n    {\r\n      \"create\": {\r\n        \"id\": $r.id,\r\n        \"workcenterId\": $r.workcenterId,\r\n        \"scheduleId\": $r.scheduleId,\r\n        \"dayHour\": $r.dayHour,\r\n        \"shiftHour\": $r.shiftHour,\r\n        \"shift\": $r.shift,\r\n        \"periodStartAt\": $r.periodStartAt,\r\n        \"periodEndAt\": $r.periodEndAt,\r\n        \"scheduleHourStartAt\": $r.scheduleHourStartAt,\r\n        \"scheduleHourEndAt\": $r.scheduleHourEndAt,\r\n        \"plannedMinutes\": $r.plannedMinutes,\r\n        \"isPartialHour\": $r.isPartialHour ? $r.isPartialHour : false,\r\n        \"scheduledTime\": $r.scheduledTime,\r\n        \"actualCycleTime\": 0,\r\n        \"idealCycleTime\": 0,\r\n        \"plannedDowntimeMinutes\": $r.plannedDowntimeMinutes,\r\n        \"runMinutes\": 0,\r\n        \"setupMinutes\": 0,\r\n        \"topDowntime\": 0,\r\n        \"downtimeMinutes\": 0\r\n      }\r\n    }\r\n  }) : []\r\n}",
+            "nextNodes": [],
+            "mutation": "mutation CreateOeeHourlyRecords($payload: [OeeHourlyCreatePayloadInput!]!) {\r\n  createOeeHourly(payload: $payload) {\r\n    id\r\n  }\r\n}"
+          },
+          "debug": {
+            "breakpointEnabled": true,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "7d0827e4-1a0e-42ba-9c69-de1cfc07c780",
+          "name": "Get Schedule Timelines & tomorrow details",
+          "type": "transform",
+          "data": {
+            "transform": "(\r\n  /* Extract timezone */\r\n  $timezone := setting.edges[0].node.defaultValue ? setting.edges[0].node.defaultValue : $momentTzGuess();\r\n  \r\n  /* Calculate tomorrow's boundaries in local timezone, then convert to UTC */\r\n  $now := $moment().tz($timezone);\r\n  $tomorrowLocal := $now.clone().add(1, 'days').startOf('day'); /* Tomorrow 00:00:00 in local tz */\r\n  $tomorrowEndLocal := $tomorrowLocal.clone().add(1, 'day').startOf('day'); /* Day after tomorrow 00:00:00 in local tz (exclusive end) */\r\n  \r\n  /* Convert to UTC for getTimeline (these are the UTC timestamps representing local day boundaries) */\r\n  $tomorrow := $tomorrowLocal.clone().utc();\r\n  $tomorrowEnd := $tomorrowEndLocal.clone().utc();\r\n  \r\n  /* For each scheduleGroupId group */\r\n  workcenter.edges.node.(\r\n    $scheduleGroupId := scheduleGroupId;\r\n    $workcenterIds := _aggregate.id.uniqueValues;  /* Use IDs instead of codes */\r\n    $timeline := $scheduleGroup($scheduleGroupId).getTimeline($tomorrow, $tomorrowEnd, { \"inclusive\": true });\r\n    \r\n    {\r\n      \"scheduleGroupId\": $scheduleGroupId,\r\n      \"workcenters\": $workcenterIds,  /* Array of workcenter IDs */\r\n      \"timezone\": $timezone,\r\n      \"tomorrowStart\": $tomorrow.format(),\r\n      \"tomorrowEnd\": $tomorrowEnd.format(),\r\n      \"tomorrowDate\": $tomorrowLocal.format(\"YYYY-MM-DD\"),\r\n      \"tomorrowDayOfWeek\": [\"Sunday\", \"Monday\", \"Tuesday\", \"Wednesday\", \"Thursday\", \"Friday\", \"Saturday\"][$tomorrowLocal.day()],\r\n      \"timeline\": $timeline\r\n    }\r\n  )\r\n)",
+            "nextNodes": [
+              "2c1dadde-10f6-453b-b3f0-922f2b0cbe55"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "2c1dadde-10f6-453b-b3f0-922f2b0cbe55",
+          "name": "Build Schedule for next day by workcenter",
+          "type": "javascriptTransform",
+          "data": {
+            "transform": "'use strict';\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// OEE HOURLY RECORD GENERATOR\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// Input: Schedule group object with workcenters (IDs), timeline, and timezone\r\n// Output: Array of OeeHourly records (24 per workcenter)\r\n// ═══════════════════════════════════════════════════════════════════════\r\n\r\n// Input is the schedule group object directly\r\nconst scheduleGroup = $;\r\n\r\n// Validate input\r\nif (!scheduleGroup || !scheduleGroup.workcenters || !scheduleGroup.timeline) {\r\n  console.error('Invalid input - missing required fields');\r\n  console.error('Input:', JSON.stringify($, null, 2));\r\n  return [];\r\n}\r\n\r\nconst { scheduleGroupId, workcenters, timezone, tomorrowStart, tomorrowEnd, timeline } = scheduleGroup;\r\n\r\nconsole.log('Processing scheduleGroup: ' + scheduleGroupId);\r\nconsole.log('Workcenters: ' + workcenters.length);\r\nconsole.log('Timezone: ' + timezone);\r\nconsole.log('Timeline events: ' + timeline.length);\r\n\r\n// Parse tomorrow's boundaries (midnight to midnight in local time, expressed in UTC)\r\nconst dayStart = $moment(tomorrowStart).utc();\r\nconst dayEnd = $moment(tomorrowEnd).utc();\r\n\r\nconsole.log('Tomorrow boundaries (UTC): ' + dayStart.toISOString() + ' to ' + dayEnd.toISOString());\r\n\r\n// Constants\r\nconst ONE_HOUR_MS = 3600000; // 60 minutes in milliseconds\r\nconst ONE_MINUTE_MS = 60000;\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// GENERATE OEE HOURLY RECORDS\r\n// ═══════════════════════════════════════════════════════════════════════\r\nconst allRecords = [];\r\n\r\n// For each workcenter, generate EXACTLY 24 hourly records (one for each hour of tomorrow)\r\nworkcenters.forEach((workcenterId, wcIndex) => {\r\n  // Validation: Ensure workcenterId exists\r\n  if (!workcenterId || workcenterId === null || workcenterId === '') {\r\n    console.error('Skipping null/empty workcenterId at index ' + wcIndex);\r\n    return;\r\n  }\r\n  \r\n  for (let dayHour = 0; dayHour < 24; dayHour++) {\r\n    // Create exact hour boundaries - periods run from :00 to :00 (e.g., 05:00 to 06:00)\r\n    const hourStart = dayStart.clone().add(dayHour, 'hours');\r\n    const hourEnd = hourStart.clone().add(1, 'hour');\r\n    \r\n    // Verify we're still within tomorrow's boundaries\r\n    if (hourStart.isSameOrAfter(dayEnd)) {\r\n      console.error('ERROR: hourStart ' + hourStart.toISOString() + ' is beyond tomorrow end ' + dayEnd.toISOString());\r\n      continue;\r\n    }\r\n    \r\n    // Debug first few hours of first workcenter\r\n    if (dayHour < 3 && wcIndex === 0) {\r\n      console.log('DayHour ' + dayHour + ': ' + hourStart.toISOString() + ' to ' + hourEnd.toISOString());\r\n      console.log('Using workcenter ID: ' + workcenterId);\r\n    }\r\n    \r\n    // Find timeline events that overlap with THIS SPECIFIC HOUR\r\n    const overlappingEvents = timeline.filter(event => {\r\n      const eventStart = $moment(event.range.start).utc();\r\n      const eventEnd = $moment(event.range.end).utc();\r\n      \r\n      // Does the event overlap with this hour?\r\n      const overlaps = hourStart.isBefore(eventEnd) && hourEnd.isAfter(eventStart);\r\n      \r\n      if (dayHour < 3 && wcIndex === 0) {\r\n        console.log('  Event ' + event.scheduleId + ': ' + eventStart.toISOString() + ' to ' + eventEnd.toISOString() + ', overlaps: ' + overlaps);\r\n      }\r\n      \r\n      return overlaps;\r\n    });\r\n    \r\n    if (overlappingEvents.length === 0) {\r\n      // ═══════════════════════════════════════════════════════════════\r\n      // NO SCHEDULE: Full hour of planned downtime\r\n      // ═══════════════════════════════════════════════════════════════\r\n      const id = workcenterId + '-0-' + hourStart.toISOString();\r\n      allRecords.push({\r\n        id: id,\r\n        workcenterId: workcenterId,\r\n        scheduleId: null,\r\n        dayHour: dayHour,\r\n        shiftHour: 0,\r\n        shift: 'No Schedule Defined',\r\n        periodStartAt: hourStart.toISOString(),\r\n        periodEndAt: hourEnd.toISOString(),\r\n        scheduleHourStartAt: hourStart.toISOString(),\r\n        scheduleHourEndAt: hourEnd.toISOString(),\r\n        scheduledTime: 0,                      // ✅ NO scheduled time when no schedule\r\n        plannedMinutes: 0,                     // Always 0\r\n        plannedDowntimeMinutes: ONE_HOUR_MS    // ✅ Full hour = planned downtime\r\n      });\r\n      \r\n      if (dayHour < 3 && wcIndex === 0) {\r\n        console.log('  No schedule: scheduledTime=0, plannedDowntime=3600000ms (full hour)');\r\n      }\r\n    } else {\r\n      // Process each overlapping event\r\n      overlappingEvents.forEach(event => {\r\n        const scheduleId = event.scheduleId;\r\n        const isException = event.exception === true;\r\n        \r\n        // Get THIS event's actual start time (not just the hour)\r\n        const eventStartUTC = $moment(event.range.start).utc();\r\n        const eventEndUTC = $moment(event.range.end).utc();\r\n        \r\n        // Calculate shiftHour based on THIS specific event's start time\r\n        const hoursFromEventStart = hourStart.diff(eventStartUTC, 'hours');\r\n        const shiftHour = hoursFromEventStart + 1; // 1-indexed\r\n        \r\n        if (dayHour < 3 && wcIndex === 0) {\r\n          console.log('  Event starts: ' + eventStartUTC.toISOString());\r\n          console.log('  Current hour: ' + hourStart.toISOString());\r\n          console.log('  Hours elapsed: ' + hoursFromEventStart + ', shiftHour: ' + shiftHour);\r\n          console.log('  Is exception: ' + isException);\r\n        }\r\n        \r\n        // CRITICAL: Clip event boundaries to THIS HOUR and TOMORROW'S boundaries\r\n        const segmentStart = $momentMax([hourStart, eventStartUTC]);\r\n        const segmentEnd = $momentMin([hourEnd, eventEndUTC, dayEnd]);\r\n        \r\n        // Calculate milliseconds for the segment\r\n        const segmentMs = segmentEnd.diff(segmentStart, 'milliseconds');\r\n        const segmentMinutes = segmentEnd.diff(segmentStart, 'minutes');\r\n        \r\n        // Calculate remainder of the hour (time outside the segment)\r\n        const remainderMs = ONE_HOUR_MS - segmentMs;\r\n        \r\n        // Verify segment is within tomorrow's boundaries\r\n        if (segmentStart.isBefore(dayStart) || segmentStart.isSameOrAfter(dayEnd)) {\r\n          console.error('ERROR: segmentStart ' + segmentStart.toISOString() + ' is outside tomorrow boundaries');\r\n        }\r\n        \r\n        const id = workcenterId + '-' + shiftHour + '-' + segmentStart.toISOString();\r\n        \r\n        // ═══════════════════════════════════════════════════════════════\r\n        // SCHEDULED EVENT\r\n        // ═══════════════════════════════════════════════════════════════\r\n        const record = {\r\n          id: id,\r\n          workcenterId: workcenterId,\r\n          scheduleId: scheduleId,\r\n          dayHour: dayHour,\r\n          shiftHour: shiftHour,\r\n          shift: isException ? 'Exception' : scheduleId,\r\n          periodStartAt: hourStart.toISOString(),\r\n          periodEndAt: hourEnd.toISOString(),\r\n          scheduleHourStartAt: segmentStart.toISOString(),\r\n          scheduleHourEndAt: segmentEnd.toISOString(),\r\n          scheduledTime: ONE_HOUR_MS,  // ✅ Always full hour when there IS a schedule\r\n          plannedMinutes: 0             // Always 0 (calculated later from actual data)\r\n        };\r\n        \r\n        // Calculate plannedDowntimeMinutes based on type\r\n        if (isException) {\r\n          // EXCECustomer-DON: The exception time itself is planned downtime\r\n          record.plannedDowntimeMinutes = segmentMs;\r\n          if (dayHour < 3 && wcIndex === 0) {\r\n            console.log('  Exception event: scheduledTime=3600000, plannedDowntime=' + segmentMs + 'ms');\r\n          }\r\n        } else {\r\n          // NORMAL SCHEDULE: Only the remainder (if any) is planned downtime\r\n          record.plannedDowntimeMinutes = remainderMs;\r\n          if (dayHour < 3 && wcIndex === 0) {\r\n            console.log('  Normal schedule: scheduledTime=3600000, plannedDowntime=' + remainderMs + 'ms (remainder)');\r\n          }\r\n        }\r\n        \r\n        // Add isPartialHour flag if less than 60 minutes scheduled\r\n        if (segmentMinutes < 60 && segmentMinutes > 0) {\r\n          record.isPartialHour = true;\r\n        }\r\n        \r\n        allRecords.push(record);\r\n      });\r\n    }\r\n  }\r\n});\r\n\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\nconsole.log('Generated ' + allRecords.length + ' OeeHourly records total');\r\nconsole.log('Workcenters processed: ' + workcenters.length);\r\nconsole.log('Expected records: ' + (workcenters.length * 24));\r\nconsole.log('Records per workcenter: ' + (allRecords.length / workcenters.length).toFixed(1));\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\n\r\nif (allRecords.length > 0) {\r\n  console.log('Sample NO SCHEDULE record:');\r\n  const noScheduleRecord = allRecords.find(r => r.scheduleId === null);\r\n  if (noScheduleRecord) {\r\n    console.log(JSON.stringify(noScheduleRecord, null, 2));\r\n  }\r\n  \r\n  console.log('Sample SCHEDULED record:');\r\n  const scheduledRecord = allRecords.find(r => r.scheduleId !== null);\r\n  if (scheduledRecord) {\r\n    console.log(JSON.stringify(scheduledRecord, null, 2));\r\n  }\r\n}\r\n\r\n// Final validation\r\nconst nullWorkcenters = allRecords.filter(r => !r.workcenterId);\r\nif (nullWorkcenters.length > 0) {\r\n  console.error('CRITICAL: ' + nullWorkcenters.length + ' records have null workcenterId!');\r\n}\r\n\r\n// Validation: Check scheduledTime logic\r\nconst invalidScheduledTime = allRecords.filter(r => {\r\n  if (r.scheduleId === null && r.scheduledTime !== 0) {\r\n    return true; // No schedule but scheduledTime > 0\r\n  }\r\n  if (r.scheduleId !== null && r.scheduledTime === 0) {\r\n    return true; // Has schedule but scheduledTime = 0\r\n  }\r\n  return false;\r\n});\r\n\r\nif (invalidScheduledTime.length > 0) {\r\n  console.error('CRITICAL: ' + invalidScheduledTime.length + ' records have invalid scheduledTime!');\r\n  console.error('Sample invalid record:', JSON.stringify(invalidScheduledTime[0], null, 2));\r\n}\r\n\r\nreturn allRecords;",
+            "nextNodes": [
+              "89c9a742-8b1a-41ad-a3e1-a9c981a7439c"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": true,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        }
+      ],
+      "version": "0.0.9"
+    },
+    "diagram": {
+      "id": "cml44thh7x8qm01688s55hibv",
+      "offsetX": -165.44,
+      "offsetY": 74.17,
+      "zoom": 59.92,
+      "gridSize": 5,
+      "layers": [
+        {
+          "id": "2298b781-e34e-4a43-a757-366aa7b97e33",
+          "type": "diagram-links",
+          "isSvg": true,
+          "transformed": true,
+          "models": {
+            "8a740061-688b-4b49-9615-bd154c4113b1": {
+              "points": [
+                {
+                  "id": "d209bfc0-035a-48f7-8ab0-b6350815ae0f",
+                  "type": "point",
+                  "x": 204,
+                  "y": 89.73
+                },
+                {
+                  "id": "7e3bc36b-459b-41ba-8a64-5315c9a6382f",
+                  "type": "point",
+                  "x": 229,
+                  "y": 77.16
+                },
+                {
+                  "id": "d0608849-63b7-4182-acbb-cf6764008c32",
+                  "type": "point",
+                  "x": 254,
+                  "y": 154.39
+                }
+              ],
+              "id": "8a740061-688b-4b49-9615-bd154c4113b1",
+              "type": "default",
+              "selected": false,
+              "source": "09727abd-d06c-4d89-abbf-086a69085503",
+              "sourcePort": "cmkn861lh002j356ru23k5ej8",
+              "target": "c3e11412-a901-465d-87bb-ca16732be50b",
+              "targetPort": "cmkn86fac0039356r57g1slwp",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "82f93b27-b2eb-4236-b00d-69a1660235e2": {
+              "points": [
+                {
+                  "id": "7074cb93-3421-4263-8691-76d9b002a791",
+                  "type": "point",
+                  "x": 204,
+                  "y": 219.03
+                },
+                {
+                  "id": "ba131640-02c8-47f9-8675-8752f4e88c87",
+                  "type": "point",
+                  "x": 229,
+                  "y": 206.47
+                },
+                {
+                  "id": "eca748eb-9910-4c31-8c5d-60393a55381d",
+                  "type": "point",
+                  "x": 254,
+                  "y": 154.39
+                }
+              ],
+              "id": "82f93b27-b2eb-4236-b00d-69a1660235e2",
+              "type": "default",
+              "selected": false,
+              "source": "a05178ff-15fc-4033-9d76-907eb8010fe3",
+              "sourcePort": "cmkn868vy002l356rcghbfj7r",
+              "target": "c3e11412-a901-465d-87bb-ca16732be50b",
+              "targetPort": "cmkn86fac0039356r57g1slwp",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "4fdf30e4-f542-4bf7-a483-e7d3525818ae": {
+              "points": [
+                {
+                  "id": "9bf577c6-df68-4806-9e05-ae4c92eb2764",
+                  "type": "point",
+                  "x": 532.84,
+                  "y": 154.39
+                },
+                {
+                  "id": "6984da02-41ca-4e5f-be6d-481057f28ca3",
+                  "type": "point",
+                  "x": 557.84,
+                  "y": 141.81
+                },
+                {
+                  "id": "fff908b2-1201-41b7-9beb-99cc69825be8",
+                  "type": "point",
+                  "x": 582.83,
+                  "y": 154.39
+                }
+              ],
+              "id": "4fdf30e4-f542-4bf7-a483-e7d3525818ae",
+              "type": "default",
+              "selected": false,
+              "source": "c3e11412-a901-465d-87bb-ca16732be50b",
+              "sourcePort": "cmkn86fad003b356rww7pbo8q",
+              "target": "7d0827e4-1a0e-42ba-9c69-de1cfc07c780",
+              "targetPort": "cmkpqul4t01z1356rd51epgf8",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "8507e51f-80e9-4548-a48c-a7cc8ae6f656": {
+              "points": [
+                {
+                  "id": "70024e0d-ab47-448a-94a2-7c1e517fbad1",
+                  "type": "point",
+                  "x": 861.05,
+                  "y": 154.39
+                },
+                {
+                  "id": "6421c98e-140b-42c0-a454-d5efef8f103b",
+                  "type": "point",
+                  "x": 886.06,
+                  "y": 141.81
+                },
+                {
+                  "id": "cef7e637-3aff-45a2-b8f1-a17bcdc4a2bf",
+                  "type": "point",
+                  "x": 910,
+                  "y": 154.73
+                }
+              ],
+              "id": "8507e51f-80e9-4548-a48c-a7cc8ae6f656",
+              "type": "default",
+              "selected": false,
+              "source": "7d0827e4-1a0e-42ba-9c69-de1cfc07c780",
+              "sourcePort": "cmkpqul4t01z3356rnnm1auoi",
+              "target": "2c1dadde-10f6-453b-b3f0-922f2b0cbe55",
+              "targetPort": "cmkpr54yh023v356r9r163fsg",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "e877009b-b78d-4412-b12d-ffb8ded8743c": {
+              "points": [
+                {
+                  "id": "6f66dee9-d5f5-4d4c-b07b-c5e882a69c7c",
+                  "type": "point",
+                  "x": 1181.43,
+                  "y": 154.73
+                },
+                {
+                  "id": "5821bdfe-d5a8-4619-9b16-c4e0a94f4179",
+                  "type": "point",
+                  "x": 1207.48,
+                  "y": 141.81
+                },
+                {
+                  "id": "0047aa21-9128-4b7c-ae59-bf8e14d06f82",
+                  "type": "point",
+                  "x": 1230,
+                  "y": 154.73
+                }
+              ],
+              "id": "e877009b-b78d-4412-b12d-ffb8ded8743c",
+              "type": "default",
+              "selected": false,
+              "source": "2c1dadde-10f6-453b-b3f0-922f2b0cbe55",
+              "sourcePort": "cmkpr54yh023x356rokzr3vpk",
+              "target": "89c9a742-8b1a-41ad-a3e1-a9c981a7439c",
+              "targetPort": "cmkn9gthp00em356r10mg31vw",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "8fa6a418-f942-44da-8954-600aa313d370": {
+              "points": [
+                {
+                  "id": "a12152d6-9dd8-4360-9389-f26c344d20b9",
+                  "type": "point",
+                  "x": 693.99,
+                  "y": -30.26
+                },
+                {
+                  "id": "6724a324-0658-4179-9371-77e17e15a2ab",
+                  "type": "point",
+                  "x": 910,
+                  "y": 154.73
+                }
+              ],
+              "id": "8fa6a418-f942-44da-8954-600aa313d370",
+              "type": "default",
+              "selected": false,
+              "source": "50fa1e52-a241-4b8e-a989-b7e22f62d3a6",
+              "sourcePort": "cmkzga35c004g356rioqtr2rx",
+              "target": "2c1dadde-10f6-453b-b3f0-922f2b0cbe55",
+              "targetPort": "cmkpr54yh023v356r9r163fsg",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            }
+          }
+        },
+        {
+          "id": "1517b9b8-100a-4ed1-864e-ad8de7fa18dd",
+          "type": "diagram-nodes",
+          "isSvg": false,
+          "transformed": true,
+          "models": {
+            "09727abd-d06c-4d89-abbf-086a69085503": {
+              "id": "09727abd-d06c-4d89-abbf-086a69085503",
+              "type": "debugSource",
+              "selected": false,
+              "x": 50,
+              "y": 50,
+              "ports": [
+                {
+                  "id": "cmkn861lh002j356ru23k5ej8",
+                  "type": "default",
+                  "x": 196,
+                  "y": 81.73,
+                  "name": "cmkn861lh002k356rlskfwang",
+                  "parentNode": "09727abd-d06c-4d89-abbf-086a69085503",
+                  "links": [
+                    "8a740061-688b-4b49-9615-bd154c4113b1"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "payload": {},
+                "context": {},
+                "nextNodes": [
+                  "c3e11412-a901-465d-87bb-ca16732be50b"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Source"
+            },
+            "a05178ff-15fc-4033-9d76-907eb8010fe3": {
+              "id": "a05178ff-15fc-4033-9d76-907eb8010fe3",
+              "type": "schedule",
+              "selected": false,
+              "x": 50,
+              "y": 179.31,
+              "ports": [
+                {
+                  "id": "cmkn868vy002l356rcghbfj7r",
+                  "type": "default",
+                  "x": 196,
+                  "y": 211.03,
+                  "name": "cmkn868vy002m356rphp6ovyc",
+                  "parentNode": "a05178ff-15fc-4033-9d76-907eb8010fe3",
+                  "links": [
+                    "82f93b27-b2eb-4236-b00d-69a1660235e2"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Payload",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "configure": "Open Schedule Editor",
+                "nextNodes": [
+                  "c3e11412-a901-465d-87bb-ca16732be50b"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Schedule"
+            },
+            "c3e11412-a901-465d-87bb-ca16732be50b": {
+              "id": "c3e11412-a901-465d-87bb-ca16732be50b",
+              "type": "query",
+              "selected": false,
+              "x": 254,
+              "y": 114.66,
+              "ports": [
+                {
+                  "id": "cmkn86fac0039356r57g1slwp",
+                  "type": "default",
+                  "x": 246,
+                  "y": 146.39,
+                  "name": "cmkn86fad003a356rlwltqcfv",
+                  "parentNode": "c3e11412-a901-465d-87bb-ca16732be50b",
+                  "links": [
+                    "8a740061-688b-4b49-9615-bd154c4113b1",
+                    "82f93b27-b2eb-4236-b00d-69a1660235e2"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkn86fad003b356rww7pbo8q",
+                  "type": "default",
+                  "x": 524.84,
+                  "y": 146.39,
+                  "name": "cmkn86fad003c356r7qb20elz",
+                  "parentNode": "c3e11412-a901-465d-87bb-ca16732be50b",
+                  "links": [
+                    "4fdf30e4-f542-4bf7-a483-e7d3525818ae"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "application",
+                "variablesTransform": "{\r\n  \"where\":{\r\n    \"id\":{\r\n       \"_eq\": \"Timezone\"\r\n    }\r\n  }\r\n}",
+                "query": "query GetOeeConfig {\r\n  setting(where: { id: { _eq: \"Timezone\" } }) {\r\n    edges {\r\n      node {\r\n        defaultValue\r\n      }\r\n    }\r\n  }\r\n  workcenter(where: { isActive: { _eq: true } }, first: 1000) {\r\n    edges {\r\n      node {\r\n        scheduleGroupId\r\n        _aggregate {\r\n          id {\r\n            uniqueValues\r\n          }\r\n        }\r\n      }\r\n    }\r\n  }\r\n}",
+                "nextNodes": [
+                  "7d0827e4-1a0e-42ba-9c69-de1cfc07c780"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Get Tenant Timezone & Active Workcenters"
+            },
+            "89c9a742-8b1a-41ad-a3e1-a9c981a7439c": {
+              "id": "89c9a742-8b1a-41ad-a3e1-a9c981a7439c",
+              "type": "mutate",
+              "selected": false,
+              "x": 1230,
+              "y": 115,
+              "ports": [
+                {
+                  "id": "cmkn9gthp00em356r10mg31vw",
+                  "type": "default",
+                  "x": 1222,
+                  "y": 146.73,
+                  "name": "cmkn9gthp00en356r69p210u0",
+                  "parentNode": "89c9a742-8b1a-41ad-a3e1-a9c981a7439c",
+                  "links": [
+                    "e877009b-b78d-4412-b12d-ffb8ded8743c"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkn9gthp00eo356ry0inf20h",
+                  "type": "default",
+                  "x": 1438.49,
+                  "y": 146.73,
+                  "name": "cmkn9gthp00ep356r8netczmv",
+                  "parentNode": "89c9a742-8b1a-41ad-a3e1-a9c981a7439c",
+                  "links": [],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "Application",
+                "variablesTransform": "{\r\n  \"payload\": $ and $count($) > 0 ? $map($, function($r) {\r\n    {\r\n      \"create\": {\r\n        \"id\": $r.id,\r\n        \"workcenterId\": $r.workcenterId,\r\n        \"scheduleId\": $r.scheduleId,\r\n        \"dayHour\": $r.dayHour,\r\n        \"shiftHour\": $r.shiftHour,\r\n        \"shift\": $r.shift,\r\n        \"periodStartAt\": $r.periodStartAt,\r\n        \"periodEndAt\": $r.periodEndAt,\r\n        \"scheduleHourStartAt\": $r.scheduleHourStartAt,\r\n        \"scheduleHourEndAt\": $r.scheduleHourEndAt,\r\n        \"plannedMinutes\": $r.plannedMinutes,\r\n        \"isPartialHour\": $r.isPartialHour ? $r.isPartialHour : false,\r\n        \"scheduledTime\": $r.scheduledTime,\r\n        \"actualCycleTime\": 0,\r\n        \"idealCycleTime\": 0,\r\n        \"plannedDowntimeMinutes\": $r.plannedDowntimeMinutes,\r\n        \"runMinutes\": 0,\r\n        \"setupMinutes\": 0,\r\n        \"topDowntime\": 0,\r\n        \"downtimeMinutes\": 0\r\n      }\r\n    }\r\n  }) : []\r\n}",
+                "nextNodes": [],
+                "mutation": "mutation CreateOeeHourlyRecords($payload: [OeeHourlyCreatePayloadInput!]!) {\r\n  createOeeHourly(payload: $payload) {\r\n    id\r\n  }\r\n}"
+              },
+              "debug": {
+                "breakpointEnabled": true,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Create OEE Stubs for Tomorrow"
+            },
+            "7d0827e4-1a0e-42ba-9c69-de1cfc07c780": {
+              "id": "7d0827e4-1a0e-42ba-9c69-de1cfc07c780",
+              "type": "transform",
+              "selected": true,
+              "x": 582.84,
+              "y": 114.66,
+              "ports": [
+                {
+                  "id": "cmkpqul4t01z1356rd51epgf8",
+                  "type": "default",
+                  "x": 574.83,
+                  "y": 146.39,
+                  "name": "cmkpqul4t01z2356rspl5q93d",
+                  "parentNode": "7d0827e4-1a0e-42ba-9c69-de1cfc07c780",
+                  "links": [
+                    "4fdf30e4-f542-4bf7-a483-e7d3525818ae"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkpqul4t01z3356rnnm1auoi",
+                  "type": "default",
+                  "x": 853.05,
+                  "y": 146.39,
+                  "name": "cmkpqul4t01z4356r7wh3inaa",
+                  "parentNode": "7d0827e4-1a0e-42ba-9c69-de1cfc07c780",
+                  "links": [
+                    "8507e51f-80e9-4548-a48c-a7cc8ae6f656"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "(\r\n  /* Extract timezone */\r\n  $timezone := setting.edges[0].node.defaultValue ? setting.edges[0].node.defaultValue : $momentTzGuess();\r\n  \r\n  /* Calculate tomorrow's boundaries in local timezone, then convert to UTC */\r\n  $now := $moment().tz($timezone);\r\n  $tomorrowLocal := $now.clone().add(1, 'days').startOf('day'); /* Tomorrow 00:00:00 in local tz */\r\n  $tomorrowEndLocal := $tomorrowLocal.clone().add(1, 'day').startOf('day'); /* Day after tomorrow 00:00:00 in local tz (exclusive end) */\r\n  \r\n  /* Convert to UTC for getTimeline (these are the UTC timestamps representing local day boundaries) */\r\n  $tomorrow := $tomorrowLocal.clone().utc();\r\n  $tomorrowEnd := $tomorrowEndLocal.clone().utc();\r\n  \r\n  /* For each scheduleGroupId group */\r\n  workcenter.edges.node.(\r\n    $scheduleGroupId := scheduleGroupId;\r\n    $workcenterIds := _aggregate.id.uniqueValues;  /* Use IDs instead of codes */\r\n    $timeline := $scheduleGroup($scheduleGroupId).getTimeline($tomorrow, $tomorrowEnd, { \"inclusive\": true });\r\n    \r\n    {\r\n      \"scheduleGroupId\": $scheduleGroupId,\r\n      \"workcenters\": $workcenterIds,  /* Array of workcenter IDs */\r\n      \"timezone\": $timezone,\r\n      \"tomorrowStart\": $tomorrow.format(),\r\n      \"tomorrowEnd\": $tomorrowEnd.format(),\r\n      \"tomorrowDate\": $tomorrowLocal.format(\"YYYY-MM-DD\"),\r\n      \"tomorrowDayOfWeek\": [\"Sunday\", \"Monday\", \"Tuesday\", \"Wednesday\", \"Thursday\", \"Friday\", \"Saturday\"][$tomorrowLocal.day()],\r\n      \"timeline\": $timeline\r\n    }\r\n  )\r\n)",
+                "nextNodes": [
+                  "2c1dadde-10f6-453b-b3f0-922f2b0cbe55"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Get Schedule Timelines & tomorrow details"
+            },
+            "2c1dadde-10f6-453b-b3f0-922f2b0cbe55": {
+              "id": "2c1dadde-10f6-453b-b3f0-922f2b0cbe55",
+              "type": "javascriptTransform",
+              "selected": false,
+              "x": 910,
+              "y": 115,
+              "ports": [
+                {
+                  "id": "cmkpr54yh023v356r9r163fsg",
+                  "type": "default",
+                  "x": 902,
+                  "y": 146.73,
+                  "name": "cmkpr54yh023w356r3asi86c7",
+                  "parentNode": "2c1dadde-10f6-453b-b3f0-922f2b0cbe55",
+                  "links": [
+                    "8507e51f-80e9-4548-a48c-a7cc8ae6f656",
+                    "8fa6a418-f942-44da-8954-600aa313d370"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkpr54yh023x356rokzr3vpk",
+                  "type": "default",
+                  "x": 1173.43,
+                  "y": 146.73,
+                  "name": "cmkpr54yh023y356rx2m9pr24",
+                  "parentNode": "2c1dadde-10f6-453b-b3f0-922f2b0cbe55",
+                  "links": [
+                    "e877009b-b78d-4412-b12d-ffb8ded8743c"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "'use strict';\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// OEE HOURLY RECORD GENERATOR\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// Input: Schedule group object with workcenters (IDs), timeline, and timezone\r\n// Output: Array of OeeHourly records (24 per workcenter)\r\n// ═══════════════════════════════════════════════════════════════════════\r\n\r\n// Input is the schedule group object directly\r\nconst scheduleGroup = $;\r\n\r\n// Validate input\r\nif (!scheduleGroup || !scheduleGroup.workcenters || !scheduleGroup.timeline) {\r\n  console.error('Invalid input - missing required fields');\r\n  console.error('Input:', JSON.stringify($, null, 2));\r\n  return [];\r\n}\r\n\r\nconst { scheduleGroupId, workcenters, timezone, tomorrowStart, tomorrowEnd, timeline } = scheduleGroup;\r\n\r\nconsole.log('Processing scheduleGroup: ' + scheduleGroupId);\r\nconsole.log('Workcenters: ' + workcenters.length);\r\nconsole.log('Timezone: ' + timezone);\r\nconsole.log('Timeline events: ' + timeline.length);\r\n\r\n// Parse tomorrow's boundaries (midnight to midnight in local time, expressed in UTC)\r\nconst dayStart = $moment(tomorrowStart).utc();\r\nconst dayEnd = $moment(tomorrowEnd).utc();\r\n\r\nconsole.log('Tomorrow boundaries (UTC): ' + dayStart.toISOString() + ' to ' + dayEnd.toISOString());\r\n\r\n// Constants\r\nconst ONE_HOUR_MS = 3600000; // 60 minutes in milliseconds\r\nconst ONE_MINUTE_MS = 60000;\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// GENERATE OEE HOURLY RECORDS\r\n// ═══════════════════════════════════════════════════════════════════════\r\nconst allRecords = [];\r\n\r\n// For each workcenter, generate EXACTLY 24 hourly records (one for each hour of tomorrow)\r\nworkcenters.forEach((workcenterId, wcIndex) => {\r\n  // Validation: Ensure workcenterId exists\r\n  if (!workcenterId || workcenterId === null || workcenterId === '') {\r\n    console.error('Skipping null/empty workcenterId at index ' + wcIndex);\r\n    return;\r\n  }\r\n  \r\n  for (let dayHour = 0; dayHour < 24; dayHour++) {\r\n    // Create exact hour boundaries - periods run from :00 to :00 (e.g., 05:00 to 06:00)\r\n    const hourStart = dayStart.clone().add(dayHour, 'hours');\r\n    const hourEnd = hourStart.clone().add(1, 'hour');\r\n    \r\n    // Verify we're still within tomorrow's boundaries\r\n    if (hourStart.isSameOrAfter(dayEnd)) {\r\n      console.error('ERROR: hourStart ' + hourStart.toISOString() + ' is beyond tomorrow end ' + dayEnd.toISOString());\r\n      continue;\r\n    }\r\n    \r\n    // Debug first few hours of first workcenter\r\n    if (dayHour < 3 && wcIndex === 0) {\r\n      console.log('DayHour ' + dayHour + ': ' + hourStart.toISOString() + ' to ' + hourEnd.toISOString());\r\n      console.log('Using workcenter ID: ' + workcenterId);\r\n    }\r\n    \r\n    // Find timeline events that overlap with THIS SPECIFIC HOUR\r\n    const overlappingEvents = timeline.filter(event => {\r\n      const eventStart = $moment(event.range.start).utc();\r\n      const eventEnd = $moment(event.range.end).utc();\r\n      \r\n      // Does the event overlap with this hour?\r\n      const overlaps = hourStart.isBefore(eventEnd) && hourEnd.isAfter(eventStart);\r\n      \r\n      if (dayHour < 3 && wcIndex === 0) {\r\n        console.log('  Event ' + event.scheduleId + ': ' + eventStart.toISOString() + ' to ' + eventEnd.toISOString() + ', overlaps: ' + overlaps);\r\n      }\r\n      \r\n      return overlaps;\r\n    });\r\n    \r\n    if (overlappingEvents.length === 0) {\r\n      // ═══════════════════════════════════════════════════════════════\r\n      // NO SCHEDULE: Full hour of planned downtime\r\n      // ═══════════════════════════════════════════════════════════════\r\n      const id = workcenterId + '-0-' + hourStart.toISOString();\r\n      allRecords.push({\r\n        id: id,\r\n        workcenterId: workcenterId,\r\n        scheduleId: null,\r\n        dayHour: dayHour,\r\n        shiftHour: 0,\r\n        shift: 'No Schedule Defined',\r\n        periodStartAt: hourStart.toISOString(),\r\n        periodEndAt: hourEnd.toISOString(),\r\n        scheduleHourStartAt: hourStart.toISOString(),\r\n        scheduleHourEndAt: hourEnd.toISOString(),\r\n        scheduledTime: 0,                      // ✅ NO scheduled time when no schedule\r\n        plannedMinutes: 0,                     // Always 0\r\n        plannedDowntimeMinutes: ONE_HOUR_MS    // ✅ Full hour = planned downtime\r\n      });\r\n      \r\n      if (dayHour < 3 && wcIndex === 0) {\r\n        console.log('  No schedule: scheduledTime=0, plannedDowntime=3600000ms (full hour)');\r\n      }\r\n    } else {\r\n      // Process each overlapping event\r\n      overlappingEvents.forEach(event => {\r\n        const scheduleId = event.scheduleId;\r\n        const isException = event.exception === true;\r\n        \r\n        // Get THIS event's actual start time (not just the hour)\r\n        const eventStartUTC = $moment(event.range.start).utc();\r\n        const eventEndUTC = $moment(event.range.end).utc();\r\n        \r\n        // Calculate shiftHour based on THIS specific event's start time\r\n        const hoursFromEventStart = hourStart.diff(eventStartUTC, 'hours');\r\n        const shiftHour = hoursFromEventStart + 1; // 1-indexed\r\n        \r\n        if (dayHour < 3 && wcIndex === 0) {\r\n          console.log('  Event starts: ' + eventStartUTC.toISOString());\r\n          console.log('  Current hour: ' + hourStart.toISOString());\r\n          console.log('  Hours elapsed: ' + hoursFromEventStart + ', shiftHour: ' + shiftHour);\r\n          console.log('  Is exception: ' + isException);\r\n        }\r\n        \r\n        // CRITICAL: Clip event boundaries to THIS HOUR and TOMORROW'S boundaries\r\n        const segmentStart = $momentMax([hourStart, eventStartUTC]);\r\n        const segmentEnd = $momentMin([hourEnd, eventEndUTC, dayEnd]);\r\n        \r\n        // Calculate milliseconds for the segment\r\n        const segmentMs = segmentEnd.diff(segmentStart, 'milliseconds');\r\n        const segmentMinutes = segmentEnd.diff(segmentStart, 'minutes');\r\n        \r\n        // Calculate remainder of the hour (time outside the segment)\r\n        const remainderMs = ONE_HOUR_MS - segmentMs;\r\n        \r\n        // Verify segment is within tomorrow's boundaries\r\n        if (segmentStart.isBefore(dayStart) || segmentStart.isSameOrAfter(dayEnd)) {\r\n          console.error('ERROR: segmentStart ' + segmentStart.toISOString() + ' is outside tomorrow boundaries');\r\n        }\r\n        \r\n        const id = workcenterId + '-' + shiftHour + '-' + segmentStart.toISOString();\r\n        \r\n        // ═══════════════════════════════════════════════════════════════\r\n        // SCHEDULED EVENT\r\n        // ═══════════════════════════════════════════════════════════════\r\n        const record = {\r\n          id: id,\r\n          workcenterId: workcenterId,\r\n          scheduleId: scheduleId,\r\n          dayHour: dayHour,\r\n          shiftHour: shiftHour,\r\n          shift: isException ? 'Exception' : scheduleId,\r\n          periodStartAt: hourStart.toISOString(),\r\n          periodEndAt: hourEnd.toISOString(),\r\n          scheduleHourStartAt: segmentStart.toISOString(),\r\n          scheduleHourEndAt: segmentEnd.toISOString(),\r\n          scheduledTime: ONE_HOUR_MS,  // ✅ Always full hour when there IS a schedule\r\n          plannedMinutes: 0             // Always 0 (calculated later from actual data)\r\n        };\r\n        \r\n        // Calculate plannedDowntimeMinutes based on type\r\n        if (isException) {\r\n          // EXCECustomer-DON: The exception time itself is planned downtime\r\n          record.plannedDowntimeMinutes = segmentMs;\r\n          if (dayHour < 3 && wcIndex === 0) {\r\n            console.log('  Exception event: scheduledTime=3600000, plannedDowntime=' + segmentMs + 'ms');\r\n          }\r\n        } else {\r\n          // NORMAL SCHEDULE: Only the remainder (if any) is planned downtime\r\n          record.plannedDowntimeMinutes = remainderMs;\r\n          if (dayHour < 3 && wcIndex === 0) {\r\n            console.log('  Normal schedule: scheduledTime=3600000, plannedDowntime=' + remainderMs + 'ms (remainder)');\r\n          }\r\n        }\r\n        \r\n        // Add isPartialHour flag if less than 60 minutes scheduled\r\n        if (segmentMinutes < 60 && segmentMinutes > 0) {\r\n          record.isPartialHour = true;\r\n        }\r\n        \r\n        allRecords.push(record);\r\n      });\r\n    }\r\n  }\r\n});\r\n\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\nconsole.log('Generated ' + allRecords.length + ' OeeHourly records total');\r\nconsole.log('Workcenters processed: ' + workcenters.length);\r\nconsole.log('Expected records: ' + (workcenters.length * 24));\r\nconsole.log('Records per workcenter: ' + (allRecords.length / workcenters.length).toFixed(1));\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\n\r\nif (allRecords.length > 0) {\r\n  console.log('Sample NO SCHEDULE record:');\r\n  const noScheduleRecord = allRecords.find(r => r.scheduleId === null);\r\n  if (noScheduleRecord) {\r\n    console.log(JSON.stringify(noScheduleRecord, null, 2));\r\n  }\r\n  \r\n  console.log('Sample SCHEDULED record:');\r\n  const scheduledRecord = allRecords.find(r => r.scheduleId !== null);\r\n  if (scheduledRecord) {\r\n    console.log(JSON.stringify(scheduledRecord, null, 2));\r\n  }\r\n}\r\n\r\n// Final validation\r\nconst nullWorkcenters = allRecords.filter(r => !r.workcenterId);\r\nif (nullWorkcenters.length > 0) {\r\n  console.error('CRITICAL: ' + nullWorkcenters.length + ' records have null workcenterId!');\r\n}\r\n\r\n// Validation: Check scheduledTime logic\r\nconst invalidScheduledTime = allRecords.filter(r => {\r\n  if (r.scheduleId === null && r.scheduledTime !== 0) {\r\n    return true; // No schedule but scheduledTime > 0\r\n  }\r\n  if (r.scheduleId !== null && r.scheduledTime === 0) {\r\n    return true; // Has schedule but scheduledTime = 0\r\n  }\r\n  return false;\r\n});\r\n\r\nif (invalidScheduledTime.length > 0) {\r\n  console.error('CRITICAL: ' + invalidScheduledTime.length + ' records have invalid scheduledTime!');\r\n  console.error('Sample invalid record:', JSON.stringify(invalidScheduledTime[0], null, 2));\r\n}\r\n\r\nreturn allRecords;",
+                "nextNodes": [
+                  "89c9a742-8b1a-41ad-a3e1-a9c981a7439c"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": true,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Build Schedule for next day by workcenter"
+            },
+            "50fa1e52-a241-4b8e-a989-b7e22f62d3a6": {
+              "id": "50fa1e52-a241-4b8e-a989-b7e22f62d3a6",
+              "type": "debugSource",
+              "selected": false,
+              "x": 540,
+              "y": -70,
+              "ports": [
+                {
+                  "id": "cmkzga35c004g356rioqtr2rx",
+                  "type": "default",
+                  "x": 685.99,
+                  "y": -38.26,
+                  "name": "cmkzga35c004h356rl4jgclim",
+                  "parentNode": "50fa1e52-a241-4b8e-a989-b7e22f62d3a6",
+                  "links": [
+                    "8fa6a418-f942-44da-8954-600aa313d370"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "payload": {
+                  "scheduleGroupId": "basic",
+                  "workcenters": [
+                    "wc-cr-c2",
+                    "wc-fil-c1",
+                    "wc-dst-c1",
+                    "wc-dst-c2",
+                    "wc-crt-c2",
+                    "wc-hex-c2",
+                    "wc-cbl-c1",
+                    "wc-cips-c2",
+                    "wc-fil-c2",
+                    "wc-fa-c2",
+                    "wc-vmc-c2",
+                    "wc-hp-c2",
+                    "cml0wiqu7564i016y7eb52b3p",
+                    "wc-cipm-c1",
+                    "wc-cips-c1",
+                    "wc-pd-c2",
+                    "wc-wld-c1",
+                    "wc-fa-c1",
+                    "wc-vmc-c1",
+                    "wc-pmp-c2",
+                    "wc-hmc-c2",
+                    "wc-crt-c1",
+                    "wc-pmp-c1",
+                    "wc-flt-c1",
+                    "wc-cbl-c2",
+                    "wc-cr-c1",
+                    "wc-wld-c2",
+                    "wc-hp-c1",
+                    "wc-flt-c2",
+                    "wc-cipm-c2",
+                    "wc-bmx-c2",
+                    "wc-hex-c1",
+                    "wc-hmc-c1",
+                    "wc-pd-c1",
+                    "wc-br-c2",
+                    "wc-br-c1"
+                  ],
+                  "timezone": "America/Detroit",
+                  "tomorrowStart": "2026-01-31T05:00:00Z",
+                  "tomorrowEnd": "2026-02-01T05:00:00Z",
+                  "tomorrowDate": "2026-01-31",
+                  "tomorrowDayOfWeek": "Saturday",
+                  "timeline": [
+                    {
+                      "eventRangeId": "MjAyNi0wMS0zMVQwMzowMDowMC4wMDBaLTIwMjYtMDEtMzFUMTE6MDA6MDAuMDAwWi1mYWxzZQ==",
+                      "range": {
+                        "start": "2026-01-31T03:00:00.000Z",
+                        "end": "2026-01-31T11:00:00.000Z"
+                      },
+                      "exception": false,
+                      "scheduleId": "third"
+                    },
+                    {
+                      "eventRangeId": "MjAyNi0wMS0zMVQxMTowMDowMC4wMDBaLTIwMjYtMDEtMzFUMTk6MDA6MDAuMDAwWi1mYWxzZQ==",
+                      "range": {
+                        "start": "2026-01-31T11:00:00.000Z",
+                        "end": "2026-01-31T19:00:00.000Z"
+                      },
+                      "exception": false,
+                      "scheduleId": "first"
+                    },
+                    {
+                      "eventRangeId": "MjAyNi0wMS0zMVQxOTowMDowMC4wMDBaLTIwMjYtMDItMDFUMDM6MDA6MDAuMDAwWi1mYWxzZQ==",
+                      "range": {
+                        "start": "2026-01-31T19:00:00.000Z",
+                        "end": "2026-02-01T03:00:00.000Z"
+                      },
+                      "exception": false,
+                      "scheduleId": "second"
+                    },
+                    {
+                      "eventRangeId": "MjAyNi0wMi0wMVQwMzowMDowMC4wMDBaLTIwMjYtMDItMDFUMTE6MDA6MDAuMDAwWi1mYWxzZQ==",
+                      "range": {
+                        "start": "2026-02-01T03:00:00.000Z",
+                        "end": "2026-02-01T11:00:00.000Z"
+                      },
+                      "exception": false,
+                      "scheduleId": "third"
+                    }
+                  ]
+                },
+                "context": {},
+                "nextNodes": [
+                  "2c1dadde-10f6-453b-b3f0-922f2b0cbe55"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Source"
+            }
+          }
+        }
+      ],
+      "name": "Generate Payload for OEE Schedule Tomorrow (Parent Flow - scheduled)",
+      "type": "System",
+      "version": "0.0.9",
+      "walkthrough": {
+        "steps": []
+      }
+    }
+  }
+}

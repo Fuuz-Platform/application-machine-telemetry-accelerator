@@ -1,0 +1,323 @@
+{
+  "header": {
+    "id": "eventCategory",
+    "name": "EventCategory",
+    "description": "Categorizes downtime and production events into logical groups for reporting and analysis. Examples include Mechanical, Electrical, Quality, Changeover, and Scheduled Maintenance.",
+    "dataModelKindId": "reference",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cmkcq15pa1zzl016f1wbo687n",
+    "number": "3",
+    "dataModelId": "eventCategory",
+    "modelDefinition": {
+      "name": "EventCategory",
+      "metadata": {
+        "mfgx": {
+          "module": {
+            "id": "machineDataApp",
+            "group": {
+              "id": "machineTelemetrySiteApplication"
+            }
+          },
+          "exposed": true,
+          "mutable": true,
+          "mutations": {
+            "create": true,
+            "update": true,
+            "del": true
+          },
+          "dataChangeCapture": {
+            "exposed": false,
+            "retentionDays": 365
+          },
+          "customFields": {
+            "exposed": true
+          },
+          "editor": {
+            "autosort": true
+          },
+          "labelField": "name"
+        },
+        "mongo": {
+          "collection": "eventCategory"
+        },
+        "graphql": {
+          "type": "Object"
+        }
+      },
+      "kind": "Reference",
+      "fields": [
+        {
+          "name": "id",
+          "type": "ID!",
+          "description": "**`id`** (`ID!`)\nPrimary unique identifier for the EventCategory record.\n\n- Required on creation; cannot be updated.\n- Use a short, meaningful code like `MECH` or `ELEC`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": false
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": true
+          }
+        },
+        {
+          "name": "name",
+          "type": "String!",
+          "description": "**`name`** (`String!`)\nDisplay name for the EventCategory.\n\n- Shown in dropdowns, reports, and dashboards.\n- Example: `Mechanical Failure`, `Electrical Issue`, `Quality Hold`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "sortOrder",
+          "type": "Int",
+          "description": "**`sortOrder`** (`Int`)\nNumeric value to control display order in dropdown lists and reports.\n\n- Lower numbers appear first.\n- Example: `10`, `20`, `30` allows inserting new categories between existing ones.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "affectsOee",
+          "type": "Boolean!",
+          "description": "**`affectsOee`** (`Boolean!`)\nDetermines if events in this category count against OEE availability.\n\n- `true`: Counts as downtime in OEE calculation.\n- `false`: Excluded from OEE (e.g., scheduled breaks, no production planned).",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "isActive",
+          "type": "Boolean!",
+          "description": "**`isActive`** (`Boolean!`)\nControls whether this category is available for selection.\n\n- `true`: Appears in operator dropdowns.\n- `false`: Hidden from selection but retained for historical data.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "isPlanned",
+          "type": "Boolean!",
+          "description": "**`isPlanned`** (`Boolean!`)\nIndicates whether events in this category are planned (scheduled) or unplanned.\n\n- `true`: Scheduled maintenance, changeovers, breaks.\n- `false`: Breakdowns, failures, unexpected stoppages.\n- Affects OEE calculations (planned vs. unplanned downtime).",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "usable",
+          "type": "Boolean!",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": true
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "code",
+          "type": "String!",
+          "description": "**`code`** (`String!`)\nUnique, human-readable code for the EventCategory.\n\n- Used for integrations, reports, and quick reference.\n- Example: `MECH`, `ELEC`, `QUAL`, `CHGVR`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": true
+          }
+        },
+        {
+          "name": "color",
+          "type": "String",
+          "description": "**`color`** (`String`)\nHex color code for visual identification in dashboards and reports.\n\n- Format: `#RRGGBB` (e.g., `#FF5733` for orange-red).\n- Used in Pareto charts, Gantt views, and status indicators.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "description",
+          "type": "String",
+          "description": "**`description`** (`String`)\nDetailed explanation of what this category encompasses.\n\n- Helps operators select the correct category.\n- Example: `Equipment failures related to mechanical components such as motors, bearings, and gearboxes.`",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        }
+      ],
+      "description": "Categorizes downtime and production events into logical groups for reporting and analysis. Examples include Mechanical, Electrical, Quality, Changeover, and Scheduled Maintenance."
+    },
+    "dataModelTypeId": "setup"
+  },
+  "migration": "{ \n\n  \"usable\": $coalesce([field, true])\n}",
+  "migrations": [
+    {
+      "dataModelVersionId": "cmkcq15pa1zzl016f1wbo687n",
+      "dataModelVersion": {
+        "number": "3"
+      },
+      "mappingExpression": "{ \n\n  \"usable\": $coalesce([field, true])\n}"
+    },
+    {
+      "dataModelVersionId": "cmk1944bq426x016c3ps9a29a",
+      "dataModelVersion": {
+        "number": "2"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "eventCategory_v1",
+      "dataModelVersion": {
+        "number": "1"
+      },
+      "mappingExpression": "$"
+    }
+  ]
+}

@@ -1,0 +1,364 @@
+{
+  "api": "application",
+  "modelName": "Product",
+  "payload": [
+    {
+      "id": "prd-det-001",
+      "name": "Brake Pad Backing Plate",
+      "setupTime": 30,
+      "standardCycleTime": 12.5,
+      "targetYield": 98.5,
+      "isActive": true,
+      "code": "BRK-PAD-001",
+      "description": "Stamped steel backing plate for brake pad assembly",
+      "productFamily": "Brake Components",
+      "idealCycleTime": null,
+      "unitId": "ea",
+      "workcenterId": "wc-hp-c1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "prd-det-004",
+      "name": "Brake Bracket Assembly",
+      "setupTime": 45,
+      "standardCycleTime": 45,
+      "targetYield": 97,
+      "isActive": false,
+      "code": "BRK-BRK-001",
+      "description": "Machined and welded brake mounting bracket",
+      "productFamily": "Brake Components",
+      "idealCycleTime": null,
+      "unitId": "ea",
+      "workcenterId": "wc-wld-c1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "prd-det-005",
+      "name": "Brake Rotor Blank",
+      "setupTime": 60,
+      "standardCycleTime": 60,
+      "targetYield": 96,
+      "isActive": true,
+      "code": "BRK-ROT-001",
+      "description": "Stamped and machined brake rotor blank",
+      "productFamily": "Brake Components",
+      "idealCycleTime": null,
+      "unitId": "ea",
+      "workcenterId": "wc-hmc-c1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "prd-det-006",
+      "name": "Control Arm Stamping",
+      "setupTime": 35,
+      "standardCycleTime": 18,
+      "targetYield": 98,
+      "isActive": true,
+      "code": "SUS-ARM-001",
+      "description": "Stamped steel control arm blank",
+      "productFamily": "Suspension Components",
+      "idealCycleTime": null,
+      "unitId": "ea",
+      "workcenterId": "wc-pd-c1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "prd-det-010",
+      "name": "Strut Mount Plate",
+      "setupTime": 20,
+      "standardCycleTime": 10,
+      "targetYield": 99,
+      "isActive": true,
+      "code": "SUS-MNT-001",
+      "description": "Stamped strut mount reinforcement plate",
+      "productFamily": "Suspension Components",
+      "idealCycleTime": null,
+      "unitId": "ea",
+      "workcenterId": "wc-pd-c1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "prd-det-011",
+      "name": "Engine Bracket",
+      "setupTime": 60,
+      "standardCycleTime": 90,
+      "targetYield": 96.5,
+      "isActive": true,
+      "code": "ENG-BRK-001",
+      "description": "Machined engine mounting bracket",
+      "productFamily": "Engine Components",
+      "idealCycleTime": null,
+      "unitId": "ea",
+      "workcenterId": "wc-vmc-c1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "prd-det-013",
+      "name": "Sensor Housing",
+      "setupTime": 45,
+      "standardCycleTime": 120,
+      "targetYield": 95,
+      "isActive": true,
+      "code": "ENG-HSG-001",
+      "description": "Machined aluminum sensor housing",
+      "productFamily": "Engine Components",
+      "idealCycleTime": null,
+      "unitId": "ea",
+      "workcenterId": "wc-vmc-c2",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "prd-det-014",
+      "name": "Body Panel Reinforcement",
+      "setupTime": 40,
+      "standardCycleTime": 22,
+      "targetYield": 97.5,
+      "isActive": true,
+      "code": "BDY-PNL-001",
+      "description": "Stamped body panel reinforcement",
+      "productFamily": "Body Components",
+      "idealCycleTime": null,
+      "unitId": "ea",
+      "workcenterId": "wc-pd-c2",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "prd-det-016",
+      "name": "Door Hinge Bracket",
+      "setupTime": 35,
+      "standardCycleTime": 16,
+      "targetYield": 98,
+      "isActive": true,
+      "code": "BDY-HNG-001",
+      "description": "Stamped door hinge mounting bracket",
+      "productFamily": "Body Components",
+      "idealCycleTime": null,
+      "unitId": "ea",
+      "workcenterId": "wc-vmc-c2",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "prd-det-017",
+      "name": "Transmission Gear Blank",
+      "setupTime": 90,
+      "standardCycleTime": 180,
+      "targetYield": 94,
+      "isActive": true,
+      "code": "TRN-GR-001",
+      "description": "Machined transmission gear blank",
+      "productFamily": "Transmission Components",
+      "idealCycleTime": null,
+      "unitId": "ea",
+      "workcenterId": "wc-hmc-c2",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "prd-hou-006",
+      "name": "Additive Blend A",
+      "setupTime": 90,
+      "standardCycleTime": 1,
+      "targetYield": 98,
+      "isActive": true,
+      "code": "CHM-ADD-001",
+      "description": "Performance additive for lubricants",
+      "productFamily": "Additives",
+      "idealCycleTime": null,
+      "unitId": "kg",
+      "workcenterId": "wc-cbl-c1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "prd-hou-010",
+      "name": "Resin Compound B",
+      "setupTime": 240,
+      "standardCycleTime": 3.5,
+      "targetYield": 94.5,
+      "isActive": true,
+      "code": "CHM-RSN-002",
+      "description": "Adhesive formulation resin",
+      "productFamily": "Resins",
+      "idealCycleTime": null,
+      "unitId": "kg",
+      "workcenterId": "wc-bmx-c2",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "prd-hou-011",
+      "name": "Polymer Base A",
+      "setupTime": 300,
+      "standardCycleTime": 4,
+      "targetYield": 96,
+      "isActive": true,
+      "code": "CHM-PLY-001",
+      "description": "Base polymer for compounding",
+      "productFamily": "Polymers",
+      "idealCycleTime": null,
+      "unitId": "kg",
+      "workcenterId": "wc-cr-c1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "prd-hou-013",
+      "name": "Intermediate A",
+      "setupTime": 150,
+      "standardCycleTime": 2,
+      "targetYield": 97.5,
+      "isActive": true,
+      "code": "CHM-INT-001",
+      "description": "Chemical synthesis intermediate",
+      "productFamily": "Intermediates",
+      "idealCycleTime": null,
+      "unitId": "kg",
+      "workcenterId": "wc-br-c1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "prd-mke-003",
+      "name": "Marinara Sauce 500mL",
+      "setupTime": 45,
+      "standardCycleTime": 2,
+      "targetYield": 99,
+      "isActive": true,
+      "code": "FD-SAU-003",
+      "description": "Traditional marinara sauce",
+      "productFamily": "Sauces",
+      "idealCycleTime": null,
+      "unitId": "ea",
+      "workcenterId": "wc-fil-c1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "prd-mke-005",
+      "name": "Hot Sauce 150mL",
+      "setupTime": 30,
+      "standardCycleTime": 1.2,
+      "targetYield": 99.5,
+      "isActive": true,
+      "code": "FD-SAU-005",
+      "description": "Cayenne pepper hot sauce",
+      "productFamily": "Sauces",
+      "idealCycleTime": null,
+      "unitId": "ea",
+      "workcenterId": "wc-fil-c1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "prd-mke-006",
+      "name": "Ranch Dressing 500mL",
+      "setupTime": 50,
+      "standardCycleTime": 2.2,
+      "targetYield": 98.5,
+      "isActive": true,
+      "code": "FD-DRS-001",
+      "description": "Creamy ranch salad dressing",
+      "productFamily": "Dressings",
+      "idealCycleTime": null,
+      "unitId": "ea",
+      "workcenterId": "wc-fil-c2",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "prd-mke-007",
+      "name": "Italian Dressing 500mL",
+      "setupTime": 50,
+      "standardCycleTime": 2,
+      "targetYield": 98.5,
+      "isActive": true,
+      "code": "FD-DRS-002",
+      "description": "Zesty Italian salad dressing",
+      "productFamily": "Dressings",
+      "idealCycleTime": null,
+      "unitId": "ea",
+      "workcenterId": "wc-fil-c1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "prd-mke-008",
+      "name": "Caesar Dressing 350mL",
+      "setupTime": 55,
+      "standardCycleTime": 2.5,
+      "targetYield": 98,
+      "isActive": true,
+      "code": "FD-DRS-003",
+      "description": "Classic Caesar salad dressing",
+      "productFamily": "Dressings",
+      "idealCycleTime": null,
+      "unitId": "ea",
+      "workcenterId": "wc-fil-c2",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "prd-mke-009",
+      "name": "Apple Juice 1L",
+      "setupTime": 60,
+      "standardCycleTime": 1.5,
+      "targetYield": 99.5,
+      "isActive": true,
+      "code": "FD-BEV-001",
+      "description": "100% pure apple juice",
+      "productFamily": "Beverages",
+      "idealCycleTime": null,
+      "unitId": "ea",
+      "workcenterId": "wc-crt-c1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "prd-mke-015",
+      "name": "Tomato Paste 170g",
+      "setupTime": 35,
+      "standardCycleTime": 1,
+      "targetYield": 99.5,
+      "isActive": true,
+      "code": "FD-CON-001",
+      "description": "Concentrated tomato paste",
+      "productFamily": "Concentrates",
+      "idealCycleTime": null,
+      "unitId": "ea",
+      "workcenterId": "wc-crt-c1",
+      "_customFields": {
+        "_externalId": null
+      }
+    }
+  ],
+  "metadata": {}
+}

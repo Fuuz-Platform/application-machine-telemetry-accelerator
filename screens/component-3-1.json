@@ -1,0 +1,3040 @@
+{
+  "header": {
+    "id": "productionLog",
+    "name": "Production Log",
+    "description": "**Production Log History**\n\nThis screen provides a centralized view of all production log entries, helping you track and analyze manufacturing activity over time. It is designed for operators, supervisors, and managers to monitor production performance and quality.\n\n**Key Capabilities:**\n\n- \\*\\*View Historical Records:\\*\\* Displays detailed logs of production runs, including timestamps, workcenter, work order, product, operator, and source.\n\n- \\*\\*Performance Metrics:\\*\\* Shows quantities of good and scrap parts, total production, yield percentage, and cycle time for each entry.\n\n- \\*\\*Filtering & Search:\\*\\* Use the filter panel to narrow results by date range, workcenter, work order, product, operator, schedule, or data source. Advanced GraphQL filtering is available for complex queries.\n\n- \\*\\*Data Analysis Tools:\\*\\* Supports grouping, charting, and sorting to identify trends and improve decision-making.\n\n- \\*\\*Actions:\\*\\* Quickly create new production entries, edit existing records, or delete logs. You can also refresh data and view detailed information for any record.\n\n- \\*\\*Traceability:\\*\\* Each entry includes metadata such as who created it and when, ensuring full auditability.\n\nThis screen is essential for maintaining accurate production history, monitoring quality, and supporting continuous improvement initiatives.",
+    "active": true,
+    "edgeScreen": false,
+    "forceFullscreen": false,
+    "moduleId": "machineDataApp",
+    "substitutesScreenId": null,
+    "isWidget": false
+  },
+  "version": {
+    "id": "cml8bhxtj73ny01829mgo9gy5",
+    "number": "0.0.8",
+    "description": "",
+    "screenId": "productionLog",
+    "design": {
+      "components": [
+        {
+          "name": "Production Log History",
+          "tabTitle": "Production Log",
+          "type": "canvas",
+          "props": {
+            "design": {
+              "ROOT": {
+                "type": {
+                  "resolvedName": "Screen"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexDirection": "column",
+                  "flexWrap": false,
+                  "alignItems": "stretch",
+                  "justifyContent": "flex-start",
+                  "width": "100%",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "flowsDelay": 0,
+                  "removeOuterMargin": true,
+                  "background": "paper"
+                },
+                "displayName": "Screen",
+                "custom": {
+                  "elementName": "Screen",
+                  "elementCounts": {
+                    "Container": 16,
+                    "Action": 4,
+                    "Resizable Panel": 1,
+                    "Form": 1,
+                    "Select": 5,
+                    "Date Range": 1,
+                    "GraphQL Where Input": 1,
+                    "Table": 1,
+                    "Table Column": 22,
+                    "Text": 4,
+                    "Custom Column": 1
+                  },
+                  "module": {
+                    "id": "machineDataApp",
+                    "group": {
+                      "id": "machineTelemetrySiteApplication"
+                    }
+                  },
+                  "dataModel": "ProductionLog",
+                  "template": "history"
+                },
+                "parent": null,
+                "hidden": false,
+                "nodes": [
+                  "ContainerOuter"
+                ],
+                "linkedNodes": {}
+              },
+              "ContainerOuter": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": true,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "0px",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "ContainerOuter"
+                },
+                "parent": "ROOT",
+                "hidden": false,
+                "nodes": [
+                  "ResizableFilterPanel",
+                  "ContainerBody"
+                ],
+                "linkedNodes": {}
+              },
+              "ContainerBody": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "0px",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0.5px solid #5b30df"
+                  },
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "ContainerBody"
+                },
+                "parent": "ContainerOuter",
+                "hidden": false,
+                "nodes": [
+                  "TopActionBar",
+                  "BrandBandSeparator",
+                  "ProductionLogTable"
+                ],
+                "linkedNodes": {}
+              },
+              "ResizableFilterPanel": {
+                "type": {
+                  "resolvedName": "ResizablePanelLayout"
+                },
+                "isCanvas": true,
+                "props": {
+                  "handle": "right",
+                  "toggleHotkey": "",
+                  "defaultSize": 320,
+                  "axis": false,
+                  "minSize": 0,
+                  "maxSize": 320
+                },
+                "displayName": "Resizable Panel",
+                "custom": {
+                  "elementName": "ResizableFilterPanel"
+                },
+                "parent": "ContainerOuter",
+                "hidden": false,
+                "nodes": [
+                  "ContainerFilterOuter"
+                ],
+                "linkedNodes": {}
+              },
+              "ContainerFilterOuter": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": true,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "ContainerFilterOuter"
+                },
+                "parent": "ResizableFilterPanel",
+                "hidden": false,
+                "nodes": [
+                  "FilterPanelHeader",
+                  "FormFilterPanel"
+                ],
+                "linkedNodes": {}
+              },
+              "ProductionLogTable": {
+                "type": {
+                  "resolvedName": "Table"
+                },
+                "isCanvas": true,
+                "props": {
+                  "margin": 0,
+                  "width": "100%",
+                  "height": "0px",
+                  "flexGrow": true,
+                  "query": {
+                    "api": "Application",
+                    "query": null,
+                    "dataPath": "edges",
+                    "dataTransform": {
+                      "transform": "[edges.node~>|$|(\n  $tot := $coalesce([quantityGood, 0]) + $coalesce([quantityScrap, 0]);\n  $yieldVal := $tot > 0 ? $round(quantityGood / $tot * 100, 1) : 0;\n  $yieldColor := $yieldVal <= 95 ? \"#d32f2f\" : ($yieldVal >= 97 and $yieldVal <= 98.5 ? \"#ed6c02\" : null);\n  {\n    \"totalQuantity\": $tot,\n    \"yieldPercent\": $tot > 0 ? $string($yieldVal) & \"%\" : \"0%\",\n    \"yieldColor\": $yieldColor\n  }\n)|]",
+                      "remote": true
+                    },
+                    "dataSubscription": {
+                      "enabled": false
+                    },
+                    "autoLoad": true,
+                    "fields": [
+                      "id",
+                      "code",
+                      "occurAt",
+                      "quantityGood",
+                      "quantityScrap",
+                      "cycleTime",
+                      "notes",
+                      "source",
+                      "createdAt",
+                      "workcenter.id",
+                      "workcenter.code",
+                      "workcenter.name",
+                      "workOrder.id",
+                      "workOrder.code",
+                      "product.id",
+                      "product.code",
+                      "product.name",
+                      "operator.id",
+                      "operator.email",
+                      "operator.firstName",
+                      "operator.lastName",
+                      "schedule.id",
+                      "schedule.code",
+                      "createdByUser.id",
+                      "createdByUser.firstName",
+                      "createdByUser.lastName"
+                    ],
+                    "disableDataChangeIndicator": false,
+                    "selectedDataChangeIndicator": null,
+                    "model": "ProductionLog",
+                    "readPreference": "primaryPreferred",
+                    "parameters": "{\r\n  \"orderBy\": [\r\n    {\r\n      \"field\": \"occurAt\",\r\n      \"direction\": \"desc\"\r\n    }\r\n  ]\r\n}"
+                  },
+                  "selectable": "none",
+                  "showToolPanels": true,
+                  "showStatusBar": true,
+                  "enableGrouping": true,
+                  "enableCharts": true,
+                  "showColumnMenu": true,
+                  "enableRowDragging": false,
+                  "disableColumnDragging": false,
+                  "disableDragLeaveHidesColumns": false,
+                  "masterDetail": false,
+                  "hideTableHeader": false,
+                  "description": "Production Log history records capturing production output, quality data, and cycle times from workcenters.",
+                  "rowMultiSelectWithClick": false,
+                  "defaultSort": [
+                    {
+                      "field": "TableColumnOccurAt",
+                      "direction": "desc"
+                    }
+                  ],
+                  "limitToOneActiveDetail": false,
+                  "filterFormName": "FormFilterPanel"
+                },
+                "displayName": "Table",
+                "custom": {
+                  "elementName": "ProductionLogTable"
+                },
+                "parent": "ContainerBody",
+                "hidden": false,
+                "nodes": [
+                  "TableColumnActions",
+                  "TableColumnCode",
+                  "TableColumnOccurAt",
+                  "OK3hg7mwC7",
+                  "TableColumnWorkcenter",
+                  "TableColumnWorkOrder",
+                  "TableColumnProduct",
+                  "TableColumnQtyGood",
+                  "TableColumnQtyScrap",
+                  "TableColumnTotalQty",
+                  "TableColumnYield",
+                  "CkKG_uoD7M",
+                  "TableColumnCycleTime",
+                  "pmGvixPF35",
+                  "TableColumnOperator",
+                  "TableColumnSource",
+                  "TableColumnNotes",
+                  "zvVZGoONhj",
+                  "TableColumnCreatedAt",
+                  "TableColumnCreatedBy",
+                  "glZQtqfrng",
+                  "-iR4qbPnFh"
+                ],
+                "linkedNodes": {}
+              },
+              "TableColumnActions": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": " ",
+                  "format": "menu",
+                  "sortable": false,
+                  "dataPath": "actions",
+                  "width": "50px",
+                  "flows": [],
+                  "actions": [
+                    {
+                      "action": [
+                        {
+                          "type": "form",
+                          "submitIcon": "check",
+                          "submitLabel": "Close",
+                          "title": {
+                            "__transform": "\"Production Log: \" & data.code"
+                          },
+                          "transforms": {
+                            "pre": "data"
+                          },
+                          "fields": [
+                            {
+                              "label": "Code",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "Unique identifier for this production log entry.",
+                              "field": "code",
+                              "dataPath": "code",
+                              "target": {
+                                "dataPath": "code"
+                              }
+                            },
+                            {
+                              "label": "Occur At",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "Timestamp when production occurred.",
+                              "format": "datetime",
+                              "formatString": "MM/DD/YYYY h:mm A",
+                              "timeZone": "setting",
+                              "field": "occurAt",
+                              "dataPath": "occurAt",
+                              "target": {
+                                "dataPath": "occurAt"
+                              }
+                            },
+                            {
+                              "label": "Workcenter",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "The workcenter where production occurred.",
+                              "field": "workcenterDisplay",
+                              "dataPath": "workcenterDisplay",
+                              "target": {
+                                "dataPath": "workcenterDisplay"
+                              }
+                            },
+                            {
+                              "label": "Work Order",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "The work order this production fulfills.",
+                              "field": "workOrderDisplay",
+                              "dataPath": "workOrderDisplay",
+                              "target": {
+                                "dataPath": "workOrderDisplay"
+                              }
+                            },
+                            {
+                              "label": "Product",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "The product being manufactured.",
+                              "field": "productDisplay",
+                              "dataPath": "productDisplay",
+                              "target": {
+                                "dataPath": "productDisplay"
+                              }
+                            },
+                            {
+                              "label": "Quantity Good",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "fontColor": "#2e7d32",
+                              "description": "Number of conforming/good parts produced.",
+                              "field": "quantityGood",
+                              "dataPath": "quantityGood",
+                              "target": {
+                                "dataPath": "quantityGood"
+                              }
+                            },
+                            {
+                              "label": "Quantity Scrap",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "fontColor": "#d32f2f",
+                              "description": "Number of rejected/scrap parts.",
+                              "field": "quantityScrap",
+                              "dataPath": "quantityScrap",
+                              "target": {
+                                "dataPath": "quantityScrap"
+                              }
+                            },
+                            {
+                              "label": "Total Quantity",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "Total production (Good + Scrap). Computed field.",
+                              "field": "totalQuantity",
+                              "dataPath": "totalQuantity",
+                              "target": {
+                                "dataPath": "totalQuantity"
+                              }
+                            },
+                            {
+                              "label": "Yield %",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "First-pass yield percentage.",
+                              "field": "yieldPercent",
+                              "dataPath": "yieldPercent",
+                              "target": {
+                                "dataPath": "yieldPercent"
+                              }
+                            },
+                            {
+                              "label": "Cycle Time (seconds)",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "Actual cycle time in seconds.",
+                              "field": "cycleTime",
+                              "dataPath": "cycleTime",
+                              "target": {
+                                "dataPath": "cycleTime"
+                              }
+                            },
+                            {
+                              "label": "Operator",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "The operator who performed this production.",
+                              "field": "operatorDisplay",
+                              "dataPath": "operatorDisplay",
+                              "target": {
+                                "dataPath": "operatorDisplay"
+                              }
+                            },
+                            {
+                              "label": "Schedule",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "Production schedule for shift tracking.",
+                              "field": "schedule.code",
+                              "dataPath": "schedule.code",
+                              "target": {
+                                "dataPath": "schedule.code"
+                              }
+                            },
+                            {
+                              "label": "Source",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "Data source: Manual, PLC, Sensor, or Integration.",
+                              "field": "source",
+                              "dataPath": "source",
+                              "target": {
+                                "dataPath": "source"
+                              }
+                            },
+                            {
+                              "label": "Notes",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "Operator notes or comments.",
+                              "field": "notes",
+                              "dataPath": "notes",
+                              "target": {
+                                "dataPath": "notes"
+                              }
+                            },
+                            {
+                              "label": "Created At",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "System timestamp when record was created.",
+                              "format": "datetime",
+                              "formatString": "MM/DD/YYYY h:mm A",
+                              "timeZone": "setting",
+                              "field": "createdAt",
+                              "dataPath": "createdAt",
+                              "target": {
+                                "dataPath": "createdAt"
+                              }
+                            },
+                            {
+                              "label": "Created By",
+                              "element": "DisplayText",
+                              "type": "display",
+                              "labelPosition": {
+                                "id": "row",
+                                "label": "Left"
+                              },
+                              "justifyContent": "space-between",
+                              "alignTextItems": "center",
+                              "labelFontSize": "body1",
+                              "fontSize": "body1",
+                              "description": "User who created this record.",
+                              "field": "createdByDisplay",
+                              "dataPath": "createdByDisplay",
+                              "target": {
+                                "dataPath": "createdByDisplay"
+                              }
+                            }
+                          ]
+                        }
+                      ],
+                      "text": "View Details",
+                      "icon": {
+                        "icon": "eye",
+                        "color": "info",
+                        "variant": "regular",
+                        "size": "small"
+                      }
+                    },
+                    {
+                      "text": "Edit",
+                      "icon": {
+                        "icon": "pencil",
+                        "color": "warning",
+                        "variant": "regular",
+                        "size": "small"
+                      },
+                      "action": [
+                        {
+                          "type": "form",
+                          "submitIcon": "save",
+                          "title": {
+                            "__transform": "\"Update Production Log \" & data.code"
+                          },
+                          "fields": [
+                            {
+                              "label": "Code",
+                              "uniqueValidationEnabled": false,
+                              "validation": {
+                                "required": true
+                              },
+                              "dataPath": "code",
+                              "field": "code",
+                              "description": "Unique identifier for this production log entry.",
+                              "element": "TextInput",
+                              "type": "text",
+                              "query": {
+                                "fields": [
+                                  "code"
+                                ]
+                              }
+                            },
+                            {
+                              "label": "Occur At",
+                              "uniqueValidationEnabled": false,
+                              "validation": {
+                                "required": true
+                              },
+                              "dataPath": "occurAt",
+                              "field": "occurAt",
+                              "description": "Timestamp when production occurred.",
+                              "element": "DateTimeInput",
+                              "type": "datetime",
+                              "query": {
+                                "fields": [
+                                  "occurAt"
+                                ]
+                              }
+                            },
+                            {
+                              "label": "Workcenter",
+                              "uniqueValidationEnabled": false,
+                              "validation": {
+                                "required": true
+                              },
+                              "dataPath": "workcenter",
+                              "field": "workcenter",
+                              "description": "The workcenter where production occurred.",
+                              "element": "SelectInput",
+                              "type": "select",
+                              "api": "Application",
+                              "dataModel": "Workcenter",
+                              "labelField": "name",
+                              "labelPath": "name",
+                              "additionalFields": [
+                                "name"
+                              ],
+                              "selectFields": [
+                                "name"
+                              ],
+                              "target": {
+                                "dataPath": "workcenterId"
+                              },
+                              "query": {
+                                "fields": [
+                                  "workcenter.id",
+                                  "workcenter.name"
+                                ]
+                              }
+                            },
+                            {
+                              "label": "Work Order",
+                              "uniqueValidationEnabled": false,
+                              "validation": {
+                                "required": false
+                              },
+                              "dataPath": "workOrder",
+                              "field": "workOrder",
+                              "description": "The work order this production fulfills.",
+                              "element": "SelectInput",
+                              "type": "select",
+                              "api": "Application",
+                              "dataModel": "WorkOrder",
+                              "labelField": "code",
+                              "labelPath": "code",
+                              "additionalFields": [
+                                "code"
+                              ],
+                              "selectFields": [
+                                "code"
+                              ],
+                              "target": {
+                                "dataPath": "workOrderId"
+                              },
+                              "query": {
+                                "fields": [
+                                  "workOrder.id",
+                                  "workOrder.code"
+                                ]
+                              }
+                            },
+                            {
+                              "label": "Product",
+                              "uniqueValidationEnabled": false,
+                              "validation": {
+                                "required": true
+                              },
+                              "dataPath": "product",
+                              "field": "product",
+                              "description": "The product being manufactured.",
+                              "element": "SelectInput",
+                              "type": "select",
+                              "api": "Application",
+                              "dataModel": "Product",
+                              "labelField": "name",
+                              "labelPath": "name",
+                              "additionalFields": [
+                                "name"
+                              ],
+                              "selectFields": [
+                                "name"
+                              ],
+                              "target": {
+                                "dataPath": "productId"
+                              },
+                              "query": {
+                                "fields": [
+                                  "product.id",
+                                  "product.name"
+                                ]
+                              }
+                            },
+                            {
+                              "label": "Operator",
+                              "uniqueValidationEnabled": false,
+                              "validation": {
+                                "required": false
+                              },
+                              "dataPath": "operator",
+                              "field": "operator",
+                              "description": "The operator who performed this production.",
+                              "element": "SelectInput",
+                              "type": "select",
+                              "api": "Application",
+                              "dataModel": "User",
+                              "labelField": "email",
+                              "labelPath": "email",
+                              "additionalFields": [
+                                "email",
+                                "firstName",
+                                "lastName"
+                              ],
+                              "selectFields": [
+                                "email",
+                                "firstName",
+                                "lastName"
+                              ],
+                              "target": {
+                                "dataPath": "operatorId"
+                              },
+                              "query": {
+                                "fields": [
+                                  "operator.id",
+                                  "operator.email",
+                                  "operator.firstName",
+                                  "operator.lastName"
+                                ]
+                              }
+                            },
+                            {
+                              "label": "Quantity Good",
+                              "uniqueValidationEnabled": false,
+                              "validation": {
+                                "required": true
+                              },
+                              "dataPath": "quantityGood",
+                              "field": "quantityGood",
+                              "description": "Number of conforming/good parts produced.",
+                              "element": "FloatInput",
+                              "type": "float",
+                              "query": {
+                                "fields": [
+                                  "quantityGood"
+                                ]
+                              }
+                            },
+                            {
+                              "label": "Quantity Scrap",
+                              "uniqueValidationEnabled": false,
+                              "validation": {
+                                "required": true
+                              },
+                              "dataPath": "quantityScrap",
+                              "field": "quantityScrap",
+                              "description": "Number of rejected/scrap parts.",
+                              "element": "FloatInput",
+                              "type": "float",
+                              "query": {
+                                "fields": [
+                                  "quantityScrap"
+                                ]
+                              }
+                            },
+                            {
+                              "label": "Cycle Time",
+                              "uniqueValidationEnabled": false,
+                              "validation": {
+                                "required": false
+                              },
+                              "dataPath": "cycleTime",
+                              "field": "cycleTime",
+                              "description": "Actual cycle time in seconds.",
+                              "element": "FloatInput",
+                              "type": "float",
+                              "query": {
+                                "fields": [
+                                  "cycleTime"
+                                ]
+                              }
+                            },
+                            {
+                              "label": "Schedule",
+                              "uniqueValidationEnabled": false,
+                              "validation": {
+                                "required": false
+                              },
+                              "dataPath": "schedule",
+                              "field": "schedule",
+                              "description": "Production schedule for shift tracking.",
+                              "element": "SelectInput",
+                              "type": "select",
+                              "api": "Application",
+                              "dataModel": "Schedule",
+                              "labelField": "code",
+                              "labelPath": "code",
+                              "additionalFields": [
+                                "code"
+                              ],
+                              "selectFields": [
+                                "code"
+                              ],
+                              "target": {
+                                "dataPath": "scheduleId"
+                              },
+                              "query": {
+                                "fields": [
+                                  "schedule.id",
+                                  "schedule.code"
+                                ]
+                              }
+                            },
+                            {
+                              "label": "Source",
+                              "uniqueValidationEnabled": false,
+                              "validation": {
+                                "required": false
+                              },
+                              "dataPath": "source",
+                              "field": "source",
+                              "description": "Data source: Manual, PLC, Sensor, or Integration.",
+                              "element": "TextInput",
+                              "type": "text",
+                              "query": {
+                                "fields": [
+                                  "source"
+                                ]
+                              }
+                            },
+                            {
+                              "label": "Notes",
+                              "uniqueValidationEnabled": false,
+                              "validation": {
+                                "required": false
+                              },
+                              "dataPath": "notes",
+                              "field": "notes",
+                              "description": "Operator notes or comments.",
+                              "element": "TextInput",
+                              "type": "text",
+                              "query": {
+                                "fields": [
+                                  "notes"
+                                ]
+                              }
+                            }
+                          ],
+                          "transforms": {
+                            "pre": "data"
+                          },
+                          "message": {
+                            "__transform": ""
+                          }
+                        },
+                        {
+                          "type": "mutation",
+                          "api": "Application",
+                          "mutation": "mutation UpdateProductionLog($payload: [ProductionLogUpdatePayloadInput!]!) {\n  mutation: updateProductionLog(payload: $payload) {\n    id\n    code\n  }\n}",
+                          "transforms": {
+                            "pre": "{\n  \"payload\": rowData.{\n    \"where\": {\n      \"id\": id\n    },\n    \"update\": $$.data\n  }\n}"
+                          },
+                          "message": {
+                            "__transform": "(\"Production Log \" & rowData.code) & \" updated successfully.\""
+                          }
+                        },
+                        {
+                          "type": "transformation",
+                          "remote": false,
+                          "transformation": "$components.ProductionLogTable.fn.search()"
+                        }
+                      ]
+                    },
+                    {
+                      "text": "Delete",
+                      "icon": {
+                        "icon": "trash",
+                        "color": "error",
+                        "variant": "regular",
+                        "size": "small"
+                      },
+                      "action": [
+                        {
+                          "type": "confirmation",
+                          "buttonColor": "error",
+                          "submitIcon": {
+                            "icon": "trash",
+                            "variant": "solid"
+                          },
+                          "message": {
+                            "__transform": "\"Delete Production Log \" & data.code & \"?\""
+                          },
+                          "title": {
+                            "__transform": ""
+                          }
+                        },
+                        {
+                          "type": "mutation",
+                          "api": "Application",
+                          "mutation": "mutation DeleteProductionLog($payload: [ProductionLogDeletePayloadInput!]!) {\n  mutation: deleteProductionLog(payload: $payload) {\n    id\n    code\n  }\n}",
+                          "transforms": {
+                            "pre": "{\n  \"payload\": data.{\n    \"where\": {\n      \"id\": id\n    }\n  }\n}"
+                          },
+                          "message": {
+                            "__transform": "\"Production Log \" & rowData.code & \" deleted successfully.\""
+                          }
+                        },
+                        {
+                          "type": "transformation",
+                          "remote": false,
+                          "transformation": "$components.ProductionLogTable.fn.search()"
+                        }
+                      ]
+                    }
+                  ],
+                  "isFlow": false,
+                  "menuIcon": "ellipsis-v",
+                  "iconSize": "small",
+                  "query": {
+                    "fields": []
+                  },
+                  "showColumnSuppressMenu": true,
+                  "editable": false,
+                  "sortAsNumber": false,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "description": "Row actions menu. Click to view details, edit, or delete."
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnActions"
+                },
+                "parent": "ProductionLogTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnCode": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Code",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "code",
+                  "description": "Unique identifier for the production log entry. Used for traceability.",
+                  "query": {
+                    "fields": [
+                      "id",
+                      "code"
+                    ]
+                  },
+                  "field": "code",
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnCode"
+                },
+                "parent": "ProductionLogTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnOccurAt": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Occur At",
+                  "format": "datetime",
+                  "sortable": true,
+                  "dataPath": "occurAt",
+                  "description": "Timestamp when production occurred. Used for time-based queries and shift assignment.",
+                  "query": {},
+                  "field": "occurAt",
+                  "width": "180px",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "showColumnSuppressMenu": false,
+                  "timeZone": "setting"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnOccurAt"
+                },
+                "parent": "ProductionLogTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnWorkcenter": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Workcenter Code",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "workcenter.code",
+                  "description": "**`code`** (`String!`)\nUnique workcenter identifier.\n\n- Often matches ERP work center code.\n- Example: `WC-PRESS-01`, `WC-FILL-A`.",
+                  "query": {},
+                  "field": "workcenter.code",
+                  "width": "225",
+                  "editable": false,
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnWorkcenter"
+                },
+                "parent": "ProductionLogTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnWorkOrder": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Work Order Code",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "workOrder.code",
+                  "description": "**`code`** (`String!`)\nUnique work order number.\n\n- Often matches ERP order number.\n- Example: `WO-2025-00001`, `MO-12345`.",
+                  "query": {
+                    "fields": [
+                      "workOrder.id",
+                      "workOrder.code"
+                    ]
+                  },
+                  "field": "workOrder.code",
+                  "editable": false,
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnWorkOrder"
+                },
+                "parent": "ProductionLogTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnProduct": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Product Code",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "product.code",
+                  "description": "**`code`** (`String!`)\nUnique product code, SKU, or part number.\n\n- Used in work orders, labels, and integrations.\n- Example: `WIDGET-001`, `ASM-12345`, `FG-SAUCE-500ML`.",
+                  "query": {},
+                  "field": "product.code",
+                  "editable": false,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "width": "200"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnProduct"
+                },
+                "parent": "ProductionLogTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnQtyGood": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Qty Good",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "quantityGood",
+                  "description": "Quantity of conforming/good parts. Contributes to OEE Quality.",
+                  "query": {},
+                  "field": "quantityGood",
+                  "style": {
+                    "alignItems": "center",
+                    "color": "#2e7d32"
+                  },
+                  "sortAsNumber": true,
+                  "formatString": "0,0.00"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnQtyGood"
+                },
+                "parent": "ProductionLogTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnQtyScrap": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Qty Scrap",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "quantityScrap",
+                  "description": "Quantity of rejected/scrap parts. Includes rework and defects.",
+                  "query": {},
+                  "field": "quantityScrap",
+                  "style": {
+                    "alignItems": "center",
+                    "color": "#d32f2f"
+                  },
+                  "sortAsNumber": true,
+                  "formatString": "0,0.00"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnQtyScrap"
+                },
+                "parent": "ProductionLogTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnTotalQty": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Total Qty",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "totalQuantity",
+                  "description": "Total production quantity (Good + Scrap). Computed field.",
+                  "query": {
+                    "fields": []
+                  },
+                  "field": "totalQuantity",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "sortAsNumber": true,
+                  "editable": false,
+                  "formatString": "0,0.00"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnTotalQty"
+                },
+                "parent": "ProductionLogTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnYield": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Yield %",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "yieldPercent",
+                  "description": "First-pass yield: (Qty Good / Total Qty) × 100. Key quality metric.",
+                  "query": {
+                    "fields": []
+                  },
+                  "field": "yieldPercent",
+                  "style": {
+                    "__transform": "{\n  \"alignItems\": \"center\",\n  \"color\": data.yieldColor\n}",
+                    "__dynamicFields": {
+                      "payload": null,
+                      "context": []
+                    },
+                    "__cacheKey": "",
+                    "__remote": false
+                  },
+                  "sortAsNumber": true,
+                  "editable": false
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnYield"
+                },
+                "parent": "ProductionLogTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnCycleTime": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Cycle Time (s)",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "cycleTime",
+                  "description": "Actual cycle time in seconds. Used for OEE Performance.",
+                  "query": {},
+                  "field": "cycleTime",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "sortAsNumber": true,
+                  "formatString": "0,0.00"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnCycleTime"
+                },
+                "parent": "ProductionLogTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnOperator": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Operator",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "operatorDisplay",
+                  "description": "The operator who performed this production.",
+                  "query": {
+                    "fields": [
+                      "operator.id",
+                      "operator.firstName",
+                      "operator.lastName"
+                    ]
+                  },
+                  "field": "operatorDisplay",
+                  "width": "140px",
+                  "editable": false,
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnOperator"
+                },
+                "parent": "ProductionLogTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnSource": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Source",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "source",
+                  "description": "Origin of record: Manual, PLC, Sensor, or Integration.",
+                  "query": {},
+                  "field": "source",
+                  "width": "100px",
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnSource"
+                },
+                "parent": "ProductionLogTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnNotes": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Notes",
+                  "format": "text",
+                  "sortable": false,
+                  "dataPath": "notes",
+                  "description": "Free-form notes about this production run.",
+                  "query": {},
+                  "field": "notes",
+                  "width": "200px",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "wrapText": true
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnNotes"
+                },
+                "parent": "ProductionLogTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnCreatedAt": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Created At",
+                  "format": "datetime",
+                  "sortable": true,
+                  "dataPath": "createdAt",
+                  "description": "System timestamp when record was created.",
+                  "query": {},
+                  "field": "createdAt",
+                  "width": "160px",
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "showColumnSuppressMenu": false,
+                  "timeZone": "setting"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnCreatedAt"
+                },
+                "parent": "ProductionLogTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TableColumnCreatedBy": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Created By",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "createdByUser.email",
+                  "description": "The email address of the User.  The email is also used as the username.",
+                  "query": {
+                    "fields": [
+                      "createdByUser.id",
+                      "createdByUser.email"
+                    ]
+                  },
+                  "field": "createdByUser.email",
+                  "width": "140px",
+                  "editable": false,
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumnCreatedBy"
+                },
+                "parent": "ProductionLogTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "FormFilterPanel": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "isCanvas": true,
+                "props": {
+                  "query": {
+                    "api": "Application",
+                    "query": null,
+                    "dataPath": "edges[0]",
+                    "dataTransform": {
+                      "transform": null,
+                      "remote": true
+                    },
+                    "dataSubscription": {
+                      "enabled": false
+                    },
+                    "autoLoad": false,
+                    "parameters": "{\n  \"filter\": {\n    \"id\": {\n      \"_eq\": id\n    }\n  },\n  \"first\": 1\n}",
+                    "fields": [
+                      "id"
+                    ],
+                    "disableDataChangeIndicator": false,
+                    "dataChangeIndicatorSize": "normal",
+                    "model": "ProductionLog"
+                  },
+                  "blockNavigationWhenDirty": false,
+                  "enableConfirmOnDataChanged": false,
+                  "description": "Use filters to narrow down production log records."
+                },
+                "displayName": "Form",
+                "custom": {
+                  "elementName": "FormFilterPanel"
+                },
+                "parent": "ContainerFilterOuter",
+                "hidden": false,
+                "nodes": [
+                  "FilterFormContainer"
+                ],
+                "linkedNodes": {}
+              },
+              "FilterFormContainer": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "0px",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {},
+                  "data": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "FilterFormContainer"
+                },
+                "parent": "FormFilterPanel",
+                "hidden": false,
+                "nodes": [
+                  "SelectOccurAtRange",
+                  "SelectWorkcenter",
+                  "SelectWorkOrder",
+                  "SelectProduct",
+                  "SelectOperator",
+                  "SelectSchedule",
+                  "D7KWofsFRM",
+                  "GraphQLAdvancedFilter"
+                ],
+                "linkedNodes": {}
+              },
+              "SelectOccurAtRange": {
+                "type": {
+                  "resolvedName": "DateRangeInput"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "datetimeRange",
+                  "label": "Date Range",
+                  "target": {
+                    "dataPath": "occurAt"
+                  },
+                  "dataPath": "occurAtRange",
+                  "formElement": "FormFilterPanel",
+                  "disabled": false,
+                  "description": "Filter by production occurrence date range."
+                },
+                "displayName": "Date Range",
+                "custom": {
+                  "elementName": "SelectOccurAtRange"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "SelectWorkcenter": {
+                "type": {
+                  "resolvedName": "SelectInput"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "select",
+                  "label": "Work Order",
+                  "dialogMode": "never",
+                  "multiselect": true,
+                  "isClearable": true,
+                  "selectAll": true,
+                  "searchPredicate": "contains",
+                  "api": "Application",
+                  "stateTracking": "full",
+                  "optionLimit": 20,
+                  "optionLimitFlex": 10,
+                  "alwaysReloadOptions": false,
+                  "target": {
+                    "dataPath": "workOrderId._in"
+                  },
+                  "dataPath": "workOrder",
+                  "formElement": "FormFilterPanel",
+                  "variant": "filled",
+                  "disabled": false,
+                  "description": "Filter by one or more work orders. Multi-select enabled.",
+                  "query": {
+                    "api": "Application",
+                    "model": "Workcenter",
+                    "dataPath": "edges",
+                    "fields": [
+                      "workOrder.id",
+                      "workOrder.code"
+                    ],
+                    "parameters": "{\n  \"orderBy\": {\n    \"name\": \"ASC\"\n  }\n}"
+                  },
+                  "optionLabelPath": "name",
+                  "optionValuePath": "id",
+                  "optionSecondaryLabelPath": "code",
+                  "field": "workOrder",
+                  "labelPath": "code",
+                  "orderByField": "code",
+                  "dataModel": "WorkOrder",
+                  "selectFields": [
+                    "code",
+                    "productId"
+                  ],
+                  "additionalFields": [],
+                  "orderByDirection": "desc",
+                  "predicate": "_in"
+                },
+                "displayName": "Select",
+                "custom": {
+                  "elementName": "SelectWorkcenter"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "SelectWorkOrder": {
+                "type": {
+                  "resolvedName": "SelectInput"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "select",
+                  "label": "Workcenter",
+                  "dialogMode": "never",
+                  "multiselect": true,
+                  "isClearable": true,
+                  "selectAll": true,
+                  "searchPredicate": "contains",
+                  "api": "Application",
+                  "stateTracking": "full",
+                  "optionLimit": 20,
+                  "optionLimitFlex": 10,
+                  "alwaysReloadOptions": false,
+                  "target": {
+                    "dataPath": "workcenterId._in"
+                  },
+                  "dataPath": "workcenter",
+                  "formElement": "FormFilterPanel",
+                  "variant": "filled",
+                  "disabled": false,
+                  "description": "Filter by one or more workcenters. Multi-select enabled.",
+                  "query": {
+                    "api": "Application",
+                    "model": "WorkOrder",
+                    "dataPath": "edges",
+                    "fields": [
+                      "workcenter.id",
+                      "workcenter.name"
+                    ],
+                    "parameters": "{\n  \"orderBy\": {\n    \"code\": \"ASC\"\n  }\n}"
+                  },
+                  "optionLabelPath": "code",
+                  "optionValuePath": "id",
+                  "optionSecondaryLabelPath": "status",
+                  "field": "workcenter",
+                  "predicate": "_in",
+                  "labelPath": "name",
+                  "orderByField": "name",
+                  "dataModel": "Workcenter",
+                  "selectFields": [
+                    "name",
+                    "code"
+                  ],
+                  "additionalFields": [],
+                  "orderByDirection": "asc"
+                },
+                "displayName": "Select",
+                "custom": {
+                  "elementName": "SelectWorkOrder"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "SelectProduct": {
+                "type": {
+                  "resolvedName": "SelectInput"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "select",
+                  "label": "Product",
+                  "dialogMode": "never",
+                  "multiselect": true,
+                  "isClearable": true,
+                  "selectAll": true,
+                  "searchPredicate": "contains",
+                  "api": "Application",
+                  "stateTracking": "full",
+                  "optionLimit": 20,
+                  "optionLimitFlex": 10,
+                  "alwaysReloadOptions": false,
+                  "target": {
+                    "dataPath": "productId._in"
+                  },
+                  "dataPath": "product",
+                  "formElement": "FormFilterPanel",
+                  "variant": "filled",
+                  "disabled": false,
+                  "description": "Filter by one or more products. Multi-select enabled.",
+                  "query": {
+                    "api": "Application",
+                    "model": "Product",
+                    "dataPath": "edges",
+                    "fields": [
+                      "product.id",
+                      "product.name"
+                    ],
+                    "parameters": "{\n  \"orderBy\": {\n    \"name\": \"ASC\"\n  }\n}"
+                  },
+                  "optionLabelPath": "name",
+                  "optionValuePath": "id",
+                  "optionSecondaryLabelPath": "code",
+                  "field": "product",
+                  "predicate": "_in",
+                  "labelPath": "name",
+                  "orderByField": "name",
+                  "dataModel": "Product",
+                  "selectFields": [
+                    "name",
+                    "code"
+                  ],
+                  "additionalFields": [],
+                  "orderByDirection": "asc"
+                },
+                "displayName": "Select",
+                "custom": {
+                  "elementName": "SelectProduct"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "SelectOperator": {
+                "type": {
+                  "resolvedName": "SelectInput"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "select",
+                  "label": "Operator",
+                  "dialogMode": "never",
+                  "multiselect": true,
+                  "isClearable": true,
+                  "selectAll": true,
+                  "searchPredicate": "contains",
+                  "api": "Application",
+                  "stateTracking": "full",
+                  "optionLimit": 20,
+                  "optionLimitFlex": 10,
+                  "alwaysReloadOptions": false,
+                  "target": {
+                    "dataPath": "operatorId._in"
+                  },
+                  "dataPath": "operator",
+                  "formElement": "FormFilterPanel",
+                  "variant": "filled",
+                  "disabled": false,
+                  "description": "Filter by one or more operators. Multi-select enabled.",
+                  "query": {
+                    "api": "Application",
+                    "model": "User",
+                    "dataPath": "edges",
+                    "fields": [
+                      "operator.id",
+                      "operator.email"
+                    ],
+                    "parameters": "{\n  \"orderBy\": {\n    \"lastName\": \"ASC\"\n  }\n}"
+                  },
+                  "optionLabelPath": "firstName",
+                  "optionValuePath": "id",
+                  "optionSecondaryLabelPath": "lastName",
+                  "field": "operator",
+                  "labelPath": "email",
+                  "orderByField": "email",
+                  "dataModel": "User",
+                  "selectFields": [
+                    "email"
+                  ],
+                  "additionalFields": [],
+                  "orderByDirection": "asc",
+                  "predicate": "_in"
+                },
+                "displayName": "Select",
+                "custom": {
+                  "elementName": "SelectOperator"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "GraphQLAdvancedFilter": {
+                "type": {
+                  "resolvedName": "WrappedGraphQLPredicate"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "graphqlWhere",
+                  "dataPath": "predicate",
+                  "target": {
+                    "dataPath": "_and.0"
+                  },
+                  "formElement": "FormFilterPanel",
+                  "label": "Advanced Filter",
+                  "disabled": false,
+                  "description": "Advanced GraphQL where clause for complex filtering."
+                },
+                "displayName": "GraphQL Where Input",
+                "custom": {
+                  "elementName": "GraphQLAdvancedFilter"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "TopActionBar": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "35px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0px undefined ",
+                    "borderBottom": "0px none "
+                  },
+                  "justifyItems": "start",
+                  "style": {},
+                  "background": "light",
+                  "customBackground": "#f0f0f0"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "TopActionBar"
+                },
+                "parent": "ContainerBody",
+                "hidden": false,
+                "nodes": [
+                  "ContainerActionsStandard",
+                  "ContainerActionsCustom"
+                ],
+                "linkedNodes": {}
+              },
+              "ContainerActionsStandard": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 12,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "space-between",
+                  "alignItems": "center",
+                  "width": "80px",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0px undefined ",
+                    "borderRight": "0px none "
+                  },
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "ContainerActionsStandard"
+                },
+                "parent": "TopActionBar",
+                "hidden": false,
+                "nodes": [
+                  "ActionCreateEntry"
+                ],
+                "linkedNodes": {}
+              },
+              "ActionCreateEntry": {
+                "type": {
+                  "resolvedName": "ActionButton"
+                },
+                "isCanvas": false,
+                "props": {
+                  "margin": 0,
+                  "buttonColor": "primary",
+                  "icon": {
+                    "icon": "plus",
+                    "color": "success",
+                    "variant": "regular",
+                    "size": "icon"
+                  },
+                  "width": "40px",
+                  "height": "30px",
+                  "disabled": false,
+                  "hidden": false,
+                  "useIconButton": true,
+                  "disableHover": false,
+                  "disableRipple": false,
+                  "action": [
+                    {
+                      "type": "form",
+                      "submitIcon": "plus",
+                      "title": "Create Production Log",
+                      "fields": [
+                        {
+                          "label": "Code",
+                          "dataPath": "code",
+                          "field": "code",
+                          "description": "Unique identifier for this entry.",
+                          "element": "TextInput",
+                          "type": "text",
+                          "validation": {
+                            "required": true
+                          }
+                        },
+                        {
+                          "label": "Occur At",
+                          "dataPath": "occurAt",
+                          "field": "occurAt",
+                          "description": "When production occurred.",
+                          "element": "DateTimeInput",
+                          "type": "datetime",
+                          "validation": {
+                            "required": true
+                          }
+                        },
+                        {
+                          "label": "Workcenter",
+                          "dataPath": "workcenter",
+                          "field": "workcenter",
+                          "description": "Where production occurred.",
+                          "element": "SelectInput",
+                          "type": "select",
+                          "api": "Application",
+                          "dataModel": "Workcenter",
+                          "labelField": "name",
+                          "labelPath": "name",
+                          "additionalFields": [
+                            "name"
+                          ],
+                          "selectFields": [
+                            "name"
+                          ],
+                          "target": {
+                            "dataPath": "workcenterId"
+                          },
+                          "query": {
+                            "fields": [
+                              "workcenter.id",
+                              "workcenter.name"
+                            ]
+                          },
+                          "validation": {
+                            "required": true
+                          }
+                        },
+                        {
+                          "label": "Work Order",
+                          "dataPath": "workOrder",
+                          "field": "workOrder",
+                          "description": "Work order this fulfills.",
+                          "element": "SelectInput",
+                          "type": "select",
+                          "api": "Application",
+                          "dataModel": "WorkOrder",
+                          "labelField": "code",
+                          "labelPath": "code",
+                          "additionalFields": [
+                            "code"
+                          ],
+                          "selectFields": [
+                            "code"
+                          ],
+                          "target": {
+                            "dataPath": "workOrderId"
+                          },
+                          "query": {
+                            "fields": [
+                              "workOrder.id",
+                              "workOrder.code"
+                            ]
+                          },
+                          "validation": {
+                            "required": false
+                          }
+                        },
+                        {
+                          "label": "Product",
+                          "dataPath": "product",
+                          "field": "product",
+                          "description": "Product being manufactured.",
+                          "element": "SelectInput",
+                          "type": "select",
+                          "api": "Application",
+                          "dataModel": "Product",
+                          "labelField": "name",
+                          "labelPath": "name",
+                          "additionalFields": [
+                            "name"
+                          ],
+                          "selectFields": [
+                            "name"
+                          ],
+                          "target": {
+                            "dataPath": "productId"
+                          },
+                          "query": {
+                            "fields": [
+                              "product.id",
+                              "product.name"
+                            ]
+                          },
+                          "validation": {
+                            "required": true
+                          }
+                        },
+                        {
+                          "label": "Quantity Good",
+                          "dataPath": "quantityGood",
+                          "field": "quantityGood",
+                          "description": "Good parts produced.",
+                          "element": "FloatInput",
+                          "type": "float",
+                          "validation": {
+                            "required": true
+                          }
+                        },
+                        {
+                          "label": "Quantity Scrap",
+                          "dataPath": "quantityScrap",
+                          "field": "quantityScrap",
+                          "description": "Scrap parts. Enter 0 if none.",
+                          "element": "FloatInput",
+                          "type": "float",
+                          "validation": {
+                            "required": true
+                          }
+                        },
+                        {
+                          "label": "Cycle Time",
+                          "dataPath": "cycleTime",
+                          "field": "cycleTime",
+                          "description": "Cycle time in seconds.",
+                          "element": "FloatInput",
+                          "type": "float",
+                          "validation": {
+                            "required": false
+                          }
+                        },
+                        {
+                          "label": "Operator",
+                          "dataPath": "operator",
+                          "field": "operator",
+                          "description": "Operator who performed work.",
+                          "element": "SelectInput",
+                          "type": "select",
+                          "api": "Application",
+                          "dataModel": "User",
+                          "labelField": "email",
+                          "labelPath": "email",
+                          "additionalFields": [
+                            "email"
+                          ],
+                          "selectFields": [
+                            "email"
+                          ],
+                          "target": {
+                            "dataPath": "operatorId"
+                          },
+                          "query": {
+                            "fields": [
+                              "operator.id",
+                              "operator.email"
+                            ]
+                          },
+                          "validation": {
+                            "required": false
+                          }
+                        },
+                        {
+                          "label": "Schedule",
+                          "dataPath": "schedule",
+                          "field": "schedule",
+                          "description": "Production schedule.",
+                          "element": "SelectInput",
+                          "type": "select",
+                          "api": "Application",
+                          "dataModel": "Schedule",
+                          "labelField": "code",
+                          "labelPath": "code",
+                          "additionalFields": [
+                            "code"
+                          ],
+                          "selectFields": [
+                            "code"
+                          ],
+                          "target": {
+                            "dataPath": "scheduleId"
+                          },
+                          "query": {
+                            "fields": [
+                              "schedule.id",
+                              "schedule.code"
+                            ]
+                          },
+                          "validation": {
+                            "required": false
+                          }
+                        },
+                        {
+                          "label": "Source",
+                          "dataPath": "source",
+                          "field": "source",
+                          "description": "Data source: Manual, PLC, etc.",
+                          "element": "TextInput",
+                          "type": "text",
+                          "validation": {
+                            "required": false
+                          }
+                        },
+                        {
+                          "label": "Notes",
+                          "dataPath": "notes",
+                          "field": "notes",
+                          "description": "Additional notes.",
+                          "element": "TextInput",
+                          "type": "text",
+                          "validation": {
+                            "required": false
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "mutation",
+                      "api": "Application",
+                      "mutation": "mutation CreateProductionLog($payload: [ProductionLogCreatePayloadInput!]!) {\n  mutation: createProductionLog(payload: $payload) {\n    id\n    code\n  }\n}",
+                      "transforms": {
+                        "pre": "{\n  \"payload\": {\n    \"create\": data\n  }\n}"
+                      },
+                      "message": {
+                        "__transform": "\"Production Log \" & data.mutation[0].code & \" created successfully.\""
+                      }
+                    },
+                    {
+                      "type": "transformation",
+                      "remote": false,
+                      "transformation": "$components.ProductionLogTable.fn.search()"
+                    }
+                  ],
+                  "title": "Log New Production Entry",
+                  "customTextSize": 10,
+                  "customIconSize": 0
+                },
+                "displayName": "Action",
+                "custom": {
+                  "editor": {
+                    "category": "Buttons",
+                    "description": "Create production log entry.",
+                    "color": "#9c5a94",
+                    "elementName": "Create production log entry.",
+                    "icon": "plus",
+                    "requiresTable": true
+                  },
+                  "elementName": "ActionCreateEntry"
+                },
+                "parent": "ContainerActionsStandard",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ContainerActionsCustom": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 12,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "center",
+                  "width": "200px",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0px undefined ",
+                    "borderRight": "undefinedpx none "
+                  },
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "ContainerActionsCustom"
+                },
+                "parent": "TopActionBar",
+                "hidden": false,
+                "nodes": [
+                  "ActionRefresh"
+                ],
+                "linkedNodes": {}
+              },
+              "FilterPanelHeader": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "40px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0px undefined ",
+                    "borderBottom": "0px none "
+                  },
+                  "justifyItems": "start",
+                  "style": {},
+                  "background": "light",
+                  "customBackground": "#f0f0f0"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "FilterPanelHeader"
+                },
+                "parent": "ContainerFilterOuter",
+                "hidden": false,
+                "nodes": [
+                  "FilterPanelHeaderInner",
+                  "FilterBrandSeparator"
+                ],
+                "linkedNodes": {}
+              },
+              "FilterPanelHeaderInner": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 4,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "space-between",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "35px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "multi",
+                    "border": "0px undefined ",
+                    "borderLeft": "0px undefined ",
+                    "borderBottom": "0px none "
+                  },
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "FilterPanelHeaderInner"
+                },
+                "parent": "FilterPanelHeader",
+                "hidden": false,
+                "nodes": [
+                  "FilterPanelTitle",
+                  "FilterSearchContainer"
+                ],
+                "linkedNodes": {}
+              },
+              "FilterPanelTitle": {
+                "type": {
+                  "resolvedName": "RichText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "width": "180px",
+                  "height": "40px",
+                  "content": {
+                    "blocks": [
+                      {
+                        "key": "filterPanelTitle",
+                        "text": "Production Log Filters",
+                        "type": "unstyled",
+                        "depth": 0,
+                        "inlineStyleRanges": [
+                          {
+                            "offset": 0,
+                            "length": 22,
+                            "style": "fontfamily-Roboto"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 22,
+                            "style": "fontsize-14"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 22,
+                            "style": "color-rgb(44,130,201)"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 22,
+                            "style": "BOLD"
+                          }
+                        ],
+                        "entityRanges": [],
+                        "data": {}
+                      }
+                    ],
+                    "entityMap": {}
+                  }
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "FilterPanelTitle"
+                },
+                "parent": "FilterPanelHeaderInner",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "FilterSearchContainer": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "center",
+                  "width": "30px",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "FilterSearchContainer"
+                },
+                "parent": "FilterPanelHeaderInner",
+                "hidden": false,
+                "nodes": [
+                  "ActionSearch"
+                ],
+                "linkedNodes": {}
+              },
+              "ActionSearch": {
+                "type": {
+                  "resolvedName": "ActionButton"
+                },
+                "isCanvas": false,
+                "props": {
+                  "margin": 0,
+                  "buttonColor": "primary",
+                  "icon": {
+                    "icon": "magnifying-glass",
+                    "color": "info",
+                    "variant": "regular",
+                    "size": "icon"
+                  },
+                  "width": "24px",
+                  "height": "24px",
+                  "disabled": false,
+                  "hidden": false,
+                  "useIconButton": true,
+                  "disableHover": false,
+                  "disableRipple": false,
+                  "action": [
+                    {
+                      "type": "transformation",
+                      "transformation": "$components.ProductionLogTable.fn.search()",
+                      "remote": false
+                    }
+                  ],
+                  "title": "Search Using Filters"
+                },
+                "displayName": "Action",
+                "custom": {
+                  "elementName": "ActionSearch"
+                },
+                "parent": "FilterSearchContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "FilterBrandSeparator": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "4px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {
+                    "background-image": "linear-gradient(90deg, #39005a,#5b30df, #03caaf)"
+                  }
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "FilterBrandSeparator"
+                },
+                "parent": "FilterPanelHeader",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "BrandBandSeparator": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "4px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {
+                    "background-image": "linear-gradient(90deg, #39005a,#5b30df, #03caaf)"
+                  }
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "BrandBandSeparator"
+                },
+                "parent": "ContainerBody",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "D7KWofsFRM": {
+                "type": {
+                  "resolvedName": "OptionsInput"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "options",
+                  "label": "Source",
+                  "multiselect": true,
+                  "isClearable": true,
+                  "selectAll": true,
+                  "searchPredicate": "contains",
+                  "stateTracking": "id",
+                  "optionLimit": 10,
+                  "optionLimitFlex": 5,
+                  "description": "Filter by data source type.",
+                  "formElement": "FormFilterPanel",
+                  "variant": "filled",
+                  "options": [
+                    {
+                      "id": "Manual",
+                      "label": "Manual"
+                    },
+                    {
+                      "id": "PLC",
+                      "label": "PLC"
+                    },
+                    {
+                      "id": "Sensor",
+                      "label": "Sensor"
+                    },
+                    {
+                      "id": "Integration",
+                      "label": "Integration"
+                    },
+                    {
+                      "id": "Barcode Scanner",
+                      "label": "Barcode Scanner"
+                    }
+                  ],
+                  "disabled": false,
+                  "target": {
+                    "dataPath": "source._in"
+                  },
+                  "dataPath": "source",
+                  "labelPath": "label"
+                },
+                "displayName": "Options",
+                "custom": {
+                  "elementName": "SourceOptions"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "ActionRefresh": {
+                "type": {
+                  "resolvedName": "ActionButton"
+                },
+                "isCanvas": false,
+                "props": {
+                  "margin": 0,
+                  "buttonColor": "primary",
+                  "icon": {
+                    "icon": "arrows-rotate",
+                    "color": "secondary",
+                    "variant": "regular",
+                    "size": "icon"
+                  },
+                  "width": "40px",
+                  "height": "30px",
+                  "disabled": false,
+                  "hidden": false,
+                  "useIconButton": true,
+                  "disableHover": false,
+                  "disableRipple": false,
+                  "action": [
+                    {
+                      "type": "transformation",
+                      "transformation": "$components.ProductionLogTable.fn.search()",
+                      "remote": false
+                    }
+                  ],
+                  "title": "Refresh Data",
+                  "customTextSize": 10,
+                  "customIconSize": 0
+                },
+                "displayName": "Action",
+                "custom": {
+                  "editor": {
+                    "category": "Buttons",
+                    "description": "Refresh table data.",
+                    "color": "#9c5a94",
+                    "elementName": "Refresh Button",
+                    "icon": "arrows-rotate",
+                    "requiresTable": true
+                  },
+                  "elementName": "ActionRefresh"
+                },
+                "parent": "ContainerActionsCustom",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "SelectSchedule": {
+                "type": {
+                  "resolvedName": "SelectInput"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "select",
+                  "label": "Schedule",
+                  "dialogMode": "never",
+                  "multiselect": true,
+                  "isClearable": true,
+                  "selectAll": true,
+                  "searchPredicate": "contains",
+                  "api": "Application",
+                  "stateTracking": "full",
+                  "optionLimit": 20,
+                  "optionLimitFlex": 10,
+                  "alwaysReloadOptions": false,
+                  "description": "Filter by production schedule/shift.",
+                  "target": {
+                    "dataPath": "scheduleId._in"
+                  },
+                  "dataPath": "schedule",
+                  "formElement": "FormFilterPanel",
+                  "variant": "filled",
+                  "disabled": false,
+                  "query": {
+                    "api": "Application",
+                    "model": "Schedule",
+                    "dataPath": "edges",
+                    "fields": [
+                      "schedule.id",
+                      "schedule.code"
+                    ],
+                    "parameters": "{\n  \"orderBy\": {\n    \"code\": \"ASC\"\n  }\n}"
+                  },
+                  "optionLabelPath": "code",
+                  "optionValuePath": "id",
+                  "field": "schedule",
+                  "predicate": "_in",
+                  "labelPath": "code",
+                  "orderByField": "code",
+                  "dataModel": "Schedule",
+                  "selectFields": [
+                    "code"
+                  ],
+                  "additionalFields": [],
+                  "orderByDirection": "asc"
+                },
+                "displayName": "Select",
+                "custom": {
+                  "elementName": "SelectSchedule"
+                },
+                "parent": "FilterFormContainer",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "-iR4qbPnFh": {
+                "type": {
+                  "resolvedName": "CustomFieldsTableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Custom Fields",
+                  "expandGroups": false,
+                  "dataPath": "_customFields",
+                  "dataModel": "ProductionLog",
+                  "field": "_customFields"
+                },
+                "displayName": "Custom Column",
+                "custom": {
+                  "elementName": "CustomColumn1"
+                },
+                "parent": "ProductionLogTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "OK3hg7mwC7": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Workcenter",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "workcenterId",
+                  "description": "**`workcenterId`** (`ID!`)\nForeign key to the Workcenter where production occurred.\n\n- Required for all production logs.",
+                  "query": {},
+                  "field": "workcenterId",
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn17"
+                },
+                "parent": "ProductionLogTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "zvVZGoONhj": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Schedule",
+                  "format": "text",
+                  "sortable": true,
+                  "dataPath": "scheduleId",
+                  "description": "**`scheduleId`** (`ID`)\nForeign key to the Schedule when production occurred.\n\n- Enables schedule-based reporting.",
+                  "query": {},
+                  "field": "scheduleId",
+                  "style": {
+                    "alignItems": "center"
+                  }
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn18"
+                },
+                "parent": "ProductionLogTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "glZQtqfrng": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Processed In Oee Hourly At",
+                  "format": "datetime",
+                  "sortable": true,
+                  "style": {
+                    "alignItems": "center"
+                  },
+                  "query": {},
+                  "dataPath": "processedInOeeHourlyAt",
+                  "description": "",
+                  "field": "processedInOeeHourlyAt",
+                  "timeZone": "setting"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn19"
+                },
+                "parent": "ProductionLogTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "CkKG_uoD7M": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Ideal Units",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "idealUnits",
+                  "description": "Based on the cycle time for this record, what is the ideal number of total units that we should have produced.",
+                  "query": {},
+                  "field": "idealUnits"
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn21"
+                },
+                "parent": "ProductionLogTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "pmGvixPF35": {
+                "type": {
+                  "resolvedName": "TableColumn"
+                },
+                "isCanvas": false,
+                "props": {
+                  "label": "Performance",
+                  "format": "float",
+                  "sortable": true,
+                  "dataPath": "performance",
+                  "description": "the performance calcuation for this single production log entry.",
+                  "query": {},
+                  "field": "performance",
+                  "editable": false,
+                  "formatString": "0.00%",
+                  "showColumnSuppressMenu": true,
+                  "sortAsNumber": true
+                },
+                "displayName": "Table Column",
+                "custom": {
+                  "elementName": "TableColumn22"
+                },
+                "parent": "ProductionLogTable",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "routes": [
+    {
+      "id": "cmk4fihfv0ara015ze5884n98",
+      "title": "Production Log",
+      "path": "/machineTelemetrySiteApplication/machineDataApp/productionLogs",
+      "moduleId": "machineDataApp",
+      "screenId": "productionLog",
+      "isMenuAccessible": true,
+      "submenu": ""
+    }
+  ]
+}

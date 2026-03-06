@@ -1,0 +1,126 @@
+{
+  "api": "application",
+  "modelName": "Role",
+  "payload": [
+    {
+      "id": "devUser",
+      "name": "Development User",
+      "description": "Role for development users.  Menu includes common developer tools, such as the flow designer and API explorer.",
+      "menu": {
+        "icon": "laptop-code",
+        "items": [
+          {
+            "icon": "terminal",
+            "link": "/system/integration/jsonata",
+            "text": "Transformation Explorer"
+          },
+          {
+            "icon": "code",
+            "link": "/system/businessIntelligence/graphiQL",
+            "text": "API Explorer"
+          },
+          {
+            "icon": "project-diagram",
+            "link": "/system/orchestration/flowDesigner",
+            "text": "Flow Designer"
+          },
+          {
+            "icon": "chart-network",
+            "link": "/system/dataModeling/dataModelEditor",
+            "text": "Schema Designer"
+          },
+          {
+            "icon": "file-code",
+            "link": "/system/orchestration/documentDesigner",
+            "text": "Document Designer"
+          },
+          {
+            "icon": "diagram-sankey",
+            "link": "/system/orchestration/dataMappingEditor",
+            "text": "Data Mapping Designer"
+          },
+          {
+            "icon": "cog",
+            "text": "Setup",
+            "type": "submenu",
+            "children": [
+              {
+                "link": "/system/orchestration/dataFlows",
+                "text": "Data Flows"
+              },
+              {
+                "link": "/system/dataModeling/dataModels",
+                "text": "Data Models"
+              },
+              {
+                "link": "/system/orchestration/documentDesigns",
+                "text": "Document Designs"
+              },
+              {
+                "link": "/system/integration/connections",
+                "text": "Connections"
+              }
+            ]
+          }
+        ],
+        "title": "Development Menu"
+      },
+      "homeScreenId": null,
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "telemetryManager",
+      "name": "Telemetry Manager",
+      "description": "",
+      "menu": {
+        "title": "Telemetry Manager",
+        "icon": "industry",
+        "items": [
+          {
+            "text": "Alarm Dashboard",
+            "link": "/machineTelemetrySiteApplication/machineDataApp/alarmsDashboard"
+          },
+          {
+            "text": "OEE Report By Hour",
+            "link": "/machineTelemetrySiteApplication/machineDataApp/oeeHourlies"
+          },
+          {
+            "text": "OEE Report by Day",
+            "link": "/machineTelemetrySiteApplication/machineDataApp/oeeDailies"
+          },
+          {
+            "text": "Workcenter Management",
+            "link": "/machineTelemetrySiteApplication/machineDataApp/workcenters"
+          },
+          {
+            "text": "Asset Management",
+            "link": "/machineTelemetrySiteApplication/machineDataApp/assets"
+          },
+          {
+            "text": "Workcenter Mode Historian",
+            "link": "/machineTelemetrySiteApplication/machineDataApp/workcenterHistories"
+          },
+          {
+            "text": "Production Log Historian",
+            "link": "/machineTelemetrySiteApplication/machineDataApp/productionLogs"
+          },
+          {
+            "text": "Telemetry Data Hourly",
+            "link": "/machineTelemetrySiteApplication/machineDataApp/telemetryHourlies"
+          },
+          {
+            "text": "Telemetry Data Daily",
+            "link": "/machineTelemetrySiteApplication/machineDataApp/telemetryDailies"
+          }
+        ]
+      },
+      "homeScreenId": "alarmsDashboard",
+      "_customFields": {
+        "_externalId": null
+      }
+    }
+  ],
+  "metadata": {}
+}

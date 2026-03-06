@@ -1,0 +1,127 @@
+{
+  "api": "application",
+  "modelName": "UnitType",
+  "payload": [
+    {
+      "id": "Amount",
+      "label": "Amount",
+      "description": "Unit Type based on the amount of objects.",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "Area",
+      "label": "Area",
+      "description": "Unit type based on the cross-product of two lengths.",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "Currency",
+      "label": "Currency",
+      "description": "Unit Type based on money.",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "Electrical",
+      "label": "Electrical",
+      "description": "Units for measuring voltage, current, and power",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "FlowRate",
+      "label": "Flow Rate",
+      "description": "Units for measuring volume per unit time",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "Force",
+      "label": "Force",
+      "description": "Units for measuring force and load",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "Frequency",
+      "label": "Frequency",
+      "description": "Units for measuring cycles per unit time",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "Length",
+      "label": "Length",
+      "description": "Unit Type based on the the measurement of an object end to end.",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "Pressure",
+      "label": "Pressure",
+      "description": "Units for measuring force per unit area",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "Ratio",
+      "label": "Ratio",
+      "description": "Units for measuring proportions and percentages",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "Speed",
+      "label": "Speed",
+      "description": "Units for measuring rotational and linear velocity",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "Temperature",
+      "label": "Temperature",
+      "description": "Units for measuring thermal energy and heat",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "Time",
+      "label": "Time",
+      "description": "Unit type based on a length of time.",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "Volume",
+      "label": "Volume",
+      "description": "Unit Type based on the space used object, normally in a container.",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "Weight",
+      "label": "Weight",
+      "description": "Unit Type based on the mass of an object.",
+      "_customFields": {
+        "_externalId": null
+      }
+    }
+  ],
+  "metadata": {}
+}

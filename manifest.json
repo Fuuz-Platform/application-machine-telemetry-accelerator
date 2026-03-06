@@ -1,0 +1,10 @@
+{
+  "name": "MachineTelemetryApp",
+  "version": "0.0.8",
+  "applicationPublisherId": "fuuz",
+  "enterpriseId": "mfgx",
+  "environmentId": "build",
+  "dependencies": {},
+  "specVersion": "2.0.0",
+  "platformVersion": "2026.2.0"
+}

@@ -1,0 +1,2075 @@
+{
+  "header": {
+    "id": "applicationDashbaord",
+    "name": "Application Dashbaord",
+    "description": "\n\nCopied from Workcenter OEE Dashboard v0.0.20",
+    "active": true,
+    "edgeScreen": false,
+    "forceFullscreen": false,
+    "moduleId": "machineDataApp",
+    "substitutesScreenId": null,
+    "isWidget": false
+  },
+  "version": {
+    "id": "cmlcp1inh74gt016udj20ashg",
+    "number": "0.0.2",
+    "description": "",
+    "screenId": "applicationDashbaord",
+    "design": {
+      "components": [
+        {
+          "name": "OEE Dashboard v1.0.1",
+          "tabTitle": "OEE Monitor - WC-101",
+          "type": "canvas",
+          "props": {
+            "design": {
+              "ROOT": {
+                "type": {
+                  "resolvedName": "Screen"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexDirection": "column",
+                  "flexWrap": false,
+                  "alignItems": "stretch",
+                  "justifyContent": "flex-start",
+                  "width": "100%",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "flowsDelay": 0,
+                  "removeOuterMargin": true,
+                  "background": "paper",
+                  "forceFullscreen": true,
+                  "intervals": [
+                    {
+                      "interval": 60,
+                      "action": "$components.DashboardRefresh.fn.execute()"
+                    }
+                  ]
+                },
+                "displayName": "Screen",
+                "custom": {
+                  "elementName": "Screen",
+                  "elementCounts": {
+                    "Container": 112,
+                    "Text": 94,
+                    "Visualization": 7,
+                    "Action": 10,
+                    "Icon": 27,
+                    "Form": 36,
+                    "Chart": 2,
+                    "Flow": 1,
+                    "Cards": 1
+                  },
+                  "template": "fuuz-oee-dashboard",
+                  "isaLevel": 1,
+                  "isaDescription": "OEE Dashboard - Real-time Overall Equipment Effectiveness monitoring for single workcenter",
+                  "version": "1.0.1",
+                  "changeNote": "Fixed PascalCase naming convention and formElement linkages"
+                },
+                "parent": null,
+                "hidden": false,
+                "nodes": [
+                  "OeeHeaderContainer",
+                  "OeeBrandSeparator",
+                  "OeeMainContentArea"
+                ],
+                "linkedNodes": {}
+              },
+              "OeeHeaderContainer": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 6,
+                  "margin": 0,
+                  "flexWrap": true,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "auto",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "full",
+                    "border": "0px none "
+                  },
+                  "justifyItems": "center",
+                  "style": {},
+                  "background": "paper"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "OeeHeaderContainer",
+                  "isaNote": "Header area for OEE dashboard title, shift info, and timestamp"
+                },
+                "parent": "ROOT",
+                "hidden": false,
+                "nodes": [
+                  "OeeTitleGroup"
+                ],
+                "linkedNodes": {}
+              },
+              "OeeTitleGroup": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": true,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "center",
+                  "width": "auto",
+                  "height": "auto",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {},
+                  "gap": "12px"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "OeeTitleGroup"
+                },
+                "parent": "OeeHeaderContainer",
+                "hidden": false,
+                "nodes": [
+                  "zxxX2y2GhF"
+                ],
+                "linkedNodes": {}
+              },
+              "OeeIcon": {
+                "type": {
+                  "resolvedName": "Icon"
+                },
+                "isCanvas": false,
+                "props": {
+                  "icon": {
+                    "icon": "browser",
+                    "color": "inherit",
+                    "variant": "light",
+                    "size": "icon"
+                  },
+                  "title": "Icon",
+                  "height": "32px",
+                  "width": "32px",
+                  "color": "#2563eb",
+                  "variant": "light",
+                  "size": "lg"
+                },
+                "displayName": "Icon",
+                "custom": {
+                  "elementName": "OeeIcon",
+                  "isaNote": "OEE dashboard icon"
+                },
+                "parent": "6DUJLmTpPb",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "OeeBrandSeparator": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "4px",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {
+                    "background-image": "linear-gradient(90deg, #39005a,#5b30df, #03caaf)"
+                  },
+                  "data": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "OeeBrandSeparator"
+                },
+                "parent": "ROOT",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "OeeMainContentArea": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 6,
+                  "margin": 6,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "auto",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "stretch",
+                  "style": {
+                    "gap": 12
+                  },
+                  "gap": "20px"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "OeeMainContentArea",
+                  "isaNote": "Main content area - OEE metrics, trends, and loss analysis"
+                },
+                "parent": "ROOT",
+                "hidden": false,
+                "nodes": [
+                  "OeeMetricsRow",
+                  "OeeLossAnalysisRow"
+                ],
+                "linkedNodes": {}
+              },
+              "OeeMetricsRow": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": true,
+                  "flexDirection": "row",
+                  "justifyContent": "space-between",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "auto",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "center",
+                  "style": {
+                    "gap": 12
+                  },
+                  "columns": 4,
+                  "gap": "16px",
+                  "rows": 1
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "OeeMetricsRow",
+                  "isaNote": "Row of OEE metric cards - OEE, Availability, Performance, Quality"
+                },
+                "parent": "OeeMainContentArea",
+                "hidden": false,
+                "nodes": [
+                  "OeeCardOee",
+                  "OeeCardAvailability",
+                  "OeeCardPerformance",
+                  "OeeCardQuality"
+                ],
+                "linkedNodes": {}
+              },
+              "OeeCardOee": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 6,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "space-between",
+                  "alignItems": "stretch",
+                  "width": "320",
+                  "height": "120",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 8,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "single",
+                    "border": "2px solid #2563eb"
+                  },
+                  "justifyItems": "stretch",
+                  "style": {
+                    "box-shadow": "2px 2px 2px #8b5cf6"
+                  },
+                  "background": "paper",
+                  "gap": "8px"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "OeeCardOee",
+                  "isaNote": "Overall Equipment Effectiveness metric card"
+                },
+                "parent": "OeeMetricsRow",
+                "hidden": false,
+                "nodes": [
+                  "OeeCardOeeContent"
+                ],
+                "linkedNodes": {}
+              },
+              "OeeCardOeeContent": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "space-between",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "stretch",
+                  "style": {},
+                  "gap": "4px"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "OeeCardOeeContent"
+                },
+                "parent": "OeeCardOee",
+                "hidden": false,
+                "nodes": [
+                  "OeeOeeHeader",
+                  "IZtp7Ry9Gq"
+                ],
+                "linkedNodes": {}
+              },
+              "OeeOeeHeader": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "space-between",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "40",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "OeeOeeHeader"
+                },
+                "parent": "OeeCardOeeContent",
+                "hidden": false,
+                "nodes": [
+                  "OeeOeeLabel",
+                  "OeeOeeIcon"
+                ],
+                "linkedNodes": {}
+              },
+              "OeeOeeLabel": {
+                "type": {
+                  "resolvedName": "RichText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "width": "auto",
+                  "height": "100%",
+                  "content": {
+                    "blocks": [
+                      {
+                        "key": "oee-label",
+                        "text": "GENERATE WORK ORDERS\nRUN FLOW TO GENERATE WORK ORDERS",
+                        "type": "unstyled",
+                        "depth": 0,
+                        "inlineStyleRanges": [
+                          {
+                            "offset": 0,
+                            "length": 53,
+                            "style": "fontfamily-Roboto"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 21,
+                            "style": "fontsize-14"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 53,
+                            "style": "BOLD"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 53,
+                            "style": "color-#64748b"
+                          },
+                          {
+                            "offset": 21,
+                            "length": 32,
+                            "style": "fontsize-9"
+                          }
+                        ],
+                        "entityRanges": [],
+                        "data": {}
+                      }
+                    ],
+                    "entityMap": {}
+                  }
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "OeeOeeLabel"
+                },
+                "parent": "OeeOeeHeader",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "OeeOeeIcon": {
+                "type": {
+                  "resolvedName": "Icon"
+                },
+                "isCanvas": false,
+                "props": {
+                  "icon": {
+                    "icon": "table-list",
+                    "color": "inherit",
+                    "variant": "light",
+                    "size": "icon"
+                  },
+                  "title": "Workorder",
+                  "height": "24px",
+                  "width": "24px",
+                  "color": "#2563eb",
+                  "variant": "light",
+                  "size": "md"
+                },
+                "displayName": "Icon",
+                "custom": {
+                  "elementName": "OeeOeeIcon"
+                },
+                "parent": "OeeOeeHeader",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "OeeCardAvailability": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 6,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "space-between",
+                  "alignItems": "stretch",
+                  "width": "320",
+                  "height": "120",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 8,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "single",
+                    "border": "1px solid #e2e8f0"
+                  },
+                  "justifyItems": "stretch",
+                  "style": {
+                    "box-shadow": "2px 2px 2px #8b5cf6"
+                  },
+                  "background": "paper",
+                  "gap": "8px"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "OeeCardAvailability"
+                },
+                "parent": "OeeMetricsRow",
+                "hidden": false,
+                "nodes": [
+                  "OeeCardAvailContent"
+                ],
+                "linkedNodes": {}
+              },
+              "OeeCardAvailContent": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "space-between",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "stretch",
+                  "style": {},
+                  "gap": "4px"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "OeeCardAvailContent"
+                },
+                "parent": "OeeCardAvailability",
+                "hidden": false,
+                "nodes": [
+                  "OeeAvailHeader",
+                  "jvTGCguJFa"
+                ],
+                "linkedNodes": {}
+              },
+              "OeeAvailHeader": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "space-between",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "40",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "OeeAvailHeader"
+                },
+                "parent": "OeeCardAvailContent",
+                "hidden": false,
+                "nodes": [
+                  "OeeAvailLabel",
+                  "OeeAvailIcon"
+                ],
+                "linkedNodes": {}
+              },
+              "OeeAvailLabel": {
+                "type": {
+                  "resolvedName": "RichText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "width": "auto",
+                  "height": "100%",
+                  "content": {
+                    "blocks": [
+                      {
+                        "key": "avail-label",
+                        "text": "SIMULATE PRODUCTION\nRUN FLOW TO SIMULATE REAL PRODUCTION",
+                        "type": "unstyled",
+                        "depth": 0,
+                        "inlineStyleRanges": [
+                          {
+                            "offset": 0,
+                            "length": 56,
+                            "style": "fontfamily-Roboto"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 20,
+                            "style": "fontsize-14"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 56,
+                            "style": "BOLD"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 56,
+                            "style": "color-#64748b"
+                          },
+                          {
+                            "offset": 20,
+                            "length": 36,
+                            "style": "fontsize-9"
+                          }
+                        ],
+                        "entityRanges": [],
+                        "data": {}
+                      }
+                    ],
+                    "entityMap": {}
+                  }
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "OeeAvailLabel"
+                },
+                "parent": "OeeAvailHeader",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "OeeAvailIcon": {
+                "type": {
+                  "resolvedName": "Icon"
+                },
+                "isCanvas": false,
+                "props": {
+                  "icon": {
+                    "icon": "boxes-stacked",
+                    "color": "inherit",
+                    "variant": "light",
+                    "size": "icon"
+                  },
+                  "title": "Production",
+                  "height": "24px",
+                  "width": "24px",
+                  "color": "#10b981",
+                  "variant": "light",
+                  "size": "md"
+                },
+                "displayName": "Icon",
+                "custom": {
+                  "elementName": "OeeAvailIcon"
+                },
+                "parent": "OeeAvailHeader",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "OeeCardPerformance": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 6,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "space-between",
+                  "alignItems": "stretch",
+                  "width": "320",
+                  "height": "120",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 8,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "single",
+                    "border": "1px solid #e2e8f0"
+                  },
+                  "justifyItems": "stretch",
+                  "style": {
+                    "box-shadow": "2px 2px 2px #8b5cf6"
+                  },
+                  "background": "paper",
+                  "gap": "8px"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "OeeCardPerformance"
+                },
+                "parent": "OeeMetricsRow",
+                "hidden": false,
+                "nodes": [
+                  "OeeCardPerfContent"
+                ],
+                "linkedNodes": {}
+              },
+              "OeeCardPerfContent": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "space-between",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "stretch",
+                  "style": {},
+                  "gap": "4px"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "OeeCardPerfContent"
+                },
+                "parent": "OeeCardPerformance",
+                "hidden": false,
+                "nodes": [
+                  "OeePerfHeader",
+                  "uRbLt4BEHX"
+                ],
+                "linkedNodes": {}
+              },
+              "OeePerfHeader": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "space-between",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "40",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "OeePerfHeader"
+                },
+                "parent": "OeeCardPerfContent",
+                "hidden": false,
+                "nodes": [
+                  "OeePerfLabel",
+                  "OeePerfIcon"
+                ],
+                "linkedNodes": {}
+              },
+              "OeePerfLabel": {
+                "type": {
+                  "resolvedName": "RichText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "width": "auto",
+                  "height": "100%",
+                  "content": {
+                    "blocks": [
+                      {
+                        "key": "perf-label",
+                        "text": "SIMULATE DOWNTIME\nRUN A FLOW TO SIMULATE WORKCENTER ACTIVITY",
+                        "type": "unstyled",
+                        "depth": 0,
+                        "inlineStyleRanges": [
+                          {
+                            "offset": 0,
+                            "length": 60,
+                            "style": "fontfamily-Roboto"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 18,
+                            "style": "fontsize-14"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 60,
+                            "style": "BOLD"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 60,
+                            "style": "color-#64748b"
+                          },
+                          {
+                            "offset": 18,
+                            "length": 42,
+                            "style": "fontsize-9"
+                          }
+                        ],
+                        "entityRanges": [],
+                        "data": {}
+                      }
+                    ],
+                    "entityMap": {}
+                  }
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "OeePerfLabel"
+                },
+                "parent": "OeePerfHeader",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "OeePerfIcon": {
+                "type": {
+                  "resolvedName": "Icon"
+                },
+                "isCanvas": false,
+                "props": {
+                  "icon": {
+                    "icon": "brake-warning",
+                    "color": "inherit",
+                    "variant": "light",
+                    "size": "icon"
+                  },
+                  "title": "WCHistory",
+                  "height": "24px",
+                  "width": "24px",
+                  "color": "#3b82f6",
+                  "variant": "light",
+                  "size": "md"
+                },
+                "displayName": "Icon",
+                "custom": {
+                  "elementName": "OeePerfIcon"
+                },
+                "parent": "OeePerfHeader",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "OeeCardQuality": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 6,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "space-between",
+                  "alignItems": "stretch",
+                  "width": "320",
+                  "height": "120",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 8,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "single",
+                    "border": "1px solid #e2e8f0"
+                  },
+                  "justifyItems": "stretch",
+                  "style": {
+                    "box-shadow": "2px 2px 2px #8b5cf6"
+                  },
+                  "background": "paper",
+                  "gap": "8px"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "OeeCardQuality"
+                },
+                "parent": "OeeMetricsRow",
+                "hidden": false,
+                "nodes": [
+                  "OeeCardQualContent"
+                ],
+                "linkedNodes": {}
+              },
+              "OeeCardQualContent": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "space-between",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "100%",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "stretch",
+                  "style": {},
+                  "gap": "4px"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "OeeCardQualContent"
+                },
+                "parent": "OeeCardQuality",
+                "hidden": false,
+                "nodes": [
+                  "OeeQualHeader",
+                  "eVuKP-0fvl"
+                ],
+                "linkedNodes": {}
+              },
+              "OeeQualHeader": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "space-between",
+                  "alignItems": "center",
+                  "width": "100%",
+                  "height": "40",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "OeeQualHeader"
+                },
+                "parent": "OeeCardQualContent",
+                "hidden": false,
+                "nodes": [
+                  "OeeQualLabel",
+                  "OeeQualIcon"
+                ],
+                "linkedNodes": {}
+              },
+              "OeeQualLabel": {
+                "type": {
+                  "resolvedName": "RichText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "width": "auto",
+                  "height": "100%",
+                  "content": {
+                    "blocks": [
+                      {
+                        "key": "qual-label",
+                        "text": "SIMULATE IIOT DATA\nRUN A FLOW TO SIMULATE CREATEOIN OF IIOT ASSET DATA",
+                        "type": "unstyled",
+                        "depth": 0,
+                        "inlineStyleRanges": [
+                          {
+                            "offset": 0,
+                            "length": 70,
+                            "style": "fontfamily-Roboto"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 19,
+                            "style": "fontsize-14"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 70,
+                            "style": "BOLD"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 70,
+                            "style": "color-#64748b"
+                          },
+                          {
+                            "offset": 19,
+                            "length": 51,
+                            "style": "fontsize-9"
+                          }
+                        ],
+                        "entityRanges": [],
+                        "data": {}
+                      }
+                    ],
+                    "entityMap": {}
+                  }
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "OeeQualLabel"
+                },
+                "parent": "OeeQualHeader",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "OeeQualIcon": {
+                "type": {
+                  "resolvedName": "Icon"
+                },
+                "isCanvas": false,
+                "props": {
+                  "icon": {
+                    "icon": "temperature-list",
+                    "color": "inherit",
+                    "variant": "light",
+                    "size": "icon"
+                  },
+                  "title": "IIoTData",
+                  "height": "24px",
+                  "width": "24px",
+                  "color": "#10b981",
+                  "variant": "light",
+                  "size": "md"
+                },
+                "displayName": "Icon",
+                "custom": {
+                  "elementName": "OeeQualIcon"
+                },
+                "parent": "OeeQualHeader",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "OeeLossAnalysisRow": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 6,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "auto",
+                  "hidden": false,
+                  "flexGrow": true,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 8,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {
+                    "borderMode": "single",
+                    "border": "1px solid #e2e8f0"
+                  },
+                  "justifyItems": "stretch",
+                  "style": {
+                    "box-shadow": "2px 2px 2px #8b5cf6"
+                  },
+                  "background": "paper",
+                  "gap": "16px"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "OeeLossAnalysisRow",
+                  "isaNote": "Loss category breakdown for current shift"
+                },
+                "parent": "OeeMainContentArea",
+                "hidden": false,
+                "nodes": [
+                  "OeeLossHeader",
+                  "OeeLossContent"
+                ],
+                "linkedNodes": {}
+              },
+              "OeeLossHeader": {
+                "type": {
+                  "resolvedName": "RichText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "width": "auto",
+                  "height": "40",
+                  "content": {
+                    "blocks": [
+                      {
+                        "key": "loss-title",
+                        "text": "Application Models and Usage",
+                        "type": "unstyled",
+                        "depth": 0,
+                        "inlineStyleRanges": [
+                          {
+                            "offset": 0,
+                            "length": 28,
+                            "style": "fontfamily-Roboto"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 28,
+                            "style": "fontsize-16"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 28,
+                            "style": "BOLD"
+                          },
+                          {
+                            "offset": 0,
+                            "length": 28,
+                            "style": "color-#1e3a8a"
+                          }
+                        ],
+                        "entityRanges": [],
+                        "data": {}
+                      }
+                    ],
+                    "entityMap": {}
+                  }
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "OeeLossHeader"
+                },
+                "parent": "OeeLossAnalysisRow",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "OeeLossContent": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "auto",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "stretch",
+                  "style": {
+                    "overflow-y": "hidden"
+                  },
+                  "columns": 4,
+                  "gap": "16px"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "DataModelsAndUsage",
+                  "isaNote": "Four loss categories following Six Big Losses framework"
+                },
+                "parent": "OeeLossAnalysisRow",
+                "hidden": false,
+                "nodes": [
+                  "u120zaiGa7"
+                ],
+                "linkedNodes": {}
+              },
+              "6DUJLmTpPb": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "width": "45",
+                  "height": "45",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "OeeIconContainer"
+                },
+                "parent": "8C7cM4HIv3",
+                "hidden": false,
+                "nodes": [
+                  "OeeIcon"
+                ],
+                "linkedNodes": {}
+              },
+              "zxxX2y2GhF": {
+                "type": {
+                  "resolvedName": "Form"
+                },
+                "isCanvas": true,
+                "props": {
+                  "query": {
+                    "api": "Application",
+                    "query": null,
+                    "dataPath": "edges[0]",
+                    "dataTransform": {
+                      "transform": null,
+                      "remote": true
+                    },
+                    "dataSubscription": {
+                      "enabled": false
+                    },
+                    "autoLoad": false,
+                    "fields": [
+                      "id"
+                    ],
+                    "disableDataChangeIndicator": false,
+                    "dataChangeIndicatorSize": "normal"
+                  },
+                  "blockNavigationWhenDirty": false,
+                  "enableConfirmOnDataChanged": false
+                },
+                "displayName": "Form",
+                "custom": {
+                  "elementName": "OeeTitleForm"
+                },
+                "parent": "OeeTitleGroup",
+                "hidden": false,
+                "nodes": [
+                  "8C7cM4HIv3"
+                ],
+                "linkedNodes": {}
+              },
+              "8C7cM4HIv3": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "center",
+                  "width": "auto",
+                  "height": "50",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 4,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {},
+                  "data": {}
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "OeeTitleContainer"
+                },
+                "parent": "zxxX2y2GhF",
+                "hidden": false,
+                "nodes": [
+                  "6DUJLmTpPb",
+                  "pSTjvDd5ua"
+                ],
+                "linkedNodes": {}
+              },
+              "pSTjvDd5ua": {
+                "type": {
+                  "resolvedName": "DisplayText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 3,
+                  "width": "auto",
+                  "height": "100%",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "display",
+                  "label": "Application Dashboard",
+                  "justifyContent": "start",
+                  "alignTextItems": "start",
+                  "labelFontSize": "h4",
+                  "fontSize": "body2",
+                  "target": {
+                    "dataPath": null
+                  },
+                  "dataPath": "dashboardTitle",
+                  "formElement": "OeeTitleForm",
+                  "labelPosition": {
+                    "id": "row",
+                    "label": "Left"
+                  },
+                  "labelFontColor": "#1e3a8a",
+                  "fontColor": "#4b5563",
+                  "disabled": true
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "OeeDashboardTitle"
+                },
+                "parent": "8C7cM4HIv3",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "IZtp7Ry9Gq": {
+                "type": {
+                  "resolvedName": "ActionButton"
+                },
+                "isCanvas": false,
+                "props": {
+                  "margin": 6,
+                  "buttonColor": "primary",
+                  "icon": {
+                    "icon": "table-list",
+                    "color": "inherit",
+                    "variant": "light",
+                    "size": "icon"
+                  },
+                  "width": "100%",
+                  "height": "auto",
+                  "disabled": false,
+                  "hidden": false,
+                  "useIconButton": false,
+                  "disableHover": false,
+                  "disableRipple": false,
+                  "action": [
+                    {
+                      "type": "transformation",
+                      "transformation": "$executeFlow(\"weeklyWorkOrderGenerator\",{})",
+                      "remote": true,
+                      "message": "Submitted Request to Generate Work Orders for the Week"
+                    }
+                  ],
+                  "title": "GENERATE WORK ORDERS",
+                  "customButtonColor": "#8b5cf6"
+                },
+                "displayName": "Action",
+                "custom": {
+                  "elementName": "Action7"
+                },
+                "parent": "OeeCardOeeContent",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "jvTGCguJFa": {
+                "type": {
+                  "resolvedName": "ActionButton"
+                },
+                "isCanvas": false,
+                "props": {
+                  "margin": 6,
+                  "buttonColor": "primary",
+                  "icon": {
+                    "icon": "boxes-stacked",
+                    "color": "inherit",
+                    "variant": "light",
+                    "size": "icon"
+                  },
+                  "width": "100%",
+                  "height": "auto",
+                  "disabled": false,
+                  "hidden": false,
+                  "useIconButton": false,
+                  "disableHover": false,
+                  "disableRipple": false,
+                  "action": [
+                    {
+                      "type": "transformation",
+                      "transformation": "$executeFlow(\"productionSimulatorDaily\",{})",
+                      "remote": true,
+                      "message": "Submitted Request to Simulate production for the day"
+                    }
+                  ],
+                  "title": "SIMULATE PRODUCTION",
+                  "customButtonColor": "#8b5cf6"
+                },
+                "displayName": "Action",
+                "custom": {
+                  "elementName": "Action8"
+                },
+                "parent": "OeeCardAvailContent",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "uRbLt4BEHX": {
+                "type": {
+                  "resolvedName": "ActionButton"
+                },
+                "isCanvas": false,
+                "props": {
+                  "margin": 6,
+                  "buttonColor": "primary",
+                  "icon": {
+                    "icon": "brake-warning",
+                    "color": "inherit",
+                    "variant": "light",
+                    "size": "icon"
+                  },
+                  "width": "100%",
+                  "height": "auto",
+                  "disabled": false,
+                  "hidden": false,
+                  "useIconButton": false,
+                  "disableHover": false,
+                  "disableRipple": false,
+                  "action": [
+                    {
+                      "type": "transformation",
+                      "transformation": "$executeFlow(\"workcenterHistoryScheduler\",{})",
+                      "remote": true,
+                      "message": "Submitted Request to Generate Simulated Workcenter History Records"
+                    }
+                  ],
+                  "title": "SIMULATE PRODUCTION",
+                  "customButtonColor": "#8b5cf6"
+                },
+                "displayName": "Action",
+                "custom": {
+                  "elementName": "Action9"
+                },
+                "parent": "OeeCardPerfContent",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "eVuKP-0fvl": {
+                "type": {
+                  "resolvedName": "ActionButton"
+                },
+                "isCanvas": false,
+                "props": {
+                  "margin": 6,
+                  "buttonColor": "primary",
+                  "icon": {
+                    "icon": "temperature-list",
+                    "color": "inherit",
+                    "variant": "light",
+                    "size": "icon"
+                  },
+                  "width": "100%",
+                  "height": "auto",
+                  "disabled": false,
+                  "hidden": false,
+                  "useIconButton": false,
+                  "disableHover": false,
+                  "disableRipple": false,
+                  "action": [
+                    {
+                      "type": "transformation",
+                      "transformation": "$executeFlow(\"generateBooleanRawData\",{})",
+                      "remote": true,
+                      "message": "Submitted Request to Simulate IIoT Telemetry Data"
+                    }
+                  ],
+                  "title": "SIMULATE IIOT DATA",
+                  "customButtonColor": "#8b5cf6"
+                },
+                "displayName": "Action",
+                "custom": {
+                  "elementName": "Action10"
+                },
+                "parent": "OeeCardQualContent",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "u120zaiGa7": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 0,
+                  "margin": 0,
+                  "flexWrap": false,
+                  "flexDirection": "column",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "auto",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": false,
+                  "borderRadius": 0,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {
+                    "overflow-y": "auto",
+                    "scrollbar-width": "thin"
+                  }
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "Container111"
+                },
+                "parent": "OeeLossContent",
+                "hidden": false,
+                "nodes": [
+                  "FRs8BiUJVG"
+                ],
+                "linkedNodes": {}
+              },
+              "FRs8BiUJVG": {
+                "type": {
+                  "resolvedName": "Cards"
+                },
+                "isCanvas": true,
+                "props": {
+                  "query": {
+                    "api": "Application",
+                    "query": null,
+                    "dataPath": "edges",
+                    "dataTransform": {
+                      "transform": null,
+                      "remote": true
+                    },
+                    "dataSubscription": {
+                      "enabled": false
+                    },
+                    "autoLoad": true,
+                    "parameters": "{\n  \"filter\":{\n     \"moduleId\":{\n       \"_eq\": \"machineDataApp\"\n     }\n  }\n}",
+                    "fields": [
+                      "id"
+                    ],
+                    "model": "DataModel"
+                  },
+                  "blockNavigationWhenDirty": false,
+                  "padding": 6,
+                  "margin": 0,
+                  "flexDirection": "column",
+                  "flexWrap": true,
+                  "alignItems": "stretch",
+                  "justifyContent": "flex-start",
+                  "width": "100%",
+                  "height": "auto",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "shadow": false,
+                  "borderRadius": 0
+                },
+                "displayName": "Cards",
+                "custom": {
+                  "elementName": "Cards1"
+                },
+                "parent": "u120zaiGa7",
+                "hidden": false,
+                "nodes": [
+                  "MBxyETcRlr"
+                ],
+                "linkedNodes": {}
+              },
+              "MBxyETcRlr": {
+                "type": {
+                  "resolvedName": "Container"
+                },
+                "isCanvas": true,
+                "props": {
+                  "padding": 8,
+                  "margin": 0,
+                  "flexWrap": true,
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "alignItems": "stretch",
+                  "width": "100%",
+                  "height": "auto",
+                  "hidden": false,
+                  "flexGrow": false,
+                  "flexShrink": false,
+                  "shadow": true,
+                  "borderRadius": 4,
+                  "collapsible": false,
+                  "collapsedFooter": false,
+                  "collapsedSize": 0,
+                  "collapsedByDefault": false,
+                  "onClickTransform": false,
+                  "layout": "flex",
+                  "bordersInput": {},
+                  "justifyItems": "start",
+                  "style": {},
+                  "background": "paper"
+                },
+                "displayName": "Container",
+                "custom": {
+                  "elementName": "Container112"
+                },
+                "parent": "FRs8BiUJVG",
+                "hidden": false,
+                "nodes": [
+                  "EEO74XPnv9",
+                  "WWFkkFBmqW",
+                  "2YY5mjuXQY",
+                  "rTcmFkRf9n",
+                  "r45VgWw1yg",
+                  "XHf0G_1-FX"
+                ],
+                "linkedNodes": {}
+              },
+              "EEO74XPnv9": {
+                "type": {
+                  "resolvedName": "DisplayText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "display",
+                  "label": "Data Model:",
+                  "justifyContent": "start",
+                  "alignTextItems": "start",
+                  "labelFontSize": "body1",
+                  "fontSize": "body1",
+                  "formElement": "Cards1",
+                  "dataPath": "name",
+                  "target": {
+                    "dataPath": null
+                  },
+                  "description": "The name of the Data Model.",
+                  "field": "name",
+                  "labelPosition": {
+                    "id": "row",
+                    "label": "Left"
+                  },
+                  "disabled": true
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "Text88"
+                },
+                "parent": "MBxyETcRlr",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "WWFkkFBmqW": {
+                "type": {
+                  "resolvedName": "DisplayText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "display",
+                  "label": "Kind: ",
+                  "justifyContent": "start",
+                  "alignTextItems": "start",
+                  "labelFontSize": "body1",
+                  "fontSize": "body1",
+                  "formElement": "Cards1",
+                  "dataPath": "dataModelKind.label",
+                  "target": {
+                    "dataPath": null
+                  },
+                  "field": "dataModelKind.label",
+                  "labelPosition": {
+                    "id": "row",
+                    "label": "Left"
+                  },
+                  "disabled": true
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "Text89"
+                },
+                "parent": "MBxyETcRlr",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "2YY5mjuXQY": {
+                "type": {
+                  "resolvedName": "DisplayText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "display",
+                  "label": "Type: ",
+                  "justifyContent": "start",
+                  "alignTextItems": "start",
+                  "labelFontSize": "body1",
+                  "fontSize": "body1",
+                  "formElement": "Cards1",
+                  "dataPath": "dataModelType.name",
+                  "target": {
+                    "dataPath": null
+                  },
+                  "field": "dataModelType.name",
+                  "labelPosition": {
+                    "id": "row",
+                    "label": "Left"
+                  },
+                  "disabled": true
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "Text91"
+                },
+                "parent": "MBxyETcRlr",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "rTcmFkRf9n": {
+                "type": {
+                  "resolvedName": "DisplayText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "display",
+                  "label": "Estimated Data: ",
+                  "justifyContent": "start",
+                  "alignTextItems": "start",
+                  "labelFontSize": "body1",
+                  "fontSize": "body1",
+                  "formElement": "Cards1",
+                  "dataPath": "estimatedDataBytes",
+                  "target": {
+                    "dataPath": null
+                  },
+                  "field": "estimatedDataBytes",
+                  "labelPosition": {
+                    "id": "row",
+                    "label": "Left"
+                  },
+                  "description": "The estimate data size of this Data Model.",
+                  "disabled": true
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "Text92"
+                },
+                "parent": "MBxyETcRlr",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "r45VgWw1yg": {
+                "type": {
+                  "resolvedName": "DisplayText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "display",
+                  "label": "Estimated Record Count:",
+                  "justifyContent": "start",
+                  "alignTextItems": "start",
+                  "labelFontSize": "body1",
+                  "fontSize": "body1",
+                  "formElement": "Cards1",
+                  "dataPath": "estimatedRecordCount",
+                  "target": {
+                    "dataPath": null
+                  },
+                  "field": "estimatedRecordCount",
+                  "labelPosition": {
+                    "id": "row",
+                    "label": "Left"
+                  },
+                  "description": "The estimated count of records of this Data Model."
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "Text93"
+                },
+                "parent": "MBxyETcRlr",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              },
+              "XHf0G_1-FX": {
+                "type": {
+                  "resolvedName": "DisplayText"
+                },
+                "isCanvas": false,
+                "props": {
+                  "padding": 4,
+                  "width": "100%",
+                  "height": "auto",
+                  "validation": {
+                    "required": false
+                  },
+                  "uniqueValidationEnabled": false,
+                  "visible": true,
+                  "type": "display",
+                  "label": "Description",
+                  "justifyContent": "start",
+                  "alignTextItems": "start",
+                  "labelFontSize": "body1",
+                  "fontSize": "body1",
+                  "formElement": "Cards1",
+                  "dataPath": "description",
+                  "target": {
+                    "dataPath": null
+                  },
+                  "field": "description",
+                  "labelPosition": {
+                    "id": "row",
+                    "label": "Left"
+                  },
+                  "description": "The description of the Data Model."
+                },
+                "displayName": "Text",
+                "custom": {
+                  "elementName": "Text94"
+                },
+                "parent": "MBxyETcRlr",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "routes": [
+    {
+      "id": "cmlcoygva72xh016vcdp8bypk",
+      "title": "Application Dashbaord",
+      "path": "/machineTelemetrySiteApplication/machineDataApp/applicationDashbaord",
+      "moduleId": "machineDataApp",
+      "screenId": "applicationDashbaord",
+      "isMenuAccessible": true,
+      "submenu": ""
+    }
+  ]
+}

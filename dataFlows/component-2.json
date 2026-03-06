@@ -1,0 +1,726 @@
+{
+  "header": {
+    "id": "generateBooleanRawData",
+    "name": "Generate Boolean Raw Data",
+    "description": "Called from the main TelemetryGeneratorScheduler Flow",
+    "active": true,
+    "substitutesDataFlowId": null,
+    "dataFlowTypeId": "System",
+    "logLevelId": "Info",
+    "mcpToolConfiguration": null,
+    "moduleId": "machineDataApp",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cmkeau34g0832013q0l6dcr3n",
+    "number": "0.0.2",
+    "description": "",
+    "dataFlowId": "generateBooleanRawData",
+    "flow": {
+      "id": "cmkeau34g0832013q0l6dcr3n",
+      "name": "Generate Boolean Raw Data",
+      "type": "System",
+      "nodes": [
+        {
+          "id": "1abef11a-b14a-4f00-b3f8-54012bd97b5f",
+          "name": "Request",
+          "type": "request",
+          "data": {
+            "nextNodes": [
+              "f5bfc7d9-9a55-4e78-9fb8-6247afbfed53"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "f5bfc7d9-9a55-4e78-9fb8-6247afbfed53",
+          "name": "GenerateBooleanData",
+          "type": "javascriptTransform",
+          "data": {
+            "transform": "/**\r\n * Generate Boolean Telemetry Records - Compact Payload\r\n * \r\n * INPUT:\r\n *   $ (payload): Single batch from broadcast\r\n *   {\r\n *     batchData: {\r\n *       type: 1,\r\n *       windowStart: \"2026-01-13T15:00:00.000Z\",\r\n *       windowEnd: \"2026-01-13T15:05:00.000Z\",\r\n *       frequency: 5000,\r\n *       batchIndex: 1,\r\n *       count: 2,\r\n *       timezone: \"America/Detroit\",\r\n *       anomalyEnabled: true,\r\n *       anomalyProb: 0.02\r\n *     },\r\n *     dataPoints: [\r\n *       { id: \"DP-100\", props: \"ASSET-001.Running\" },\r\n *       { id: \"DP-101\", props: \"ASSET-001.FaultActive\" }\r\n *     ]\r\n *   }\r\n * \r\n * PROPS FORMAT: \"name\" (for pattern matching)\r\n * \r\n * OUTPUT:\r\n *   [{ create: { dataPointId, recordedAt, valueBool? } }, ...]\r\n */\r\n\r\n'use strict';\r\n\r\n// Extract batch properties\r\nvar batch = $ || {};\r\nvar batchData = batch.batchData || {};\r\nvar dataPoints = batch.dataPoints || [];\r\n\r\nvar frequency = batchData.frequency || 5000;\r\nvar windowStartMs = new Date(batchData.windowStart).getTime();\r\nvar windowEndMs = new Date(batchData.windowEnd).getTime();\r\nvar anomalyEnabled = batchData.anomalyEnabled !== false;\r\nvar anomalyProb = batchData.anomalyProb || 0.02;\r\n\r\n// Validate window\r\nif (isNaN(windowStartMs) || isNaN(windowEndMs)) {\r\n  console.error('ERROR: Invalid window timestamps');\r\n  return [];\r\n}\r\n\r\n// ============================================================\r\n// BOOLEAN VALUE GENERATOR\r\n// ============================================================\r\n\r\nfunction generateBooleanValue(name, timestamp, prevValue) {\r\n  var nameLower = (name || '').toLowerCase();\r\n  var hour = new Date(timestamp).getUTCHours();\r\n  var isWorkHours = hour >= 6 && hour <= 22;\r\n  \r\n  var value;\r\n  var changeProb = 0.05;\r\n  \r\n  // --------------------------------------------------------\r\n  // RUNNING / ACTIVE / ENABLED - High during work hours\r\n  // --------------------------------------------------------\r\n  if (nameLower.indexOf('running') >= 0 || nameLower.indexOf('active') >= 0 || \r\n      nameLower.indexOf('enabled') >= 0 || nameLower.indexOf('online') >= 0 ||\r\n      nameLower.indexOf('inservice') >= 0) {\r\n    \r\n    if (prevValue === null || prevValue === undefined) {\r\n      value = isWorkHours && Math.random() < 0.9;\r\n    } else {\r\n      if (isWorkHours) {\r\n        changeProb = prevValue ? 0.02 : 0.15;\r\n      } else {\r\n        changeProb = prevValue ? 0.1 : 0.02;\r\n      }\r\n      value = Math.random() < changeProb ? !prevValue : prevValue;\r\n    }\r\n  }\r\n  \r\n  // --------------------------------------------------------\r\n  // FAULT / ALARM / ERROR - Rare, but sticky when triggered\r\n  // --------------------------------------------------------\r\n  else if (nameLower.indexOf('fault') >= 0 || nameLower.indexOf('alarm') >= 0 || \r\n           nameLower.indexOf('error') >= 0 || nameLower.indexOf('fail') >= 0 ||\r\n           nameLower.indexOf('trip') >= 0) {\r\n    \r\n    if (prevValue === null || prevValue === undefined) {\r\n      value = Math.random() < 0.02;\r\n    } else if (prevValue) {\r\n      value = Math.random() < 0.1 ? false : true;\r\n    } else {\r\n      var faultProb = anomalyEnabled ? anomalyProb : 0.01;\r\n      value = Math.random() < faultProb;\r\n    }\r\n  }\r\n  \r\n  // --------------------------------------------------------\r\n  // SAFETY / READY / OK / HEALTHY - Usually true\r\n  // --------------------------------------------------------\r\n  else if (nameLower.indexOf('safety') >= 0 || nameLower.indexOf('ready') >= 0 || \r\n           nameLower.indexOf('ok') >= 0 || nameLower.indexOf('healthy') >= 0 ||\r\n           nameLower.indexOf('normal') >= 0 || nameLower.indexOf('good') >= 0) {\r\n    \r\n    if (prevValue === null || prevValue === undefined) {\r\n      value = Math.random() < 0.95;\r\n    } else {\r\n      changeProb = prevValue ? 0.01 : 0.2;\r\n      value = Math.random() < changeProb ? !prevValue : prevValue;\r\n    }\r\n  }\r\n  \r\n  // --------------------------------------------------------\r\n  // OPEN / CLOSED - Binary state, changes occasionally\r\n  // --------------------------------------------------------\r\n  else if (nameLower.indexOf('open') >= 0 || nameLower.indexOf('closed') >= 0 ||\r\n           nameLower.indexOf('valve') >= 0 || nameLower.indexOf('door') >= 0 ||\r\n           nameLower.indexOf('gate') >= 0) {\r\n    \r\n    if (prevValue === null || prevValue === undefined) {\r\n      value = Math.random() < 0.5;\r\n    } else {\r\n      changeProb = 0.03;\r\n      value = Math.random() < changeProb ? !prevValue : prevValue;\r\n    }\r\n  }\r\n  \r\n  // --------------------------------------------------------\r\n  // ON / OFF - Similar to running\r\n  // --------------------------------------------------------\r\n  else if (nameLower.indexOf('.on') >= 0 || nameLower.indexOf('_on') >= 0 ||\r\n           nameLower.indexOf('.off') >= 0 || nameLower.indexOf('_off') >= 0 ||\r\n           nameLower.indexOf('ison') >= 0) {\r\n    \r\n    if (prevValue === null || prevValue === undefined) {\r\n      value = isWorkHours && Math.random() < 0.7;\r\n    } else {\r\n      changeProb = 0.05;\r\n      value = Math.random() < changeProb ? !prevValue : prevValue;\r\n    }\r\n  }\r\n  \r\n  // --------------------------------------------------------\r\n  // LIMIT / HIGH / LOW - Rare triggers\r\n  // --------------------------------------------------------\r\n  else if (nameLower.indexOf('limit') >= 0 || nameLower.indexOf('high') >= 0 || \r\n           nameLower.indexOf('low') >= 0 || nameLower.indexOf('max') >= 0 ||\r\n           nameLower.indexOf('min') >= 0) {\r\n    \r\n    if (prevValue === null || prevValue === undefined) {\r\n      value = Math.random() < 0.05;\r\n    } else {\r\n      changeProb = prevValue ? 0.15 : 0.02;\r\n      value = Math.random() < changeProb ? !prevValue : prevValue;\r\n    }\r\n  }\r\n  \r\n  // --------------------------------------------------------\r\n  // AUTO / MANUAL - Mode switches, infrequent changes\r\n  // --------------------------------------------------------\r\n  else if (nameLower.indexOf('auto') >= 0 || nameLower.indexOf('manual') >= 0 ||\r\n           nameLower.indexOf('mode') >= 0) {\r\n    \r\n    if (prevValue === null || prevValue === undefined) {\r\n      value = Math.random() < 0.8;\r\n    } else {\r\n      changeProb = 0.01;\r\n      value = Math.random() < changeProb ? !prevValue : prevValue;\r\n    }\r\n  }\r\n  \r\n  // --------------------------------------------------------\r\n  // COMPLETE / DONE / FINISHED - Cycle-based\r\n  // --------------------------------------------------------\r\n  else if (nameLower.indexOf('complete') >= 0 || nameLower.indexOf('done') >= 0 ||\r\n           nameLower.indexOf('finished') >= 0 || nameLower.indexOf('cycle') >= 0) {\r\n    \r\n    if (prevValue === null || prevValue === undefined) {\r\n      value = false;\r\n    } else if (prevValue) {\r\n      value = false;\r\n    } else {\r\n      value = isWorkHours && Math.random() < 0.1;\r\n    }\r\n  }\r\n  \r\n  // --------------------------------------------------------\r\n  // DEFAULT - Random with some persistence\r\n  // --------------------------------------------------------\r\n  else {\r\n    if (prevValue === null || prevValue === undefined) {\r\n      value = Math.random() < 0.5;\r\n    } else {\r\n      changeProb = 0.05;\r\n      value = Math.random() < changeProb ? !prevValue : prevValue;\r\n    }\r\n  }\r\n  \r\n  // --------------------------------------------------------\r\n  // ANOMALY INJECTION\r\n  // --------------------------------------------------------\r\n  if (anomalyEnabled && Math.random() < anomalyProb * 0.5) {\r\n    value = !value;\r\n  }\r\n  \r\n  return value;\r\n}\r\n\r\n// ============================================================\r\n// MAIN RECORD GENERATION\r\n// ============================================================\r\n\r\nvar records = [];\r\n\r\nfor (var d = 0; d < dataPoints.length; d++) {\r\n  var dp = dataPoints[d];\r\n  var dpId = dp.id;\r\n  var name = dp.props || '';\r\n  \r\n  var ts = windowStartMs;\r\n  var prevValue = null;\r\n  \r\n  while (ts < windowEndMs) {\r\n    var value = generateBooleanValue(name, ts, prevValue);\r\n    \r\n    var record = {\r\n      create: {\r\n        dataPointId: dpId,\r\n        recordedAt: new Date(ts).toISOString()\r\n      }\r\n    };\r\n    \r\n    // Only include valueBool when true (false is default in Fuuz)\r\n    if (value === true) {\r\n      record.create.valueBool = true;\r\n    }\r\n    \r\n    records.push(record);\r\n    \r\n    prevValue = value;\r\n    ts += frequency;\r\n  }\r\n}\r\n\r\nconsole.log('Generated ' + records.length + ' boolean records');\r\nconsole.log('  DataPoints: ' + dataPoints.length);\r\nconsole.log('  Frequency: ' + frequency + 'ms');\r\nconsole.log('  Window: ' + batchData.windowStart + ' to ' + batchData.windowEnd);\r\n\r\nreturn records;",
+            "nextNodes": [
+              "eb520f97-6903-4d08-b82e-2eedb7096261"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "eb520f97-6903-4d08-b82e-2eedb7096261",
+          "name": "Mutate",
+          "type": "mutate",
+          "data": {
+            "api": "Application",
+            "variablesTransform": "{\r\n  \"payload\": $\r\n}",
+            "mutation": "mutation CreateTelemetryRawBool($payload: [TelemetryRawBoolCreatePayloadInput!]!) {\n  createTelemetryRawBool(payload: $payload) {\n    id\n  }\n}",
+            "nextNodes": [
+              "a0410d51-6524-4c60-9b22-7f078b9ec6ec"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": true,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "a0410d51-6524-4c60-9b22-7f078b9ec6ec",
+          "name": "Response",
+          "type": "response",
+          "data": {
+            "responseTransform": "$",
+            "nextNodes": []
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        }
+      ],
+      "version": "0.0.2"
+    },
+    "diagram": {
+      "id": "cmkeau34g0832013q0l6dcr3n",
+      "offsetX": -169,
+      "offsetY": 13,
+      "zoom": 100,
+      "gridSize": 5,
+      "layers": [
+        {
+          "id": "bac9eef9-a59f-494a-84b1-c9a98f1af7a3",
+          "type": "diagram-links",
+          "isSvg": true,
+          "transformed": true,
+          "models": {
+            "2fd7fe58-df24-4278-b610-02a8490232fd": {
+              "points": [
+                {
+                  "id": "933590c2-7cb2-4561-a7e0-53d0acd756e4",
+                  "type": "point",
+                  "x": 324,
+                  "y": 299.39
+                },
+                {
+                  "id": "99bc98f9-5fb5-4f7f-96cc-7d2039173131",
+                  "type": "point",
+                  "x": 454.33,
+                  "y": 294.39
+                }
+              ],
+              "id": "2fd7fe58-df24-4278-b610-02a8490232fd",
+              "type": "default",
+              "selected": false,
+              "source": "1abef11a-b14a-4f00-b3f8-54012bd97b5f",
+              "sourcePort": "cmkcohn68003j356rg1v9ktdu",
+              "target": "f5bfc7d9-9a55-4e78-9fb8-6247afbfed53",
+              "targetPort": "cmkcoimv3004w356rdhplpenb",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "e3ff67a9-9827-4427-8447-17506be76a80": {
+              "points": [
+                {
+                  "id": "b8f475c9-03a5-4ffa-9a8f-306303409116",
+                  "type": "point",
+                  "x": 363.99,
+                  "y": 159.39
+                },
+                {
+                  "id": "7a4840d3-8825-43a7-8be3-65aedb83613d",
+                  "type": "point",
+                  "x": 454.33,
+                  "y": 294.39
+                }
+              ],
+              "id": "e3ff67a9-9827-4427-8447-17506be76a80",
+              "type": "default",
+              "selected": false,
+              "source": "d1ad427d-432e-4e1c-bc90-c4dd740a0e0a",
+              "sourcePort": "cmkcohhix003f356rw306ki6e",
+              "target": "f5bfc7d9-9a55-4e78-9fb8-6247afbfed53",
+              "targetPort": "cmkcoimv3004w356rdhplpenb",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "13eef0ea-1b45-48e3-8957-c540b77375fe": {
+              "points": [
+                {
+                  "id": "050a6716-e83c-4bed-ab1c-208410e3599b",
+                  "type": "point",
+                  "x": 849,
+                  "y": 269.39
+                },
+                {
+                  "id": "9bbf47b2-e411-428b-aa66-74dbe382599a",
+                  "type": "point",
+                  "x": 929.33,
+                  "y": 364.39
+                }
+              ],
+              "id": "13eef0ea-1b45-48e3-8957-c540b77375fe",
+              "type": "default",
+              "selected": false,
+              "source": "eb520f97-6903-4d08-b82e-2eedb7096261",
+              "sourcePort": "cmkcx385j001l356rckf36n4q",
+              "target": "a0410d51-6524-4c60-9b22-7f078b9ec6ec",
+              "targetPort": "cmkcxc0v50457356rj81f6xch",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "561c4b57-396b-4d77-bb11-45e2a2f779f7": {
+              "points": [
+                {
+                  "id": "5e0dc0e9-2b05-4bd1-b17e-363fe3f6fd47",
+                  "type": "point",
+                  "x": 617.99,
+                  "y": 294.39
+                },
+                {
+                  "id": "7e43748d-566c-4451-b3a4-7417849b5d20",
+                  "type": "point",
+                  "x": 694.33,
+                  "y": 269.39
+                }
+              ],
+              "id": "561c4b57-396b-4d77-bb11-45e2a2f779f7",
+              "type": "default",
+              "selected": false,
+              "source": "f5bfc7d9-9a55-4e78-9fb8-6247afbfed53",
+              "sourcePort": "cmkcoimv3004y356r8mp9e35m",
+              "target": "eb520f97-6903-4d08-b82e-2eedb7096261",
+              "targetPort": "cmkcx385j001j356rbflv9qpb",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            }
+          }
+        },
+        {
+          "id": "67030647-05c2-4f6f-a6f2-926b69d31d4d",
+          "type": "diagram-nodes",
+          "isSvg": false,
+          "transformed": true,
+          "models": {
+            "d1ad427d-432e-4e1c-bc90-c4dd740a0e0a": {
+              "id": "d1ad427d-432e-4e1c-bc90-c4dd740a0e0a",
+              "type": "debugSource",
+              "selected": false,
+              "x": 210,
+              "y": 120,
+              "ports": [
+                {
+                  "id": "cmkcohhix003f356rw306ki6e",
+                  "type": "default",
+                  "x": 356.33,
+                  "y": 151.73,
+                  "name": "cmkcohhix003g356rxieqysww",
+                  "parentNode": "d1ad427d-432e-4e1c-bc90-c4dd740a0e0a",
+                  "links": [
+                    "e3ff67a9-9827-4427-8447-17506be76a80"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "payload": {
+                  "batchData": {
+                    "type": 1,
+                    "windowStart": "2026-01-14T17:09:00.000Z",
+                    "windowEnd": "2026-01-14T17:10:00.000Z",
+                    "frequency": 5000,
+                    "batchIndex": 1,
+                    "count": 50,
+                    "timezone": "GMT",
+                    "anomalyEnabled": true,
+                    "anomalyProb": 0.02
+                  },
+                  "dataPoints": [
+                    {
+                      "id": "DP-00039",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-00095",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-00138",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-00146",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-00238",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-00288",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-00321",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-00464",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-00539",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-00546",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-01119",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-01122",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-01171",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-01194",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-01246",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-01295",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-01596",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-01694",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-01696",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-01994",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-02046",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-02135",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-02255",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-02256",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-02458",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-02477",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-02516",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-02517",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-02536",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-02557",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-02599",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-02705",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-02824",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-02847",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-02872",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-02930",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-02972",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-02973",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-02996",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-02997",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-03026",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-03066",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-03087",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-03088",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-03090",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-03149",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-03170",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-03226",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-03267",
+                      "props": ""
+                    },
+                    {
+                      "id": "DP-03286",
+                      "props": ""
+                    }
+                  ]
+                },
+                "context": {},
+                "nextNodes": [
+                  "f5bfc7d9-9a55-4e78-9fb8-6247afbfed53"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Source"
+            },
+            "1abef11a-b14a-4f00-b3f8-54012bd97b5f": {
+              "id": "1abef11a-b14a-4f00-b3f8-54012bd97b5f",
+              "type": "request",
+              "selected": false,
+              "x": 170,
+              "y": 260,
+              "ports": [
+                {
+                  "id": "cmkcohn68003j356rg1v9ktdu",
+                  "type": "default",
+                  "x": 316.34,
+                  "y": 291.73,
+                  "name": "cmkcohn68003k356rabmp4cfd",
+                  "parentNode": "1abef11a-b14a-4f00-b3f8-54012bd97b5f",
+                  "links": [
+                    "2fd7fe58-df24-4278-b610-02a8490232fd"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Payload",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "f5bfc7d9-9a55-4e78-9fb8-6247afbfed53"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Request"
+            },
+            "f5bfc7d9-9a55-4e78-9fb8-6247afbfed53": {
+              "id": "f5bfc7d9-9a55-4e78-9fb8-6247afbfed53",
+              "type": "javascriptTransform",
+              "selected": false,
+              "x": 455,
+              "y": 255,
+              "ports": [
+                {
+                  "id": "cmkcoimv3004w356rdhplpenb",
+                  "type": "default",
+                  "x": 446.67,
+                  "y": 286.73,
+                  "name": "cmkcoimv3004x356r7x67vym9",
+                  "parentNode": "f5bfc7d9-9a55-4e78-9fb8-6247afbfed53",
+                  "links": [
+                    "2fd7fe58-df24-4278-b610-02a8490232fd",
+                    "e3ff67a9-9827-4427-8447-17506be76a80"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkcoimv3004y356r8mp9e35m",
+                  "type": "default",
+                  "x": 610.33,
+                  "y": 286.73,
+                  "name": "cmkcoimv3004z356rapump3vj",
+                  "parentNode": "f5bfc7d9-9a55-4e78-9fb8-6247afbfed53",
+                  "links": [
+                    "561c4b57-396b-4d77-bb11-45e2a2f779f7"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "/**\r\n * Generate Boolean Telemetry Records - Compact Payload\r\n * \r\n * INPUT:\r\n *   $ (payload): Single batch from broadcast\r\n *   {\r\n *     batchData: {\r\n *       type: 1,\r\n *       windowStart: \"2026-01-13T15:00:00.000Z\",\r\n *       windowEnd: \"2026-01-13T15:05:00.000Z\",\r\n *       frequency: 5000,\r\n *       batchIndex: 1,\r\n *       count: 2,\r\n *       timezone: \"America/Detroit\",\r\n *       anomalyEnabled: true,\r\n *       anomalyProb: 0.02\r\n *     },\r\n *     dataPoints: [\r\n *       { id: \"DP-100\", props: \"ASSET-001.Running\" },\r\n *       { id: \"DP-101\", props: \"ASSET-001.FaultActive\" }\r\n *     ]\r\n *   }\r\n * \r\n * PROPS FORMAT: \"name\" (for pattern matching)\r\n * \r\n * OUTPUT:\r\n *   [{ create: { dataPointId, recordedAt, valueBool? } }, ...]\r\n */\r\n\r\n'use strict';\r\n\r\n// Extract batch properties\r\nvar batch = $ || {};\r\nvar batchData = batch.batchData || {};\r\nvar dataPoints = batch.dataPoints || [];\r\n\r\nvar frequency = batchData.frequency || 5000;\r\nvar windowStartMs = new Date(batchData.windowStart).getTime();\r\nvar windowEndMs = new Date(batchData.windowEnd).getTime();\r\nvar anomalyEnabled = batchData.anomalyEnabled !== false;\r\nvar anomalyProb = batchData.anomalyProb || 0.02;\r\n\r\n// Validate window\r\nif (isNaN(windowStartMs) || isNaN(windowEndMs)) {\r\n  console.error('ERROR: Invalid window timestamps');\r\n  return [];\r\n}\r\n\r\n// ============================================================\r\n// BOOLEAN VALUE GENERATOR\r\n// ============================================================\r\n\r\nfunction generateBooleanValue(name, timestamp, prevValue) {\r\n  var nameLower = (name || '').toLowerCase();\r\n  var hour = new Date(timestamp).getUTCHours();\r\n  var isWorkHours = hour >= 6 && hour <= 22;\r\n  \r\n  var value;\r\n  var changeProb = 0.05;\r\n  \r\n  // --------------------------------------------------------\r\n  // RUNNING / ACTIVE / ENABLED - High during work hours\r\n  // --------------------------------------------------------\r\n  if (nameLower.indexOf('running') >= 0 || nameLower.indexOf('active') >= 0 || \r\n      nameLower.indexOf('enabled') >= 0 || nameLower.indexOf('online') >= 0 ||\r\n      nameLower.indexOf('inservice') >= 0) {\r\n    \r\n    if (prevValue === null || prevValue === undefined) {\r\n      value = isWorkHours && Math.random() < 0.9;\r\n    } else {\r\n      if (isWorkHours) {\r\n        changeProb = prevValue ? 0.02 : 0.15;\r\n      } else {\r\n        changeProb = prevValue ? 0.1 : 0.02;\r\n      }\r\n      value = Math.random() < changeProb ? !prevValue : prevValue;\r\n    }\r\n  }\r\n  \r\n  // --------------------------------------------------------\r\n  // FAULT / ALARM / ERROR - Rare, but sticky when triggered\r\n  // --------------------------------------------------------\r\n  else if (nameLower.indexOf('fault') >= 0 || nameLower.indexOf('alarm') >= 0 || \r\n           nameLower.indexOf('error') >= 0 || nameLower.indexOf('fail') >= 0 ||\r\n           nameLower.indexOf('trip') >= 0) {\r\n    \r\n    if (prevValue === null || prevValue === undefined) {\r\n      value = Math.random() < 0.02;\r\n    } else if (prevValue) {\r\n      value = Math.random() < 0.1 ? false : true;\r\n    } else {\r\n      var faultProb = anomalyEnabled ? anomalyProb : 0.01;\r\n      value = Math.random() < faultProb;\r\n    }\r\n  }\r\n  \r\n  // --------------------------------------------------------\r\n  // SAFETY / READY / OK / HEALTHY - Usually true\r\n  // --------------------------------------------------------\r\n  else if (nameLower.indexOf('safety') >= 0 || nameLower.indexOf('ready') >= 0 || \r\n           nameLower.indexOf('ok') >= 0 || nameLower.indexOf('healthy') >= 0 ||\r\n           nameLower.indexOf('normal') >= 0 || nameLower.indexOf('good') >= 0) {\r\n    \r\n    if (prevValue === null || prevValue === undefined) {\r\n      value = Math.random() < 0.95;\r\n    } else {\r\n      changeProb = prevValue ? 0.01 : 0.2;\r\n      value = Math.random() < changeProb ? !prevValue : prevValue;\r\n    }\r\n  }\r\n  \r\n  // --------------------------------------------------------\r\n  // OPEN / CLOSED - Binary state, changes occasionally\r\n  // --------------------------------------------------------\r\n  else if (nameLower.indexOf('open') >= 0 || nameLower.indexOf('closed') >= 0 ||\r\n           nameLower.indexOf('valve') >= 0 || nameLower.indexOf('door') >= 0 ||\r\n           nameLower.indexOf('gate') >= 0) {\r\n    \r\n    if (prevValue === null || prevValue === undefined) {\r\n      value = Math.random() < 0.5;\r\n    } else {\r\n      changeProb = 0.03;\r\n      value = Math.random() < changeProb ? !prevValue : prevValue;\r\n    }\r\n  }\r\n  \r\n  // --------------------------------------------------------\r\n  // ON / OFF - Similar to running\r\n  // --------------------------------------------------------\r\n  else if (nameLower.indexOf('.on') >= 0 || nameLower.indexOf('_on') >= 0 ||\r\n           nameLower.indexOf('.off') >= 0 || nameLower.indexOf('_off') >= 0 ||\r\n           nameLower.indexOf('ison') >= 0) {\r\n    \r\n    if (prevValue === null || prevValue === undefined) {\r\n      value = isWorkHours && Math.random() < 0.7;\r\n    } else {\r\n      changeProb = 0.05;\r\n      value = Math.random() < changeProb ? !prevValue : prevValue;\r\n    }\r\n  }\r\n  \r\n  // --------------------------------------------------------\r\n  // LIMIT / HIGH / LOW - Rare triggers\r\n  // --------------------------------------------------------\r\n  else if (nameLower.indexOf('limit') >= 0 || nameLower.indexOf('high') >= 0 || \r\n           nameLower.indexOf('low') >= 0 || nameLower.indexOf('max') >= 0 ||\r\n           nameLower.indexOf('min') >= 0) {\r\n    \r\n    if (prevValue === null || prevValue === undefined) {\r\n      value = Math.random() < 0.05;\r\n    } else {\r\n      changeProb = prevValue ? 0.15 : 0.02;\r\n      value = Math.random() < changeProb ? !prevValue : prevValue;\r\n    }\r\n  }\r\n  \r\n  // --------------------------------------------------------\r\n  // AUTO / MANUAL - Mode switches, infrequent changes\r\n  // --------------------------------------------------------\r\n  else if (nameLower.indexOf('auto') >= 0 || nameLower.indexOf('manual') >= 0 ||\r\n           nameLower.indexOf('mode') >= 0) {\r\n    \r\n    if (prevValue === null || prevValue === undefined) {\r\n      value = Math.random() < 0.8;\r\n    } else {\r\n      changeProb = 0.01;\r\n      value = Math.random() < changeProb ? !prevValue : prevValue;\r\n    }\r\n  }\r\n  \r\n  // --------------------------------------------------------\r\n  // COMPLETE / DONE / FINISHED - Cycle-based\r\n  // --------------------------------------------------------\r\n  else if (nameLower.indexOf('complete') >= 0 || nameLower.indexOf('done') >= 0 ||\r\n           nameLower.indexOf('finished') >= 0 || nameLower.indexOf('cycle') >= 0) {\r\n    \r\n    if (prevValue === null || prevValue === undefined) {\r\n      value = false;\r\n    } else if (prevValue) {\r\n      value = false;\r\n    } else {\r\n      value = isWorkHours && Math.random() < 0.1;\r\n    }\r\n  }\r\n  \r\n  // --------------------------------------------------------\r\n  // DEFAULT - Random with some persistence\r\n  // --------------------------------------------------------\r\n  else {\r\n    if (prevValue === null || prevValue === undefined) {\r\n      value = Math.random() < 0.5;\r\n    } else {\r\n      changeProb = 0.05;\r\n      value = Math.random() < changeProb ? !prevValue : prevValue;\r\n    }\r\n  }\r\n  \r\n  // --------------------------------------------------------\r\n  // ANOMALY INJECTION\r\n  // --------------------------------------------------------\r\n  if (anomalyEnabled && Math.random() < anomalyProb * 0.5) {\r\n    value = !value;\r\n  }\r\n  \r\n  return value;\r\n}\r\n\r\n// ============================================================\r\n// MAIN RECORD GENERATION\r\n// ============================================================\r\n\r\nvar records = [];\r\n\r\nfor (var d = 0; d < dataPoints.length; d++) {\r\n  var dp = dataPoints[d];\r\n  var dpId = dp.id;\r\n  var name = dp.props || '';\r\n  \r\n  var ts = windowStartMs;\r\n  var prevValue = null;\r\n  \r\n  while (ts < windowEndMs) {\r\n    var value = generateBooleanValue(name, ts, prevValue);\r\n    \r\n    var record = {\r\n      create: {\r\n        dataPointId: dpId,\r\n        recordedAt: new Date(ts).toISOString()\r\n      }\r\n    };\r\n    \r\n    // Only include valueBool when true (false is default in Fuuz)\r\n    if (value === true) {\r\n      record.create.valueBool = true;\r\n    }\r\n    \r\n    records.push(record);\r\n    \r\n    prevValue = value;\r\n    ts += frequency;\r\n  }\r\n}\r\n\r\nconsole.log('Generated ' + records.length + ' boolean records');\r\nconsole.log('  DataPoints: ' + dataPoints.length);\r\nconsole.log('  Frequency: ' + frequency + 'ms');\r\nconsole.log('  Window: ' + batchData.windowStart + ' to ' + batchData.windowEnd);\r\n\r\nreturn records;",
+                "nextNodes": [
+                  "eb520f97-6903-4d08-b82e-2eedb7096261"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "GenerateBooleanData"
+            },
+            "eb520f97-6903-4d08-b82e-2eedb7096261": {
+              "id": "eb520f97-6903-4d08-b82e-2eedb7096261",
+              "type": "mutate",
+              "selected": true,
+              "x": 695,
+              "y": 230,
+              "ports": [
+                {
+                  "id": "cmkcx385j001j356rbflv9qpb",
+                  "type": "default",
+                  "x": 686.67,
+                  "y": 261.73,
+                  "name": "cmkcx385j001k356rhvruro39",
+                  "parentNode": "eb520f97-6903-4d08-b82e-2eedb7096261",
+                  "links": [
+                    "561c4b57-396b-4d77-bb11-45e2a2f779f7"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkcx385j001l356rckf36n4q",
+                  "type": "default",
+                  "x": 841.34,
+                  "y": 261.73,
+                  "name": "cmkcx385j001m356rd64fng3c",
+                  "parentNode": "eb520f97-6903-4d08-b82e-2eedb7096261",
+                  "links": [
+                    "13eef0ea-1b45-48e3-8957-c540b77375fe"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "Application",
+                "variablesTransform": "{\r\n  \"payload\": $\r\n}",
+                "mutation": "mutation CreateTelemetryRawBool($payload: [TelemetryRawBoolCreatePayloadInput!]!) {\n  createTelemetryRawBool(payload: $payload) {\n    id\n  }\n}",
+                "nextNodes": [
+                  "a0410d51-6524-4c60-9b22-7f078b9ec6ec"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": true,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Mutate"
+            },
+            "a0410d51-6524-4c60-9b22-7f078b9ec6ec": {
+              "id": "a0410d51-6524-4c60-9b22-7f078b9ec6ec",
+              "type": "response",
+              "selected": false,
+              "x": 930,
+              "y": 325,
+              "ports": [
+                {
+                  "id": "cmkcxc0v50457356rj81f6xch",
+                  "type": "default",
+                  "x": 921.67,
+                  "y": 356.73,
+                  "name": "cmkcxc0v50458356r605rih7r",
+                  "parentNode": "a0410d51-6524-4c60-9b22-7f078b9ec6ec",
+                  "links": [
+                    "13eef0ea-1b45-48e3-8957-c540b77375fe"
+                  ],
+                  "in": true,
+                  "fieldLabel": "Response"
+                },
+                {
+                  "id": "cmkcxc0v60459356r69ku0th5",
+                  "type": "default",
+                  "x": 1076.34,
+                  "y": 356.73,
+                  "name": "cmkcxc0v6045a356r0o4jusnk",
+                  "parentNode": "a0410d51-6524-4c60-9b22-7f078b9ec6ec",
+                  "links": [],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "responseTransform": "$",
+                "nextNodes": []
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Response"
+            }
+          }
+        }
+      ],
+      "name": "Generate Boolean Raw Data",
+      "type": "System",
+      "version": "0.0.2",
+      "walkthrough": {
+        "steps": []
+      }
+    }
+  }
+}

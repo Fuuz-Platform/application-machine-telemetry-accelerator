@@ -1,0 +1,3174 @@
+{
+  "header": {
+    "id": "duplicateAssetWithOptionsFromScreen",
+    "name": "Duplicate Asset with Options from Screen",
+    "description": "",
+    "active": true,
+    "substitutesDataFlowId": null,
+    "dataFlowTypeId": "Screen",
+    "logLevelId": "Info",
+    "mcpToolConfiguration": null,
+    "moduleId": "machineDataApp",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cmkx53zr941pp0129569tf8up",
+    "number": "0.0.4",
+    "description": "",
+    "dataFlowId": "duplicateAssetWithOptionsFromScreen",
+    "flow": {
+      "id": "cmkx53zr941pp0129569tf8up",
+      "name": "Duplicate Asset with Options from Screen",
+      "type": "Screen",
+      "nodes": [
+        {
+          "id": "26b1315d-7753-4e4b-b5ec-3b8b0985e9e7",
+          "name": "Form Dialog1",
+          "type": "formDialog",
+          "data": {
+            "formInputs": [
+              {
+                "label": "Original Asset Code",
+                "element": "DisplayText",
+                "type": "display",
+                "labelPosition": {
+                  "id": "row",
+                  "label": "Left"
+                },
+                "justifyContent": "space-between",
+                "alignTextItems": "center",
+                "labelFontSize": "body1",
+                "fontSize": "body1",
+                "field": "originalCode",
+                "target": {
+                  "dataPath": "originalCode"
+                },
+                "query": {
+                  "fields": []
+                },
+                "dataPath": "originalCode"
+              },
+              {
+                "label": "Data Points to Copy",
+                "element": "DisplayText",
+                "type": "display",
+                "labelPosition": {
+                  "id": "row",
+                  "label": "Left"
+                },
+                "justifyContent": "space-between",
+                "alignTextItems": "center",
+                "labelFontSize": "body1",
+                "fontSize": "body1",
+                "field": "dataPointCount",
+                "dataPath": "dataPointCount",
+                "target": {
+                  "dataPath": "dataPointCount"
+                },
+                "query": {
+                  "fields": []
+                }
+              },
+              {
+                "label": "New Asset Code",
+                "dataPath": "code",
+                "field": "code",
+                "element": "TextInput",
+                "type": "text",
+                "validation": {
+                  "required": true
+                }
+              },
+              {
+                "label": "Name",
+                "dataPath": "name",
+                "field": "name",
+                "element": "TextInput",
+                "type": "text",
+                "validation": {
+                  "required": true
+                }
+              },
+              {
+                "label": "Type",
+                "dataPath": "type",
+                "field": "type",
+                "element": "OptionsInput",
+                "type": "options",
+                "options": [
+                  {
+                    "id": "Assembly Robot",
+                    "label": "Assembly Robot"
+                  },
+                  {
+                    "id": "Batch Reactor",
+                    "label": "Batch Reactor"
+                  },
+                  {
+                    "id": "Blender",
+                    "label": "Blender"
+                  },
+                  {
+                    "id": "Cartoner",
+                    "label": "Cartoner"
+                  },
+                  {
+                    "id": "Centrifugal Pump",
+                    "label": "Centrifugal Pump"
+                  },
+                  {
+                    "id": "CIP System",
+                    "label": "CIP System"
+                  },
+                  {
+                    "id": "CNC Machine",
+                    "label": "CNC Machine"
+                  },
+                  {
+                    "id": "Continuous Reactor",
+                    "label": "Continuous Reactor"
+                  },
+                  {
+                    "id": "Conveyor",
+                    "label": "Conveyor"
+                  },
+                  {
+                    "id": "Distillation Column",
+                    "label": "Distillation Column"
+                  },
+                  {
+                    "id": "Feeder",
+                    "label": "Feeder"
+                  },
+                  {
+                    "id": "Filling Machine",
+                    "label": "Filling Machine"
+                  },
+                  {
+                    "id": "Filter",
+                    "label": "Filter"
+                  },
+                  {
+                    "id": "Heat Exchanger",
+                    "label": "Heat Exchanger"
+                  },
+                  {
+                    "id": "Industrial Mixer",
+                    "label": "Industrial Mixer"
+                  },
+                  {
+                    "id": "Stamping Press",
+                    "label": "Stamping Press"
+                  },
+                  {
+                    "id": "Welding Robot",
+                    "label": "Welding Robot"
+                  }
+                ],
+                "multiselect": false,
+                "isClearable": true,
+                "stateTracking": "id",
+                "labelPath": "label"
+              },
+              {
+                "label": "Workcenter",
+                "dataPath": "workcenter",
+                "field": "workcenter",
+                "element": "SelectInput",
+                "type": "select",
+                "api": "Application",
+                "dataModel": "Workcenter",
+                "labelField": "code",
+                "labelPath": "code",
+                "additionalFields": [
+                  "code",
+                  "name"
+                ],
+                "selectFields": [
+                  "code",
+                  "name"
+                ],
+                "target": {
+                  "dataPath": "workcenterId"
+                },
+                "isClearable": true,
+                "disabled": {
+                  "__transform": "$not($isNilOrEmpty($data.line.id)) or $not($isNilOrEmpty($data.cell.id))",
+                  "__dynamicFields": {
+                    "payload": [
+                      "data.line.id",
+                      "data.cell.id"
+                    ],
+                    "context": []
+                  },
+                  "__cacheKey": "",
+                  "__remote": false
+                }
+              },
+              {
+                "label": "Line",
+                "dataPath": "line",
+                "field": "line",
+                "element": "SelectInput",
+                "type": "select",
+                "api": "Application",
+                "dataModel": "Line",
+                "labelField": "code",
+                "labelPath": "code",
+                "additionalFields": [
+                  "code",
+                  "name"
+                ],
+                "selectFields": [
+                  "code",
+                  "name"
+                ],
+                "target": {
+                  "dataPath": "lineId"
+                },
+                "isClearable": true,
+                "disabled": {
+                  "__transform": "$not($isNilOrEmpty($data.workcenter.id)) or $not($isNilOrEmpty($data.cell.id))",
+                  "__dynamicFields": {
+                    "payload": [
+                      "data.workcenter.id",
+                      "data.cell.id"
+                    ],
+                    "context": []
+                  },
+                  "__cacheKey": "",
+                  "__remote": false
+                },
+                "additionalFilter": {
+                  "__transform": "$isNilOrEmpty($data.cell.lineId) ? {} : {\"id\": {\"_eq\": $data.cell.lineId}}",
+                  "__dynamicFields": {
+                    "payload": [
+                      "data.cell.lineId"
+                    ],
+                    "context": []
+                  },
+                  "__cacheKey": "",
+                  "__remote": false
+                }
+              },
+              {
+                "label": "Cell",
+                "dataPath": "cell",
+                "field": "cell",
+                "element": "SelectInput",
+                "type": "select",
+                "api": "Application",
+                "dataModel": "Cell",
+                "labelField": "code",
+                "labelPath": "code",
+                "additionalFields": [
+                  "code",
+                  "name",
+                  "lineId"
+                ],
+                "selectFields": [
+                  "code",
+                  "name",
+                  "lineId"
+                ],
+                "target": {
+                  "dataPath": "cellId"
+                },
+                "isClearable": true,
+                "disabled": {
+                  "__transform": "$not($isNilOrEmpty($data.workcenter.id))",
+                  "__dynamicFields": {
+                    "payload": [
+                      "data.workcenter.id"
+                    ],
+                    "context": []
+                  },
+                  "__cacheKey": "",
+                  "__remote": false
+                },
+                "additionalFilter": {
+                  "__transform": "$isNilOrEmpty($data.line.id) ? {} : {\"lineId\": {\"_eq\": $data.line.id}}",
+                  "__dynamicFields": {
+                    "payload": [
+                      "data.line.id"
+                    ],
+                    "context": []
+                  },
+                  "__cacheKey": "",
+                  "__remote": false
+                }
+              },
+              {
+                "label": "Status",
+                "dataPath": "status",
+                "field": "status",
+                "element": "OptionsInput",
+                "type": "options",
+                "options": [
+                  {
+                    "id": "Active",
+                    "label": "Active"
+                  },
+                  {
+                    "id": "Maintenance",
+                    "label": "Maintenance"
+                  }
+                ],
+                "multiselect": false,
+                "isClearable": false,
+                "stateTracking": "id",
+                "labelPath": "label",
+                "validation": {
+                  "required": true
+                }
+              },
+              {
+                "label": "Copy Data Points",
+                "dataPath": "copyDataPoints",
+                "field": "copyDataPoints",
+                "element": "Switch",
+                "type": "switch",
+                "validation": {
+                  "required": false
+                }
+              }
+            ],
+            "dataTransform": "$.formData ~> |$|{\r\n  \"originalCode\": $.summary.originalCode,\r\n  \"dataPointCount\": $.summary.dataPointCount,\r\n  \"_originalAsset\": $.originalAsset,\r\n  \"_summary\": $.summary\r\n}|",
+            "fullScreenTransform": "false",
+            "titleTransform": "\"Duplicate Asset & Asset Data Points\"",
+            "onSubmitNextNodes": [
+              "083dc680-91db-41d2-82f7-7a514f1d8e17"
+            ],
+            "onCancelNextNodes": [
+              "b4551cbb-976b-4001-a02d-008b3fb42429"
+            ],
+            "submitIconTransform": "\"floppy-disk\""
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "53bc6873-26d3-4f2e-b2ce-d8d188bc0b92",
+          "name": "Request",
+          "type": "request",
+          "data": {
+            "nextNodes": [
+              "3d953ff7-3b1b-488a-8c0d-11f60ab24f57"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "3d953ff7-3b1b-488a-8c0d-11f60ab24f57",
+          "name": "GetAssetWithDataPoints",
+          "type": "query",
+          "data": {
+            "api": "application",
+            "variablesTransform": "{\r\n  \"assetId\": $.assetId\r\n}",
+            "query": "query GetAssetWithDataPoints($assetId: String!) {\r\n  asset(where: { id: { _eq: $assetId } }) {\r\n    edges {\r\n      node {\r\n        id\r\n        code\r\n        name\r\n        connectionString\r\n        criticality\r\n        manufacturer\r\n        model\r\n        responsibleTeam\r\n        serialNumber\r\n        status\r\n        subType\r\n        type\r\n        installedAt\r\n        lastPmAt\r\n        nextPmAt\r\n        cellId\r\n        cell {\r\n          id\r\n          code\r\n          name\r\n          lineId\r\n        }\r\n        deviceDriverId\r\n        deviceDriver {\r\n          id\r\n          name\r\n        }\r\n        lineId\r\n        line {\r\n          id\r\n          code\r\n          name\r\n        }\r\n        workcenterId\r\n        workcenter {\r\n          id\r\n          code\r\n          name\r\n        }\r\n        dataPoints {\r\n          edges {\r\n            node {\r\n              id\r\n              code\r\n              name\r\n              displayName\r\n              description\r\n              category\r\n              dataType\r\n              unitId\r\n              unit {\r\n                id\r\n                code\r\n                name\r\n              }\r\n              setPoint\r\n              upperLimit\r\n              lowerLimit\r\n              upperWarning\r\n              lowerWarning\r\n              tolerance\r\n              frequency\r\n              isOnChange\r\n              deadband\r\n              precision\r\n              scaleFactor\r\n              historize\r\n              enabled\r\n              alarmEnabled\r\n              alarmPriority\r\n              isCritical\r\n            }\r\n          }\r\n        }\r\n      }\r\n    }\r\n  }\r\n}",
+            "nextNodes": [
+              "785db34f-9a5e-4601-ab9b-6fb8b931ad03"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "785db34f-9a5e-4601-ab9b-6fb8b931ad03",
+          "name": "GenerateForm",
+          "type": "javascriptTransform",
+          "data": {
+            "transform": "// Extract asset from GraphQL response\r\nconst asset = $.asset?.edges?.[0]?.node;\r\n\r\nif (!asset) {\r\n  return {\r\n    error: true,\r\n    message: \"Asset not found\"\r\n  };\r\n}\r\n\r\n// Count data points\r\nconst dataPointCount = asset.dataPoints?.edges?.length || 0;\r\n\r\n// Prepare form data\r\nreturn {\r\n  // Original asset data (for reference and mutation)\r\n  originalAsset: asset,\r\n  \r\n  // Form default values\r\n  formData: {\r\n    code: asset.code + \"-COPY\",\r\n    name: asset.name,\r\n    type: asset.type,\r\n    subType: asset.subType,\r\n    manufacturer: asset.manufacturer,\r\n    model: asset.model,\r\n    serialNumber: asset.serialNumber,\r\n    connectionString: asset.connectionString,\r\n    criticality: asset.criticality,\r\n    responsibleTeam: asset.responsibleTeam,\r\n    status: asset.status,\r\n    installedAt: asset.installedAt,\r\n    lastPmAt: asset.lastPmAt,\r\n    nextPmAt: asset.nextPmAt,\r\n    workcenterId: asset.workcenterId,\r\n    workcenter: asset.workcenter,\r\n    lineId: asset.lineId,\r\n    line: asset.line,\r\n    cellId: asset.cellId,\r\n    cell: asset.cell,\r\n    deviceDriverId: asset.deviceDriverId,\r\n    deviceDriver: asset.deviceDriver,\r\n    copyDataPoints: true  // Default to copying data points\r\n  },\r\n  \r\n  // Summary info for display\r\n  summary: {\r\n    originalCode: asset.code,\r\n    dataPointCount: dataPointCount\r\n  }\r\n};",
+            "nextNodes": [
+              "b4b56ad6-c11b-455f-8ead-d061cd96af3c"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "083dc680-91db-41d2-82f7-7a514f1d8e17",
+          "name": "Form Dialog2",
+          "type": "formDialog",
+          "data": {
+            "formInputs": [
+              {
+                "label": "New Asset Code",
+                "element": "DisplayText",
+                "type": "display",
+                "labelPosition": {
+                  "id": "row",
+                  "label": "Left"
+                },
+                "justifyContent": "space-between",
+                "alignTextItems": "center",
+                "labelFontSize": "body1",
+                "fontSize": "body1",
+                "fontWeight": "bold",
+                "field": "code",
+                "dataPath": "code",
+                "target": {
+                  "dataPath": "code"
+                },
+                "query": {
+                  "fields": []
+                }
+              },
+              {
+                "label": "Name",
+                "element": "DisplayText",
+                "type": "display",
+                "labelPosition": {
+                  "id": "row",
+                  "label": "Left"
+                },
+                "justifyContent": "space-between",
+                "alignTextItems": "center",
+                "labelFontSize": "body1",
+                "fontSize": "body1",
+                "field": "name",
+                "dataPath": "name",
+                "target": {
+                  "dataPath": "name"
+                },
+                "query": {
+                  "fields": []
+                }
+              },
+              {
+                "label": "Type",
+                "element": "DisplayText",
+                "type": "display",
+                "labelPosition": {
+                  "id": "row",
+                  "label": "Left"
+                },
+                "justifyContent": "space-between",
+                "alignTextItems": "center",
+                "labelFontSize": "body1",
+                "fontSize": "body1",
+                "field": "type",
+                "dataPath": "type",
+                "target": {
+                  "dataPath": "type"
+                },
+                "query": {
+                  "fields": []
+                }
+              },
+              {
+                "label": "Workcenter",
+                "element": "DisplayText",
+                "type": "display",
+                "labelPosition": {
+                  "id": "row",
+                  "label": "Left"
+                },
+                "justifyContent": "space-between",
+                "alignTextItems": "center",
+                "labelFontSize": "body1",
+                "fontSize": "body1",
+                "field": "workcenter",
+                "dataPath": "workcenter",
+                "target": {
+                  "dataPath": "workcenter"
+                },
+                "query": {
+                  "fields": []
+                }
+              },
+              {
+                "label": "Line",
+                "element": "DisplayText",
+                "type": "display",
+                "labelPosition": {
+                  "id": "row",
+                  "label": "Left"
+                },
+                "justifyContent": "space-between",
+                "alignTextItems": "center",
+                "labelFontSize": "body1",
+                "fontSize": "body1",
+                "field": "line",
+                "dataPath": "line",
+                "target": {
+                  "dataPath": "line"
+                },
+                "query": {
+                  "fields": []
+                }
+              },
+              {
+                "label": "Cell",
+                "element": "DisplayText",
+                "type": "display",
+                "labelPosition": {
+                  "id": "row",
+                  "label": "Left"
+                },
+                "justifyContent": "space-between",
+                "alignTextItems": "center",
+                "labelFontSize": "body1",
+                "fontSize": "body1",
+                "field": "cell",
+                "dataPath": "cell",
+                "target": {
+                  "dataPath": "cell"
+                },
+                "query": {
+                  "fields": []
+                }
+              },
+              {
+                "label": "Status",
+                "element": "DisplayText",
+                "type": "display",
+                "labelPosition": {
+                  "id": "row",
+                  "label": "Left"
+                },
+                "justifyContent": "space-between",
+                "alignTextItems": "center",
+                "labelFontSize": "body1",
+                "fontSize": "body1",
+                "field": "status",
+                "dataPath": "status",
+                "target": {
+                  "dataPath": "status"
+                },
+                "query": {
+                  "fields": []
+                }
+              },
+              {
+                "label": "Copy Data Points",
+                "element": "Switch",
+                "type": "switch",
+                "field": "copyDataPoints",
+                "dataPath": "copyDataPoints",
+                "target": {
+                  "dataPath": "copyDataPoints"
+                },
+                "disabled": true,
+                "query": {
+                  "fields": []
+                }
+              },
+              {
+                "label": "Data Points",
+                "element": "DisplayText",
+                "type": "display",
+                "labelPosition": {
+                  "id": "row",
+                  "label": "Left"
+                },
+                "justifyContent": "space-between",
+                "alignTextItems": "center",
+                "labelFontSize": "body1",
+                "fontSize": "body1",
+                "fontWeight": "bold",
+                "field": "dataPointsMessage",
+                "dataPath": "dataPointsMessage",
+                "target": {
+                  "dataPath": "dataPointsMessage"
+                },
+                "query": {
+                  "fields": []
+                }
+              }
+            ],
+            "dataTransform": "{\r\n  \"code\": $.code,\r\n  \"name\": $.name,\r\n  \"type\": $.type,\r\n  \"workcenter\": $.workcenter ? $.workcenter.code & ' - ' & $.workcenter.name : '-',\r\n  \"line\": $.line ? $.line.code & ' - ' & $.line.name : '-',\r\n  \"cell\": $.cell ? $.cell.code & ' - ' & $.cell.name : '-',\r\n  \"status\": $.status,\r\n  \"copyDataPoints\": $.copyDataPoints,\r\n  \"dataPointsMessage\": $.copyDataPoints ? $string($state.context.dataPointCount) & ' data points will be copied' : 'No data points will be copied',\r\n  \"_rawData\": $\r\n}",
+            "fullScreenTransform": "false",
+            "titleTransform": "\"Confirm the Details of the New Asset\"",
+            "onSubmitNextNodes": [
+              "d3bcc8ae-2621-4ec7-8e2a-88c479c2a0a2"
+            ],
+            "onCancelNextNodes": [
+              "b4551cbb-976b-4001-a02d-008b3fb42429"
+            ],
+            "submitIconTransform": "\"check\""
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "b4b56ad6-c11b-455f-8ead-d061cd96af3c",
+          "name": "Set Context",
+          "type": "setContext",
+          "data": {
+            "transform": "{\r\n  \"originalAsset\": $.originalAsset,\r\n  \"dataPointCount\": $.summary.dataPointCount\r\n}",
+            "nextNodes": [
+              "26b1315d-7753-4e4b-b5ec-3b8b0985e9e7"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "eee76f56-c86d-4810-8f8c-aa455d0b732c",
+          "name": "Create Asset Mutation",
+          "type": "mutate",
+          "data": {
+            "api": "Application",
+            "variablesTransform": "{\r\n  \"payload\": [$.assetPayload]\r\n}",
+            "nextNodes": [
+              "ab39ebba-6c5a-409a-a5f0-557c92fcdb3c"
+            ],
+            "mutation": "mutation CreateAsset($payload: [AssetCreatePayloadInput!]!) {\r\n  createAsset(payload: $payload) {\r\n    id\r\n    code\r\n    name\r\n  }\r\n}"
+          },
+          "debug": {
+            "breakpointEnabled": true,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "b4551cbb-976b-4001-a02d-008b3fb42429",
+          "name": "Snackbar",
+          "type": "snackbar",
+          "data": {
+            "severityTransform": "\"warning\"",
+            "titleTransform": "\"Action Canceled - No Asset Created\"",
+            "nextNodes": []
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "d3bcc8ae-2621-4ec7-8e2a-88c479c2a0a2",
+          "name": "prepare payload for mutation",
+          "type": "transform",
+          "data": {
+            "transform": "{\r\n  \"assetPayload\": {\r\n    \"create\": {\r\n      \"code\": $.code,\r\n      \"name\": $.name,\r\n      \"type\": $.type,\r\n      \"subType\": $._rawData.subType,\r\n      \"manufacturer\": $._rawData.manufacturer,\r\n      \"model\": $._rawData.model,\r\n      \"serialNumber\": $._rawData.serialNumber,\r\n      \"connectionString\": $._rawData.connectionString,\r\n      \"criticality\": $._rawData.criticality,\r\n      \"responsibleTeam\": $._rawData.responsibleTeam,\r\n      \"status\": $.status,\r\n      \"installedAt\": $._rawData.installedAt,\r\n      \"lastPmAt\": $._rawData.lastPmAt,\r\n      \"nextPmAt\": $._rawData.nextPmAt,\r\n      \"workcenterId\": $._rawData.workcenterId,\r\n      \"lineId\": $._rawData.lineId,\r\n      \"cellId\": $._rawData.cellId,\r\n      \"deviceDriverId\": $._rawData.deviceDriverId\r\n    }\r\n  },\r\n  \"copyDataPoints\": $.copyDataPoints,\r\n  \"originalAsset\": $state.context.originalAsset\r\n}",
+            "nextNodes": [
+              "f5d37577-fce3-463d-abfd-508e5d5bf2aa"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": true,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "ab39ebba-6c5a-409a-a5f0-557c92fcdb3c",
+          "name": "Copy Data Points",
+          "type": "ifElse",
+          "data": {
+            "transform": "$state.context.copyDataPoints = true",
+            "onTrueNextNodes": [
+              "5163f846-756d-4a59-8088-50aba640e687"
+            ],
+            "onFalseNextNodes": [
+              "661b4b32-6021-41fa-b07f-4e7b5935ecb9"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "ef7831c6-43b3-4e4e-bb74-cb03ffff1dd2",
+          "name": "Create DataPoints",
+          "type": "mutate",
+          "data": {
+            "api": "Application",
+            "variablesTransform": "{\r\n  \"payload\": $.dataPointsPayload\r\n}",
+            "nextNodes": [
+              "f0abc5a7-d920-4b82-a2d9-7f0f3a329399"
+            ],
+            "mutation": "mutation CreateDataPoints($payload: [DataPointCreatePayloadInput!]!) {\r\n  createDataPoint(payload: $payload) {\r\n    id\r\n    code\r\n    name\r\n  }\r\n}"
+          },
+          "debug": {
+            "breakpointEnabled": true,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "5163f846-756d-4a59-8088-50aba640e687",
+          "name": "Prep DataPoint Payload",
+          "type": "javascriptTransform",
+          "data": {
+            "transform": "// Get the newly created asset\r\nconst newAsset = $.createAsset[0];\r\nconst newAssetId = newAsset.id;\r\nconst newAssetCode = newAsset.code;\r\n\r\n// Get original asset data points from flow context\r\nconst originalAsset = $state.context.originalAsset;\r\nconst originalAssetCode = originalAsset.code;\r\nconst dataPoints = originalAsset.dataPoints?.edges || [];\r\n\r\n// Build the payload array for batch creation\r\nconst dataPointsPayload = dataPoints.map(edge => {\r\n  const dp = edge.node;\r\n  \r\n  // Replace old asset code with new asset code in the name\r\n  // Example: \"ASSET-0001.RamPosition\" becomes \"ASSET-0003-COPY.RamPosition\"\r\n  let newName = dp.name;\r\n  if (dp.name && dp.name.includes('.')) {\r\n    const parts = dp.name.split('.');\r\n    // Replace the first part (asset code) with new asset code\r\n    parts[0] = newAssetCode;\r\n    newName = parts.join('.');\r\n  }\r\n  \r\n  // Also update displayName description if they reference the old asset\r\n  let newDescription = dp.description;\r\n  if (newDescription && newDescription.includes(originalAssetCode)) {\r\n    newDescription = newDescription.replace(new RegExp(originalAssetCode, 'g'), newAssetCode);\r\n  }\r\n  \r\n  return {\r\n    create: {\r\n      assetId: newAssetId,\r\n      // code: REMOVED - let Fuuz generate sequence number\r\n      name: newName,\r\n      displayName: dp.displayName,\r\n      description: newDescription,\r\n      category: dp.category,\r\n      dataType: dp.dataType,\r\n      unitId: dp.unitId,\r\n      setPoint: dp.setPoint,\r\n      upperLimit: dp.upperLimit,\r\n      lowerLimit: dp.lowerLimit,\r\n      upperWarning: dp.upperWarning,\r\n      lowerWarning: dp.lowerWarning,\r\n      tolerance: dp.tolerance,\r\n      frequency: dp.frequency,\r\n      isOnChange: dp.isOnChange,\r\n      deadband: dp.deadband,\r\n      precision: dp.precision,\r\n      scaleFactor: dp.scaleFactor,\r\n      historize: dp.historize,\r\n      enabled: dp.enabled,\r\n      alarmEnabled: dp.alarmEnabled,\r\n      alarmPriority: dp.alarmPriority,\r\n      isCritical: dp.isCritical\r\n    }\r\n  };\r\n});\r\n\r\nreturn {\r\n  dataPointsPayload: dataPointsPayload,\r\n  newAsset: newAsset,\r\n  dataPointCount: dataPointsPayload.length\r\n};",
+            "nextNodes": [
+              "ef7831c6-43b3-4e4e-bb74-cb03ffff1dd2"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "33e9bfa9-c01e-4447-8b3f-56a43f747043",
+          "name": "Snackbar",
+          "type": "snackbar",
+          "data": {
+            "severityTransform": "\"success\"",
+            "nextNodes": [],
+            "titleTransform": "\"Asset & Data Point Duplication Completed\"",
+            "messageTransform": "\"Successfully completed the duplication of Asset \" &  $state.context.originalAsset.code & \", and its\" & $state.context.dataPointCount & \" data points.\""
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "f5d37577-fce3-463d-abfd-508e5d5bf2aa",
+          "name": "Merge Context",
+          "type": "mergeContext",
+          "data": {
+            "transform": "{\r\n  \"copyDataPoints\": $.copyDataPoints\r\n}",
+            "nextNodes": [
+              "eee76f56-c86d-4810-8f8c-aa455d0b732c"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "a397bda4-5bbc-402e-957c-4e5203c72617",
+          "name": "If Else",
+          "type": "ifElse",
+          "data": {
+            "onTrueNextNodes": [
+              "33e9bfa9-c01e-4447-8b3f-56a43f747043"
+            ],
+            "onFalseNextNodes": [
+              "942a216c-4ed7-4fd6-ba1a-f4d83b2fcbcd"
+            ],
+            "transform": "$isNilOrEmpty($.error)"
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "f0abc5a7-d920-4b82-a2d9-7f0f3a329399",
+          "name": "Search Table",
+          "type": "searchTable",
+          "data": {
+            "screenElementTransform": "\"AssetTable\"",
+            "nextNodes": [
+              "a397bda4-5bbc-402e-957c-4e5203c72617"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "661b4b32-6021-41fa-b07f-4e7b5935ecb9",
+          "name": "Snackbar",
+          "type": "snackbar",
+          "data": {
+            "severityTransform": "\"success\"",
+            "nextNodes": [],
+            "titleTransform": "\"Asset Duplication Completed\"",
+            "messageTransform": "\"Successfully completed the duplication of Asset \" &  $state.context.originalAsset.code & \", you selected NOT to copy its datapoints.\""
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "942a216c-4ed7-4fd6-ba1a-f4d83b2fcbcd",
+          "name": "Snackbar",
+          "type": "snackbar",
+          "data": {
+            "severityTransform": "\"error\"",
+            "nextNodes": [],
+            "titleTransform": "\"Asset & Data Point Duplication Completed\"",
+            "messageTransform": "\"Shucks something did not go right! Tried to copy Asset:  \" &  $state.context.originalAsset.code & \", and its\" & $state.context.dataPointCount & \" data points.\""
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        }
+      ],
+      "version": "0.0.3"
+    },
+    "diagram": {
+      "id": "cmkx53zr941pp0129569tf8up",
+      "offsetX": -2344,
+      "offsetY": -145.72,
+      "zoom": 111.11,
+      "gridSize": 5,
+      "layers": [
+        {
+          "id": "13405498-3247-4a75-a0e0-4240942d64a1",
+          "type": "diagram-links",
+          "isSvg": true,
+          "transformed": true,
+          "models": {
+            "5f13c82c-cc1e-4abe-89f2-07cc8e234492": {
+              "points": [
+                {
+                  "id": "02f26898-e721-42d6-bda6-dda34d3a85a5",
+                  "type": "point",
+                  "x": 403.97,
+                  "y": 134.18
+                },
+                {
+                  "id": "43fb5773-735c-4f98-82f3-a5d6ba86b0d1",
+                  "type": "point",
+                  "x": 458.96,
+                  "y": 254.18
+                }
+              ],
+              "id": "5f13c82c-cc1e-4abe-89f2-07cc8e234492",
+              "type": "default",
+              "selected": false,
+              "source": "af665b65-49aa-4f7d-8838-fca4fffd690d",
+              "sourcePort": "cmkx0arjo00ba356r1zalp3ax",
+              "target": "3d953ff7-3b1b-488a-8c0d-11f60ab24f57",
+              "targetPort": "cmkx0ej9u00cp356rmy9oys9y",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "e7389620-d8c2-4a03-b839-a6d5e985e67a": {
+              "points": [
+                {
+                  "id": "ce9b7532-d20f-4707-a6bd-410d17a8164f",
+                  "type": "point",
+                  "x": 388.97,
+                  "y": 314.18
+                },
+                {
+                  "id": "ef226531-76ed-44ed-8fc6-6289fd51f0a2",
+                  "type": "point",
+                  "x": 458.96,
+                  "y": 254.18
+                }
+              ],
+              "id": "e7389620-d8c2-4a03-b839-a6d5e985e67a",
+              "type": "default",
+              "selected": false,
+              "source": "53bc6873-26d3-4f2e-b2ce-d8d188bc0b92",
+              "sourcePort": "cmkx0b3bo00br356rld6z6hep",
+              "target": "3d953ff7-3b1b-488a-8c0d-11f60ab24f57",
+              "targetPort": "cmkx0ej9u00cp356rmy9oys9y",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "16807b6c-9e16-4fc2-ad79-7b1f9c08a47f": {
+              "points": [
+                {
+                  "id": "5bf0f80d-d0a6-405c-b1a4-5c879a7ed89f",
+                  "type": "point",
+                  "x": 638.54,
+                  "y": 254.18
+                },
+                {
+                  "id": "06b387ed-2ab1-4caa-8a86-33b4bbf10faa",
+                  "type": "point",
+                  "x": 693.96,
+                  "y": 259.18
+                }
+              ],
+              "id": "16807b6c-9e16-4fc2-ad79-7b1f9c08a47f",
+              "type": "default",
+              "selected": false,
+              "source": "3d953ff7-3b1b-488a-8c0d-11f60ab24f57",
+              "sourcePort": "cmkx0ej9u00cr356r6ru0dzt5",
+              "target": "785db34f-9a5e-4601-ab9b-6fb8b931ad03",
+              "targetPort": "cmkx0mqhj00gs356r8u38bufk",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "b48b1681-9ba6-43bf-bce5-ff2c43c28934": {
+              "points": [
+                {
+                  "id": "832971c5-2c3d-45bd-a06e-3484cb271580",
+                  "type": "point",
+                  "x": 1283.97,
+                  "y": 634.18
+                },
+                {
+                  "id": "8787041f-be1f-4859-b3f3-6f673688d88a",
+                  "type": "point",
+                  "x": 1473.96,
+                  "y": 484.18
+                }
+              ],
+              "id": "b48b1681-9ba6-43bf-bce5-ff2c43c28934",
+              "type": "default",
+              "selected": false,
+              "source": "fb7fa485-0eec-4bfb-a332-9daf71636ed4",
+              "sourcePort": "cmkx2b5n2003n356r8zevtjuj",
+              "target": "083dc680-91db-41d2-82f7-7a514f1d8e17",
+              "targetPort": "cmkx0toor00jm356rlqlnubh9",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "6f4281d5-4719-40cd-aae5-642a7843e2b3": {
+              "points": [
+                {
+                  "id": "fae4015a-8668-40ee-adf0-9b3e3b0fb500",
+                  "type": "point",
+                  "x": 1293.97,
+                  "y": 399.18
+                },
+                {
+                  "id": "6da4bfd8-0948-4729-aa1b-c2743b490c4a",
+                  "type": "point",
+                  "x": 1473.96,
+                  "y": 484.18
+                }
+              ],
+              "id": "6f4281d5-4719-40cd-aae5-642a7843e2b3",
+              "type": "default",
+              "selected": false,
+              "source": "26b1315d-7753-4e4b-b5ec-3b8b0985e9e7",
+              "sourcePort": "cmkx0avcj00bi356rgm331lm6",
+              "target": "083dc680-91db-41d2-82f7-7a514f1d8e17",
+              "targetPort": "cmkx0toor00jm356rlqlnubh9",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "fa4fe6a9-ee51-40ee-be50-f2b17e1039ac": {
+              "points": [
+                {
+                  "id": "17f3955b-7e7c-4a64-96b6-1620a75f0d2c",
+                  "type": "point",
+                  "x": 1628.97,
+                  "y": 509.32
+                },
+                {
+                  "id": "52c203ac-71f2-46f6-be27-a14fec7e9c18",
+                  "type": "point",
+                  "x": 1523.96,
+                  "y": 704.18
+                }
+              ],
+              "id": "fa4fe6a9-ee51-40ee-be50-f2b17e1039ac",
+              "type": "default",
+              "selected": false,
+              "source": "083dc680-91db-41d2-82f7-7a514f1d8e17",
+              "sourcePort": "cmkx0toor00jq356rj1i8k1wv",
+              "target": "b4551cbb-976b-4001-a02d-008b3fb42429",
+              "targetPort": "cmkx2tczv00b1356rr07v0sa8",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "188b031b-2545-4219-b147-5871bd0485a3": {
+              "points": [
+                {
+                  "id": "09f1dac1-774e-4078-a7fb-35febf8c77ad",
+                  "type": "point",
+                  "x": 1293.97,
+                  "y": 424.32
+                },
+                {
+                  "id": "ccbf8136-07f6-4e75-8d1f-322079cff2d0",
+                  "type": "point",
+                  "x": 1523.96,
+                  "y": 704.18
+                }
+              ],
+              "id": "188b031b-2545-4219-b147-5871bd0485a3",
+              "type": "default",
+              "selected": false,
+              "source": "26b1315d-7753-4e4b-b5ec-3b8b0985e9e7",
+              "sourcePort": "cmkx0avcj00bk356rb2ou9xhk",
+              "target": "b4551cbb-976b-4001-a02d-008b3fb42429",
+              "targetPort": "cmkx2tczv00b1356rr07v0sa8",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "6dd9ee62-a3c3-4e04-a9bd-cc0bdedc3f65": {
+              "points": [
+                {
+                  "id": "53869082-0404-48af-ae42-dfbb2cb7342f",
+                  "type": "point",
+                  "x": 1628.97,
+                  "y": 484.18
+                },
+                {
+                  "id": "61bf962a-0df7-4897-8994-a1f0fe6a4320",
+                  "type": "point",
+                  "x": 1688.96,
+                  "y": 544.18
+                }
+              ],
+              "id": "6dd9ee62-a3c3-4e04-a9bd-cc0bdedc3f65",
+              "type": "default",
+              "selected": false,
+              "source": "083dc680-91db-41d2-82f7-7a514f1d8e17",
+              "sourcePort": "cmkx0toor00jo356rashshnz7",
+              "target": "d3bcc8ae-2621-4ec7-8e2a-88c479c2a0a2",
+              "targetPort": "cmkx2u82900c7356rijbzojya",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "216908c3-f45b-4db0-a10e-650362bdc20a": {
+              "points": [
+                {
+                  "id": "fcfcce45-58a3-466b-a3d6-58b7dc8c6c44",
+                  "type": "point",
+                  "x": 2135.75,
+                  "y": 604.18
+                },
+                {
+                  "id": "0e4a443d-7407-4959-be5d-dd785cbbfaba",
+                  "type": "point",
+                  "x": 2188.96,
+                  "y": 659.18
+                }
+              ],
+              "id": "216908c3-f45b-4db0-a10e-650362bdc20a",
+              "type": "default",
+              "selected": false,
+              "source": "eee76f56-c86d-4810-8f8c-aa455d0b732c",
+              "sourcePort": "cmkx2sy1700as356redfm715f",
+              "target": "ab39ebba-6c5a-409a-a5f0-557c92fcdb3c",
+              "targetPort": "cmkx2wze800fj356rbhpnvfij",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "58d9a9fe-ec83-4225-9dae-92fa7098dc8b": {
+              "points": [
+                {
+                  "id": "f29d29d8-25b0-40ca-b0c2-0a330dd672c3",
+                  "type": "point",
+                  "x": 2343.97,
+                  "y": 659.18
+                },
+                {
+                  "id": "7597bd34-7533-4b25-b9b7-6d8247662d32",
+                  "type": "point",
+                  "x": 2438.96,
+                  "y": 709.18
+                }
+              ],
+              "id": "58d9a9fe-ec83-4225-9dae-92fa7098dc8b",
+              "type": "default",
+              "selected": false,
+              "source": "ab39ebba-6c5a-409a-a5f0-557c92fcdb3c",
+              "sourcePort": "cmkx2wze800fl356r9ml0i243",
+              "target": "5163f846-756d-4a59-8088-50aba640e687",
+              "targetPort": "cmkx2yfd300ho356rloog7qhf",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "82914e59-96ab-4200-a3f3-2083d5493ecc": {
+              "points": [
+                {
+                  "id": "049335ae-f039-496e-8ff9-6de4b1371bd3",
+                  "type": "point",
+                  "x": 2612.56,
+                  "y": 709.18
+                },
+                {
+                  "id": "ff129d21-5ca0-498c-ac3a-ff038d211a5d",
+                  "type": "point",
+                  "x": 2683.96,
+                  "y": 704.18
+                }
+              ],
+              "id": "82914e59-96ab-4200-a3f3-2083d5493ecc",
+              "type": "default",
+              "selected": false,
+              "source": "5163f846-756d-4a59-8088-50aba640e687",
+              "sourcePort": "cmkx2yfd300hq356rqpzg99z2",
+              "target": "ef7831c6-43b3-4e4e-bb74-cb03ffff1dd2",
+              "targetPort": "cmkx2xyrk00h8356rslofhkq9",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "54ada4de-68c4-4b64-8336-4a0552e2df09": {
+              "points": [
+                {
+                  "id": "4aa17e15-b7eb-4152-b988-d0b9b555f74d",
+                  "type": "point",
+                  "x": 1891.82,
+                  "y": 544.18
+                },
+                {
+                  "id": "2cbabcc5-091a-404a-9a18-e84ba6dbf68e",
+                  "type": "point",
+                  "x": 1993.96,
+                  "y": 519.18
+                }
+              ],
+              "id": "54ada4de-68c4-4b64-8336-4a0552e2df09",
+              "type": "default",
+              "selected": false,
+              "source": "d3bcc8ae-2621-4ec7-8e2a-88c479c2a0a2",
+              "sourcePort": "cmkx2u82900c9356r1giv0c9v",
+              "target": "f5d37577-fce3-463d-abfd-508e5d5bf2aa",
+              "targetPort": "cmkx366ma00nz356rlon3xvpd",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "1fd3dcbf-2354-4f23-8da3-500c6c327f52": {
+              "points": [
+                {
+                  "id": "b20faba6-a8bf-4083-a254-a99f2f034fe3",
+                  "type": "point",
+                  "x": 848.97,
+                  "y": 259.18
+                },
+                {
+                  "id": "3b7612ef-93cb-4f8a-aca3-26e10913541e",
+                  "type": "point",
+                  "x": 928.96,
+                  "y": 294.18
+                }
+              ],
+              "id": "1fd3dcbf-2354-4f23-8da3-500c6c327f52",
+              "type": "default",
+              "selected": false,
+              "source": "785db34f-9a5e-4601-ab9b-6fb8b931ad03",
+              "sourcePort": "cmkx0mqhj00gu356rzvrf5h57",
+              "target": "b4b56ad6-c11b-455f-8ead-d061cd96af3c",
+              "targetPort": "cmkx1mrhe003d356rx6a7t7nz",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "b3d83c86-43c7-44d3-b536-57f687d07790": {
+              "points": [
+                {
+                  "id": "83b439cb-108d-4c8d-9173-6f0ea0ec7fbd",
+                  "type": "point",
+                  "x": 1083.97,
+                  "y": 294.18
+                },
+                {
+                  "id": "2e9f25d1-c097-4000-84c2-290d1351b3d5",
+                  "type": "point",
+                  "x": 1138.96,
+                  "y": 399.18
+                }
+              ],
+              "id": "b3d83c86-43c7-44d3-b536-57f687d07790",
+              "type": "default",
+              "selected": false,
+              "source": "b4b56ad6-c11b-455f-8ead-d061cd96af3c",
+              "sourcePort": "cmkx1mrhe003f356rlicl3ek1",
+              "target": "26b1315d-7753-4e4b-b5ec-3b8b0985e9e7",
+              "targetPort": "cmkx0avcj00bg356rz20rsr81",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "2c41a234-6037-4de1-a556-81445fa862ec": {
+              "points": [
+                {
+                  "id": "dfba4f4a-d6fc-490a-bf13-ad164e089b97",
+                  "type": "point",
+                  "x": 2148.97,
+                  "y": 519.18
+                },
+                {
+                  "id": "56374742-6ccc-4a45-800b-8a7329768c21",
+                  "type": "point",
+                  "x": 1968.96,
+                  "y": 604.18
+                }
+              ],
+              "id": "2c41a234-6037-4de1-a556-81445fa862ec",
+              "type": "default",
+              "selected": false,
+              "source": "f5d37577-fce3-463d-abfd-508e5d5bf2aa",
+              "sourcePort": "cmkx366mb00o1356re90vcc4c",
+              "target": "eee76f56-c86d-4810-8f8c-aa455d0b732c",
+              "targetPort": "cmkx2sy1700aq356rwt1f3qle",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "60e6b75f-d663-4b71-9d43-e9a5725ecaf9": {
+              "points": [
+                {
+                  "id": "0883205a-17a5-4925-96c5-74f9fba3abea",
+                  "type": "point",
+                  "x": 3198.97,
+                  "y": 524.18
+                },
+                {
+                  "id": "73c98ce6-57d1-49e2-bf3c-b93f408fa624",
+                  "type": "point",
+                  "x": 3248.96,
+                  "y": 479.18
+                }
+              ],
+              "id": "60e6b75f-d663-4b71-9d43-e9a5725ecaf9",
+              "type": "default",
+              "selected": false,
+              "source": "a397bda4-5bbc-402e-957c-4e5203c72617",
+              "sourcePort": "cmkx49udh01bc356r2o2p0k3q",
+              "target": "33e9bfa9-c01e-4447-8b3f-56a43f747043",
+              "targetPort": "cmkx30dh200kf356r68y2muhl",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "624accea-52cc-474f-8f47-8a775fff5087": {
+              "points": [
+                {
+                  "id": "acc4770a-661f-4680-985a-6b9bf15cf119",
+                  "type": "point",
+                  "x": 2838.97,
+                  "y": 704.18
+                },
+                {
+                  "id": "bfeffac5-f0ed-4848-be0d-c83e3349c7c2",
+                  "type": "point",
+                  "x": 2863.96,
+                  "y": 629.18
+                }
+              ],
+              "id": "624accea-52cc-474f-8f47-8a775fff5087",
+              "type": "default",
+              "selected": false,
+              "source": "ef7831c6-43b3-4e4e-bb74-cb03ffff1dd2",
+              "sourcePort": "cmkx2xyrk00ha356ruk1lkg72",
+              "target": "f0abc5a7-d920-4b82-a2d9-7f0f3a329399",
+              "targetPort": "cmkx4c8ar01c4356rmdavl6ri",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "0e057e62-7726-452d-8fa1-0317137feb53": {
+              "points": [
+                {
+                  "id": "ea1787e0-a76b-4cc6-afc4-73c885b47d91",
+                  "type": "point",
+                  "x": 3018.97,
+                  "y": 629.18
+                },
+                {
+                  "id": "721a6cef-4179-49da-9ed2-f569c3cd26ef",
+                  "type": "point",
+                  "x": 3043.96,
+                  "y": 524.18
+                }
+              ],
+              "id": "0e057e62-7726-452d-8fa1-0317137feb53",
+              "type": "default",
+              "selected": false,
+              "source": "f0abc5a7-d920-4b82-a2d9-7f0f3a329399",
+              "sourcePort": "cmkx4c8ar01c6356rin7l2f53",
+              "target": "a397bda4-5bbc-402e-957c-4e5203c72617",
+              "targetPort": "cmkx49udh01ba356rxkz5k375",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "373d67d2-655e-498e-b2d6-9257bd29fbb9": {
+              "points": [
+                {
+                  "id": "38f4735b-d0cf-4921-8c9e-4660a1486574",
+                  "type": "point",
+                  "x": 2343.97,
+                  "y": 684.32
+                },
+                {
+                  "id": "c0909a0c-1ad6-497b-b541-45c8b99e69cd",
+                  "type": "point",
+                  "x": 2423.96,
+                  "y": 814.18
+                }
+              ],
+              "id": "373d67d2-655e-498e-b2d6-9257bd29fbb9",
+              "type": "default",
+              "selected": false,
+              "source": "ab39ebba-6c5a-409a-a5f0-557c92fcdb3c",
+              "sourcePort": "cmkx2wze800fn356r5dmc59ag",
+              "target": "661b4b32-6021-41fa-b07f-4e7b5935ecb9",
+              "targetPort": "cmkx4fj2o01en356r93p4b74i",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "37f8b490-0cf0-4175-9ad0-b7c98d0c3bd4": {
+              "points": [
+                {
+                  "id": "38cc655f-20ce-4f1e-8c16-f22766a82fca",
+                  "type": "point",
+                  "x": 3198.97,
+                  "y": 549.32
+                },
+                {
+                  "id": "7475c005-f095-4ba3-b8dd-724f9fec11da",
+                  "type": "point",
+                  "x": 3263.96,
+                  "y": 584.19
+                }
+              ],
+              "id": "37f8b490-0cf0-4175-9ad0-b7c98d0c3bd4",
+              "type": "default",
+              "selected": false,
+              "source": "a397bda4-5bbc-402e-957c-4e5203c72617",
+              "sourcePort": "cmkx49udh01be356r066pxypp",
+              "target": "942a216c-4ed7-4fd6-ba1a-f4d83b2fcbcd",
+              "targetPort": "cmkx533j401xh356r9thlzpuz",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            }
+          }
+        },
+        {
+          "id": "fe19b9b5-08e8-434e-a1d8-6594d556ced8",
+          "type": "diagram-nodes",
+          "isSvg": false,
+          "transformed": true,
+          "models": {
+            "af665b65-49aa-4f7d-8838-fca4fffd690d": {
+              "id": "af665b65-49aa-4f7d-8838-fca4fffd690d",
+              "type": "debugSource",
+              "selected": false,
+              "x": 250,
+              "y": 95,
+              "ports": [
+                {
+                  "id": "cmkx0arjo00ba356r1zalp3ax",
+                  "type": "default",
+                  "x": 396.49,
+                  "y": 126.7,
+                  "name": "cmkx0arjo00bb356r5v7933r3",
+                  "parentNode": "af665b65-49aa-4f7d-8838-fca4fffd690d",
+                  "links": [
+                    "5f13c82c-cc1e-4abe-89f2-07cc8e234492"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "payload": {
+                  "assetId": "ASSET-0003"
+                },
+                "context": {},
+                "nextNodes": [
+                  "3d953ff7-3b1b-488a-8c0d-11f60ab24f57"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Source"
+            },
+            "26b1315d-7753-4e4b-b5ec-3b8b0985e9e7": {
+              "id": "26b1315d-7753-4e4b-b5ec-3b8b0985e9e7",
+              "type": "formDialog",
+              "selected": false,
+              "x": 1140,
+              "y": 360,
+              "ports": [
+                {
+                  "id": "cmkx0avcj00bg356rz20rsr81",
+                  "type": "default",
+                  "x": 1131.48,
+                  "y": 391.7,
+                  "name": "cmkx0avcj00bh356ruij60jf2",
+                  "parentNode": "26b1315d-7753-4e4b-b5ec-3b8b0985e9e7",
+                  "links": [
+                    "b3d83c86-43c7-44d3-b536-57f687d07790"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkx0avcj00bi356rgm331lm6",
+                  "type": "default",
+                  "x": 1286.49,
+                  "y": 391.7,
+                  "name": "cmkx0avcj00bj356rqzmo7yd0",
+                  "parentNode": "26b1315d-7753-4e4b-b5ec-3b8b0985e9e7",
+                  "links": [
+                    "6f4281d5-4719-40cd-aae5-642a7843e2b3"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Submit",
+                  "fieldPath": "data.onSubmitNextNodes"
+                },
+                {
+                  "id": "cmkx0avcj00bk356rb2ou9xhk",
+                  "type": "default",
+                  "x": 1286.49,
+                  "y": 416.84,
+                  "name": "cmkx0avcj00bl356rvjxzmdap",
+                  "parentNode": "26b1315d-7753-4e4b-b5ec-3b8b0985e9e7",
+                  "links": [
+                    "188b031b-2545-4219-b147-5871bd0485a3"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Cancel",
+                  "fieldPath": "data.onCancelNextNodes"
+                }
+              ],
+              "data": {
+                "formInputs": [
+                  {
+                    "label": "Original Asset Code",
+                    "element": "DisplayText",
+                    "type": "display",
+                    "labelPosition": {
+                      "id": "row",
+                      "label": "Left"
+                    },
+                    "justifyContent": "space-between",
+                    "alignTextItems": "center",
+                    "labelFontSize": "body1",
+                    "fontSize": "body1",
+                    "field": "originalCode",
+                    "target": {
+                      "dataPath": "originalCode"
+                    },
+                    "query": {
+                      "fields": []
+                    },
+                    "dataPath": "originalCode"
+                  },
+                  {
+                    "label": "Data Points to Copy",
+                    "element": "DisplayText",
+                    "type": "display",
+                    "labelPosition": {
+                      "id": "row",
+                      "label": "Left"
+                    },
+                    "justifyContent": "space-between",
+                    "alignTextItems": "center",
+                    "labelFontSize": "body1",
+                    "fontSize": "body1",
+                    "field": "dataPointCount",
+                    "dataPath": "dataPointCount",
+                    "target": {
+                      "dataPath": "dataPointCount"
+                    },
+                    "query": {
+                      "fields": []
+                    }
+                  },
+                  {
+                    "label": "New Asset Code",
+                    "dataPath": "code",
+                    "field": "code",
+                    "element": "TextInput",
+                    "type": "text",
+                    "validation": {
+                      "required": true
+                    }
+                  },
+                  {
+                    "label": "Name",
+                    "dataPath": "name",
+                    "field": "name",
+                    "element": "TextInput",
+                    "type": "text",
+                    "validation": {
+                      "required": true
+                    }
+                  },
+                  {
+                    "label": "Type",
+                    "dataPath": "type",
+                    "field": "type",
+                    "element": "OptionsInput",
+                    "type": "options",
+                    "options": [
+                      {
+                        "id": "Assembly Robot",
+                        "label": "Assembly Robot"
+                      },
+                      {
+                        "id": "Batch Reactor",
+                        "label": "Batch Reactor"
+                      },
+                      {
+                        "id": "Blender",
+                        "label": "Blender"
+                      },
+                      {
+                        "id": "Cartoner",
+                        "label": "Cartoner"
+                      },
+                      {
+                        "id": "Centrifugal Pump",
+                        "label": "Centrifugal Pump"
+                      },
+                      {
+                        "id": "CIP System",
+                        "label": "CIP System"
+                      },
+                      {
+                        "id": "CNC Machine",
+                        "label": "CNC Machine"
+                      },
+                      {
+                        "id": "Continuous Reactor",
+                        "label": "Continuous Reactor"
+                      },
+                      {
+                        "id": "Conveyor",
+                        "label": "Conveyor"
+                      },
+                      {
+                        "id": "Distillation Column",
+                        "label": "Distillation Column"
+                      },
+                      {
+                        "id": "Feeder",
+                        "label": "Feeder"
+                      },
+                      {
+                        "id": "Filling Machine",
+                        "label": "Filling Machine"
+                      },
+                      {
+                        "id": "Filter",
+                        "label": "Filter"
+                      },
+                      {
+                        "id": "Heat Exchanger",
+                        "label": "Heat Exchanger"
+                      },
+                      {
+                        "id": "Industrial Mixer",
+                        "label": "Industrial Mixer"
+                      },
+                      {
+                        "id": "Stamping Press",
+                        "label": "Stamping Press"
+                      },
+                      {
+                        "id": "Welding Robot",
+                        "label": "Welding Robot"
+                      }
+                    ],
+                    "multiselect": false,
+                    "isClearable": true,
+                    "stateTracking": "id",
+                    "labelPath": "label"
+                  },
+                  {
+                    "label": "Workcenter",
+                    "dataPath": "workcenter",
+                    "field": "workcenter",
+                    "element": "SelectInput",
+                    "type": "select",
+                    "api": "Application",
+                    "dataModel": "Workcenter",
+                    "labelField": "code",
+                    "labelPath": "code",
+                    "additionalFields": [
+                      "code",
+                      "name"
+                    ],
+                    "selectFields": [
+                      "code",
+                      "name"
+                    ],
+                    "target": {
+                      "dataPath": "workcenterId"
+                    },
+                    "isClearable": true,
+                    "disabled": {
+                      "__transform": "$not($isNilOrEmpty($data.line.id)) or $not($isNilOrEmpty($data.cell.id))",
+                      "__dynamicFields": {
+                        "payload": [
+                          "data.line.id",
+                          "data.cell.id"
+                        ],
+                        "context": []
+                      },
+                      "__cacheKey": "",
+                      "__remote": false
+                    }
+                  },
+                  {
+                    "label": "Line",
+                    "dataPath": "line",
+                    "field": "line",
+                    "element": "SelectInput",
+                    "type": "select",
+                    "api": "Application",
+                    "dataModel": "Line",
+                    "labelField": "code",
+                    "labelPath": "code",
+                    "additionalFields": [
+                      "code",
+                      "name"
+                    ],
+                    "selectFields": [
+                      "code",
+                      "name"
+                    ],
+                    "target": {
+                      "dataPath": "lineId"
+                    },
+                    "isClearable": true,
+                    "disabled": {
+                      "__transform": "$not($isNilOrEmpty($data.workcenter.id)) or $not($isNilOrEmpty($data.cell.id))",
+                      "__dynamicFields": {
+                        "payload": [
+                          "data.workcenter.id",
+                          "data.cell.id"
+                        ],
+                        "context": []
+                      },
+                      "__cacheKey": "",
+                      "__remote": false
+                    },
+                    "additionalFilter": {
+                      "__transform": "$isNilOrEmpty($data.cell.lineId) ? {} : {\"id\": {\"_eq\": $data.cell.lineId}}",
+                      "__dynamicFields": {
+                        "payload": [
+                          "data.cell.lineId"
+                        ],
+                        "context": []
+                      },
+                      "__cacheKey": "",
+                      "__remote": false
+                    }
+                  },
+                  {
+                    "label": "Cell",
+                    "dataPath": "cell",
+                    "field": "cell",
+                    "element": "SelectInput",
+                    "type": "select",
+                    "api": "Application",
+                    "dataModel": "Cell",
+                    "labelField": "code",
+                    "labelPath": "code",
+                    "additionalFields": [
+                      "code",
+                      "name",
+                      "lineId"
+                    ],
+                    "selectFields": [
+                      "code",
+                      "name",
+                      "lineId"
+                    ],
+                    "target": {
+                      "dataPath": "cellId"
+                    },
+                    "isClearable": true,
+                    "disabled": {
+                      "__transform": "$not($isNilOrEmpty($data.workcenter.id))",
+                      "__dynamicFields": {
+                        "payload": [
+                          "data.workcenter.id"
+                        ],
+                        "context": []
+                      },
+                      "__cacheKey": "",
+                      "__remote": false
+                    },
+                    "additionalFilter": {
+                      "__transform": "$isNilOrEmpty($data.line.id) ? {} : {\"lineId\": {\"_eq\": $data.line.id}}",
+                      "__dynamicFields": {
+                        "payload": [
+                          "data.line.id"
+                        ],
+                        "context": []
+                      },
+                      "__cacheKey": "",
+                      "__remote": false
+                    }
+                  },
+                  {
+                    "label": "Status",
+                    "dataPath": "status",
+                    "field": "status",
+                    "element": "OptionsInput",
+                    "type": "options",
+                    "options": [
+                      {
+                        "id": "Active",
+                        "label": "Active"
+                      },
+                      {
+                        "id": "Maintenance",
+                        "label": "Maintenance"
+                      }
+                    ],
+                    "multiselect": false,
+                    "isClearable": false,
+                    "stateTracking": "id",
+                    "labelPath": "label",
+                    "validation": {
+                      "required": true
+                    }
+                  },
+                  {
+                    "label": "Copy Data Points",
+                    "dataPath": "copyDataPoints",
+                    "field": "copyDataPoints",
+                    "element": "Switch",
+                    "type": "switch",
+                    "validation": {
+                      "required": false
+                    }
+                  }
+                ],
+                "dataTransform": "$.formData ~> |$|{\r\n  \"originalCode\": $.summary.originalCode,\r\n  \"dataPointCount\": $.summary.dataPointCount,\r\n  \"_originalAsset\": $.originalAsset,\r\n  \"_summary\": $.summary\r\n}|",
+                "fullScreenTransform": "false",
+                "titleTransform": "\"Duplicate Asset & Asset Data Points\"",
+                "onSubmitNextNodes": [
+                  "083dc680-91db-41d2-82f7-7a514f1d8e17"
+                ],
+                "onCancelNextNodes": [
+                  "b4551cbb-976b-4001-a02d-008b3fb42429"
+                ],
+                "submitIconTransform": "\"floppy-disk\""
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Form Dialog1"
+            },
+            "53bc6873-26d3-4f2e-b2ce-d8d188bc0b92": {
+              "id": "53bc6873-26d3-4f2e-b2ce-d8d188bc0b92",
+              "type": "request",
+              "selected": false,
+              "x": 235,
+              "y": 275,
+              "ports": [
+                {
+                  "id": "cmkx0b3bo00br356rld6z6hep",
+                  "type": "default",
+                  "x": 381.49,
+                  "y": 306.7,
+                  "name": "cmkx0b3bo00bs356raj147zp4",
+                  "parentNode": "53bc6873-26d3-4f2e-b2ce-d8d188bc0b92",
+                  "links": [
+                    "e7389620-d8c2-4a03-b839-a6d5e985e67a"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Payload",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "3d953ff7-3b1b-488a-8c0d-11f60ab24f57"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Request"
+            },
+            "3d953ff7-3b1b-488a-8c0d-11f60ab24f57": {
+              "id": "3d953ff7-3b1b-488a-8c0d-11f60ab24f57",
+              "type": "query",
+              "selected": false,
+              "x": 460,
+              "y": 215,
+              "ports": [
+                {
+                  "id": "cmkx0ej9u00cp356rmy9oys9y",
+                  "type": "default",
+                  "x": 451.48,
+                  "y": 246.7,
+                  "name": "cmkx0ej9u00cq356rin9whn2y",
+                  "parentNode": "3d953ff7-3b1b-488a-8c0d-11f60ab24f57",
+                  "links": [
+                    "5f13c82c-cc1e-4abe-89f2-07cc8e234492",
+                    "e7389620-d8c2-4a03-b839-a6d5e985e67a"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkx0ej9u00cr356r6ru0dzt5",
+                  "type": "default",
+                  "x": 631.06,
+                  "y": 246.7,
+                  "name": "cmkx0ej9u00cs356rtfsyxwfs",
+                  "parentNode": "3d953ff7-3b1b-488a-8c0d-11f60ab24f57",
+                  "links": [
+                    "16807b6c-9e16-4fc2-ad79-7b1f9c08a47f"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "application",
+                "variablesTransform": "{\r\n  \"assetId\": $.assetId\r\n}",
+                "query": "query GetAssetWithDataPoints($assetId: String!) {\r\n  asset(where: { id: { _eq: $assetId } }) {\r\n    edges {\r\n      node {\r\n        id\r\n        code\r\n        name\r\n        connectionString\r\n        criticality\r\n        manufacturer\r\n        model\r\n        responsibleTeam\r\n        serialNumber\r\n        status\r\n        subType\r\n        type\r\n        installedAt\r\n        lastPmAt\r\n        nextPmAt\r\n        cellId\r\n        cell {\r\n          id\r\n          code\r\n          name\r\n          lineId\r\n        }\r\n        deviceDriverId\r\n        deviceDriver {\r\n          id\r\n          name\r\n        }\r\n        lineId\r\n        line {\r\n          id\r\n          code\r\n          name\r\n        }\r\n        workcenterId\r\n        workcenter {\r\n          id\r\n          code\r\n          name\r\n        }\r\n        dataPoints {\r\n          edges {\r\n            node {\r\n              id\r\n              code\r\n              name\r\n              displayName\r\n              description\r\n              category\r\n              dataType\r\n              unitId\r\n              unit {\r\n                id\r\n                code\r\n                name\r\n              }\r\n              setPoint\r\n              upperLimit\r\n              lowerLimit\r\n              upperWarning\r\n              lowerWarning\r\n              tolerance\r\n              frequency\r\n              isOnChange\r\n              deadband\r\n              precision\r\n              scaleFactor\r\n              historize\r\n              enabled\r\n              alarmEnabled\r\n              alarmPriority\r\n              isCritical\r\n            }\r\n          }\r\n        }\r\n      }\r\n    }\r\n  }\r\n}",
+                "nextNodes": [
+                  "785db34f-9a5e-4601-ab9b-6fb8b931ad03"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "GetAssetWithDataPoints"
+            },
+            "785db34f-9a5e-4601-ab9b-6fb8b931ad03": {
+              "id": "785db34f-9a5e-4601-ab9b-6fb8b931ad03",
+              "type": "javascriptTransform",
+              "selected": false,
+              "x": 695,
+              "y": 220,
+              "ports": [
+                {
+                  "id": "cmkx0mqhj00gs356r8u38bufk",
+                  "type": "default",
+                  "x": 686.48,
+                  "y": 251.7,
+                  "name": "cmkx0mqhj00gt356raket2t3j",
+                  "parentNode": "785db34f-9a5e-4601-ab9b-6fb8b931ad03",
+                  "links": [
+                    "16807b6c-9e16-4fc2-ad79-7b1f9c08a47f"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkx0mqhj00gu356rzvrf5h57",
+                  "type": "default",
+                  "x": 841.49,
+                  "y": 251.7,
+                  "name": "cmkx0mqhj00gv356r32gg8vd8",
+                  "parentNode": "785db34f-9a5e-4601-ab9b-6fb8b931ad03",
+                  "links": [
+                    "1fd3dcbf-2354-4f23-8da3-500c6c327f52"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "// Extract asset from GraphQL response\r\nconst asset = $.asset?.edges?.[0]?.node;\r\n\r\nif (!asset) {\r\n  return {\r\n    error: true,\r\n    message: \"Asset not found\"\r\n  };\r\n}\r\n\r\n// Count data points\r\nconst dataPointCount = asset.dataPoints?.edges?.length || 0;\r\n\r\n// Prepare form data\r\nreturn {\r\n  // Original asset data (for reference and mutation)\r\n  originalAsset: asset,\r\n  \r\n  // Form default values\r\n  formData: {\r\n    code: asset.code + \"-COPY\",\r\n    name: asset.name,\r\n    type: asset.type,\r\n    subType: asset.subType,\r\n    manufacturer: asset.manufacturer,\r\n    model: asset.model,\r\n    serialNumber: asset.serialNumber,\r\n    connectionString: asset.connectionString,\r\n    criticality: asset.criticality,\r\n    responsibleTeam: asset.responsibleTeam,\r\n    status: asset.status,\r\n    installedAt: asset.installedAt,\r\n    lastPmAt: asset.lastPmAt,\r\n    nextPmAt: asset.nextPmAt,\r\n    workcenterId: asset.workcenterId,\r\n    workcenter: asset.workcenter,\r\n    lineId: asset.lineId,\r\n    line: asset.line,\r\n    cellId: asset.cellId,\r\n    cell: asset.cell,\r\n    deviceDriverId: asset.deviceDriverId,\r\n    deviceDriver: asset.deviceDriver,\r\n    copyDataPoints: true  // Default to copying data points\r\n  },\r\n  \r\n  // Summary info for display\r\n  summary: {\r\n    originalCode: asset.code,\r\n    dataPointCount: dataPointCount\r\n  }\r\n};",
+                "nextNodes": [
+                  "b4b56ad6-c11b-455f-8ead-d061cd96af3c"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "GenerateForm"
+            },
+            "083dc680-91db-41d2-82f7-7a514f1d8e17": {
+              "id": "083dc680-91db-41d2-82f7-7a514f1d8e17",
+              "type": "formDialog",
+              "selected": false,
+              "x": 1475,
+              "y": 445,
+              "ports": [
+                {
+                  "id": "cmkx0toor00jm356rlqlnubh9",
+                  "type": "default",
+                  "x": 1466.48,
+                  "y": 476.7,
+                  "name": "cmkx0toor00jn356r8chrvt03",
+                  "parentNode": "083dc680-91db-41d2-82f7-7a514f1d8e17",
+                  "links": [
+                    "b48b1681-9ba6-43bf-bce5-ff2c43c28934",
+                    "6f4281d5-4719-40cd-aae5-642a7843e2b3"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkx0toor00jo356rashshnz7",
+                  "type": "default",
+                  "x": 1621.49,
+                  "y": 476.7,
+                  "name": "cmkx0toor00jp356rs98mr6bc",
+                  "parentNode": "083dc680-91db-41d2-82f7-7a514f1d8e17",
+                  "links": [
+                    "6dd9ee62-a3c3-4e04-a9bd-cc0bdedc3f65"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Submit",
+                  "fieldPath": "data.onSubmitNextNodes"
+                },
+                {
+                  "id": "cmkx0toor00jq356rj1i8k1wv",
+                  "type": "default",
+                  "x": 1621.49,
+                  "y": 501.84,
+                  "name": "cmkx0toor00jr356rb33obvxp",
+                  "parentNode": "083dc680-91db-41d2-82f7-7a514f1d8e17",
+                  "links": [
+                    "fa4fe6a9-ee51-40ee-be50-f2b17e1039ac"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Cancel",
+                  "fieldPath": "data.onCancelNextNodes"
+                }
+              ],
+              "data": {
+                "formInputs": [
+                  {
+                    "label": "New Asset Code",
+                    "element": "DisplayText",
+                    "type": "display",
+                    "labelPosition": {
+                      "id": "row",
+                      "label": "Left"
+                    },
+                    "justifyContent": "space-between",
+                    "alignTextItems": "center",
+                    "labelFontSize": "body1",
+                    "fontSize": "body1",
+                    "fontWeight": "bold",
+                    "field": "code",
+                    "dataPath": "code",
+                    "target": {
+                      "dataPath": "code"
+                    },
+                    "query": {
+                      "fields": []
+                    }
+                  },
+                  {
+                    "label": "Name",
+                    "element": "DisplayText",
+                    "type": "display",
+                    "labelPosition": {
+                      "id": "row",
+                      "label": "Left"
+                    },
+                    "justifyContent": "space-between",
+                    "alignTextItems": "center",
+                    "labelFontSize": "body1",
+                    "fontSize": "body1",
+                    "field": "name",
+                    "dataPath": "name",
+                    "target": {
+                      "dataPath": "name"
+                    },
+                    "query": {
+                      "fields": []
+                    }
+                  },
+                  {
+                    "label": "Type",
+                    "element": "DisplayText",
+                    "type": "display",
+                    "labelPosition": {
+                      "id": "row",
+                      "label": "Left"
+                    },
+                    "justifyContent": "space-between",
+                    "alignTextItems": "center",
+                    "labelFontSize": "body1",
+                    "fontSize": "body1",
+                    "field": "type",
+                    "dataPath": "type",
+                    "target": {
+                      "dataPath": "type"
+                    },
+                    "query": {
+                      "fields": []
+                    }
+                  },
+                  {
+                    "label": "Workcenter",
+                    "element": "DisplayText",
+                    "type": "display",
+                    "labelPosition": {
+                      "id": "row",
+                      "label": "Left"
+                    },
+                    "justifyContent": "space-between",
+                    "alignTextItems": "center",
+                    "labelFontSize": "body1",
+                    "fontSize": "body1",
+                    "field": "workcenter",
+                    "dataPath": "workcenter",
+                    "target": {
+                      "dataPath": "workcenter"
+                    },
+                    "query": {
+                      "fields": []
+                    }
+                  },
+                  {
+                    "label": "Line",
+                    "element": "DisplayText",
+                    "type": "display",
+                    "labelPosition": {
+                      "id": "row",
+                      "label": "Left"
+                    },
+                    "justifyContent": "space-between",
+                    "alignTextItems": "center",
+                    "labelFontSize": "body1",
+                    "fontSize": "body1",
+                    "field": "line",
+                    "dataPath": "line",
+                    "target": {
+                      "dataPath": "line"
+                    },
+                    "query": {
+                      "fields": []
+                    }
+                  },
+                  {
+                    "label": "Cell",
+                    "element": "DisplayText",
+                    "type": "display",
+                    "labelPosition": {
+                      "id": "row",
+                      "label": "Left"
+                    },
+                    "justifyContent": "space-between",
+                    "alignTextItems": "center",
+                    "labelFontSize": "body1",
+                    "fontSize": "body1",
+                    "field": "cell",
+                    "dataPath": "cell",
+                    "target": {
+                      "dataPath": "cell"
+                    },
+                    "query": {
+                      "fields": []
+                    }
+                  },
+                  {
+                    "label": "Status",
+                    "element": "DisplayText",
+                    "type": "display",
+                    "labelPosition": {
+                      "id": "row",
+                      "label": "Left"
+                    },
+                    "justifyContent": "space-between",
+                    "alignTextItems": "center",
+                    "labelFontSize": "body1",
+                    "fontSize": "body1",
+                    "field": "status",
+                    "dataPath": "status",
+                    "target": {
+                      "dataPath": "status"
+                    },
+                    "query": {
+                      "fields": []
+                    }
+                  },
+                  {
+                    "label": "Copy Data Points",
+                    "element": "Switch",
+                    "type": "switch",
+                    "field": "copyDataPoints",
+                    "dataPath": "copyDataPoints",
+                    "target": {
+                      "dataPath": "copyDataPoints"
+                    },
+                    "disabled": true,
+                    "query": {
+                      "fields": []
+                    }
+                  },
+                  {
+                    "label": "Data Points",
+                    "element": "DisplayText",
+                    "type": "display",
+                    "labelPosition": {
+                      "id": "row",
+                      "label": "Left"
+                    },
+                    "justifyContent": "space-between",
+                    "alignTextItems": "center",
+                    "labelFontSize": "body1",
+                    "fontSize": "body1",
+                    "fontWeight": "bold",
+                    "field": "dataPointsMessage",
+                    "dataPath": "dataPointsMessage",
+                    "target": {
+                      "dataPath": "dataPointsMessage"
+                    },
+                    "query": {
+                      "fields": []
+                    }
+                  }
+                ],
+                "dataTransform": "{\r\n  \"code\": $.code,\r\n  \"name\": $.name,\r\n  \"type\": $.type,\r\n  \"workcenter\": $.workcenter ? $.workcenter.code & ' - ' & $.workcenter.name : '-',\r\n  \"line\": $.line ? $.line.code & ' - ' & $.line.name : '-',\r\n  \"cell\": $.cell ? $.cell.code & ' - ' & $.cell.name : '-',\r\n  \"status\": $.status,\r\n  \"copyDataPoints\": $.copyDataPoints,\r\n  \"dataPointsMessage\": $.copyDataPoints ? $string($state.context.dataPointCount) & ' data points will be copied' : 'No data points will be copied',\r\n  \"_rawData\": $\r\n}",
+                "fullScreenTransform": "false",
+                "titleTransform": "\"Confirm the Details of the New Asset\"",
+                "onSubmitNextNodes": [
+                  "d3bcc8ae-2621-4ec7-8e2a-88c479c2a0a2"
+                ],
+                "onCancelNextNodes": [
+                  "b4551cbb-976b-4001-a02d-008b3fb42429"
+                ],
+                "submitIconTransform": "\"check\""
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Form Dialog2"
+            },
+            "b4b56ad6-c11b-455f-8ead-d061cd96af3c": {
+              "id": "b4b56ad6-c11b-455f-8ead-d061cd96af3c",
+              "type": "setContext",
+              "selected": false,
+              "x": 930,
+              "y": 255,
+              "ports": [
+                {
+                  "id": "cmkx1mrhe003d356rx6a7t7nz",
+                  "type": "default",
+                  "x": 921.48,
+                  "y": 286.7,
+                  "name": "cmkx1mrhe003e356rre4ga0ax",
+                  "parentNode": "b4b56ad6-c11b-455f-8ead-d061cd96af3c",
+                  "links": [
+                    "1fd3dcbf-2354-4f23-8da3-500c6c327f52"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkx1mrhe003f356rlicl3ek1",
+                  "type": "default",
+                  "x": 1076.49,
+                  "y": 286.7,
+                  "name": "cmkx1mrhe003g356rcaevzii7",
+                  "parentNode": "b4b56ad6-c11b-455f-8ead-d061cd96af3c",
+                  "links": [
+                    "b3d83c86-43c7-44d3-b536-57f687d07790"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "{\r\n  \"originalAsset\": $.originalAsset,\r\n  \"dataPointCount\": $.summary.dataPointCount\r\n}",
+                "nextNodes": [
+                  "26b1315d-7753-4e4b-b5ec-3b8b0985e9e7"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Set Context"
+            },
+            "fb7fa485-0eec-4bfb-a332-9daf71636ed4": {
+              "id": "fb7fa485-0eec-4bfb-a332-9daf71636ed4",
+              "type": "debugSource",
+              "selected": false,
+              "x": 1130,
+              "y": 595,
+              "ports": [
+                {
+                  "id": "cmkx2b5n2003n356r8zevtjuj",
+                  "type": "default",
+                  "x": 1276.49,
+                  "y": 626.7,
+                  "name": "cmkx2b5n2003o356r1ewv8n53",
+                  "parentNode": "fb7fa485-0eec-4bfb-a332-9daf71636ed4",
+                  "links": [
+                    "b48b1681-9ba6-43bf-bce5-ff2c43c28934"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "payload": {
+                  "assetId": "ASSET-0001"
+                },
+                "context": {},
+                "nextNodes": [
+                  "083dc680-91db-41d2-82f7-7a514f1d8e17"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Source"
+            },
+            "eee76f56-c86d-4810-8f8c-aa455d0b732c": {
+              "id": "eee76f56-c86d-4810-8f8c-aa455d0b732c",
+              "type": "mutate",
+              "selected": false,
+              "x": 1970,
+              "y": 565,
+              "ports": [
+                {
+                  "id": "cmkx2sy1700aq356rwt1f3qle",
+                  "type": "default",
+                  "x": 1961.48,
+                  "y": 596.7,
+                  "name": "cmkx2sy1700ar356rjt05g01g",
+                  "parentNode": "eee76f56-c86d-4810-8f8c-aa455d0b732c",
+                  "links": [
+                    "2c41a234-6037-4de1-a556-81445fa862ec"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkx2sy1700as356redfm715f",
+                  "type": "default",
+                  "x": 2128.28,
+                  "y": 596.7,
+                  "name": "cmkx2sy1700at356rnu6781an",
+                  "parentNode": "eee76f56-c86d-4810-8f8c-aa455d0b732c",
+                  "links": [
+                    "216908c3-f45b-4db0-a10e-650362bdc20a"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "Application",
+                "variablesTransform": "{\r\n  \"payload\": [$.assetPayload]\r\n}",
+                "nextNodes": [
+                  "ab39ebba-6c5a-409a-a5f0-557c92fcdb3c"
+                ],
+                "mutation": "mutation CreateAsset($payload: [AssetCreatePayloadInput!]!) {\r\n  createAsset(payload: $payload) {\r\n    id\r\n    code\r\n    name\r\n  }\r\n}"
+              },
+              "debug": {
+                "breakpointEnabled": true,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Create Asset Mutation"
+            },
+            "b4551cbb-976b-4001-a02d-008b3fb42429": {
+              "id": "b4551cbb-976b-4001-a02d-008b3fb42429",
+              "type": "snackbar",
+              "selected": false,
+              "x": 1525,
+              "y": 665,
+              "ports": [
+                {
+                  "id": "cmkx2tczv00b1356rr07v0sa8",
+                  "type": "default",
+                  "x": 1516.48,
+                  "y": 696.7,
+                  "name": "cmkx2tczv00b2356rmucyxhet",
+                  "parentNode": "b4551cbb-976b-4001-a02d-008b3fb42429",
+                  "links": [
+                    "fa4fe6a9-ee51-40ee-be50-f2b17e1039ac",
+                    "188b031b-2545-4219-b147-5871bd0485a3"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkx2tczv00b3356r3seb3s8f",
+                  "type": "default",
+                  "x": 1671.49,
+                  "y": 696.7,
+                  "name": "cmkx2tczv00b4356rcjqdfqlz",
+                  "parentNode": "b4551cbb-976b-4001-a02d-008b3fb42429",
+                  "links": [],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "severityTransform": "\"warning\"",
+                "titleTransform": "\"Action Canceled - No Asset Created\"",
+                "nextNodes": []
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Snackbar"
+            },
+            "d3bcc8ae-2621-4ec7-8e2a-88c479c2a0a2": {
+              "id": "d3bcc8ae-2621-4ec7-8e2a-88c479c2a0a2",
+              "type": "transform",
+              "selected": false,
+              "x": 1690,
+              "y": 505,
+              "ports": [
+                {
+                  "id": "cmkx2u82900c7356rijbzojya",
+                  "type": "default",
+                  "x": 1681.48,
+                  "y": 536.7,
+                  "name": "cmkx2u82900c8356rowe49cx2",
+                  "parentNode": "d3bcc8ae-2621-4ec7-8e2a-88c479c2a0a2",
+                  "links": [
+                    "6dd9ee62-a3c3-4e04-a9bd-cc0bdedc3f65"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkx2u82900c9356r1giv0c9v",
+                  "type": "default",
+                  "x": 1884.34,
+                  "y": 536.7,
+                  "name": "cmkx2u82900ca356r16aqb433",
+                  "parentNode": "d3bcc8ae-2621-4ec7-8e2a-88c479c2a0a2",
+                  "links": [
+                    "54ada4de-68c4-4b64-8336-4a0552e2df09"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "{\r\n  \"assetPayload\": {\r\n    \"create\": {\r\n      \"code\": $.code,\r\n      \"name\": $.name,\r\n      \"type\": $.type,\r\n      \"subType\": $._rawData.subType,\r\n      \"manufacturer\": $._rawData.manufacturer,\r\n      \"model\": $._rawData.model,\r\n      \"serialNumber\": $._rawData.serialNumber,\r\n      \"connectionString\": $._rawData.connectionString,\r\n      \"criticality\": $._rawData.criticality,\r\n      \"responsibleTeam\": $._rawData.responsibleTeam,\r\n      \"status\": $.status,\r\n      \"installedAt\": $._rawData.installedAt,\r\n      \"lastPmAt\": $._rawData.lastPmAt,\r\n      \"nextPmAt\": $._rawData.nextPmAt,\r\n      \"workcenterId\": $._rawData.workcenterId,\r\n      \"lineId\": $._rawData.lineId,\r\n      \"cellId\": $._rawData.cellId,\r\n      \"deviceDriverId\": $._rawData.deviceDriverId\r\n    }\r\n  },\r\n  \"copyDataPoints\": $.copyDataPoints,\r\n  \"originalAsset\": $state.context.originalAsset\r\n}",
+                "nextNodes": [
+                  "f5d37577-fce3-463d-abfd-508e5d5bf2aa"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": true,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "prepare payload for mutation"
+            },
+            "ab39ebba-6c5a-409a-a5f0-557c92fcdb3c": {
+              "id": "ab39ebba-6c5a-409a-a5f0-557c92fcdb3c",
+              "type": "ifElse",
+              "selected": false,
+              "x": 2190,
+              "y": 620,
+              "ports": [
+                {
+                  "id": "cmkx2wze800fj356rbhpnvfij",
+                  "type": "default",
+                  "x": 2181.48,
+                  "y": 651.7,
+                  "name": "cmkx2wze800fk356rf6iqjph5",
+                  "parentNode": "ab39ebba-6c5a-409a-a5f0-557c92fcdb3c",
+                  "links": [
+                    "216908c3-f45b-4db0-a10e-650362bdc20a"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkx2wze800fl356r9ml0i243",
+                  "type": "default",
+                  "x": 2336.49,
+                  "y": 651.7,
+                  "name": "cmkx2wze800fm356rxoe9ck4z",
+                  "parentNode": "ab39ebba-6c5a-409a-a5f0-557c92fcdb3c",
+                  "links": [
+                    "58d9a9fe-ec83-4225-9dae-92fa7098dc8b"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "True",
+                  "fieldPath": "data.onTrueNextNodes"
+                },
+                {
+                  "id": "cmkx2wze800fn356r5dmc59ag",
+                  "type": "default",
+                  "x": 2336.49,
+                  "y": 676.84,
+                  "name": "cmkx2wze800fo356rldelo56s",
+                  "parentNode": "ab39ebba-6c5a-409a-a5f0-557c92fcdb3c",
+                  "links": [
+                    "373d67d2-655e-498e-b2d6-9257bd29fbb9"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "False",
+                  "fieldPath": "data.onFalseNextNodes"
+                }
+              ],
+              "data": {
+                "transform": "$state.context.copyDataPoints = true",
+                "onTrueNextNodes": [
+                  "5163f846-756d-4a59-8088-50aba640e687"
+                ],
+                "onFalseNextNodes": [
+                  "661b4b32-6021-41fa-b07f-4e7b5935ecb9"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Copy Data Points"
+            },
+            "ef7831c6-43b3-4e4e-bb74-cb03ffff1dd2": {
+              "id": "ef7831c6-43b3-4e4e-bb74-cb03ffff1dd2",
+              "type": "mutate",
+              "selected": false,
+              "x": 2685,
+              "y": 665,
+              "ports": [
+                {
+                  "id": "cmkx2xyrk00h8356rslofhkq9",
+                  "type": "default",
+                  "x": 2676.48,
+                  "y": 696.7,
+                  "name": "cmkx2xyrk00h9356r4b0uib0n",
+                  "parentNode": "ef7831c6-43b3-4e4e-bb74-cb03ffff1dd2",
+                  "links": [
+                    "82914e59-96ab-4200-a3f3-2083d5493ecc"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkx2xyrk00ha356ruk1lkg72",
+                  "type": "default",
+                  "x": 2831.49,
+                  "y": 696.7,
+                  "name": "cmkx2xyrk00hb356rnahhdlth",
+                  "parentNode": "ef7831c6-43b3-4e4e-bb74-cb03ffff1dd2",
+                  "links": [
+                    "624accea-52cc-474f-8f47-8a775fff5087"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "Application",
+                "variablesTransform": "{\r\n  \"payload\": $.dataPointsPayload\r\n}",
+                "nextNodes": [
+                  "f0abc5a7-d920-4b82-a2d9-7f0f3a329399"
+                ],
+                "mutation": "mutation CreateDataPoints($payload: [DataPointCreatePayloadInput!]!) {\r\n  createDataPoint(payload: $payload) {\r\n    id\r\n    code\r\n    name\r\n  }\r\n}"
+              },
+              "debug": {
+                "breakpointEnabled": true,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Create DataPoints"
+            },
+            "5163f846-756d-4a59-8088-50aba640e687": {
+              "id": "5163f846-756d-4a59-8088-50aba640e687",
+              "type": "javascriptTransform",
+              "selected": false,
+              "x": 2440,
+              "y": 670,
+              "ports": [
+                {
+                  "id": "cmkx2yfd300ho356rloog7qhf",
+                  "type": "default",
+                  "x": 2431.48,
+                  "y": 701.7,
+                  "name": "cmkx2yfd300hp356rivvcq2oq",
+                  "parentNode": "5163f846-756d-4a59-8088-50aba640e687",
+                  "links": [
+                    "58d9a9fe-ec83-4225-9dae-92fa7098dc8b"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkx2yfd300hq356rqpzg99z2",
+                  "type": "default",
+                  "x": 2605.08,
+                  "y": 701.7,
+                  "name": "cmkx2yfd300hr356rt5rm0vz4",
+                  "parentNode": "5163f846-756d-4a59-8088-50aba640e687",
+                  "links": [
+                    "82914e59-96ab-4200-a3f3-2083d5493ecc"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "// Get the newly created asset\r\nconst newAsset = $.createAsset[0];\r\nconst newAssetId = newAsset.id;\r\nconst newAssetCode = newAsset.code;\r\n\r\n// Get original asset data points from flow context\r\nconst originalAsset = $state.context.originalAsset;\r\nconst originalAssetCode = originalAsset.code;\r\nconst dataPoints = originalAsset.dataPoints?.edges || [];\r\n\r\n// Build the payload array for batch creation\r\nconst dataPointsPayload = dataPoints.map(edge => {\r\n  const dp = edge.node;\r\n  \r\n  // Replace old asset code with new asset code in the name\r\n  // Example: \"ASSET-0001.RamPosition\" becomes \"ASSET-0003-COPY.RamPosition\"\r\n  let newName = dp.name;\r\n  if (dp.name && dp.name.includes('.')) {\r\n    const parts = dp.name.split('.');\r\n    // Replace the first part (asset code) with new asset code\r\n    parts[0] = newAssetCode;\r\n    newName = parts.join('.');\r\n  }\r\n  \r\n  // Also update displayName description if they reference the old asset\r\n  let newDescription = dp.description;\r\n  if (newDescription && newDescription.includes(originalAssetCode)) {\r\n    newDescription = newDescription.replace(new RegExp(originalAssetCode, 'g'), newAssetCode);\r\n  }\r\n  \r\n  return {\r\n    create: {\r\n      assetId: newAssetId,\r\n      // code: REMOVED - let Fuuz generate sequence number\r\n      name: newName,\r\n      displayName: dp.displayName,\r\n      description: newDescription,\r\n      category: dp.category,\r\n      dataType: dp.dataType,\r\n      unitId: dp.unitId,\r\n      setPoint: dp.setPoint,\r\n      upperLimit: dp.upperLimit,\r\n      lowerLimit: dp.lowerLimit,\r\n      upperWarning: dp.upperWarning,\r\n      lowerWarning: dp.lowerWarning,\r\n      tolerance: dp.tolerance,\r\n      frequency: dp.frequency,\r\n      isOnChange: dp.isOnChange,\r\n      deadband: dp.deadband,\r\n      precision: dp.precision,\r\n      scaleFactor: dp.scaleFactor,\r\n      historize: dp.historize,\r\n      enabled: dp.enabled,\r\n      alarmEnabled: dp.alarmEnabled,\r\n      alarmPriority: dp.alarmPriority,\r\n      isCritical: dp.isCritical\r\n    }\r\n  };\r\n});\r\n\r\nreturn {\r\n  dataPointsPayload: dataPointsPayload,\r\n  newAsset: newAsset,\r\n  dataPointCount: dataPointsPayload.length\r\n};",
+                "nextNodes": [
+                  "ef7831c6-43b3-4e4e-bb74-cb03ffff1dd2"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Prep DataPoint Payload"
+            },
+            "33e9bfa9-c01e-4447-8b3f-56a43f747043": {
+              "id": "33e9bfa9-c01e-4447-8b3f-56a43f747043",
+              "type": "snackbar",
+              "selected": false,
+              "x": 3250,
+              "y": 440,
+              "ports": [
+                {
+                  "id": "cmkx30dh200kf356r68y2muhl",
+                  "type": "default",
+                  "x": 3241.48,
+                  "y": 471.7,
+                  "name": "cmkx30dh200kg356rchgb7pyo",
+                  "parentNode": "33e9bfa9-c01e-4447-8b3f-56a43f747043",
+                  "links": [
+                    "60e6b75f-d663-4b71-9d43-e9a5725ecaf9"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkx30dh200kh356r344pedqz",
+                  "type": "default",
+                  "x": 3396.49,
+                  "y": 471.7,
+                  "name": "cmkx30dh200ki356r9a7pqajy",
+                  "parentNode": "33e9bfa9-c01e-4447-8b3f-56a43f747043",
+                  "links": [],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "severityTransform": "\"success\"",
+                "nextNodes": [],
+                "titleTransform": "\"Asset & Data Point Duplication Completed\"",
+                "messageTransform": "\"Successfully completed the duplication of Asset \" &  $state.context.originalAsset.code & \", and its\" & $state.context.dataPointCount & \" data points.\""
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Snackbar"
+            },
+            "f5d37577-fce3-463d-abfd-508e5d5bf2aa": {
+              "id": "f5d37577-fce3-463d-abfd-508e5d5bf2aa",
+              "type": "mergeContext",
+              "selected": false,
+              "x": 1995,
+              "y": 480,
+              "ports": [
+                {
+                  "id": "cmkx366ma00nz356rlon3xvpd",
+                  "type": "default",
+                  "x": 1986.48,
+                  "y": 511.7,
+                  "name": "cmkx366mb00o0356ruzokywo1",
+                  "parentNode": "f5d37577-fce3-463d-abfd-508e5d5bf2aa",
+                  "links": [
+                    "54ada4de-68c4-4b64-8336-4a0552e2df09"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkx366mb00o1356re90vcc4c",
+                  "type": "default",
+                  "x": 2141.49,
+                  "y": 511.7,
+                  "name": "cmkx366mb00o2356rmywtoi6k",
+                  "parentNode": "f5d37577-fce3-463d-abfd-508e5d5bf2aa",
+                  "links": [
+                    "2c41a234-6037-4de1-a556-81445fa862ec"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "{\r\n  \"copyDataPoints\": $.copyDataPoints\r\n}",
+                "nextNodes": [
+                  "eee76f56-c86d-4810-8f8c-aa455d0b732c"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Merge Context"
+            },
+            "a397bda4-5bbc-402e-957c-4e5203c72617": {
+              "id": "a397bda4-5bbc-402e-957c-4e5203c72617",
+              "type": "ifElse",
+              "selected": false,
+              "x": 3045,
+              "y": 485,
+              "ports": [
+                {
+                  "id": "cmkx49udh01ba356rxkz5k375",
+                  "type": "default",
+                  "x": 3036.48,
+                  "y": 516.7,
+                  "name": "cmkx49udh01bb356rj9br966i",
+                  "parentNode": "a397bda4-5bbc-402e-957c-4e5203c72617",
+                  "links": [
+                    "0e057e62-7726-452d-8fa1-0317137feb53"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkx49udh01bc356r2o2p0k3q",
+                  "type": "default",
+                  "x": 3191.49,
+                  "y": 516.7,
+                  "name": "cmkx49udh01bd356rdxf0nh19",
+                  "parentNode": "a397bda4-5bbc-402e-957c-4e5203c72617",
+                  "links": [
+                    "60e6b75f-d663-4b71-9d43-e9a5725ecaf9"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "True",
+                  "fieldPath": "data.onTrueNextNodes"
+                },
+                {
+                  "id": "cmkx49udh01be356r066pxypp",
+                  "type": "default",
+                  "x": 3191.49,
+                  "y": 541.84,
+                  "name": "cmkx49udh01bf356rvkyo05bp",
+                  "parentNode": "a397bda4-5bbc-402e-957c-4e5203c72617",
+                  "links": [
+                    "37f8b490-0cf0-4175-9ad0-b7c98d0c3bd4"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "False",
+                  "fieldPath": "data.onFalseNextNodes"
+                }
+              ],
+              "data": {
+                "onTrueNextNodes": [
+                  "33e9bfa9-c01e-4447-8b3f-56a43f747043"
+                ],
+                "onFalseNextNodes": [
+                  "942a216c-4ed7-4fd6-ba1a-f4d83b2fcbcd"
+                ],
+                "transform": "$isNilOrEmpty($.error)"
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "If Else"
+            },
+            "f0abc5a7-d920-4b82-a2d9-7f0f3a329399": {
+              "id": "f0abc5a7-d920-4b82-a2d9-7f0f3a329399",
+              "type": "searchTable",
+              "selected": false,
+              "x": 2865,
+              "y": 590,
+              "ports": [
+                {
+                  "id": "cmkx4c8ar01c4356rmdavl6ri",
+                  "type": "default",
+                  "x": 2856.48,
+                  "y": 621.7,
+                  "name": "cmkx4c8ar01c5356rs6t1njut",
+                  "parentNode": "f0abc5a7-d920-4b82-a2d9-7f0f3a329399",
+                  "links": [
+                    "624accea-52cc-474f-8f47-8a775fff5087"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkx4c8ar01c6356rin7l2f53",
+                  "type": "default",
+                  "x": 3011.49,
+                  "y": 621.7,
+                  "name": "cmkx4c8ar01c7356rlnajq2au",
+                  "parentNode": "f0abc5a7-d920-4b82-a2d9-7f0f3a329399",
+                  "links": [
+                    "0e057e62-7726-452d-8fa1-0317137feb53"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "screenElementTransform": "\"AssetTable\"",
+                "nextNodes": [
+                  "a397bda4-5bbc-402e-957c-4e5203c72617"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Search Table"
+            },
+            "661b4b32-6021-41fa-b07f-4e7b5935ecb9": {
+              "id": "661b4b32-6021-41fa-b07f-4e7b5935ecb9",
+              "type": "snackbar",
+              "selected": false,
+              "x": 2425,
+              "y": 775,
+              "ports": [
+                {
+                  "id": "cmkx4fj2o01en356r93p4b74i",
+                  "type": "default",
+                  "x": 2416.48,
+                  "y": 806.7,
+                  "name": "cmkx4fj2o01eo356r5cigqxs5",
+                  "parentNode": "661b4b32-6021-41fa-b07f-4e7b5935ecb9",
+                  "links": [
+                    "373d67d2-655e-498e-b2d6-9257bd29fbb9"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkx4fj2o01ep356rg2h2qtb0",
+                  "type": "default",
+                  "x": 2571.49,
+                  "y": 806.7,
+                  "name": "cmkx4fj2o01eq356r11z9tgk9",
+                  "parentNode": "661b4b32-6021-41fa-b07f-4e7b5935ecb9",
+                  "links": [],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "severityTransform": "\"success\"",
+                "nextNodes": [],
+                "titleTransform": "\"Asset Duplication Completed\"",
+                "messageTransform": "\"Successfully completed the duplication of Asset \" &  $state.context.originalAsset.code & \", you selected NOT to copy its datapoints.\""
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Snackbar"
+            },
+            "942a216c-4ed7-4fd6-ba1a-f4d83b2fcbcd": {
+              "id": "942a216c-4ed7-4fd6-ba1a-f4d83b2fcbcd",
+              "type": "snackbar",
+              "selected": true,
+              "x": 3265,
+              "y": 545,
+              "ports": [
+                {
+                  "id": "cmkx533j401xh356r9thlzpuz",
+                  "type": "default",
+                  "x": 3256.49,
+                  "y": 576.71,
+                  "name": "cmkx533j401xi356raytess8i",
+                  "parentNode": "942a216c-4ed7-4fd6-ba1a-f4d83b2fcbcd",
+                  "links": [
+                    "37f8b490-0cf0-4175-9ad0-b7c98d0c3bd4"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkx533j401xj356rjtea87up",
+                  "type": "default",
+                  "x": 3411.5,
+                  "y": 576.71,
+                  "name": "cmkx533j401xk356r1azjcz0f",
+                  "parentNode": "942a216c-4ed7-4fd6-ba1a-f4d83b2fcbcd",
+                  "links": [],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "severityTransform": "\"error\"",
+                "nextNodes": [],
+                "titleTransform": "\"Asset & Data Point Duplication Completed\"",
+                "messageTransform": "\"Shucks something did not go right! Tried to copy Asset:  \" &  $state.context.originalAsset.code & \", and its\" & $state.context.dataPointCount & \" data points.\""
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Snackbar"
+            }
+          }
+        }
+      ],
+      "name": "Duplicate Asset with Options from Screen",
+      "type": "Screen",
+      "version": "0.0.3",
+      "walkthrough": {
+        "steps": []
+      }
+    }
+  }
+}

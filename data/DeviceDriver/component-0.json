@@ -1,0 +1,1080 @@
+{
+  "api": "application",
+  "modelName": "DeviceDriver",
+  "payload": [
+    {
+      "id": "ethernetIpPlc",
+      "deviceDriverTypeId": "plc",
+      "name": "Ethernet/IP PLC",
+      "description": "A driver for PLCs using Allen-Bradly's Ethernet/IP protocol.",
+      "configurationSchema": {
+        "type": "object",
+        "properties": {
+          "ip": {
+            "title": "IP Address",
+            "description": "The IP address of the PLC.",
+            "type": "string"
+          },
+          "slot": {
+            "title": "Slot",
+            "description": "The slot the PLC processor is on.",
+            "type": "integer"
+          },
+          "scanRateSeconds": {
+            "title": "Scan Rate",
+            "description": "The Scan Rate in seconds for subscriptions on this device.",
+            "type": "number",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "ip",
+          "slot",
+          "scanRateSeconds"
+        ]
+      }
+    },
+    {
+      "id": "HTTPClient",
+      "deviceDriverTypeId": "http",
+      "name": "HTTP Client",
+      "description": "HTTP Client for call client side api.",
+      "configurationSchema": {
+        "type": "object",
+        "properties": {
+          "baseUrl": {
+            "title": "Base Url",
+            "description": "Base Url",
+            "type": "string"
+          },
+          "headers": {
+            "title": "Headers",
+            "description": "Headers",
+            "type": "object",
+            "inputProps": {
+              "type": "json"
+            }
+          }
+        },
+        "required": [
+          "baseUrl",
+          "headers"
+        ]
+      }
+    },
+    {
+      "id": "HTTPServer",
+      "deviceDriverTypeId": "server",
+      "name": "HTTP Server",
+      "description": "HTTP Server driver can relay requests to a data flow or subscribe to HTTP POST endpoints.",
+      "configurationSchema": {
+        "type": "object",
+        "properties": {
+          "port": {
+            "title": "Port",
+            "description": "The listen port for this HTTP server.",
+            "type": "number"
+          },
+          "endpoints": {
+            "title": "Endpoints",
+            "description": "The data flow relay endpoints for this server",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "dataFlowId": {
+                  "type": "string",
+                  "inputProps": {
+                    "type": "combobox",
+                    "queryType": "DataFlow",
+                    "label": "Data Flow",
+                    "labelField": "name",
+                    "additionalFilter": {
+                      "active": {
+                        "_eq": true
+                      }
+                    }
+                  }
+                }
+              },
+              "required": [
+                "path",
+                "dataFlowId"
+              ]
+            }
+          },
+          "requestSizeLimit": {
+            "title": "Request Body Size Limit",
+            "description": "The size limit for incoming requests (1mb, 300k). Defaults to 100k.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "port"
+        ]
+      }
+    },
+    {
+      "id": "ibmdb2",
+      "deviceDriverTypeId": "sql",
+      "name": "IBM DB2",
+      "description": "A driver for IBM DB2 server.",
+      "configurationSchema": {
+        "type": "object",
+        "properties": {
+          "server": {
+            "title": "Server",
+            "description": "The host name of the DB2 server.",
+            "type": "string"
+          },
+          "port": {
+            "title": "Port",
+            "description": "The port the DB2 server is running on.",
+            "type": "number",
+            "default": 50000
+          },
+          "poolSize": {
+            "title": "Connection Pool Size",
+            "description": "Maximum number of connections",
+            "type": "number",
+            "default": 3
+          },
+          "database": {
+            "title": "Database",
+            "description": "The database to connect to.",
+            "type": "string"
+          },
+          "user": {
+            "title": "User",
+            "description": "The user to connect to the server as.",
+            "type": "string",
+            "default": "db2admin"
+          },
+          "password": {
+            "title": "Password",
+            "description": "The password for the user that connects to the user.",
+            "type": "string",
+            "inputProps": {
+              "type": "password"
+            }
+          }
+        },
+        "required": [
+          "server",
+          "password",
+          "database",
+          "user"
+        ]
+      }
+    },
+    {
+      "id": "localFile",
+      "deviceDriverTypeId": "file",
+      "name": "Local File",
+      "description": "A driver for files on the local machine.",
+      "configurationSchema": {
+        "type": "object",
+        "properties": {
+          "root": {
+            "title": "Root Path",
+            "description": "The path to the directory that will be considered the root for this device.",
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "id": "microsoftSql",
+      "deviceDriverTypeId": "sql",
+      "name": "Microsoft SQL",
+      "description": "A driver for Microsoft SQL server.",
+      "configurationSchema": {
+        "type": "object",
+        "properties": {
+          "server": {
+            "title": "Server",
+            "description": "The host name of the SQL server.",
+            "type": "string"
+          },
+          "port": {
+            "title": "Port",
+            "description": "The port the SQL server is running on.",
+            "type": "number",
+            "default": 1433
+          },
+          "database": {
+            "title": "Database",
+            "description": "The database to connect to.",
+            "type": "string"
+          },
+          "user": {
+            "title": "User",
+            "description": "The user to connect to the server as.",
+            "type": "string",
+            "default": "sa"
+          },
+          "password": {
+            "title": "Password",
+            "description": "The password for the user that connects to the user.",
+            "type": "string",
+            "inputProps": {
+              "type": "password"
+            }
+          },
+          "trustServerCertificate": {
+            "title": "Trust Server Certificate",
+            "description": "If invalid or self signed certs should be trusted.",
+            "type": "boolean",
+            "default": false
+          },
+          "encrypt": {
+            "title": "Encrypt",
+            "description": "Whether the connection to the server is encrypted. Enabled by default.",
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "required": [
+          "server",
+          "password",
+          "database",
+          "user"
+        ]
+      }
+    },
+    {
+      "id": "modbusTCP",
+      "deviceDriverTypeId": "modbus",
+      "name": "Modbus TCP",
+      "description": "A driver for Modbus devices over TCP",
+      "configurationSchema": {
+        "type": "object",
+        "properties": {
+          "host": {
+            "title": "Host",
+            "description": "The hostname or IP address of the Modbus device is located at.",
+            "type": "string"
+          },
+          "port": {
+            "title": "Port",
+            "description": "The port the Modbus device is listening on.",
+            "type": "integer"
+          },
+          "scanRateSeconds": {
+            "title": "Scan Rate",
+            "description": "The Scan Rate in seconds for subscriptions on this device.",
+            "type": "number",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "host",
+          "port",
+          "scanRateSeconds"
+        ]
+      }
+    },
+    {
+      "id": "mqttBroker",
+      "deviceDriverTypeId": "server",
+      "name": "MQTT Broker",
+      "description": "A driver writing data to a MQTT Broker.",
+      "configurationSchema": {
+        "type": "object",
+        "properties": {
+          "port": {
+            "title": "Port",
+            "description": "The port to connect to.",
+            "type": "number"
+          }
+        },
+        "required": [
+          "port"
+        ]
+      }
+    },
+    {
+      "id": "mqttClient",
+      "deviceDriverTypeId": "mqtt",
+      "name": "MQTT Client",
+      "description": "A driver for MQTT",
+      "configurationSchema": {
+        "type": "object",
+        "properties": {
+          "brokerUrl": {
+            "title": "Broker URL",
+            "description": "the url for the mqtt broker.",
+            "type": "string"
+          },
+          "username": {
+            "title": "Username",
+            "description": "The username to use to authenticate with the broker.",
+            "type": "string"
+          },
+          "password": {
+            "title": "Password",
+            "description": "The password to use to authenticate with the broker.",
+            "type": "string",
+            "inputProps": {
+              "type": "password"
+            }
+          },
+          "lastWillAndTestament": {
+            "title": "Last Will and Testament",
+            "description": "The last will and testament is a message that will be sent out to subscribers if this client disconnects ungracefully.",
+            "type": "object",
+            "properties": {
+              "topic": {
+                "title": "Topic",
+                "description": "The topic to published data to. Can and include wildcards (+, #).",
+                "type": "string"
+              },
+              "payload": {
+                "title": "Payload",
+                "description": "The data to published to a topic",
+                "type": "string"
+              },
+              "retain": {
+                "title": "Retain",
+                "description": "Whether or not the message should be retained by the broker and sent to clients as soon as they subscribe rather then having to wait for the next update the topic.",
+                "type": "boolean"
+              },
+              "qualityOfService": {
+                "title": "Quality of Service",
+                "description": "The qos to use when sending the the message. The broker will use this field when sending the message to a subscribed client.",
+                "type": "string",
+                "enum": [
+                  "At most once",
+                  "At least once",
+                  "Exactly once"
+                ]
+              },
+              "required": [
+                "topic",
+                "payload"
+              ]
+            }
+          },
+          "options": {}
+        },
+        "required": [
+          "brokerUrl"
+        ]
+      }
+    },
+    {
+      "id": "mqttSparkplugB",
+      "deviceDriverTypeId": "mqttSparkplug",
+      "name": "MQTT Sparkplug B",
+      "description": "A driver for publishing data over sparkplug B.",
+      "configurationSchema": {
+        "type": "object",
+        "properties": {
+          "brokerUrl": {
+            "title": "Broker URL",
+            "description": "the url for the mqtt broker.",
+            "type": "string"
+          },
+          "username": {
+            "title": "Username",
+            "description": "The username to use to authenticate with the broker.",
+            "type": "string"
+          },
+          "password": {
+            "title": "Password",
+            "description": "The password to use to authenticate with the broker.",
+            "type": "string",
+            "inputProps": {
+              "type": "password"
+            }
+          },
+          "groupId": {
+            "title": "Group Id",
+            "description": "The group Id is to create logical groupings of devices.",
+            "type": "string"
+          },
+          "edgeNodeName": {
+            "title": "Edge of Network Name",
+            "description": "The name of this edge of network gateway.",
+            "type": "string"
+          },
+          "birthCertificate": {
+            "title": "Birth Certificate",
+            "description": "The birth certificate for this edge of network node. This should contain all of the metrics/data points that this gateway will publish",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "title": "Name",
+                  "description": "The name of the metric",
+                  "type": "string"
+                },
+                "value": {
+                  "title": "Value",
+                  "description": "The value of the metric"
+                },
+                "type": {
+                  "title": "Type",
+                  "description": "The Data type of the metric",
+                  "type": "string",
+                  "enum": [
+                    "Int8",
+                    "Int16",
+                    "Int32",
+                    "Int64",
+                    "UInt8",
+                    "UInt16",
+                    "UInt32",
+                    "UInt64",
+                    "Float",
+                    "Double",
+                    "Boolean",
+                    "String",
+                    "DateTime",
+                    "Text",
+                    "UUID",
+                    "Bytes"
+                  ]
+                }
+              },
+              "required": [
+                "name",
+                "value",
+                "type"
+              ]
+            }
+          },
+          "devices": {
+            "title": "Devices",
+            "description": "All of the devices and their birth certificates. This is for default devices that you know will be connected to the edge of network node. Other devices and still be birthed using the deviceBirth function.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "deviceId": {
+                  "title": "Device Id",
+                  "description": "The id of the device to publish a birth certificate for.",
+                  "type": "string"
+                },
+                "birthCertificate": {
+                  "title": "Birth Certificate",
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "title": "Name",
+                        "description": "The name of the metric",
+                        "type": "string"
+                      },
+                      "value": {
+                        "title": "Value",
+                        "description": "The value of the metric"
+                      },
+                      "type": {
+                        "title": "Type",
+                        "description": "The Data type of the metric",
+                        "type": "string",
+                        "enum": [
+                          "Int8",
+                          "Int16",
+                          "Int32",
+                          "Int64",
+                          "UInt8",
+                          "UInt16",
+                          "UInt32",
+                          "UInt64",
+                          "Float",
+                          "Double",
+                          "Boolean",
+                          "String",
+                          "DateTime",
+                          "Text",
+                          "UUID",
+                          "Bytes"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "value",
+                      "type"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "deviceId",
+                "birthCertificate"
+              ]
+            }
+          },
+          "ncmdFlow": {
+            "title": "NCMD Flow",
+            "description": "The flow to used to proccess Node Command events",
+            "type": "string",
+            "inputProps": {
+              "type": "combobox",
+              "options": {
+                "__transform": "\n$tryCatch(\n    function() { \n        [$map($query({\"statement\":'{\n            dataFlow(where: { active: { _eq: true } }) {\n            edges {\n                node {\n                    id\n                    name\n                }   \n             }\n            }\n        }',\"variables\":{}}).dataFlow.edges, function($edge) { $edge.node })]\n    }, \n    function() { [] }\n)()",
+                "__dynamicFields": false,
+                "__cacheKey": "ncmd"
+              },
+              "labelPath": "name"
+            }
+          },
+          "dcmdFlow": {
+            "title": "DCMD Flow",
+            "description": "The flow to used to proccess Device Command events",
+            "type": "string",
+            "inputProps": {
+              "type": "combobox",
+              "options": {
+                "__transform": "\n$tryCatch(\n    function() { \n        [$map($query({\"statement\":'{\n            dataFlow(where: { active: { _eq: true } }) {\n            edges {\n                node {\n                    id\n                    name\n                }   \n             }\n            }\n        }',\"variables\":{}}).dataFlow.edges, function($edge) { $edge.node })]\n    }, \n    function() { [] }\n)()",
+                "__dynamicFields": false,
+                "__cacheKey": "ncmd"
+              },
+              "labelPath": "name"
+            }
+          },
+          "messageFlow": {
+            "title": "Message Flow",
+            "description": "The flow to handle messages recived that are not supported by this verion of sparkplug.",
+            "type": "string",
+            "inputProps": {
+              "type": "combobox",
+              "options": {
+                "__transform": "\n$tryCatch(\n    function() { \n        [$map($query({\"statement\":'{\n            dataFlow(where: { active: { _eq: true } }) {\n            edges {\n                node {\n                    id\n                    name\n                }   \n             }\n            }\n        }',\"variables\":{}}).dataFlow.edges, function($edge) { $edge.node })]\n    }, \n    function() { [] }\n)()",
+                "__dynamicFields": false,
+                "__cacheKey": "ncmd"
+              },
+              "labelPath": "name"
+            }
+          },
+          "birthFlow": {
+            "title": "Birth Flow",
+            "description": "Use this flow to register any devices that do not have their birth certificates configured in the \"devices\" field when a birth message is requested. The node birth certificate and any device birth certificates that are already configured will be issued automatically be published",
+            "type": "string",
+            "inputProps": {
+              "type": "combobox",
+              "options": {
+                "__transform": "\n$tryCatch(\n    function() { \n        [$map($query({\"statement\":'{\n            dataFlow(where: { active: { _eq: true } }) {\n            edges {\n                node {\n                    id\n                    name\n                }   \n             }\n            }\n        }',\"variables\":{}}).dataFlow.edges, function($edge) { $edge.node })]\n    }, \n    function() { [] }\n)()",
+                "__dynamicFields": false,
+                "__cacheKey": "ncmd"
+              },
+              "labelPath": "name"
+            }
+          },
+          "options": {}
+        },
+        "required": [
+          "brokerUrl",
+          "username",
+          "password",
+          "groupId",
+          "edgeNodeName"
+        ]
+      }
+    },
+    {
+      "id": "mySql",
+      "deviceDriverTypeId": "sql",
+      "name": "MySQL",
+      "description": "A driver for MySQL server.",
+      "configurationSchema": {
+        "type": "object",
+        "properties": {
+          "server": {
+            "title": "Server",
+            "description": "The host name of the MySQL server.",
+            "type": "string"
+          },
+          "port": {
+            "title": "Port",
+            "description": "The port the MySQl server is running on.",
+            "type": "number",
+            "default": 3306
+          },
+          "database": {
+            "title": "Database",
+            "description": "The database to connect to.",
+            "type": "string"
+          },
+          "user": {
+            "title": "User",
+            "description": "The user to connect to the server as.",
+            "type": "string",
+            "default": "root"
+          },
+          "password": {
+            "title": "Password",
+            "description": "The password for the user that connects to the user.",
+            "type": "string",
+            "inputProps": {
+              "type": "password"
+            }
+          },
+          "options": {
+            "title": "Options",
+            "description": "The options for set extra connection options.",
+            "type": "object",
+            "inputProps": {
+              "type": "json"
+            }
+          }
+        },
+        "required": [
+          "server",
+          "password",
+          "database",
+          "user"
+        ]
+      }
+    },
+    {
+      "id": "nativePrinter",
+      "deviceDriverTypeId": "printer",
+      "name": "Native Printer",
+      "description": "A printer driver which uses the system print spooler to send documents and commands to the printer.",
+      "configurationSchema": {
+        "type": "object",
+        "properties": {
+          "printerName": {
+            "title": "Printer Name",
+            "description": "The name of the installed printer on the machine, including the printer server prefix if one is in use.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "printerName"
+        ]
+      }
+    },
+    {
+      "id": "opcuaClient",
+      "deviceDriverTypeId": "opcua",
+      "name": "OPCUA Client",
+      "description": "A OPCUA client driver.",
+      "configurationSchema": {
+        "type": "object",
+        "properties": {
+          "endpoint": {
+            "title": "Endpoint",
+            "description": "The server endpoint to connect to.",
+            "type": "string"
+          },
+          "applicationName": {
+            "title": "Application Name",
+            "description": "The name Fuuz will use to identify its self to the server.",
+            "type": "string"
+          },
+          "securityMode": {
+            "title": "Security Mode",
+            "description": "The mode to use to secure the connection to the server..",
+            "type": "string",
+            "enum": [
+              "None",
+              "Sign",
+              "SignAndEncrypt"
+            ]
+          },
+          "securityPolicy": {
+            "title": "Security Policy",
+            "description": "The policy to use to secure the connection to the server.",
+            "type": "string",
+            "enum": [
+              "Invalid",
+              "None",
+              "Basic128",
+              "Basic192",
+              "Basic192Rsa15",
+              "Basic256Rsa15",
+              "Basic256Sha256",
+              "Basic128Rsa15",
+              "Basic256",
+              "Aes128_Sha256_RsaOaep",
+              "Aes256_Sha256_RsaPss",
+              "PubSub_Aes128_CTR",
+              "PubSub_Aes256_CTR"
+            ]
+          },
+          "userTokenType": {
+            "title": "User Token Type",
+            "description": "The authentication method to use for the user session.",
+            "type": "string",
+            "enum": [
+              "UserName",
+              "Anonymous"
+            ]
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "userName": {
+                "title": "User Name",
+                "description": "The user name.",
+                "type": "string"
+              },
+              "password": {
+                "title": "Password",
+                "description": "The password for the user.",
+                "type": "string",
+                "inputProps": {
+                  "type": "password"
+                }
+              }
+            }
+          },
+          "certificateRootFolder": {
+            "title": "Certificate Root Folder",
+            "description": "The folder to manage certificates from.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "endpoint",
+          "applicationName",
+          "securityMode",
+          "securityPolicy",
+          "userTokenType"
+        ],
+        "anyOf": [
+          {
+            "properties": {
+              "userTokenType": {
+                "const": "UserName"
+              }
+            },
+            "required": [
+              "user"
+            ]
+          },
+          {
+            "properties": {
+              "userTokenType": {
+                "const": "Anonymous"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "oracledb",
+      "deviceDriverTypeId": "sql",
+      "name": "Oracle DB",
+      "description": "A driver for Oracle server. Requires Oracle Instant Client Basic or Basic Light: https://www.oracle.com/database/technologies/instant-client.html",
+      "configurationSchema": {
+        "type": "object",
+        "properties": {
+          "server": {
+            "title": "Server",
+            "description": "The host name of the Oracle server.",
+            "type": "string"
+          },
+          "port": {
+            "title": "Port",
+            "description": "The port the Oracle server is running on.",
+            "type": "number",
+            "default": 1521
+          },
+          "database": {
+            "title": "Database",
+            "description": "The database to connect to.",
+            "type": "string"
+          },
+          "user": {
+            "title": "User",
+            "description": "The user to connect to the server as.",
+            "type": "string",
+            "default": "SYSTEM"
+          },
+          "password": {
+            "title": "Password",
+            "description": "The password for the user that connects to the database.",
+            "type": "string",
+            "inputProps": {
+              "type": "password"
+            }
+          }
+        },
+        "required": [
+          "server",
+          "password",
+          "database",
+          "user"
+        ]
+      }
+    },
+    {
+      "id": "plcPCCC",
+      "deviceDriverTypeId": "pccc",
+      "name": "PCCC PLC",
+      "description": "PCCC PLC Driver",
+      "configurationSchema": {
+        "type": "object",
+        "properties": {
+          "host": {
+            "title": "Host IP Address",
+            "description": "The IP address of the PLC.",
+            "type": "string"
+          },
+          "port": {
+            "title": "Port",
+            "description": "The PLC port",
+            "type": "integer",
+            "default": 44818
+          },
+          "scanRateSeconds": {
+            "title": "Scan Rate",
+            "description": "The Scan Rate in seconds for subscriptions on this device.",
+            "type": "number",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "host",
+          "port",
+          "scanRateSeconds"
+        ]
+      }
+    },
+    {
+      "id": "sapRfc",
+      "deviceDriverTypeId": "remoteSystemCall",
+      "name": "SAP RFC",
+      "description": "A driver for making remote function calls to SAP.",
+      "configurationSchema": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "title": "Username",
+            "description": "The username to use to connect to SAP.",
+            "type": "string"
+          },
+          "passwd": {
+            "title": "Password",
+            "description": "The password to use to authenticate with SAP.",
+            "type": "string",
+            "inputProps": {
+              "type": "password"
+            }
+          },
+          "ahost": {
+            "title": "Host",
+            "description": "The host name or ip of the sap server. (ahost)",
+            "type": "string"
+          },
+          "sysnr": {
+            "title": "System Number",
+            "description": "The System Number. (sysnr)",
+            "type": "string"
+          },
+          "client": {
+            "title": "Client",
+            "description": "The client version. Usually 620",
+            "type": "string"
+          },
+          "lang": {
+            "title": "Language",
+            "description": "The language. Usually  EN ",
+            "type": "string"
+          },
+          "options": {}
+        },
+        "required": [
+          "user",
+          "passwd",
+          "ahost",
+          "sysnr",
+          "client",
+          "lang"
+        ]
+      }
+    },
+    {
+      "id": "tcpPrinter",
+      "deviceDriverTypeId": "printer",
+      "name": "TCP Printer",
+      "description": "A printer driver which uses a direct TCP network connection to send documents and commands to the printer.",
+      "configurationSchema": {
+        "type": "object",
+        "properties": {
+          "host": {
+            "title": "Host",
+            "description": "The hostname or IP address of the printer.",
+            "type": "string"
+          },
+          "port": {
+            "title": "Port",
+            "description": "The TCP port to connect to on the host.",
+            "default": 9100,
+            "type": "integer"
+          },
+          "statusCommand": {
+            "title": "Status Command",
+            "description": "The printer command string to use to query the printer status.  When not provided, a simple connection test is performed instead.",
+            "type": "string"
+          },
+          "statusResponseParser": {
+            "title": "Status Response Parser",
+            "description": "A JSONata transformation which receives the status response from the printer status command as the payload, and is expected to return an object with ok, message, and info properties.  When not provided, any response from the printer is assumed to indicate an OK status, and the response is returned as the message.",
+            "type": "string",
+            "inputProps": {
+              "type": "jsonata"
+            }
+          }
+        },
+        "required": [
+          "host",
+          "port"
+        ]
+      }
+    },
+    {
+      "id": "TCPServer",
+      "deviceDriverTypeId": "server",
+      "name": "TCP Server",
+      "description": "TCP Server driver can subscribe to a TCP port.",
+      "configurationSchema": {
+        "type": "object",
+        "properties": {
+          "port": {
+            "title": "Port",
+            "description": "The listen port for this TCP server.",
+            "type": "number"
+          },
+          "dataFlowId": {
+            "type": "string",
+            "inputProps": {
+              "type": "combobox",
+              "queryType": "DataFlow",
+              "label": "Data Flow",
+              "labelField": "name",
+              "additionalFilter": {
+                "active": {
+                  "_eq": true
+                }
+              }
+            }
+          },
+          "executeFlowOnConnect": {
+            "title": "Execute data flow on connect",
+            "description": "If enabled, new TCP connections will execute the configured data flow upon connection. Disabled by default.",
+            "type": "boolean",
+            "default": "false"
+          },
+          "debounce": {
+            "type": "object",
+            "properties": {
+              "wait": {
+                "title": "Debouce Wait Milliseconds",
+                "description": "Delays calling data flow until after \"wait\" milliseconds have elapsed since the last time the data flow was called. If not set, data flow will be called immediately.",
+                "type": "number",
+                "default": 0
+              },
+              "maxWait": {
+                "title": "Maximum Wait Time",
+                "description": "Maximum time in milliseconds in which flow execution is delayed. If not set, this is set to \"wait\" ms",
+                "type": "number"
+              },
+              "leading": {
+                "title": "Leading",
+                "description": "Specify executing data flow on the leading edge of the timeout.",
+                "type": "boolean",
+                "default": false
+              },
+              "trailing": {
+                "title": "Trailing",
+                "description": "Specify executing data flow on the trailing edge of the timeout.",
+                "type": "boolean",
+                "default": true
+              }
+            }
+          }
+        },
+        "required": [
+          "port"
+        ]
+      }
+    },
+    {
+      "id": "tcpSocket",
+      "deviceDriverTypeId": "tcp",
+      "name": "TCP Socket",
+      "description": "A driver writing data to a tcp socket.",
+      "configurationSchema": {
+        "type": "object",
+        "properties": {
+          "host": {
+            "title": "Host",
+            "description": "The hostname or ip address to connect to.",
+            "type": "string"
+          },
+          "port": {
+            "title": "Port",
+            "description": "The port to connect to.",
+            "type": "number"
+          },
+          "dataFlowId": {
+            "type": "string",
+            "inputProps": {
+              "type": "combobox",
+              "queryType": "DataFlow",
+              "label": "Data Flow",
+              "labelField": "name",
+              "additionalFilter": {
+                "active": {
+                  "_eq": true
+                }
+              }
+            }
+          },
+          "writeOnConnect": {
+            "title": "Write on Connect",
+            "type": "boolean",
+            "default": false
+          },
+          "debounce": {
+            "type": "object",
+            "properties": {
+              "wait": {
+                "title": "Debouce Wait Milliseconds",
+                "description": "Delays calling data flow until after \"wait\" milliseconds have elapsed since the last time the data flow was called. If not set, data flow will be called immediately.",
+                "type": "number",
+                "default": 0
+              },
+              "maxWait": {
+                "title": "Maximum Wait Time",
+                "description": "Maximum time in milliseconds in which flow execution is delayed. If not set, this is set to \"wait\" ms",
+                "type": "number"
+              },
+              "leading": {
+                "title": "Leading",
+                "description": "Specify executing data flow on the leading edge of the timeout.",
+                "type": "boolean",
+                "default": false
+              },
+              "trailing": {
+                "title": "Trailing",
+                "description": "Specify executing data flow on the trailing edge of the timeout.",
+                "type": "boolean",
+                "default": true
+              }
+            }
+          }
+        },
+        "required": [
+          "host",
+          "port",
+          "writeOnConnect"
+        ]
+      }
+    }
+  ],
+  "metadata": {}
+}

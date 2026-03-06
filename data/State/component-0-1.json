@@ -1,0 +1,133 @@
+{
+  "api": "application",
+  "modelName": "State",
+  "payload": [
+    {
+      "id": "blocked",
+      "code": "BLKD",
+      "name": "Blocked",
+      "isProducing": false,
+      "isPerformanceLoss": true,
+      "isFault": false,
+      "usable": true
+    },
+    {
+      "id": "changeover",
+      "code": "CHGV",
+      "name": "Changeover",
+      "isProducing": false,
+      "isPerformanceLoss": false,
+      "isFault": false,
+      "usable": true
+    },
+    {
+      "id": "cleaning",
+      "code": "CLN",
+      "name": "Cleaning",
+      "isProducing": false,
+      "isPerformanceLoss": false,
+      "isFault": false,
+      "usable": true
+    },
+    {
+      "id": "e-stopped",
+      "code": "ESTOP",
+      "name": "Emergency Stop",
+      "isProducing": false,
+      "isPerformanceLoss": false,
+      "isFault": true,
+      "usable": true
+    },
+    {
+      "id": "faulted",
+      "code": "FLT",
+      "name": "Faulted",
+      "isProducing": false,
+      "isPerformanceLoss": false,
+      "isFault": true,
+      "usable": true
+    },
+    {
+      "id": "held",
+      "code": "HELD",
+      "name": "Held",
+      "isProducing": false,
+      "isPerformanceLoss": false,
+      "isFault": false,
+      "usable": true
+    },
+    {
+      "id": "maintenance",
+      "code": "MAINT",
+      "name": "Under Maintenance",
+      "isProducing": false,
+      "isPerformanceLoss": false,
+      "isFault": false,
+      "usable": true
+    },
+    {
+      "id": "offline",
+      "code": "OFF",
+      "name": "Offline",
+      "isProducing": false,
+      "isPerformanceLoss": false,
+      "isFault": false,
+      "usable": true
+    },
+    {
+      "id": "running",
+      "code": "RUN",
+      "name": "Running",
+      "isProducing": true,
+      "isPerformanceLoss": false,
+      "isFault": false,
+      "usable": true
+    },
+    {
+      "id": "running-slow",
+      "code": "SLOW",
+      "name": "Running Slow",
+      "isProducing": true,
+      "isPerformanceLoss": true,
+      "isFault": false,
+      "usable": true
+    },
+    {
+      "id": "starved",
+      "code": "STRV",
+      "name": "Starved",
+      "isProducing": false,
+      "isPerformanceLoss": true,
+      "isFault": false,
+      "usable": true
+    },
+    {
+      "id": "stopped",
+      "code": "STOP",
+      "name": "Stopped",
+      "isProducing": false,
+      "isPerformanceLoss": false,
+      "isFault": false,
+      "usable": true
+    },
+    {
+      "id": "unknown",
+      "code": "UNK",
+      "name": "Unknown",
+      "isProducing": false,
+      "isPerformanceLoss": false,
+      "isFault": false,
+      "usable": true
+    },
+    {
+      "id": "warmup",
+      "code": "WARM",
+      "name": "Warming Up",
+      "isProducing": false,
+      "isPerformanceLoss": false,
+      "isFault": false,
+      "usable": true
+    }
+  ],
+  "metadata": {}
+}

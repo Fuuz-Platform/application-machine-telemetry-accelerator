@@ -1,0 +1,378 @@
+{
+  "header": {
+    "id": "event",
+    "name": "Event",
+    "description": "Represents specific downtime or production event reasons within a category. Used by operators to record why equipment stopped or slowed. Links to EventCategory for hierarchical reporting.",
+    "dataModelKindId": "reference",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cmkcpzvr6toyc01963u965viv",
+    "number": "3",
+    "dataModelId": "event",
+    "modelDefinition": {
+      "name": "Event",
+      "metadata": {
+        "mfgx": {
+          "module": {
+            "id": "machineDataApp",
+            "group": {
+              "id": "machineTelemetrySiteApplication"
+            }
+          },
+          "exposed": true,
+          "mutable": true,
+          "mutations": {
+            "create": true,
+            "update": true,
+            "del": true
+          },
+          "dataChangeCapture": {
+            "exposed": false,
+            "retentionDays": 365
+          },
+          "customFields": {
+            "exposed": true
+          },
+          "editor": {
+            "autosort": true
+          },
+          "labelField": "name"
+        },
+        "mongo": {
+          "collection": "event"
+        },
+        "graphql": {
+          "type": "Object"
+        }
+      },
+      "kind": "Reference",
+      "fields": [
+        {
+          "name": "id",
+          "type": "ID!",
+          "description": "**`id`** (`ID!`)\nPrimary unique identifier for the Event record.\n\n- Required on creation; cannot be updated.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": false
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": true
+          }
+        },
+        {
+          "name": "name",
+          "type": "String!",
+          "description": "**`name`** (`String!`)\nDisplay name for the Event.\n\n- Shown to operators in selection lists.\n- Should be clear and concise.\n- Example: `Motor Overheated`, `Conveyor Jam`, `Material Shortage`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "defaultDuration",
+          "type": "Int",
+          "description": "**`defaultDuration`** (`Int`)\nExpected duration in minutes for this type of event.\n\n- Used for planning and scheduling impact analysis.\n- Example: `30` for a typical changeover, `120` for a motor replacement.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "sortOrder",
+          "type": "Int",
+          "description": "**`sortOrder`** (`Int`)\nControls display order within the parent category.\n\n- Lower numbers appear first.\n- Allows grouping frequently-used events at the top.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "isActive",
+          "type": "Boolean!",
+          "description": "**`isActive`** (`Boolean!`)\nControls whether this event is available for selection.\n\n- `true`: Appears in operator dropdowns.\n- `false`: Hidden but retained for historical records.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "requiresNote",
+          "type": "Boolean!",
+          "description": "**`requiresNote`** (`Boolean!`)\nForces operators to enter a note when selecting this event.\n\n- `true`: Note field is mandatory.\n- `false`: Note is optional.\n- Use for events requiring additional context like `Other` or `Unknown`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "requiresWorkOrder",
+          "type": "Boolean!",
+          "description": "**`requiresWorkOrder`** (`Boolean!`)\nIndicates if a maintenance work order should be auto-generated.\n\n- `true`: Triggers maintenance workflow integration.\n- `false`: No automatic work order creation.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "usable",
+          "type": "Boolean!",
+          "description": "",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": true
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "code",
+          "type": "String!",
+          "description": "**`code`** (`String!`)\nUnique, human-readable code for the Event.\n\n- Used in operator interfaces and integrations.\n- Example: `MTR-001` (Motor Failure), `SNR-002` (Sensor Malfunction).",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": true
+          }
+        },
+        {
+          "name": "description",
+          "type": "String",
+          "description": "**`description`** (`String`)\nDetailed explanation to help operators identify the correct event.\n\n- Include symptoms, typical causes, or examples.\n- Example: `Motor stopped due to thermal overload protection. Check cooling fan and ambient temperature.`",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "eventCategoryId",
+          "type": "ID!",
+          "description": "**`eventCategoryId`** (`ID!`)\nForeign key linking to the parent EventCategory.\n\n- Required for proper categorization and reporting.\n- Used in Pareto analysis and downtime summaries.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "eventCategory",
+          "type": "EventCategory!",
+          "description": "**`eventCategory`** (`EventCategory!`)\nRelated EventCategory object providing category context.\n\n- Used for nested queries and reporting rollups.",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "deletionReferenceBehavior": "prevent",
+                "fields": {
+                  "from": "eventCategoryId",
+                  "to": "id"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        }
+      ],
+      "description": "Represents specific downtime or production event reasons within a category. Used by operators to record why equipment stopped or slowed. Links to EventCategory for hierarchical reporting."
+    },
+    "dataModelTypeId": "setup"
+  },
+  "migration": "{ \n\n  \"usable\": $coalesce([field, true])\n}",
+  "migrations": [
+    {
+      "dataModelVersionId": "cmkcpzvr6toyc01963u965viv",
+      "dataModelVersion": {
+        "number": "3"
+      },
+      "mappingExpression": "{ \n\n  \"usable\": $coalesce([field, true])\n}"
+    },
+    {
+      "dataModelVersionId": "cmk1ee29g4ihv016c6khvdkxk",
+      "dataModelVersion": {
+        "number": "2"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "event_v1",
+      "dataModelVersion": {
+        "number": "1"
+      },
+      "mappingExpression": "$"
+    }
+  ]
+}

@@ -1,0 +1,1065 @@
+{
+  "header": {
+    "id": "assetDataPointDashboardWebFlow",
+    "name": "Asset Data Point Dashboard - Web Flow",
+    "description": "",
+    "active": true,
+    "substitutesDataFlowId": null,
+    "dataFlowTypeId": "Screen",
+    "logLevelId": "Info",
+    "mcpToolConfiguration": null,
+    "moduleId": "machineDataApp",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cmlbdnyr7bdcv01bacpo562am",
+    "number": "0.0.1",
+    "description": "",
+    "dataFlowId": "assetDataPointDashboardWebFlow",
+    "flow": {
+      "id": "cmlbdnyr7bdcv01bacpo562am",
+      "name": "Asset Data Point Dashboard - Web Flow",
+      "type": "Screen",
+      "nodes": [
+        {
+          "id": "59b21297-4fc3-4cd7-9ba4-9abd5afd658d",
+          "name": "Request",
+          "type": "request",
+          "data": {
+            "nextNodes": [
+              "bd5216a8-c838-4d5d-841f-565e770badbc"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "bd5216a8-c838-4d5d-841f-565e770badbc",
+          "name": "Get Dashboard Runtime Properties",
+          "type": "transform",
+          "data": {
+            "transform": "{\r\n  \"assetId\": $coalesce([$metadata.querystring.assetId, $components.Screen.context.assetId, \"ASSET-0001\"]),\r\n  \"tz\": $coalesce([$metadata.settings.TimeZone, $momentTzGuess()])\r\n}",
+            "nextNodes": [
+              "31ef40d5-9cc0-4805-a514-3bc9a9b6bd1f"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "31ef40d5-9cc0-4805-a514-3bc9a9b6bd1f",
+          "name": "Asset Telemetry Boundaries",
+          "type": "javascriptTransform",
+          "data": {
+            "transform": "const assetId = $.assetId || \"\";\r\nconst tz = $.tz || $momentTzGuess();\r\n\r\nif (!assetId) {\r\n  return { error: \"No assetId provided\", assetId: null };\r\n}\r\n\r\nconst now = $moment().tz(tz);\r\nconst nowUtc = now.format('YYYY-MM-DDTHH:mm:ss.SSSZ');\r\n\r\nconst sparklineStart = $moment(now).subtract(1, 'hour').format('YYYY-MM-DDTHH:mm:ss.SSSZ');\r\nconst hourlyStart = $moment(now).subtract(7, 'days').startOf('hour').format('YYYY-MM-DDTHH:mm:ss.SSSZ');\r\n\r\nreturn {\r\n  assetId,\r\n  timezone: tz,\r\n  boundaries: {\r\n    now: nowUtc,\r\n    sparklineStart,\r\n    hourlyStart\r\n  }\r\n};",
+            "nextNodes": [
+              "f7301819-bd73-423e-85ff-699448fe1d57"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "f7301819-bd73-423e-85ff-699448fe1d57",
+          "name": "Query - Get Data",
+          "type": "query",
+          "data": {
+            "api": "application",
+            "variablesTransform": "{\r\n  \"assetId\": $.assetId,\r\n  \"sparklineStart\": $.boundaries.sparklineStart\r\n}",
+            "query": "query AssetTelemetryLive(\r\n  $assetId: String!\r\n  $sparklineStart: DateTime!\r\n) {\r\n  # Asset info\r\n  asset: asset(\r\n    where: { id: { _eq: $assetId } }\r\n    first: 1\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        code\r\n        name\r\n        status\r\n        criticality\r\n        manufacturer\r\n        model\r\n        serialNumber\r\n        workcenterId\r\n        workcenter {\r\n          id\r\n          code\r\n          name\r\n        }\r\n      }\r\n    }\r\n  }\r\n\r\n  # DataPoint config\r\n  dataPoints: dataPoint(\r\n    where: {\r\n      _and: [\r\n        { assetId: { _eq: $assetId } }\r\n        { enabled: { _eq: true } }\r\n        { historize: { _eq: true } }\r\n        { _or: [\r\n          { dataType: { _eq: \"Float\" } }\r\n          { dataType: { _eq: \"Int\" } }\r\n        ]}\r\n      ]\r\n    }\r\n    orderBy: [{ field: category, direction: asc }, { field: code, direction: asc }]\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        code\r\n        displayName\r\n        name\r\n        category\r\n        dataType\r\n        isCritical\r\n        frequency\r\n        setPoint\r\n        tolerance\r\n        lowerLimit\r\n        lowerWarning\r\n        upperWarning\r\n        upperLimit\r\n        unit {\r\n          id\r\n          code\r\n          name\r\n        }\r\n      }\r\n    }\r\n  }\r\n\r\n  # Latest raw values\r\n  latestRaw: telemetryRaw(\r\n    where: {\r\n      dataPoint: {\r\n        _and: [\r\n          { assetId: { _eq: $assetId } }\r\n          { enabled: { _eq: true } }\r\n          { historize: { _eq: true } }\r\n          { _or: [\r\n            { dataType: { _eq: \"Float\" } }\r\n            { dataType: { _eq: \"Int\" } }\r\n          ]}\r\n        ]\r\n      }\r\n    }\r\n    orderBy: [{ field: recordedAt, direction: desc }]\r\n    first: 500\r\n  ) {\r\n    edges {\r\n      node {\r\n        value\r\n        quality\r\n        qualityCode\r\n        recordedAt\r\n        dataPointId\r\n      }\r\n    }\r\n  }\r\n\r\n  # Sparkline data (last 1 hour)\r\n  sparklineRaw: telemetryRaw(\r\n    where: {\r\n      _and: [\r\n        { recordedAt: { _gte: $sparklineStart } }\r\n        { dataPoint: {\r\n          _and: [\r\n            { assetId: { _eq: $assetId } }\r\n            { enabled: { _eq: true } }\r\n            { historize: { _eq: true } }\r\n            { _or: [\r\n              { dataType: { _eq: \"Float\" } }\r\n              { dataType: { _eq: \"Int\" } }\r\n            ]}\r\n          ]\r\n        }}\r\n      ]\r\n    }\r\n    orderBy: [{ field: recordedAt, direction: asc }]\r\n    first: 5000\r\n  ) {\r\n    edges {\r\n      node {\r\n        value\r\n        quality\r\n        recordedAt\r\n        dataPointId\r\n      }\r\n    }\r\n  }\r\n}",
+            "nextNodes": [
+              "4e1dbd63-7424-48b4-a75b-094c2c6d7d90"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "4e1dbd63-7424-48b4-a75b-094c2c6d7d90",
+          "name": "Prepare current values for page",
+          "type": "javascriptTransform",
+          "data": {
+            "transform": "const timezone = $.timezone || $momentTzGuess();\r\nconst nowMs = $moment().valueOf();\r\n\r\nconst n = (v) => v || 0;\r\n\r\nconst extractNodes = (data) => {\r\n  if (!data) return [];\r\n  if (Array.isArray(data)) return data.map(e => e.node);\r\n  if (data.edges) return data.edges.map(e => e.node);\r\n  return [];\r\n};\r\n\r\nconst asset = extractNodes($.asset)?.[0] || null;\r\nconst dpNodes = extractNodes($.dataPoints);\r\nconst latestRawNodes = extractNodes($.latestRaw);\r\nconst sparklineNodes = extractNodes($.sparklineRaw);\r\n\r\n// Build datapoint config map\r\nconst dpMap = {};\r\nconst categories = {};\r\n\r\ndpNodes.forEach(dp => {\r\n  dpMap[dp.id] = {\r\n    id: dp.id,\r\n    code: dp.code,\r\n    displayName: dp.displayName || dp.name || dp.code,\r\n    category: dp.category || \"General\",\r\n    dataType: dp.dataType,\r\n    isCritical: dp.isCritical,\r\n    frequency: dp.frequency,\r\n    setPoint: dp.setPoint,\r\n    tolerance: dp.tolerance,\r\n    lowerLimit: dp.lowerLimit,\r\n    lowerWarning: dp.lowerWarning,\r\n    upperWarning: dp.upperWarning,\r\n    upperLimit: dp.upperLimit,\r\n    unitCode: dp.unit?.code || dp.unit?.name || \"\",\r\n    unitName: dp.unit?.name || \"\"\r\n  };\r\n  categories[dp.category || \"General\"] = true;\r\n});\r\n\r\n// Deduplicate latest raw → one per dataPointId\r\nconst latestByDp = {};\r\nlatestRawNodes.forEach(raw => {\r\n  if (!latestByDp[raw.dataPointId]) {\r\n    latestByDp[raw.dataPointId] = raw;\r\n  }\r\n});\r\n\r\n// Group sparkline by datapoint\r\nconst sparklineByDp = {};\r\nsparklineNodes.forEach(raw => {\r\n  if (!sparklineByDp[raw.dataPointId]) {\r\n    sparklineByDp[raw.dataPointId] = [];\r\n  }\r\n  sparklineByDp[raw.dataPointId].push({\r\n    value: raw.value,\r\n    time: raw.recordedAt\r\n  });\r\n});\r\n\r\n// Status classification\r\nconst classifyStatus = (value, dp) => {\r\n  if (value == null) return \"unknown\";\r\n  if (dp.upperLimit != null && value > dp.upperLimit) return \"alarm\";\r\n  if (dp.lowerLimit != null && value < dp.lowerLimit) return \"alarm\";\r\n  if (dp.upperWarning != null && value > dp.upperWarning) return \"warning\";\r\n  if (dp.lowerWarning != null && value < dp.lowerWarning) return \"warning\";\r\n  return \"good\";\r\n};\r\n\r\nconst getStatusColor = (status) => {\r\n  switch (status) {\r\n    case \"alarm\": return \"#ef4444\";\r\n    case \"warning\": return \"#f59e0b\";\r\n    case \"good\": return \"#10b981\";\r\n    case \"stale\": return \"#6b7280\";\r\n    case \"badQuality\": return \"#7c3aed\";\r\n    default: return \"#6b7280\";\r\n  }\r\n};\r\n\r\nconst getTrend = (sparkline) => {\r\n  if (!sparkline || sparkline.length < 3) return \"stable\";\r\n  const recent = sparkline.slice(-3).map(s => s.value);\r\n  const diff = recent[recent.length - 1] - recent[0];\r\n  const vals = sparkline.map(s => s.value);\r\n  let minVal = vals[0];\r\n  let maxVal = vals[0];\r\n  for (let i = 1; i < vals.length; i++) {\r\n    if (vals[i] < minVal) minVal = vals[i];\r\n    if (vals[i] > maxVal) maxVal = vals[i];\r\n  }\r\n  const range = maxVal - minVal;\r\n  if (range === 0) return \"stable\";\r\n  const pctChange = Math.abs(diff) / range;\r\n  if (pctChange < 0.1) return \"stable\";\r\n  return diff > 0 ? \"rising\" : \"falling\";\r\n};\r\n\r\n// Build current values\r\nconst currentValues = [];\r\nlet alarmCount = 0;\r\nlet warningCount = 0;\r\nlet goodCount = 0;\r\nlet badQualityCount = 0;\r\nlet staleCount = 0;\r\n\r\nObject.keys(dpMap).forEach(dpId => {\r\n  const dp = dpMap[dpId];\r\n  const latest = latestByDp[dpId];\r\n  const sparkline = sparklineByDp[dpId] || [];\r\n\r\n  const value = latest ? latest.value : null;\r\n  const quality = latest ? latest.quality : \"Unknown\";\r\n  const recordedAt = latest ? latest.recordedAt : null;\r\n  const staleSeconds = recordedAt ? Math.floor((nowMs - $moment(recordedAt).valueOf()) / 1000) : null;\r\n  const isStale = staleSeconds != null && dp.frequency > 0 && staleSeconds > (dp.frequency / 1000) * 3;\r\n  const isBadQuality = quality !== \"Good\" && quality !== \"Unknown\";\r\n\r\n  let status;\r\n  if (isBadQuality) {\r\n    status = \"badQuality\";\r\n    badQualityCount++;\r\n  } else if (isStale) {\r\n    status = \"stale\";\r\n    staleCount++;\r\n  } else {\r\n    status = classifyStatus(value, dp);\r\n    if (status === \"alarm\") alarmCount++;\r\n    else if (status === \"warning\") warningCount++;\r\n    else goodCount++;\r\n  }\r\n\r\n  currentValues.push({\r\n    dataPointId: dpId,\r\n    code: dp.code,\r\n    displayName: dp.displayName,\r\n    category: dp.category,\r\n    isCritical: dp.isCritical,\r\n    value,\r\n    quality,\r\n    unitCode: dp.unitCode,\r\n    unitName: dp.unitName,\r\n    recordedAt,\r\n    staleSeconds,\r\n    isStale,\r\n    setPoint: dp.setPoint,\r\n    tolerance: dp.tolerance,\r\n    lowerLimit: dp.lowerLimit,\r\n    lowerWarning: dp.lowerWarning,\r\n    upperWarning: dp.upperWarning,\r\n    upperLimit: dp.upperLimit,\r\n    status,\r\n    statusColor: getStatusColor(status),\r\n    sparkline: sparkline.map(s => s.value),\r\n    trend: getTrend(sparkline)\r\n  });\r\n});\r\n\r\ncurrentValues.sort((a, b) => {\r\n  if (a.isCritical !== b.isCritical) return b.isCritical ? 1 : -1;\r\n  if (a.category !== b.category) return a.category.localeCompare(b.category);\r\n  return a.code.localeCompare(b.code);\r\n});\r\n\r\nconst criticalPoints = currentValues.filter(cv => cv.isCritical);\r\n\r\nreturn {\r\n  assetId: $.assetId,\r\n  asset: asset ? {\r\n    id: asset.id,\r\n    code: asset.code,\r\n    name: asset.name,\r\n    status: asset.status,\r\n    criticality: asset.criticality,\r\n    manufacturer: asset.manufacturer,\r\n    model: asset.model,\r\n    serialNumber: asset.serialNumber,\r\n    workcenterId: asset.workcenterId,\r\n    workcenter: asset.workcenter\r\n  } : null,\r\n  timezone,\r\n  lastRefresh: $moment().format('YYYY-MM-DDTHH:mm:ss.SSSZ'),\r\n  lastRefreshFormatted: $moment().tz(timezone).format('MMM D, YYYY h:mm:ss A'),\r\n\r\n  alarmState: {\r\n    hasAlarms: alarmCount > 0 || warningCount > 0,\r\n    alarmCount,\r\n    warningCount,\r\n    goodCount,\r\n    badQualityCount,\r\n    staleCount,\r\n    totalPoints: currentValues.length\r\n  },\r\n\r\n  currentValues,\r\n  criticalPoints,\r\n  categories: Object.keys(categories).sort(),\r\n  dpMap,\r\n\r\n  config: {\r\n    hourlyWindowDays: 7,\r\n    sparklineWindowMinutes: 60,\r\n    dataPointCount: dpNodes.length\r\n  }\r\n};",
+            "nextNodes": [
+              "be56fc4e-7387-4370-8b75-54e11c61ed93"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "be56fc4e-7387-4370-8b75-54e11c61ed93",
+          "name": "Set Screen Context",
+          "type": "transform",
+          "data": {
+            "transform": "($data:= $;\r\n$components.Screen.fn.setContext($data))",
+            "nextNodes": [
+              "bcc15a1d-b898-433b-93b0-b2034ecb3250"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "1eedb030-54ac-409a-b722-113eb4396389",
+          "name": "Response",
+          "type": "response",
+          "data": {
+            "responseTransform": "$",
+            "nextNodes": []
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "fc8c5322-ed05-4363-9123-52a750a372d6",
+          "name": "Execute Flow",
+          "type": "executeFlow",
+          "data": {
+            "nextNodes": []
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "bcc15a1d-b898-433b-93b0-b2034ecb3250",
+          "name": "If Else",
+          "type": "ifElse",
+          "data": {
+            "onTrueNextNodes": [
+              "1eedb030-54ac-409a-b722-113eb4396389"
+            ],
+            "onFalseNextNodes": [
+              "fc8c5322-ed05-4363-9123-52a750a372d6"
+            ],
+            "transform": "(\r\n  $historyLoaded := $components.Screen.context.charts.trend ? true : false\r\n)"
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        }
+      ],
+      "version": "0.0.1"
+    },
+    "diagram": {
+      "id": "cmlbdnyr7bdcv01bacpo562am",
+      "offsetX": -246.48,
+      "offsetY": 125.18,
+      "zoom": 95,
+      "gridSize": 5,
+      "layers": [
+        {
+          "id": "1d1d8ebc-7c01-41e0-9825-aa2957520044",
+          "type": "diagram-links",
+          "isSvg": true,
+          "transformed": true,
+          "models": {
+            "23c6ea0f-a1b9-4123-b1c9-89856d6169bf": {
+              "points": [
+                {
+                  "id": "d9d56bd3-509c-498a-8f0d-6b90bb1f0015",
+                  "type": "point",
+                  "selected": true,
+                  "x": 413,
+                  "y": 204.73
+                },
+                {
+                  "id": "58a79de5-16c7-4955-896b-8639c4d53d59",
+                  "type": "point",
+                  "selected": true,
+                  "x": 485,
+                  "y": 254.73
+                }
+              ],
+              "id": "23c6ea0f-a1b9-4123-b1c9-89856d6169bf",
+              "type": "default",
+              "selected": true,
+              "source": "57c12fc7-b53a-4ad3-b9a6-7126d305e5d7",
+              "sourcePort": "cmlbdn880005z356rhw8f4gnn",
+              "target": "bd5216a8-c838-4d5d-841f-565e770badbc",
+              "targetPort": "cmlbdqs3p007s356ryeeaw552",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "80dc0845-1a58-432b-be02-7115ec993372": {
+              "points": [
+                {
+                  "id": "d8d2e691-581c-4fc1-9fd7-b69d707b6813",
+                  "type": "point",
+                  "x": 409,
+                  "y": 284.73
+                },
+                {
+                  "id": "d7e2a038-7370-4503-a88d-3bfc869cc8f1",
+                  "type": "point",
+                  "x": 485,
+                  "y": 254.73
+                }
+              ],
+              "id": "80dc0845-1a58-432b-be02-7115ec993372",
+              "type": "default",
+              "selected": true,
+              "source": "59b21297-4fc3-4cd7-9ba4-9abd5afd658d",
+              "sourcePort": "cmlbdncj30061356r14bzufjz",
+              "target": "bd5216a8-c838-4d5d-841f-565e770badbc",
+              "targetPort": "cmlbdqs3p007s356ryeeaw552",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "62afd77c-3c0f-4af3-b836-175b13cbce8f": {
+              "points": [
+                {
+                  "id": "17ab806b-7414-48d6-9b0f-df288752680e",
+                  "type": "point",
+                  "selected": true,
+                  "x": 718,
+                  "y": 254.73
+                },
+                {
+                  "id": "a0bceca1-caab-446a-a552-dd6d879fa469",
+                  "type": "point",
+                  "selected": true,
+                  "x": 765,
+                  "y": 254.73
+                }
+              ],
+              "id": "62afd77c-3c0f-4af3-b836-175b13cbce8f",
+              "type": "default",
+              "selected": true,
+              "source": "bd5216a8-c838-4d5d-841f-565e770badbc",
+              "sourcePort": "cmlbdqs3p007u356rwsm48vfl",
+              "target": "31ef40d5-9cc0-4805-a514-3bc9a9b6bd1f",
+              "targetPort": "cmlbdrx9i008m356rc42jwb37",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "576f09c9-ac3a-4b8f-a573-84c6cb655ac4": {
+              "points": [
+                {
+                  "id": "9938c959-3cc4-4f03-b7cf-6029e3625bbd",
+                  "type": "point",
+                  "selected": true,
+                  "x": 961.74,
+                  "y": 254.73
+                },
+                {
+                  "id": "e824140f-569f-4f8d-98bc-34cb98b2b37f",
+                  "type": "point",
+                  "selected": true,
+                  "x": 485,
+                  "y": 359.73
+                }
+              ],
+              "id": "576f09c9-ac3a-4b8f-a573-84c6cb655ac4",
+              "type": "default",
+              "selected": true,
+              "source": "31ef40d5-9cc0-4805-a514-3bc9a9b6bd1f",
+              "sourcePort": "cmlbdrx9i008o356r4bxsa5d1",
+              "target": "f7301819-bd73-423e-85ff-699448fe1d57",
+              "targetPort": "cmlbdt0qj00a1356rbtjx0uil",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "ae8d3d68-9076-43eb-b7b6-e51e6ed8ba43": {
+              "points": [
+                {
+                  "id": "18a47cb4-b2b2-4c89-ae43-9fcf5af72b3f",
+                  "type": "point",
+                  "selected": true,
+                  "x": 639,
+                  "y": 359.73
+                },
+                {
+                  "id": "f003face-7b8a-4fd8-adf8-0f8ec4cfb275",
+                  "type": "point",
+                  "selected": true,
+                  "x": 740,
+                  "y": 359.73
+                }
+              ],
+              "id": "ae8d3d68-9076-43eb-b7b6-e51e6ed8ba43",
+              "type": "default",
+              "selected": true,
+              "source": "f7301819-bd73-423e-85ff-699448fe1d57",
+              "sourcePort": "cmlbdt0qj00a3356rlaaqdv1e",
+              "target": "4e1dbd63-7424-48b4-a75b-094c2c6d7d90",
+              "targetPort": "cmlbdyiml00c4356rl6bzaw69",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "c5273bd4-ff7d-461a-a725-f9838049be70": {
+              "points": [
+                {
+                  "id": "5bd29b91-1b1f-46f6-8c40-9b728285f7f3",
+                  "type": "point",
+                  "selected": true,
+                  "x": 954.86,
+                  "y": 359.73
+                },
+                {
+                  "id": "abab27a3-b705-42cd-89e9-f225e60d7894",
+                  "type": "point",
+                  "selected": true,
+                  "x": 1010,
+                  "y": 364.73
+                }
+              ],
+              "id": "c5273bd4-ff7d-461a-a725-f9838049be70",
+              "type": "default",
+              "selected": true,
+              "source": "4e1dbd63-7424-48b4-a75b-094c2c6d7d90",
+              "sourcePort": "cmlbdyiml00c6356rvpeggnz2",
+              "target": "be56fc4e-7387-4370-8b75-54e11c61ed93",
+              "targetPort": "cmlbdzda800cy356raex4f1cf",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "e74833c6-551f-4766-aad4-00df9f09247c": {
+              "points": [
+                {
+                  "id": "5ebb1aa6-ed46-45d2-92c2-87a713291b1b",
+                  "type": "point",
+                  "selected": true,
+                  "x": 1164,
+                  "y": 364.73
+                },
+                {
+                  "id": "908f0bbd-4009-45bd-99da-6e832e98548a",
+                  "type": "point",
+                  "selected": true,
+                  "x": 1219.99,
+                  "y": 329.73
+                }
+              ],
+              "id": "e74833c6-551f-4766-aad4-00df9f09247c",
+              "type": "default",
+              "selected": true,
+              "source": "be56fc4e-7387-4370-8b75-54e11c61ed93",
+              "sourcePort": "cmlbdzda800d0356ryenvs6dm",
+              "target": "bcc15a1d-b898-433b-93b0-b2034ecb3250",
+              "targetPort": "cmlbekub400lx356rl7h4zput",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "0cb615dc-735b-4502-90e0-5a9a66c357a7": {
+              "points": [
+                {
+                  "id": "00fa5b80-baa4-44d1-9eb7-b388ba19ec4b",
+                  "type": "point",
+                  "selected": true,
+                  "x": 1373.99,
+                  "y": 329.73
+                },
+                {
+                  "id": "e9f272f2-6edd-4544-a2ba-b3d415d26b84",
+                  "type": "point",
+                  "selected": true,
+                  "x": 1435,
+                  "y": 289.72
+                }
+              ],
+              "id": "0cb615dc-735b-4502-90e0-5a9a66c357a7",
+              "type": "default",
+              "selected": true,
+              "source": "bcc15a1d-b898-433b-93b0-b2034ecb3250",
+              "sourcePort": "cmlbekub400lz356ranjn3gkp",
+              "target": "1eedb030-54ac-409a-b722-113eb4396389",
+              "targetPort": "cmlbdzqcq00dq356rq8311g36",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "9d7697fa-f570-4b28-aa67-0bf41a3a21d3": {
+              "points": [
+                {
+                  "id": "ff19bdca-c4c1-46e1-9bcd-fbd3a34b657b",
+                  "type": "point",
+                  "x": 1373.99,
+                  "y": 354.88
+                },
+                {
+                  "id": "d8f1e0b3-d9b4-43ee-809e-7d44a906a470",
+                  "type": "point",
+                  "x": 1434.99,
+                  "y": 409.73
+                }
+              ],
+              "id": "9d7697fa-f570-4b28-aa67-0bf41a3a21d3",
+              "type": "default",
+              "selected": false,
+              "source": "bcc15a1d-b898-433b-93b0-b2034ecb3250",
+              "sourcePort": "cmlbekub400m1356rbqetutu8",
+              "target": "fc8c5322-ed05-4363-9123-52a750a372d6",
+              "targetPort": "cmlbehg9s00iu356rrhmt6uxd",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            }
+          }
+        },
+        {
+          "id": "e4eb04ca-5aaa-40bd-ab77-f855c9a1bbf2",
+          "type": "diagram-nodes",
+          "isSvg": false,
+          "transformed": true,
+          "models": {
+            "57c12fc7-b53a-4ad3-b9a6-7126d305e5d7": {
+              "id": "57c12fc7-b53a-4ad3-b9a6-7126d305e5d7",
+              "type": "debugSource",
+              "selected": true,
+              "x": 259,
+              "y": 165,
+              "ports": [
+                {
+                  "id": "cmlbdn880005z356rhw8f4gnn",
+                  "type": "default",
+                  "x": 405,
+                  "y": 196.73,
+                  "name": "cmlbdn8800060356ru0o1zwzu",
+                  "parentNode": "57c12fc7-b53a-4ad3-b9a6-7126d305e5d7",
+                  "links": [
+                    "23c6ea0f-a1b9-4123-b1c9-89856d6169bf"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "payload": {},
+                "context": {},
+                "nextNodes": [
+                  "bd5216a8-c838-4d5d-841f-565e770badbc"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Source"
+            },
+            "59b21297-4fc3-4cd7-9ba4-9abd5afd658d": {
+              "id": "59b21297-4fc3-4cd7-9ba4-9abd5afd658d",
+              "type": "request",
+              "selected": true,
+              "x": 255,
+              "y": 245,
+              "ports": [
+                {
+                  "id": "cmlbdncj30061356r14bzufjz",
+                  "type": "default",
+                  "x": 401,
+                  "y": 276.73,
+                  "name": "cmlbdncj30062356rykrt7szu",
+                  "parentNode": "59b21297-4fc3-4cd7-9ba4-9abd5afd658d",
+                  "links": [
+                    "80dc0845-1a58-432b-be02-7115ec993372"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Payload",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "bd5216a8-c838-4d5d-841f-565e770badbc"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Request"
+            },
+            "bd5216a8-c838-4d5d-841f-565e770badbc": {
+              "id": "bd5216a8-c838-4d5d-841f-565e770badbc",
+              "type": "transform",
+              "selected": true,
+              "x": 485,
+              "y": 215,
+              "ports": [
+                {
+                  "id": "cmlbdqs3p007s356ryeeaw552",
+                  "type": "default",
+                  "x": 477,
+                  "y": 246.73,
+                  "name": "cmlbdqs3p007t356rk08qci7f",
+                  "parentNode": "bd5216a8-c838-4d5d-841f-565e770badbc",
+                  "links": [
+                    "23c6ea0f-a1b9-4123-b1c9-89856d6169bf",
+                    "80dc0845-1a58-432b-be02-7115ec993372"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmlbdqs3p007u356rwsm48vfl",
+                  "type": "default",
+                  "x": 710,
+                  "y": 246.73,
+                  "name": "cmlbdqs3p007v356r3jfplulk",
+                  "parentNode": "bd5216a8-c838-4d5d-841f-565e770badbc",
+                  "links": [
+                    "62afd77c-3c0f-4af3-b836-175b13cbce8f"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "{\r\n  \"assetId\": $coalesce([$metadata.querystring.assetId, $components.Screen.context.assetId, \"ASSET-0001\"]),\r\n  \"tz\": $coalesce([$metadata.settings.TimeZone, $momentTzGuess()])\r\n}",
+                "nextNodes": [
+                  "31ef40d5-9cc0-4805-a514-3bc9a9b6bd1f"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Get Dashboard Runtime Properties"
+            },
+            "31ef40d5-9cc0-4805-a514-3bc9a9b6bd1f": {
+              "id": "31ef40d5-9cc0-4805-a514-3bc9a9b6bd1f",
+              "type": "javascriptTransform",
+              "selected": true,
+              "x": 765,
+              "y": 215,
+              "ports": [
+                {
+                  "id": "cmlbdrx9i008m356rc42jwb37",
+                  "type": "default",
+                  "x": 757,
+                  "y": 246.73,
+                  "name": "cmlbdrx9i008n356r7p62oti2",
+                  "parentNode": "31ef40d5-9cc0-4805-a514-3bc9a9b6bd1f",
+                  "links": [
+                    "62afd77c-3c0f-4af3-b836-175b13cbce8f"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmlbdrx9i008o356r4bxsa5d1",
+                  "type": "default",
+                  "x": 953.74,
+                  "y": 246.73,
+                  "name": "cmlbdrx9i008p356rfu8nmh30",
+                  "parentNode": "31ef40d5-9cc0-4805-a514-3bc9a9b6bd1f",
+                  "links": [
+                    "576f09c9-ac3a-4b8f-a573-84c6cb655ac4"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "const assetId = $.assetId || \"\";\r\nconst tz = $.tz || $momentTzGuess();\r\n\r\nif (!assetId) {\r\n  return { error: \"No assetId provided\", assetId: null };\r\n}\r\n\r\nconst now = $moment().tz(tz);\r\nconst nowUtc = now.format('YYYY-MM-DDTHH:mm:ss.SSSZ');\r\n\r\nconst sparklineStart = $moment(now).subtract(1, 'hour').format('YYYY-MM-DDTHH:mm:ss.SSSZ');\r\nconst hourlyStart = $moment(now).subtract(7, 'days').startOf('hour').format('YYYY-MM-DDTHH:mm:ss.SSSZ');\r\n\r\nreturn {\r\n  assetId,\r\n  timezone: tz,\r\n  boundaries: {\r\n    now: nowUtc,\r\n    sparklineStart,\r\n    hourlyStart\r\n  }\r\n};",
+                "nextNodes": [
+                  "f7301819-bd73-423e-85ff-699448fe1d57"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Asset Telemetry Boundaries"
+            },
+            "f7301819-bd73-423e-85ff-699448fe1d57": {
+              "id": "f7301819-bd73-423e-85ff-699448fe1d57",
+              "type": "query",
+              "selected": true,
+              "x": 485,
+              "y": 320,
+              "ports": [
+                {
+                  "id": "cmlbdt0qj00a1356rbtjx0uil",
+                  "type": "default",
+                  "x": 477,
+                  "y": 351.73,
+                  "name": "cmlbdt0qj00a2356r3wr48e7y",
+                  "parentNode": "f7301819-bd73-423e-85ff-699448fe1d57",
+                  "links": [
+                    "576f09c9-ac3a-4b8f-a573-84c6cb655ac4"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmlbdt0qj00a3356rlaaqdv1e",
+                  "type": "default",
+                  "x": 631,
+                  "y": 351.73,
+                  "name": "cmlbdt0qj00a4356rhmvxoymq",
+                  "parentNode": "f7301819-bd73-423e-85ff-699448fe1d57",
+                  "links": [
+                    "ae8d3d68-9076-43eb-b7b6-e51e6ed8ba43"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "application",
+                "variablesTransform": "{\r\n  \"assetId\": $.assetId,\r\n  \"sparklineStart\": $.boundaries.sparklineStart\r\n}",
+                "query": "query AssetTelemetryLive(\r\n  $assetId: String!\r\n  $sparklineStart: DateTime!\r\n) {\r\n  # Asset info\r\n  asset: asset(\r\n    where: { id: { _eq: $assetId } }\r\n    first: 1\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        code\r\n        name\r\n        status\r\n        criticality\r\n        manufacturer\r\n        model\r\n        serialNumber\r\n        workcenterId\r\n        workcenter {\r\n          id\r\n          code\r\n          name\r\n        }\r\n      }\r\n    }\r\n  }\r\n\r\n  # DataPoint config\r\n  dataPoints: dataPoint(\r\n    where: {\r\n      _and: [\r\n        { assetId: { _eq: $assetId } }\r\n        { enabled: { _eq: true } }\r\n        { historize: { _eq: true } }\r\n        { _or: [\r\n          { dataType: { _eq: \"Float\" } }\r\n          { dataType: { _eq: \"Int\" } }\r\n        ]}\r\n      ]\r\n    }\r\n    orderBy: [{ field: category, direction: asc }, { field: code, direction: asc }]\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        code\r\n        displayName\r\n        name\r\n        category\r\n        dataType\r\n        isCritical\r\n        frequency\r\n        setPoint\r\n        tolerance\r\n        lowerLimit\r\n        lowerWarning\r\n        upperWarning\r\n        upperLimit\r\n        unit {\r\n          id\r\n          code\r\n          name\r\n        }\r\n      }\r\n    }\r\n  }\r\n\r\n  # Latest raw values\r\n  latestRaw: telemetryRaw(\r\n    where: {\r\n      dataPoint: {\r\n        _and: [\r\n          { assetId: { _eq: $assetId } }\r\n          { enabled: { _eq: true } }\r\n          { historize: { _eq: true } }\r\n          { _or: [\r\n            { dataType: { _eq: \"Float\" } }\r\n            { dataType: { _eq: \"Int\" } }\r\n          ]}\r\n        ]\r\n      }\r\n    }\r\n    orderBy: [{ field: recordedAt, direction: desc }]\r\n    first: 500\r\n  ) {\r\n    edges {\r\n      node {\r\n        value\r\n        quality\r\n        qualityCode\r\n        recordedAt\r\n        dataPointId\r\n      }\r\n    }\r\n  }\r\n\r\n  # Sparkline data (last 1 hour)\r\n  sparklineRaw: telemetryRaw(\r\n    where: {\r\n      _and: [\r\n        { recordedAt: { _gte: $sparklineStart } }\r\n        { dataPoint: {\r\n          _and: [\r\n            { assetId: { _eq: $assetId } }\r\n            { enabled: { _eq: true } }\r\n            { historize: { _eq: true } }\r\n            { _or: [\r\n              { dataType: { _eq: \"Float\" } }\r\n              { dataType: { _eq: \"Int\" } }\r\n            ]}\r\n          ]\r\n        }}\r\n      ]\r\n    }\r\n    orderBy: [{ field: recordedAt, direction: asc }]\r\n    first: 5000\r\n  ) {\r\n    edges {\r\n      node {\r\n        value\r\n        quality\r\n        recordedAt\r\n        dataPointId\r\n      }\r\n    }\r\n  }\r\n}",
+                "nextNodes": [
+                  "4e1dbd63-7424-48b4-a75b-094c2c6d7d90"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Query - Get Data"
+            },
+            "4e1dbd63-7424-48b4-a75b-094c2c6d7d90": {
+              "id": "4e1dbd63-7424-48b4-a75b-094c2c6d7d90",
+              "type": "javascriptTransform",
+              "selected": true,
+              "x": 740,
+              "y": 320,
+              "ports": [
+                {
+                  "id": "cmlbdyiml00c4356rl6bzaw69",
+                  "type": "default",
+                  "x": 732,
+                  "y": 351.73,
+                  "name": "cmlbdyiml00c5356rxbcpntrt",
+                  "parentNode": "4e1dbd63-7424-48b4-a75b-094c2c6d7d90",
+                  "links": [
+                    "ae8d3d68-9076-43eb-b7b6-e51e6ed8ba43"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmlbdyiml00c6356rvpeggnz2",
+                  "type": "default",
+                  "x": 946.86,
+                  "y": 351.73,
+                  "name": "cmlbdyiml00c7356rlx3917f2",
+                  "parentNode": "4e1dbd63-7424-48b4-a75b-094c2c6d7d90",
+                  "links": [
+                    "c5273bd4-ff7d-461a-a725-f9838049be70"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "const timezone = $.timezone || $momentTzGuess();\r\nconst nowMs = $moment().valueOf();\r\n\r\nconst n = (v) => v || 0;\r\n\r\nconst extractNodes = (data) => {\r\n  if (!data) return [];\r\n  if (Array.isArray(data)) return data.map(e => e.node);\r\n  if (data.edges) return data.edges.map(e => e.node);\r\n  return [];\r\n};\r\n\r\nconst asset = extractNodes($.asset)?.[0] || null;\r\nconst dpNodes = extractNodes($.dataPoints);\r\nconst latestRawNodes = extractNodes($.latestRaw);\r\nconst sparklineNodes = extractNodes($.sparklineRaw);\r\n\r\n// Build datapoint config map\r\nconst dpMap = {};\r\nconst categories = {};\r\n\r\ndpNodes.forEach(dp => {\r\n  dpMap[dp.id] = {\r\n    id: dp.id,\r\n    code: dp.code,\r\n    displayName: dp.displayName || dp.name || dp.code,\r\n    category: dp.category || \"General\",\r\n    dataType: dp.dataType,\r\n    isCritical: dp.isCritical,\r\n    frequency: dp.frequency,\r\n    setPoint: dp.setPoint,\r\n    tolerance: dp.tolerance,\r\n    lowerLimit: dp.lowerLimit,\r\n    lowerWarning: dp.lowerWarning,\r\n    upperWarning: dp.upperWarning,\r\n    upperLimit: dp.upperLimit,\r\n    unitCode: dp.unit?.code || dp.unit?.name || \"\",\r\n    unitName: dp.unit?.name || \"\"\r\n  };\r\n  categories[dp.category || \"General\"] = true;\r\n});\r\n\r\n// Deduplicate latest raw → one per dataPointId\r\nconst latestByDp = {};\r\nlatestRawNodes.forEach(raw => {\r\n  if (!latestByDp[raw.dataPointId]) {\r\n    latestByDp[raw.dataPointId] = raw;\r\n  }\r\n});\r\n\r\n// Group sparkline by datapoint\r\nconst sparklineByDp = {};\r\nsparklineNodes.forEach(raw => {\r\n  if (!sparklineByDp[raw.dataPointId]) {\r\n    sparklineByDp[raw.dataPointId] = [];\r\n  }\r\n  sparklineByDp[raw.dataPointId].push({\r\n    value: raw.value,\r\n    time: raw.recordedAt\r\n  });\r\n});\r\n\r\n// Status classification\r\nconst classifyStatus = (value, dp) => {\r\n  if (value == null) return \"unknown\";\r\n  if (dp.upperLimit != null && value > dp.upperLimit) return \"alarm\";\r\n  if (dp.lowerLimit != null && value < dp.lowerLimit) return \"alarm\";\r\n  if (dp.upperWarning != null && value > dp.upperWarning) return \"warning\";\r\n  if (dp.lowerWarning != null && value < dp.lowerWarning) return \"warning\";\r\n  return \"good\";\r\n};\r\n\r\nconst getStatusColor = (status) => {\r\n  switch (status) {\r\n    case \"alarm\": return \"#ef4444\";\r\n    case \"warning\": return \"#f59e0b\";\r\n    case \"good\": return \"#10b981\";\r\n    case \"stale\": return \"#6b7280\";\r\n    case \"badQuality\": return \"#7c3aed\";\r\n    default: return \"#6b7280\";\r\n  }\r\n};\r\n\r\nconst getTrend = (sparkline) => {\r\n  if (!sparkline || sparkline.length < 3) return \"stable\";\r\n  const recent = sparkline.slice(-3).map(s => s.value);\r\n  const diff = recent[recent.length - 1] - recent[0];\r\n  const vals = sparkline.map(s => s.value);\r\n  let minVal = vals[0];\r\n  let maxVal = vals[0];\r\n  for (let i = 1; i < vals.length; i++) {\r\n    if (vals[i] < minVal) minVal = vals[i];\r\n    if (vals[i] > maxVal) maxVal = vals[i];\r\n  }\r\n  const range = maxVal - minVal;\r\n  if (range === 0) return \"stable\";\r\n  const pctChange = Math.abs(diff) / range;\r\n  if (pctChange < 0.1) return \"stable\";\r\n  return diff > 0 ? \"rising\" : \"falling\";\r\n};\r\n\r\n// Build current values\r\nconst currentValues = [];\r\nlet alarmCount = 0;\r\nlet warningCount = 0;\r\nlet goodCount = 0;\r\nlet badQualityCount = 0;\r\nlet staleCount = 0;\r\n\r\nObject.keys(dpMap).forEach(dpId => {\r\n  const dp = dpMap[dpId];\r\n  const latest = latestByDp[dpId];\r\n  const sparkline = sparklineByDp[dpId] || [];\r\n\r\n  const value = latest ? latest.value : null;\r\n  const quality = latest ? latest.quality : \"Unknown\";\r\n  const recordedAt = latest ? latest.recordedAt : null;\r\n  const staleSeconds = recordedAt ? Math.floor((nowMs - $moment(recordedAt).valueOf()) / 1000) : null;\r\n  const isStale = staleSeconds != null && dp.frequency > 0 && staleSeconds > (dp.frequency / 1000) * 3;\r\n  const isBadQuality = quality !== \"Good\" && quality !== \"Unknown\";\r\n\r\n  let status;\r\n  if (isBadQuality) {\r\n    status = \"badQuality\";\r\n    badQualityCount++;\r\n  } else if (isStale) {\r\n    status = \"stale\";\r\n    staleCount++;\r\n  } else {\r\n    status = classifyStatus(value, dp);\r\n    if (status === \"alarm\") alarmCount++;\r\n    else if (status === \"warning\") warningCount++;\r\n    else goodCount++;\r\n  }\r\n\r\n  currentValues.push({\r\n    dataPointId: dpId,\r\n    code: dp.code,\r\n    displayName: dp.displayName,\r\n    category: dp.category,\r\n    isCritical: dp.isCritical,\r\n    value,\r\n    quality,\r\n    unitCode: dp.unitCode,\r\n    unitName: dp.unitName,\r\n    recordedAt,\r\n    staleSeconds,\r\n    isStale,\r\n    setPoint: dp.setPoint,\r\n    tolerance: dp.tolerance,\r\n    lowerLimit: dp.lowerLimit,\r\n    lowerWarning: dp.lowerWarning,\r\n    upperWarning: dp.upperWarning,\r\n    upperLimit: dp.upperLimit,\r\n    status,\r\n    statusColor: getStatusColor(status),\r\n    sparkline: sparkline.map(s => s.value),\r\n    trend: getTrend(sparkline)\r\n  });\r\n});\r\n\r\ncurrentValues.sort((a, b) => {\r\n  if (a.isCritical !== b.isCritical) return b.isCritical ? 1 : -1;\r\n  if (a.category !== b.category) return a.category.localeCompare(b.category);\r\n  return a.code.localeCompare(b.code);\r\n});\r\n\r\nconst criticalPoints = currentValues.filter(cv => cv.isCritical);\r\n\r\nreturn {\r\n  assetId: $.assetId,\r\n  asset: asset ? {\r\n    id: asset.id,\r\n    code: asset.code,\r\n    name: asset.name,\r\n    status: asset.status,\r\n    criticality: asset.criticality,\r\n    manufacturer: asset.manufacturer,\r\n    model: asset.model,\r\n    serialNumber: asset.serialNumber,\r\n    workcenterId: asset.workcenterId,\r\n    workcenter: asset.workcenter\r\n  } : null,\r\n  timezone,\r\n  lastRefresh: $moment().format('YYYY-MM-DDTHH:mm:ss.SSSZ'),\r\n  lastRefreshFormatted: $moment().tz(timezone).format('MMM D, YYYY h:mm:ss A'),\r\n\r\n  alarmState: {\r\n    hasAlarms: alarmCount > 0 || warningCount > 0,\r\n    alarmCount,\r\n    warningCount,\r\n    goodCount,\r\n    badQualityCount,\r\n    staleCount,\r\n    totalPoints: currentValues.length\r\n  },\r\n\r\n  currentValues,\r\n  criticalPoints,\r\n  categories: Object.keys(categories).sort(),\r\n  dpMap,\r\n\r\n  config: {\r\n    hourlyWindowDays: 7,\r\n    sparklineWindowMinutes: 60,\r\n    dataPointCount: dpNodes.length\r\n  }\r\n};",
+                "nextNodes": [
+                  "be56fc4e-7387-4370-8b75-54e11c61ed93"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Prepare current values for page"
+            },
+            "be56fc4e-7387-4370-8b75-54e11c61ed93": {
+              "id": "be56fc4e-7387-4370-8b75-54e11c61ed93",
+              "type": "transform",
+              "selected": true,
+              "x": 1010,
+              "y": 325,
+              "ports": [
+                {
+                  "id": "cmlbdzda800cy356raex4f1cf",
+                  "type": "default",
+                  "x": 1002,
+                  "y": 356.73,
+                  "name": "cmlbdzda800cz356rlb500b8j",
+                  "parentNode": "be56fc4e-7387-4370-8b75-54e11c61ed93",
+                  "links": [
+                    "c5273bd4-ff7d-461a-a725-f9838049be70"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmlbdzda800d0356ryenvs6dm",
+                  "type": "default",
+                  "x": 1156,
+                  "y": 356.73,
+                  "name": "cmlbdzda800d1356rhlm2hpzv",
+                  "parentNode": "be56fc4e-7387-4370-8b75-54e11c61ed93",
+                  "links": [
+                    "e74833c6-551f-4766-aad4-00df9f09247c"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "($data:= $;\r\n$components.Screen.fn.setContext($data))",
+                "nextNodes": [
+                  "bcc15a1d-b898-433b-93b0-b2034ecb3250"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Set Screen Context"
+            },
+            "1eedb030-54ac-409a-b722-113eb4396389": {
+              "id": "1eedb030-54ac-409a-b722-113eb4396389",
+              "type": "response",
+              "selected": true,
+              "x": 1435,
+              "y": 250,
+              "ports": [
+                {
+                  "id": "cmlbdzqcq00dq356rq8311g36",
+                  "type": "default",
+                  "x": 1427,
+                  "y": 281.72,
+                  "name": "cmlbdzqcq00dr356rmy9m368r",
+                  "parentNode": "1eedb030-54ac-409a-b722-113eb4396389",
+                  "links": [
+                    "0cb615dc-735b-4502-90e0-5a9a66c357a7"
+                  ],
+                  "in": true,
+                  "fieldLabel": "Response"
+                },
+                {
+                  "id": "cmlbdzqcq00ds356rk13fbkzb",
+                  "type": "default",
+                  "x": 1581,
+                  "y": 281.72,
+                  "name": "cmlbdzqcq00dt356ri77xh2tv",
+                  "parentNode": "1eedb030-54ac-409a-b722-113eb4396389",
+                  "links": [],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "responseTransform": "$",
+                "nextNodes": []
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Response"
+            },
+            "fc8c5322-ed05-4363-9123-52a750a372d6": {
+              "id": "fc8c5322-ed05-4363-9123-52a750a372d6",
+              "type": "executeFlow",
+              "selected": false,
+              "x": 1435,
+              "y": 370,
+              "ports": [
+                {
+                  "id": "cmlbehg9s00iu356rrhmt6uxd",
+                  "type": "default",
+                  "x": 1426.99,
+                  "y": 401.73,
+                  "name": "cmlbehg9s00iv356rp3qarb4m",
+                  "parentNode": "fc8c5322-ed05-4363-9123-52a750a372d6",
+                  "links": [
+                    "9d7697fa-f570-4b28-aa67-0bf41a3a21d3"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmlbehg9s00iw356r4rezg41l",
+                  "type": "default",
+                  "x": 1580.99,
+                  "y": 401.73,
+                  "name": "cmlbehg9s00ix356rbt3d86do",
+                  "parentNode": "fc8c5322-ed05-4363-9123-52a750a372d6",
+                  "links": [],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": []
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Execute Flow"
+            },
+            "bcc15a1d-b898-433b-93b0-b2034ecb3250": {
+              "id": "bcc15a1d-b898-433b-93b0-b2034ecb3250",
+              "type": "ifElse",
+              "selected": true,
+              "x": 1220,
+              "y": 290,
+              "ports": [
+                {
+                  "id": "cmlbekub400lx356rl7h4zput",
+                  "type": "default",
+                  "x": 1211.99,
+                  "y": 321.73,
+                  "name": "cmlbekub400ly356rb2gcz5qz",
+                  "parentNode": "bcc15a1d-b898-433b-93b0-b2034ecb3250",
+                  "links": [
+                    "e74833c6-551f-4766-aad4-00df9f09247c"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmlbekub400lz356ranjn3gkp",
+                  "type": "default",
+                  "x": 1365.99,
+                  "y": 321.73,
+                  "name": "cmlbekub400m0356r95itoswg",
+                  "parentNode": "bcc15a1d-b898-433b-93b0-b2034ecb3250",
+                  "links": [
+                    "0cb615dc-735b-4502-90e0-5a9a66c357a7"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "True",
+                  "fieldPath": "data.onTrueNextNodes"
+                },
+                {
+                  "id": "cmlbekub400m1356rbqetutu8",
+                  "type": "default",
+                  "x": 1365.99,
+                  "y": 346.88,
+                  "name": "cmlbekub400m2356ref8qqwe4",
+                  "parentNode": "bcc15a1d-b898-433b-93b0-b2034ecb3250",
+                  "links": [
+                    "9d7697fa-f570-4b28-aa67-0bf41a3a21d3"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "False",
+                  "fieldPath": "data.onFalseNextNodes"
+                }
+              ],
+              "data": {
+                "onTrueNextNodes": [
+                  "1eedb030-54ac-409a-b722-113eb4396389"
+                ],
+                "onFalseNextNodes": [
+                  "fc8c5322-ed05-4363-9123-52a750a372d6"
+                ],
+                "transform": "(\r\n  $historyLoaded := $components.Screen.context.charts.trend ? true : false\r\n)"
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "If Else"
+            }
+          }
+        }
+      ],
+      "name": "Asset Data Point Dashboard - Web Flow",
+      "type": "Screen",
+      "version": "0.0.1",
+      "walkthrough": {
+        "steps": []
+      }
+    }
+  }
+}

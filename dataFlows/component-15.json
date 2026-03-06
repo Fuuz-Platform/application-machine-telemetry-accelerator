@@ -1,0 +1,1268 @@
+{
+  "header": {
+    "id": "workcenerHistoryToOeeHourlyUpdatesOnEndAt",
+    "name": "Workcener History to OeeHourly Updates on EndAt",
+    "description": "",
+    "active": true,
+    "substitutesDataFlowId": null,
+    "dataFlowTypeId": "System",
+    "logLevelId": "Info",
+    "mcpToolConfiguration": null,
+    "moduleId": "machineDataApp",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cmkzw2enzz8z801a10ccofm7c",
+    "number": "0.0.3",
+    "description": "",
+    "dataFlowId": "workcenerHistoryToOeeHourlyUpdatesOnEndAt",
+    "flow": {
+      "id": "cmkzw2enzz8z801a10ccofm7c",
+      "name": "Workcener History to OeeHourly Updates on EndAt",
+      "type": "System",
+      "nodes": [
+        {
+          "id": "ab2b5f72-ebab-4e65-a21d-b2757ce1916c",
+          "name": "Data Changes",
+          "type": "dataChanges",
+          "data": {
+            "api": "Application",
+            "nextNodes": [
+              "6ced884a-52ed-4e7b-81c1-27f498e23d00"
+            ],
+            "type": "WorkcenterHistory",
+            "operations": [
+              "Update"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "6ced884a-52ed-4e7b-81c1-27f498e23d00",
+          "name": "Accept - Only if EndAt is new",
+          "type": "when",
+          "data": {
+            "transform": "$isNilOrEmpty($.value.before.endAt) and $.value.after.endAt != null and $isNilOrEmpty($.value.after.processedInOeeHourlyAt)",
+            "nextNodes": [
+              "6846c283-d32e-4341-ac75-41e65d95628b"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "6846c283-d32e-4341-ac75-41e65d95628b",
+          "name": "Extract History Data",
+          "type": "javascriptTransform",
+          "data": {
+            "transform": "'use strict';\r\n\r\n// Input: Data change capture from subscription\r\n// Structure: { value: { before: {}, after: {} }, topic: \"\", headers: {} }\r\n\r\n// Extract the after state from the data change event\r\nconst history = $.value.after;\r\n\r\n// Validate this is an update with endAt being set\r\nconst before = $.value.before;\r\n\r\nif (!before || !history) {\r\n  throw new Error('Missing before/after data in subscription payload');\r\n}\r\n\r\n// Only process when endAt is being set (was null, now has value)\r\nif (before.endAt !== null && before.endAt !== undefined) {\r\n  console.log(`Skipping: WorkcenterHistory ${history.id} - endAt was already set`);\r\n  return null;\r\n}\r\n\r\nif (!history.endAt) {\r\n  console.log(`Skipping: WorkcenterHistory ${history.id} - endAt still null`);\r\n  return null;\r\n}\r\n\r\n// Validate required fields exist\r\nif (!history.occurAt || !history.workcenterId) {\r\n  throw new Error(`Missing required fields in WorkcenterHistory ${history.id}`);\r\n}\r\n\r\n// Calculate duration in milliseconds and minutes\r\nconst historyStart = new Date(history.occurAt);\r\nconst historyEnd = new Date(history.endAt);\r\nconst durationMs = historyEnd - historyStart;\r\n\r\n// Validate duration is positive\r\nif (durationMs <= 0) {\r\n  throw new Error(\r\n    `Invalid duration for WorkcenterHistory ${history.id}: ` +\r\n    `endAt (${history.endAt}) must be after occurAt (${history.occurAt})`\r\n  );\r\n}\r\n\r\nconst durationMinutes = durationMs / (1000 * 60);\r\n\r\nconsole.log(\r\n  `Processing WorkcenterHistory ${history.id}: ` +\r\n  `${durationMinutes.toFixed(2)} minutes (${history.occurAt} to ${history.endAt})`\r\n);\r\n\r\n// Prepare output for next step\r\nreturn {\r\n  workcenterId: history.workcenterId,\r\n  historyId: history.id,\r\n  historyStart: history.occurAt,\r\n  historyEnd: history.endAt,\r\n  durationMs: durationMs,\r\n  durationMinutes: durationMinutes,\r\n  modeId: history.modeId,\r\n  stateId: history.stateId,\r\n  scheduleId: history.scheduleId\r\n};",
+            "nextNodes": [
+              "977b94f2-3c38-406a-a66a-e8b4bbc9c1e8"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "977b94f2-3c38-406a-a66a-e8b4bbc9c1e8",
+          "name": "store_before_mode_query",
+          "type": "setContext",
+          "data": {
+            "transform": "{\r\n  \"workcenterId\": $.workcenterId,\r\n  \"historyId\": $.historyId,\r\n  \"historyStart\": $.historyStart,\r\n  \"historyEnd\": $.historyEnd,\r\n  \"modeId\": $.modeId,\r\n  \"stateId\": $.stateId,\r\n  \"scheduleId\": $.scheduleId\r\n}",
+            "nextNodes": [
+              "ff8e8a28-1875-4c1d-a0b0-935246fdf68e"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "59919f92-07f7-4b36-8150-cd72c933f2e5",
+          "name": "Find all Affected Oee Hours & Mode Classifications",
+          "type": "query",
+          "data": {
+            "api": "application",
+            "variablesTransform": "{\r\n  \"workcenterId\": $.workcenterId,\r\n  \"historyStart\": $.historyStart,\r\n  \"historyEnd\": $.historyEnd,\r\n  \"modeId\": $.modeId\r\n\r\n}",
+            "query": "query GetModeAndAffectedHours(\r\n  $modeId: String!\r\n  $workcenterId: String!\r\n  $historyStart: DateTime!\r\n  $historyEnd: DateTime!\r\n) {\r\n  mode(where: { id: { _eq: $modeId } }) {\r\n    edges {\r\n      node {\r\n        id\r\n        code\r\n        name\r\n        countAsProductionTime\r\n        countAsDowntime\r\n        countAsPlannedDowntime\r\n        oeeImpact\r\n      }\r\n    }\r\n  }\r\n  \r\n  oeeHourly(\r\n    where: {\r\n      _and: [\r\n        { workcenterId: { _eq: $workcenterId } }\r\n        { scheduleHourStartAt: { _lt: $historyEnd } }\r\n        { scheduleHourEndAt: { _gt: $historyStart } }\r\n      ]\r\n    }\r\n    orderBy: { field: scheduleHourStartAt, direction: asc  }\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        workcenterId\r\n        periodStartAt\r\n        periodEndAt\r\n        scheduleHourStartAt\r\n        scheduleHourEndAt\r\n        runMinutes(format:  milliseconds)\r\n        setupMinutes(format: milliseconds)\r\n        downtimeMinutes(format: milliseconds)\r\n        idealCycleTime(format: milliseconds)\r\n        plannedDowntimeMinutes(format: milliseconds)\r\n        plannedMinutes(format: milliseconds)\r\n        scheduledTime(format: milliseconds)\r\n        modeChanges\r\n        stateChanges\r\n        scheduleId\r\n      }\r\n    }\r\n  }\r\n}",
+            "nextNodes": [
+              "119d5f6e-5e59-4d0b-a1be-e390259ecf9d"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "119d5f6e-5e59-4d0b-a1be-e390259ecf9d",
+          "name": "calculate_all_hour_updates and avail%",
+          "type": "javascriptTransform",
+          "data": {
+            "transform": "'use strict';\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// ISO 22400-COMPLIANT OEE HOURLY AGGREGATION\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// Processes WorkcenterHistory events and updates OeeHourly records\r\n// - Validates data integrity (prevents exceeding hour duration)\r\n// - Handles NO-SCHEDULE mode with scheduleId validation\r\n// - Classifies time according to mode (run/setup/downtime/planned downtime)\r\n// - Calculates ISO 22400 availability percentage\r\n// - Returns pure milliseconds (no ISO duration strings)\r\n// ═══════════════════════════════════════════════════════════════════════\r\n\r\n// Extract mode and hours from combined GraphQL response\r\nconst mode = $.mode?.edges?.[0]?.node;\r\nconst hours = $.oeeHourly?.edges?.map(edge => edge.node) || [];\r\n\r\n// Restore context data\r\nconst historyStart = new Date($state.context.historyStart);\r\nconst historyEnd = new Date($state.context.historyEnd);\r\n\r\n// Validate mode exists\r\nif (!mode) {\r\n  console.error(`Mode ${$state.context.modeId} not found - skipping history ${$state.context.historyId}`);\r\n  return { skip: true, reason: 'mode_not_found' };\r\n}\r\n\r\n// Validate hours found\r\nif (hours.length === 0) {\r\n  console.log(`No OeeHourly records found for workcenter ${$state.context.workcenterId} - no updates needed`);\r\n  return { skip: true, reason: 'no_hourly_records_found' };\r\n}\r\n\r\nconsole.log(`Processing mode ${mode.code} (${mode.name}) affecting ${hours.length} hours`);\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// CRITICAL HELPER: Extract pure milliseconds from any duration format\r\n// Handles edge case where GraphQL returns strings even with (format: milliseconds)\r\n// ═══════════════════════════════════════════════════════════════════════\r\nfunction extractMilliseconds(duration) {\r\n  // Null/undefined check\r\n  if (!duration && duration !== 0) return 0;\r\n  \r\n  // Already a number - return as-is\r\n  if (typeof duration === 'number') {\r\n    return Math.floor(duration);\r\n  }\r\n  \r\n  // Duration object with milliseconds property\r\n  if (typeof duration === 'object' && duration !== null && duration.milliseconds !== undefined) {\r\n    return Math.floor(duration.milliseconds);\r\n  }\r\n  \r\n  // String - could be ISO duration or numeric string\r\n  if (typeof duration === 'string') {\r\n    // Check if it's an ISO duration string (starts with PT)\r\n    if (duration.startsWith('PT')) {\r\n      try {\r\n        const ms = $momentDuration(duration).asMilliseconds();\r\n        return Math.floor(ms);\r\n      } catch (e) {\r\n        console.warn('Failed to parse ISO duration string: \"' + duration + '\", error: ' + e.message);\r\n        return 0;\r\n      }\r\n    }\r\n    \r\n    // Check if it's a numeric string (e.g., \"3600000\")\r\n    const parsed = parseFloat(duration);\r\n    if (!isNaN(parsed)) {\r\n      return Math.floor(parsed);\r\n    }\r\n    \r\n    console.warn('Unknown string duration format: \"' + duration + '\"');\r\n    return 0;\r\n  }\r\n  \r\n  // Unknown type\r\n  console.warn('Unknown duration type: ' + typeof duration + ', value: ' + JSON.stringify(duration));\r\n  return 0;\r\n}\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// BUILD UPDATE PAYLOADS\r\n// ═══════════════════════════════════════════════════════════════════════\r\nconst payload = hours.map(hour => {\r\n  const scheduleStart = new Date(hour.scheduleHourStartAt);\r\n  const scheduleEnd = new Date(hour.scheduleHourEndAt);\r\n  \r\n  // Calculate the TOTAL duration of this OEE hour (the absolute maximum)\r\n  const hourTotalDurationMs = scheduleEnd - scheduleStart;\r\n  \r\n  if (hourTotalDurationMs <= 0) {\r\n    console.error(`Invalid hour duration for ${hour.id}: scheduleHourEndAt must be after scheduleHourStartAt`);\r\n    return null;\r\n  }\r\n  \r\n  // Calculate overlap between history and schedule hour\r\n  const overlapStart = historyStart > scheduleStart ? historyStart : scheduleStart;\r\n  const overlapEnd = historyEnd < scheduleEnd ? historyEnd : scheduleEnd;\r\n  const overlapMs = overlapEnd - overlapStart;\r\n  \r\n  if (overlapMs <= 0) {\r\n    return null; // No overlap\r\n  }\r\n  \r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  // EXTRACT PURE MILLISECONDS - Handles strings, objects, and numbers\r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  const currentRunMs = extractMilliseconds(hour.runMinutes);\r\n  const currentSetupMs = extractMilliseconds(hour.setupMinutes);\r\n  const currentDowntimeMs = extractMilliseconds(hour.downtimeMinutes);\r\n  const currentPlannedDowntimeMs = extractMilliseconds(hour.plannedDowntimeMinutes);\r\n  const plannedMinutesMs = extractMilliseconds(hour.plannedMinutes);\r\n  const scheduledTimeMs = extractMilliseconds(hour.scheduledTime);\r\n  const currentModeChanges = hour.modeChanges || 0;\r\n  const currentStateChanges = hour.stateChanges || 0;\r\n  \r\n  // Calculate currently accounted time\r\n  const currentTotalAccountedMs = currentRunMs + currentSetupMs + currentDowntimeMs + currentPlannedDowntimeMs;\r\n  \r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  // CRITICAL PRE-FLIGHT CHECK: Validate existing data integrity\r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  if (currentTotalAccountedMs > hourTotalDurationMs) {\r\n    const excessMs = currentTotalAccountedMs - hourTotalDurationMs;\r\n    console.error(\r\n      `DATA INTEGRITY ERROR: Hour ${hour.id} ALREADY EXCEEDS duration! ` +\r\n      `Current total: ${(currentTotalAccountedMs/60000).toFixed(2)}min ` +\r\n      `(Run: ${(currentRunMs/60000).toFixed(2)}, ` +\r\n      `Setup: ${(currentSetupMs/60000).toFixed(2)}, ` +\r\n      `Downtime: ${(currentDowntimeMs/60000).toFixed(2)}, ` +\r\n      `PlannedDT: ${(currentPlannedDowntimeMs/60000).toFixed(2)}) ` +\r\n      `exceeds hour duration ${(hourTotalDurationMs/60000).toFixed(2)}min by ${(excessMs/60000).toFixed(2)}min. ` +\r\n      `REFUSING to add more time.`\r\n    );\r\n    return null;\r\n  }\r\n  \r\n  // Calculate remaining capacity\r\n  const remainingCapacityMs = hourTotalDurationMs - currentTotalAccountedMs;\r\n  \r\n  if (remainingCapacityMs === 0) {\r\n    console.log(`Hour ${hour.id} is 100% accounted - no capacity for additional time`);\r\n    return null;\r\n  }\r\n  \r\n  console.log(\r\n    `Hour ${hour.id} current state: ${(currentTotalAccountedMs/60000).toFixed(2)}/${(hourTotalDurationMs/60000).toFixed(2)}min ` +\r\n    `(${(currentTotalAccountedMs/hourTotalDurationMs*100).toFixed(1)}%), ` +\r\n    `remaining: ${(remainingCapacityMs/60000).toFixed(2)}min`\r\n  );\r\n  \r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  // SPECIAL HANDLING FOR NO-SCHEDULE MODE\r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  let effectiveMode = mode;\r\n  if (mode.code === 'NO-SCHEDULE' || mode.id === 'no-schedule') {\r\n    if (hour.scheduleId) {\r\n      console.warn(\r\n        `Hour ${hour.id} has scheduleId ${hour.scheduleId} but workcenter is in NO-SCHEDULE mode - ` +\r\n        `treating as UNPLANNED DOWNTIME`\r\n      );\r\n      effectiveMode = {\r\n        ...mode,\r\n        countAsProductionTime: true,\r\n        countAsDowntime: true,\r\n        countAsPlannedDowntime: false,\r\n        code: 'NO-SCHEDULE-MISCLASS'\r\n      };\r\n    } else {\r\n      console.log(`Hour ${hour.id} has no scheduleId and mode is NO-SCHEDULE - excluding from accumulation`);\r\n      return null;\r\n    }\r\n  }\r\n  \r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  // DETERMINE CLASSIFICATION BASED ON MODE\r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  let runIncrement = 0;\r\n  let setupIncrement = 0;\r\n  let downtimeIncrement = 0;\r\n  let plannedDowntimeIncrement = 0;\r\n  \r\n  if (effectiveMode.countAsPlannedDowntime) {\r\n    // MAINT, ENG - Planned downtime (excluded from OEE)\r\n    plannedDowntimeIncrement = overlapMs;\r\n    console.log(`Mode ${effectiveMode.code}: Planned downtime - excluded from OEE`);\r\n  } else if (!effectiveMode.countAsProductionTime) {\r\n    // Outside production entirely (shouldn't reach here after NO-SCHEDULE handling)\r\n    console.log(`Mode ${effectiveMode.code}: Outside production time - no accumulation`);\r\n    return null;\r\n  } else {\r\n    // Within production time\r\n    if (effectiveMode.countAsDowntime) {\r\n      // DISABLED, OFF, or misclassified NO-SCHEDULE\r\n      downtimeIncrement = overlapMs;\r\n    } else if (effectiveMode.code === 'PROD') {\r\n      runIncrement = overlapMs;\r\n    } else if (['SETUP', 'CLEAN', 'CLEANING', 'IDLE'].includes(effectiveMode.code)) {\r\n      setupIncrement = overlapMs;\r\n    } else {\r\n      setupIncrement = overlapMs; // Default to setup\r\n    }\r\n  }\r\n  \r\n  // Calculate total increment\r\n  const totalIncrementMs = runIncrement + setupIncrement + downtimeIncrement + plannedDowntimeIncrement;\r\n  \r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  // CAPACITY CHECK: Will this increment fit?\r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  if (totalIncrementMs > remainingCapacityMs) {\r\n    const excessMs = totalIncrementMs - remainingCapacityMs;\r\n    \r\n    console.warn(\r\n      `CAPACITY WARNING: Hour ${hour.id} - requested ${(totalIncrementMs/60000).toFixed(2)}min ` +\r\n      `but only ${(remainingCapacityMs/60000).toFixed(2)}min remaining. ` +\r\n      `Excess: ${(excessMs/60000).toFixed(2)}min. Capping proportionally.`\r\n    );\r\n    \r\n    // Proportionally reduce all increments to fit exactly\r\n    const scaleFactor = remainingCapacityMs / totalIncrementMs;\r\n    \r\n    runIncrement = Math.floor(runIncrement * scaleFactor);\r\n    setupIncrement = Math.floor(setupIncrement * scaleFactor);\r\n    downtimeIncrement = Math.floor(downtimeIncrement * scaleFactor);\r\n    plannedDowntimeIncrement = Math.floor(plannedDowntimeIncrement * scaleFactor);\r\n    \r\n    // Assign any rounding remainder to the largest increment\r\n    const adjustedTotal = runIncrement + setupIncrement + downtimeIncrement + plannedDowntimeIncrement;\r\n    const remainder = remainingCapacityMs - adjustedTotal;\r\n    \r\n    if (remainder > 0) {\r\n      if (runIncrement >= setupIncrement && runIncrement >= downtimeIncrement && runIncrement >= plannedDowntimeIncrement) {\r\n        runIncrement += remainder;\r\n      } else if (setupIncrement >= downtimeIncrement && setupIncrement >= plannedDowntimeIncrement) {\r\n        setupIncrement += remainder;\r\n      } else if (downtimeIncrement >= plannedDowntimeIncrement) {\r\n        downtimeIncrement += remainder;\r\n      } else {\r\n        plannedDowntimeIncrement += remainder;\r\n      }\r\n    }\r\n  }\r\n  \r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  // CALCULATE NEW TOTALS - ENSURE PURE NUMBERS\r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  const newRunMs = Math.floor(currentRunMs + runIncrement);\r\n  const newSetupMs = Math.floor(currentSetupMs + setupIncrement);\r\n  const newDowntimeMs = Math.floor(currentDowntimeMs + downtimeIncrement);\r\n  const newPlannedDowntimeMs = Math.floor(currentPlannedDowntimeMs + plannedDowntimeIncrement);\r\n  \r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  // FINAL VALIDATION: Absolute guarantee we don't exceed\r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  const finalTotalMs = newRunMs + newSetupMs + newDowntimeMs + newPlannedDowntimeMs;\r\n  \r\n  if (finalTotalMs > hourTotalDurationMs) {\r\n    const excessMs = finalTotalMs - hourTotalDurationMs;\r\n    console.error(\r\n      `CRITICAL LOGIC ERROR: Hour ${hour.id} final total ${(finalTotalMs/60000).toFixed(4)}min ` +\r\n      `exceeds duration ${(hourTotalDurationMs/60000).toFixed(4)}min by ${(excessMs/1000).toFixed(4)}s! ` +\r\n      `This indicates a bug in the capping logic. REFUSING UPDATE.`\r\n    );\r\n    return null;\r\n  }\r\n  \r\n  // Verify our increment was within allowed capacity\r\n  const actualIncrementMs = finalTotalMs - currentTotalAccountedMs;\r\n  if (actualIncrementMs > remainingCapacityMs) {\r\n    console.error(\r\n      `CRITICAL LOGIC ERROR: Increment ${(actualIncrementMs/60000).toFixed(4)}min ` +\r\n      `exceeds remaining capacity ${(remainingCapacityMs/60000).toFixed(4)}min. REFUSING UPDATE.`\r\n    );\r\n    return null;\r\n  }\r\n  \r\n  // Calculate accounting percentage\r\n  const percentAccounted = (finalTotalMs / hourTotalDurationMs * 100).toFixed(1);\r\n  \r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  // ISO 22400-2 AVAILABILITY CALCULATION\r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  // Availability = (Planned Production Time - Downtime) / Planned Production Time\r\n  // Where: Planned Production Time = Scheduled Time - Planned Downtime\r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  let newAvailability = null;\r\n  let calculatedPlannedMinutesMs = plannedMinutesMs;\r\n  \r\n  // If plannedMinutes is not pre-calculated, derive it\r\n  if (!calculatedPlannedMinutesMs && scheduledTimeMs > 0) {\r\n    calculatedPlannedMinutesMs = scheduledTimeMs - newPlannedDowntimeMs;\r\n  }\r\n  \r\n  if (calculatedPlannedMinutesMs > 0) {\r\n    const actualProductionTimeMs = calculatedPlannedMinutesMs - newDowntimeMs;\r\n    newAvailability = actualProductionTimeMs / calculatedPlannedMinutesMs;\r\n    \r\n    // Clamp to 0-1 range\r\n    if (newAvailability < 0) newAvailability = 0;\r\n    if (newAvailability > 1) newAvailability = 1;\r\n  }\r\n  \r\n  console.log(\r\n    `✓ Hour ${hour.id}: +${(actualIncrementMs/60000).toFixed(2)}min ${effectiveMode.code} ` +\r\n    `(R:${(runIncrement/60000).toFixed(2)} S:${(setupIncrement/60000).toFixed(2)} ` +\r\n    `D:${(downtimeIncrement/60000).toFixed(2)} PD:${(plannedDowntimeIncrement/60000).toFixed(2)}) | ` +\r\n    `Total: ${(finalTotalMs/60000).toFixed(2)}/${(hourTotalDurationMs/60000).toFixed(2)}min (${percentAccounted}%) | ` +\r\n    `Avail: ${newAvailability !== null ? (newAvailability * 100).toFixed(1) + '%' : 'N/A'}`\r\n  );\r\n  \r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  // BUILD UPDATE PAYLOAD - PURE NUMBERS ONLY (milliseconds)\r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  const update = {\r\n    runMinutes: newRunMs,                          // Pure number (milliseconds)\r\n    setupMinutes: newSetupMs,                      // Pure number (milliseconds)\r\n    downtimeMinutes: newDowntimeMs,                // Pure number (milliseconds)\r\n    plannedDowntimeMinutes: newPlannedDowntimeMs,  // Pure number (milliseconds)\r\n    modeChanges: currentModeChanges + 1,\r\n    stateChanges: currentStateChanges + 1\r\n  };\r\n  \r\n  if (newAvailability !== null) {\r\n    update.availability = newAvailability;\r\n  }\r\n  \r\n  // Final type verification\r\n  if (typeof update.runMinutes !== 'number' || isNaN(update.runMinutes)) {\r\n    console.error(`ERROR: runMinutes is ${typeof update.runMinutes}, not number!`);\r\n    return null;\r\n  }\r\n  if (typeof update.setupMinutes !== 'number' || isNaN(update.setupMinutes)) {\r\n    console.error(`ERROR: setupMinutes is ${typeof update.setupMinutes}, not number!`);\r\n    return null;\r\n  }\r\n  if (typeof update.downtimeMinutes !== 'number' || isNaN(update.downtimeMinutes)) {\r\n    console.error(`ERROR: downtimeMinutes is ${typeof update.downtimeMinutes}, not number!`);\r\n    return null;\r\n  }\r\n  if (typeof update.plannedDowntimeMinutes !== 'number' || isNaN(update.plannedDowntimeMinutes)) {\r\n    console.error(`ERROR: plannedDowntimeMinutes is ${typeof update.plannedDowntimeMinutes}, not number!`);\r\n    return null;\r\n  }\r\n  \r\n  return {\r\n    hourId: hour.id,\r\n    where: { id: hour.id },\r\n    update: update\r\n  };\r\n}).filter(Boolean);\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// CREATE MUTEX LOCK KEY AND FINALIZE PAYLOAD\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// Create mutex lock key from sorted hour IDs (prevents concurrent updates)\r\nconst mutexLockKey = payload.map(p => p.hourId).join(':');\r\n\r\nconsole.log(`✓ Prepared ${payload.length} hour updates with guaranteed duration compliance`);\r\nconsole.log(`Mutex lock key: ${mutexLockKey}`);\r\n\r\n// Remove hourId from payload (not needed in mutation)\r\nconst cleanPayload = payload.map(({ hourId, ...rest }) => rest);\r\n\r\n// Final debug log - show sample output\r\nif (cleanPayload.length > 0) {\r\n  console.log('=== SAMPLE OUTPUT ===');\r\n  console.log(JSON.stringify(cleanPayload[0], null, 2));\r\n  console.log('=====================');\r\n}\r\n\r\nreturn {\r\n  payload: cleanPayload,\r\n  mutexLockKey: mutexLockKey,\r\n  historyId: $state.context.historyId\r\n};",
+            "nextNodes": [
+              "214bf925-df57-48c9-949c-cb0f90402bcb"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "214bf925-df57-48c9-949c-cb0f90402bcb",
+          "name": "Set Context WC History to Update",
+          "type": "setContext",
+          "data": {
+            "transform": "{\r\n  \"historyId\": $.historyId\r\n}",
+            "nextNodes": [
+              "7d015d25-3fff-4bea-a3ab-84eac88e539f"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "7d015d25-3fff-4bea-a3ab-84eac88e539f",
+          "name": "bulk_update_oee_hourly",
+          "type": "mutate",
+          "data": {
+            "api": "Application",
+            "variablesTransform": "{\r\n  \"payload\": [$.payload]\r\n}",
+            "mutation": "mutation UpdateOeeHourly($payload: [OeeHourlyUpdatePayloadInput!]!) {\r\n  updateOeeHourly(payload: $payload) {\r\n    id\r\n    runMinutes\r\n    setupMinutes\r\n    downtimeMinutes\r\n    modeChanges\r\n    stateChanges\r\n    availability\r\n  }\r\n}",
+            "nextNodes": [
+              "9a01a12e-b1d3-4215-88c9-d6772cf64408"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": true,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "9a01a12e-b1d3-4215-88c9-d6772cf64408",
+          "name": "Mutex Unlock",
+          "type": "mutexUnlock",
+          "data": {
+            "nextNodes": [
+              "083fc81a-a3c9-4c55-989b-246b6b1f0e56"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "083fc81a-a3c9-4c55-989b-246b6b1f0e56",
+          "name": "Mark Workcenter History as Processed",
+          "type": "mutate",
+          "data": {
+            "api": "Application",
+            "variablesTransform": "{\r\n  \"payload\": [\r\n    {\r\n      \"where\": {\r\n        \"id\": $state.context.historyId\r\n      },\r\n      \"update\": {\r\n        \"processedInOeeHourlyAt\": $now()\r\n      }\r\n    }\r\n  ]\r\n}",
+            "mutation": "mutation MarkHistoryProcessed($payload: [WorkcenterHistoryUpdatePayloadInput!]!) {\r\n  updateWorkcenterHistory(payload: $payload) {\r\n    id\r\n    processedInOeeHourlyAt\r\n  }\r\n}",
+            "nextNodes": []
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "ff8e8a28-1875-4c1d-a0b0-935246fdf68e",
+          "name": "Mutex Lock",
+          "type": "mutexLock",
+          "data": {
+            "lockTTLms": 30000,
+            "lockRetries": -1,
+            "throwErrorWhenLockNotAcquired": false,
+            "nextNodes": [
+              "59919f92-07f7-4b36-8150-cd72c933f2e5"
+            ],
+            "resourceIdTransform": "$.workcenterId"
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        }
+      ],
+      "version": "0.0.2"
+    },
+    "diagram": {
+      "id": "cmkzw2enzz8z801a10ccofm7c",
+      "offsetX": -428.63,
+      "offsetY": -72.98,
+      "zoom": 73.34,
+      "gridSize": 5,
+      "layers": [
+        {
+          "id": "960484fe-f21a-4e7d-aaf2-0d779b7c5c74",
+          "type": "diagram-links",
+          "isSvg": true,
+          "transformed": true,
+          "models": {
+            "adbc5ecd-ddab-434b-8117-4d64417b0759": {
+              "points": [
+                {
+                  "id": "67dd435b-8535-464b-9193-049ec42fea10",
+                  "type": "point",
+                  "x": 419,
+                  "y": 444.73
+                },
+                {
+                  "id": "98de3d0c-31bd-4f4d-bb1a-d9f048893020",
+                  "type": "point",
+                  "x": 470,
+                  "y": 364.73
+                }
+              ],
+              "id": "adbc5ecd-ddab-434b-8117-4d64417b0759",
+              "type": "default",
+              "selected": false,
+              "source": "ab2b5f72-ebab-4e65-a21d-b2757ce1916c",
+              "sourcePort": "cmkwl1x2h004h356r2r6ivoxj",
+              "target": "6ced884a-52ed-4e7b-81c1-27f498e23d00",
+              "targetPort": "cmkwl2nxb0078356ruvlnsbrw",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "8b3b30e9-aecb-4740-b50f-85a19b026bf5": {
+              "points": [
+                {
+                  "id": "1aac2bdc-a2ce-45ab-8714-3fec8863ff8a",
+                  "type": "point",
+                  "x": 419,
+                  "y": 324.73
+                },
+                {
+                  "id": "45c378a2-3c5e-4fb5-a23c-d75e387ccb9f",
+                  "type": "point",
+                  "x": 470,
+                  "y": 364.73
+                }
+              ],
+              "id": "8b3b30e9-aecb-4740-b50f-85a19b026bf5",
+              "type": "default",
+              "selected": false,
+              "source": "47f0f28e-5ea3-4185-87a0-ace4b9a4a107",
+              "sourcePort": "cmkwkytn6004f356rcai3ca8i",
+              "target": "6ced884a-52ed-4e7b-81c1-27f498e23d00",
+              "targetPort": "cmkwl2nxb0078356ruvlnsbrw",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "7b1103dd-d2c8-4c0d-872d-4da98e9b3b98": {
+              "points": [
+                {
+                  "id": "e568b6b8-91a9-48d7-b64c-0c626657326d",
+                  "type": "point",
+                  "x": 889,
+                  "y": 324.73
+                },
+                {
+                  "id": "04d0bca9-32fe-40d2-b186-cf5ca5c51d30",
+                  "type": "point",
+                  "x": 975,
+                  "y": 314.73
+                }
+              ],
+              "id": "7b1103dd-d2c8-4c0d-872d-4da98e9b3b98",
+              "type": "default",
+              "selected": false,
+              "source": "6846c283-d32e-4341-ac75-41e65d95628b",
+              "sourcePort": "cmkwnpqaz00bx356r21zmd6ih",
+              "target": "977b94f2-3c38-406a-a66a-e8b4bbc9c1e8",
+              "targetPort": "cmkwojqy2003p356rapyfw6o7",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "d50813ac-0c72-4bcf-84f2-b4165c84235d": {
+              "points": [
+                {
+                  "id": "363ed494-1c86-4945-90d0-c777ec2be5ff",
+                  "type": "point",
+                  "x": 1732.25,
+                  "y": 359.73
+                },
+                {
+                  "id": "1a6eef07-984c-4d65-a9cc-00c7fe57792f",
+                  "type": "point",
+                  "x": 1540,
+                  "y": 479.73
+                }
+              ],
+              "id": "d50813ac-0c72-4bcf-84f2-b4165c84235d",
+              "type": "default",
+              "selected": false,
+              "source": "59919f92-07f7-4b36-8150-cd72c933f2e5",
+              "sourcePort": "cmkwoyesr008v356rygci731m",
+              "target": "119d5f6e-5e59-4d0b-a1be-e390259ecf9d",
+              "targetPort": "cmkwpa1n800fe356rd8vjrxek",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "2186a26a-7500-417c-bf30-4334e5a34bca": {
+              "points": [
+                {
+                  "id": "78295928-67e0-40cd-ad86-3e1c8478e30a",
+                  "type": "point",
+                  "x": 1792.09,
+                  "y": 479.73
+                },
+                {
+                  "id": "9a047787-04fc-423a-ae04-64c0e04a810a",
+                  "type": "point",
+                  "x": 1230,
+                  "y": 589.73
+                }
+              ],
+              "id": "2186a26a-7500-417c-bf30-4334e5a34bca",
+              "type": "default",
+              "selected": false,
+              "source": "119d5f6e-5e59-4d0b-a1be-e390259ecf9d",
+              "sourcePort": "cmkwpa1n800fg356rmxkp3ybo",
+              "target": "214bf925-df57-48c9-949c-cb0f90402bcb",
+              "targetPort": "cmkwplvhi00ih356riy4csynf",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "035e7828-f5e2-48da-921a-1d0da990c30e": {
+              "points": [
+                {
+                  "id": "4682fd7f-cbca-4b3a-bafe-fbfe1bea67b9",
+                  "type": "point",
+                  "x": 1394.61,
+                  "y": 769.73
+                },
+                {
+                  "id": "2ba96447-9746-4a0e-938e-c69ddb0f40bf",
+                  "type": "point",
+                  "x": 1420,
+                  "y": 844.73
+                }
+              ],
+              "id": "035e7828-f5e2-48da-921a-1d0da990c30e",
+              "type": "default",
+              "selected": false,
+              "source": "7d015d25-3fff-4bea-a3ab-84eac88e539f",
+              "sourcePort": "cmkwpmm1g00jn356r6s213byl",
+              "target": "9a01a12e-b1d3-4215-88c9-d6772cf64408",
+              "targetPort": "cmkwpq39700kh356r34uh4vtx",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "c127738b-0fe8-40e3-b5d3-5472b685e1f0": {
+              "points": [
+                {
+                  "id": "b42c6455-0004-45a4-9c85-7ae4aeb94325",
+                  "type": "point",
+                  "x": 1574,
+                  "y": 844.73
+                },
+                {
+                  "id": "4e56a934-e25e-4294-95fd-379a5f1a237a",
+                  "type": "point",
+                  "x": 1645,
+                  "y": 844.73
+                }
+              ],
+              "id": "c127738b-0fe8-40e3-b5d3-5472b685e1f0",
+              "type": "default",
+              "selected": false,
+              "source": "9a01a12e-b1d3-4215-88c9-d6772cf64408",
+              "sourcePort": "cmkwpq39700kj356rstfhnt3z",
+              "target": "083fc81a-a3c9-4c55-989b-246b6b1f0e56",
+              "targetPort": "cmkwpqb1000kq356r244ekti9",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "d7a1659d-2c57-4904-bd26-6b870dfa12ad": {
+              "points": [
+                {
+                  "id": "de20a203-8dce-4f34-af03-ad80e8adf767",
+                  "type": "point",
+                  "x": 669.77,
+                  "y": 364.73
+                },
+                {
+                  "id": "76e0f984-fbf6-4435-8b9f-58d4af51e4d1",
+                  "type": "point",
+                  "x": 735,
+                  "y": 324.73
+                }
+              ],
+              "id": "d7a1659d-2c57-4904-bd26-6b870dfa12ad",
+              "type": "default",
+              "selected": false,
+              "source": "6ced884a-52ed-4e7b-81c1-27f498e23d00",
+              "sourcePort": "cmkwl2nxb007a356rv6d2vpi5",
+              "target": "6846c283-d32e-4341-ac75-41e65d95628b",
+              "targetPort": "cmkwnpqaz00bv356r1thj7z9q",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "ba465ba4-f815-418f-813d-71869ee15ef2": {
+              "points": [
+                {
+                  "id": "7f4b15e2-1d12-4e06-9641-23134cee4991",
+                  "type": "point",
+                  "x": 1159.88,
+                  "y": 314.73
+                },
+                {
+                  "id": "038fa3d4-6ae2-4704-856f-68e1f32199bf",
+                  "type": "point",
+                  "x": 1200,
+                  "y": 394.73
+                }
+              ],
+              "id": "ba465ba4-f815-418f-813d-71869ee15ef2",
+              "type": "default",
+              "selected": false,
+              "source": "977b94f2-3c38-406a-a66a-e8b4bbc9c1e8",
+              "sourcePort": "cmkwojqy2003r356r8y0h3640",
+              "target": "ff8e8a28-1875-4c1d-a0b0-935246fdf68e",
+              "targetPort": "cmkwua27a007e356r64p637ww",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "0cae53a0-8d09-486b-98d0-cc389a911c2c": {
+              "points": [
+                {
+                  "id": "760b4ebe-950c-43e7-8598-7538e7a1e340",
+                  "type": "point",
+                  "x": 1354,
+                  "y": 394.73
+                },
+                {
+                  "id": "826fe5a4-743a-4c96-9af6-2ed6dda4fdfb",
+                  "type": "point",
+                  "x": 1410,
+                  "y": 359.73
+                }
+              ],
+              "id": "0cae53a0-8d09-486b-98d0-cc389a911c2c",
+              "type": "default",
+              "selected": false,
+              "source": "ff8e8a28-1875-4c1d-a0b0-935246fdf68e",
+              "sourcePort": "cmkwua27a007g356r5gqpwfzv",
+              "target": "59919f92-07f7-4b36-8150-cd72c933f2e5",
+              "targetPort": "cmkwoyesr008t356reqb46f3w",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "284b8c2e-7221-4154-88f7-3ba0037e7e78": {
+              "points": [
+                {
+                  "id": "f379fc16-c7d5-4c85-b3d8-b27d67bc513b",
+                  "type": "point",
+                  "x": 1457.13,
+                  "y": 589.73
+                },
+                {
+                  "id": "5f733968-0d27-4124-95e3-953b173571e4",
+                  "type": "point",
+                  "x": 1220,
+                  "y": 769.73
+                }
+              ],
+              "id": "284b8c2e-7221-4154-88f7-3ba0037e7e78",
+              "type": "default",
+              "selected": false,
+              "source": "214bf925-df57-48c9-949c-cb0f90402bcb",
+              "sourcePort": "cmkwplvhi00ij356rf5c04391",
+              "target": "7d015d25-3fff-4bea-a3ab-84eac88e539f",
+              "targetPort": "cmkwpmm1g00jl356rg09pjqrp",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            }
+          }
+        },
+        {
+          "id": "e522016c-09a3-4211-8650-99193be33cd6",
+          "type": "diagram-nodes",
+          "isSvg": false,
+          "transformed": true,
+          "models": {
+            "47f0f28e-5ea3-4185-87a0-ace4b9a4a107": {
+              "id": "47f0f28e-5ea3-4185-87a0-ace4b9a4a107",
+              "type": "debugSource",
+              "selected": false,
+              "x": 265,
+              "y": 285,
+              "ports": [
+                {
+                  "id": "cmkwkytn6004f356rcai3ca8i",
+                  "type": "default",
+                  "x": 411,
+                  "y": 316.73,
+                  "name": "cmkwkytn6004g356ra8n542nn",
+                  "parentNode": "47f0f28e-5ea3-4185-87a0-ace4b9a4a107",
+                  "links": [
+                    "8b3b30e9-aecb-4740-b50f-85a19b026bf5"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "payload": {},
+                "context": {},
+                "nextNodes": [
+                  "6ced884a-52ed-4e7b-81c1-27f498e23d00"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Source"
+            },
+            "ab2b5f72-ebab-4e65-a21d-b2757ce1916c": {
+              "id": "ab2b5f72-ebab-4e65-a21d-b2757ce1916c",
+              "type": "dataChanges",
+              "selected": false,
+              "x": 265,
+              "y": 405,
+              "ports": [
+                {
+                  "id": "cmkwl1x2h004h356r2r6ivoxj",
+                  "type": "default",
+                  "x": 411,
+                  "y": 436.73,
+                  "name": "cmkwl1x2i004i356rdn4lbfno",
+                  "parentNode": "ab2b5f72-ebab-4e65-a21d-b2757ce1916c",
+                  "links": [
+                    "adbc5ecd-ddab-434b-8117-4d64417b0759"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Message",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "Application",
+                "nextNodes": [
+                  "6ced884a-52ed-4e7b-81c1-27f498e23d00"
+                ],
+                "type": "WorkcenterHistory",
+                "operations": [
+                  "Update"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Data Changes"
+            },
+            "6ced884a-52ed-4e7b-81c1-27f498e23d00": {
+              "id": "6ced884a-52ed-4e7b-81c1-27f498e23d00",
+              "type": "when",
+              "selected": false,
+              "x": 470,
+              "y": 325,
+              "ports": [
+                {
+                  "id": "cmkwl2nxb0078356ruvlnsbrw",
+                  "type": "default",
+                  "x": 462,
+                  "y": 356.73,
+                  "name": "cmkwl2nxb0079356rmgk0u2s5",
+                  "parentNode": "6ced884a-52ed-4e7b-81c1-27f498e23d00",
+                  "links": [
+                    "adbc5ecd-ddab-434b-8117-4d64417b0759",
+                    "8b3b30e9-aecb-4740-b50f-85a19b026bf5"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkwl2nxb007a356rv6d2vpi5",
+                  "type": "default",
+                  "x": 661.77,
+                  "y": 356.73,
+                  "name": "cmkwl2nxb007b356r1hcekisf",
+                  "parentNode": "6ced884a-52ed-4e7b-81c1-27f498e23d00",
+                  "links": [
+                    "d7a1659d-2c57-4904-bd26-6b870dfa12ad"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "$isNilOrEmpty($.value.before.endAt) and $.value.after.endAt != null and $isNilOrEmpty($.value.after.processedInOeeHourlyAt)",
+                "nextNodes": [
+                  "6846c283-d32e-4341-ac75-41e65d95628b"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Accept - Only if EndAt is new"
+            },
+            "6846c283-d32e-4341-ac75-41e65d95628b": {
+              "id": "6846c283-d32e-4341-ac75-41e65d95628b",
+              "type": "javascriptTransform",
+              "selected": false,
+              "x": 735,
+              "y": 285,
+              "ports": [
+                {
+                  "id": "cmkwnpqaz00bv356r1thj7z9q",
+                  "type": "default",
+                  "x": 727,
+                  "y": 316.73,
+                  "name": "cmkwnpqaz00bw356rz6unu950",
+                  "parentNode": "6846c283-d32e-4341-ac75-41e65d95628b",
+                  "links": [
+                    "d7a1659d-2c57-4904-bd26-6b870dfa12ad"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkwnpqaz00bx356r21zmd6ih",
+                  "type": "default",
+                  "x": 881,
+                  "y": 316.73,
+                  "name": "cmkwnpqaz00by356rmyhdua01",
+                  "parentNode": "6846c283-d32e-4341-ac75-41e65d95628b",
+                  "links": [
+                    "7b1103dd-d2c8-4c0d-872d-4da98e9b3b98"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "'use strict';\r\n\r\n// Input: Data change capture from subscription\r\n// Structure: { value: { before: {}, after: {} }, topic: \"\", headers: {} }\r\n\r\n// Extract the after state from the data change event\r\nconst history = $.value.after;\r\n\r\n// Validate this is an update with endAt being set\r\nconst before = $.value.before;\r\n\r\nif (!before || !history) {\r\n  throw new Error('Missing before/after data in subscription payload');\r\n}\r\n\r\n// Only process when endAt is being set (was null, now has value)\r\nif (before.endAt !== null && before.endAt !== undefined) {\r\n  console.log(`Skipping: WorkcenterHistory ${history.id} - endAt was already set`);\r\n  return null;\r\n}\r\n\r\nif (!history.endAt) {\r\n  console.log(`Skipping: WorkcenterHistory ${history.id} - endAt still null`);\r\n  return null;\r\n}\r\n\r\n// Validate required fields exist\r\nif (!history.occurAt || !history.workcenterId) {\r\n  throw new Error(`Missing required fields in WorkcenterHistory ${history.id}`);\r\n}\r\n\r\n// Calculate duration in milliseconds and minutes\r\nconst historyStart = new Date(history.occurAt);\r\nconst historyEnd = new Date(history.endAt);\r\nconst durationMs = historyEnd - historyStart;\r\n\r\n// Validate duration is positive\r\nif (durationMs <= 0) {\r\n  throw new Error(\r\n    `Invalid duration for WorkcenterHistory ${history.id}: ` +\r\n    `endAt (${history.endAt}) must be after occurAt (${history.occurAt})`\r\n  );\r\n}\r\n\r\nconst durationMinutes = durationMs / (1000 * 60);\r\n\r\nconsole.log(\r\n  `Processing WorkcenterHistory ${history.id}: ` +\r\n  `${durationMinutes.toFixed(2)} minutes (${history.occurAt} to ${history.endAt})`\r\n);\r\n\r\n// Prepare output for next step\r\nreturn {\r\n  workcenterId: history.workcenterId,\r\n  historyId: history.id,\r\n  historyStart: history.occurAt,\r\n  historyEnd: history.endAt,\r\n  durationMs: durationMs,\r\n  durationMinutes: durationMinutes,\r\n  modeId: history.modeId,\r\n  stateId: history.stateId,\r\n  scheduleId: history.scheduleId\r\n};",
+                "nextNodes": [
+                  "977b94f2-3c38-406a-a66a-e8b4bbc9c1e8"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Extract History Data"
+            },
+            "977b94f2-3c38-406a-a66a-e8b4bbc9c1e8": {
+              "id": "977b94f2-3c38-406a-a66a-e8b4bbc9c1e8",
+              "type": "setContext",
+              "selected": false,
+              "x": 975,
+              "y": 275,
+              "ports": [
+                {
+                  "id": "cmkwojqy2003p356rapyfw6o7",
+                  "type": "default",
+                  "x": 967,
+                  "y": 306.73,
+                  "name": "cmkwojqy2003q356rvb94tkm3",
+                  "parentNode": "977b94f2-3c38-406a-a66a-e8b4bbc9c1e8",
+                  "links": [
+                    "7b1103dd-d2c8-4c0d-872d-4da98e9b3b98"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkwojqy2003r356r8y0h3640",
+                  "type": "default",
+                  "x": 1151.88,
+                  "y": 306.73,
+                  "name": "cmkwojqy2003s356r6u9w015w",
+                  "parentNode": "977b94f2-3c38-406a-a66a-e8b4bbc9c1e8",
+                  "links": [
+                    "ba465ba4-f815-418f-813d-71869ee15ef2"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "{\r\n  \"workcenterId\": $.workcenterId,\r\n  \"historyId\": $.historyId,\r\n  \"historyStart\": $.historyStart,\r\n  \"historyEnd\": $.historyEnd,\r\n  \"modeId\": $.modeId,\r\n  \"stateId\": $.stateId,\r\n  \"scheduleId\": $.scheduleId\r\n}",
+                "nextNodes": [
+                  "ff8e8a28-1875-4c1d-a0b0-935246fdf68e"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "store_before_mode_query"
+            },
+            "59919f92-07f7-4b36-8150-cd72c933f2e5": {
+              "id": "59919f92-07f7-4b36-8150-cd72c933f2e5",
+              "type": "query",
+              "selected": false,
+              "x": 1410,
+              "y": 320,
+              "ports": [
+                {
+                  "id": "cmkwoyesr008t356reqb46f3w",
+                  "type": "default",
+                  "x": 1402,
+                  "y": 351.73,
+                  "name": "cmkwoyesr008u356rhu465wlo",
+                  "parentNode": "59919f92-07f7-4b36-8150-cd72c933f2e5",
+                  "links": [
+                    "0cae53a0-8d09-486b-98d0-cc389a911c2c"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkwoyesr008v356rygci731m",
+                  "type": "default",
+                  "x": 1724.25,
+                  "y": 351.73,
+                  "name": "cmkwoyesr008w356r93u5fmsf",
+                  "parentNode": "59919f92-07f7-4b36-8150-cd72c933f2e5",
+                  "links": [
+                    "d50813ac-0c72-4bcf-84f2-b4165c84235d"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "application",
+                "variablesTransform": "{\r\n  \"workcenterId\": $.workcenterId,\r\n  \"historyStart\": $.historyStart,\r\n  \"historyEnd\": $.historyEnd,\r\n  \"modeId\": $.modeId\r\n\r\n}",
+                "query": "query GetModeAndAffectedHours(\r\n  $modeId: String!\r\n  $workcenterId: String!\r\n  $historyStart: DateTime!\r\n  $historyEnd: DateTime!\r\n) {\r\n  mode(where: { id: { _eq: $modeId } }) {\r\n    edges {\r\n      node {\r\n        id\r\n        code\r\n        name\r\n        countAsProductionTime\r\n        countAsDowntime\r\n        countAsPlannedDowntime\r\n        oeeImpact\r\n      }\r\n    }\r\n  }\r\n  \r\n  oeeHourly(\r\n    where: {\r\n      _and: [\r\n        { workcenterId: { _eq: $workcenterId } }\r\n        { scheduleHourStartAt: { _lt: $historyEnd } }\r\n        { scheduleHourEndAt: { _gt: $historyStart } }\r\n      ]\r\n    }\r\n    orderBy: { field: scheduleHourStartAt, direction: asc  }\r\n  ) {\r\n    edges {\r\n      node {\r\n        id\r\n        workcenterId\r\n        periodStartAt\r\n        periodEndAt\r\n        scheduleHourStartAt\r\n        scheduleHourEndAt\r\n        runMinutes(format:  milliseconds)\r\n        setupMinutes(format: milliseconds)\r\n        downtimeMinutes(format: milliseconds)\r\n        idealCycleTime(format: milliseconds)\r\n        plannedDowntimeMinutes(format: milliseconds)\r\n        plannedMinutes(format: milliseconds)\r\n        scheduledTime(format: milliseconds)\r\n        modeChanges\r\n        stateChanges\r\n        scheduleId\r\n      }\r\n    }\r\n  }\r\n}",
+                "nextNodes": [
+                  "119d5f6e-5e59-4d0b-a1be-e390259ecf9d"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Find all Affected Oee Hours & Mode Classifications"
+            },
+            "119d5f6e-5e59-4d0b-a1be-e390259ecf9d": {
+              "id": "119d5f6e-5e59-4d0b-a1be-e390259ecf9d",
+              "type": "javascriptTransform",
+              "selected": false,
+              "x": 1540,
+              "y": 440,
+              "ports": [
+                {
+                  "id": "cmkwpa1n800fe356rd8vjrxek",
+                  "type": "default",
+                  "x": 1532,
+                  "y": 471.73,
+                  "name": "cmkwpa1n800ff356ru1e29ibl",
+                  "parentNode": "119d5f6e-5e59-4d0b-a1be-e390259ecf9d",
+                  "links": [
+                    "d50813ac-0c72-4bcf-84f2-b4165c84235d"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkwpa1n800fg356rmxkp3ybo",
+                  "type": "default",
+                  "x": 1784.09,
+                  "y": 471.73,
+                  "name": "cmkwpa1n800fh356rcaz6h2xf",
+                  "parentNode": "119d5f6e-5e59-4d0b-a1be-e390259ecf9d",
+                  "links": [
+                    "2186a26a-7500-417c-bf30-4334e5a34bca"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "'use strict';\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// ISO 22400-COMPLIANT OEE HOURLY AGGREGATION\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// Processes WorkcenterHistory events and updates OeeHourly records\r\n// - Validates data integrity (prevents exceeding hour duration)\r\n// - Handles NO-SCHEDULE mode with scheduleId validation\r\n// - Classifies time according to mode (run/setup/downtime/planned downtime)\r\n// - Calculates ISO 22400 availability percentage\r\n// - Returns pure milliseconds (no ISO duration strings)\r\n// ═══════════════════════════════════════════════════════════════════════\r\n\r\n// Extract mode and hours from combined GraphQL response\r\nconst mode = $.mode?.edges?.[0]?.node;\r\nconst hours = $.oeeHourly?.edges?.map(edge => edge.node) || [];\r\n\r\n// Restore context data\r\nconst historyStart = new Date($state.context.historyStart);\r\nconst historyEnd = new Date($state.context.historyEnd);\r\n\r\n// Validate mode exists\r\nif (!mode) {\r\n  console.error(`Mode ${$state.context.modeId} not found - skipping history ${$state.context.historyId}`);\r\n  return { skip: true, reason: 'mode_not_found' };\r\n}\r\n\r\n// Validate hours found\r\nif (hours.length === 0) {\r\n  console.log(`No OeeHourly records found for workcenter ${$state.context.workcenterId} - no updates needed`);\r\n  return { skip: true, reason: 'no_hourly_records_found' };\r\n}\r\n\r\nconsole.log(`Processing mode ${mode.code} (${mode.name}) affecting ${hours.length} hours`);\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// CRITICAL HELPER: Extract pure milliseconds from any duration format\r\n// Handles edge case where GraphQL returns strings even with (format: milliseconds)\r\n// ═══════════════════════════════════════════════════════════════════════\r\nfunction extractMilliseconds(duration) {\r\n  // Null/undefined check\r\n  if (!duration && duration !== 0) return 0;\r\n  \r\n  // Already a number - return as-is\r\n  if (typeof duration === 'number') {\r\n    return Math.floor(duration);\r\n  }\r\n  \r\n  // Duration object with milliseconds property\r\n  if (typeof duration === 'object' && duration !== null && duration.milliseconds !== undefined) {\r\n    return Math.floor(duration.milliseconds);\r\n  }\r\n  \r\n  // String - could be ISO duration or numeric string\r\n  if (typeof duration === 'string') {\r\n    // Check if it's an ISO duration string (starts with PT)\r\n    if (duration.startsWith('PT')) {\r\n      try {\r\n        const ms = $momentDuration(duration).asMilliseconds();\r\n        return Math.floor(ms);\r\n      } catch (e) {\r\n        console.warn('Failed to parse ISO duration string: \"' + duration + '\", error: ' + e.message);\r\n        return 0;\r\n      }\r\n    }\r\n    \r\n    // Check if it's a numeric string (e.g., \"3600000\")\r\n    const parsed = parseFloat(duration);\r\n    if (!isNaN(parsed)) {\r\n      return Math.floor(parsed);\r\n    }\r\n    \r\n    console.warn('Unknown string duration format: \"' + duration + '\"');\r\n    return 0;\r\n  }\r\n  \r\n  // Unknown type\r\n  console.warn('Unknown duration type: ' + typeof duration + ', value: ' + JSON.stringify(duration));\r\n  return 0;\r\n}\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// BUILD UPDATE PAYLOADS\r\n// ═══════════════════════════════════════════════════════════════════════\r\nconst payload = hours.map(hour => {\r\n  const scheduleStart = new Date(hour.scheduleHourStartAt);\r\n  const scheduleEnd = new Date(hour.scheduleHourEndAt);\r\n  \r\n  // Calculate the TOTAL duration of this OEE hour (the absolute maximum)\r\n  const hourTotalDurationMs = scheduleEnd - scheduleStart;\r\n  \r\n  if (hourTotalDurationMs <= 0) {\r\n    console.error(`Invalid hour duration for ${hour.id}: scheduleHourEndAt must be after scheduleHourStartAt`);\r\n    return null;\r\n  }\r\n  \r\n  // Calculate overlap between history and schedule hour\r\n  const overlapStart = historyStart > scheduleStart ? historyStart : scheduleStart;\r\n  const overlapEnd = historyEnd < scheduleEnd ? historyEnd : scheduleEnd;\r\n  const overlapMs = overlapEnd - overlapStart;\r\n  \r\n  if (overlapMs <= 0) {\r\n    return null; // No overlap\r\n  }\r\n  \r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  // EXTRACT PURE MILLISECONDS - Handles strings, objects, and numbers\r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  const currentRunMs = extractMilliseconds(hour.runMinutes);\r\n  const currentSetupMs = extractMilliseconds(hour.setupMinutes);\r\n  const currentDowntimeMs = extractMilliseconds(hour.downtimeMinutes);\r\n  const currentPlannedDowntimeMs = extractMilliseconds(hour.plannedDowntimeMinutes);\r\n  const plannedMinutesMs = extractMilliseconds(hour.plannedMinutes);\r\n  const scheduledTimeMs = extractMilliseconds(hour.scheduledTime);\r\n  const currentModeChanges = hour.modeChanges || 0;\r\n  const currentStateChanges = hour.stateChanges || 0;\r\n  \r\n  // Calculate currently accounted time\r\n  const currentTotalAccountedMs = currentRunMs + currentSetupMs + currentDowntimeMs + currentPlannedDowntimeMs;\r\n  \r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  // CRITICAL PRE-FLIGHT CHECK: Validate existing data integrity\r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  if (currentTotalAccountedMs > hourTotalDurationMs) {\r\n    const excessMs = currentTotalAccountedMs - hourTotalDurationMs;\r\n    console.error(\r\n      `DATA INTEGRITY ERROR: Hour ${hour.id} ALREADY EXCEEDS duration! ` +\r\n      `Current total: ${(currentTotalAccountedMs/60000).toFixed(2)}min ` +\r\n      `(Run: ${(currentRunMs/60000).toFixed(2)}, ` +\r\n      `Setup: ${(currentSetupMs/60000).toFixed(2)}, ` +\r\n      `Downtime: ${(currentDowntimeMs/60000).toFixed(2)}, ` +\r\n      `PlannedDT: ${(currentPlannedDowntimeMs/60000).toFixed(2)}) ` +\r\n      `exceeds hour duration ${(hourTotalDurationMs/60000).toFixed(2)}min by ${(excessMs/60000).toFixed(2)}min. ` +\r\n      `REFUSING to add more time.`\r\n    );\r\n    return null;\r\n  }\r\n  \r\n  // Calculate remaining capacity\r\n  const remainingCapacityMs = hourTotalDurationMs - currentTotalAccountedMs;\r\n  \r\n  if (remainingCapacityMs === 0) {\r\n    console.log(`Hour ${hour.id} is 100% accounted - no capacity for additional time`);\r\n    return null;\r\n  }\r\n  \r\n  console.log(\r\n    `Hour ${hour.id} current state: ${(currentTotalAccountedMs/60000).toFixed(2)}/${(hourTotalDurationMs/60000).toFixed(2)}min ` +\r\n    `(${(currentTotalAccountedMs/hourTotalDurationMs*100).toFixed(1)}%), ` +\r\n    `remaining: ${(remainingCapacityMs/60000).toFixed(2)}min`\r\n  );\r\n  \r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  // SPECIAL HANDLING FOR NO-SCHEDULE MODE\r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  let effectiveMode = mode;\r\n  if (mode.code === 'NO-SCHEDULE' || mode.id === 'no-schedule') {\r\n    if (hour.scheduleId) {\r\n      console.warn(\r\n        `Hour ${hour.id} has scheduleId ${hour.scheduleId} but workcenter is in NO-SCHEDULE mode - ` +\r\n        `treating as UNPLANNED DOWNTIME`\r\n      );\r\n      effectiveMode = {\r\n        ...mode,\r\n        countAsProductionTime: true,\r\n        countAsDowntime: true,\r\n        countAsPlannedDowntime: false,\r\n        code: 'NO-SCHEDULE-MISCLASS'\r\n      };\r\n    } else {\r\n      console.log(`Hour ${hour.id} has no scheduleId and mode is NO-SCHEDULE - excluding from accumulation`);\r\n      return null;\r\n    }\r\n  }\r\n  \r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  // DETERMINE CLASSIFICATION BASED ON MODE\r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  let runIncrement = 0;\r\n  let setupIncrement = 0;\r\n  let downtimeIncrement = 0;\r\n  let plannedDowntimeIncrement = 0;\r\n  \r\n  if (effectiveMode.countAsPlannedDowntime) {\r\n    // MAINT, ENG - Planned downtime (excluded from OEE)\r\n    plannedDowntimeIncrement = overlapMs;\r\n    console.log(`Mode ${effectiveMode.code}: Planned downtime - excluded from OEE`);\r\n  } else if (!effectiveMode.countAsProductionTime) {\r\n    // Outside production entirely (shouldn't reach here after NO-SCHEDULE handling)\r\n    console.log(`Mode ${effectiveMode.code}: Outside production time - no accumulation`);\r\n    return null;\r\n  } else {\r\n    // Within production time\r\n    if (effectiveMode.countAsDowntime) {\r\n      // DISABLED, OFF, or misclassified NO-SCHEDULE\r\n      downtimeIncrement = overlapMs;\r\n    } else if (effectiveMode.code === 'PROD') {\r\n      runIncrement = overlapMs;\r\n    } else if (['SETUP', 'CLEAN', 'CLEANING', 'IDLE'].includes(effectiveMode.code)) {\r\n      setupIncrement = overlapMs;\r\n    } else {\r\n      setupIncrement = overlapMs; // Default to setup\r\n    }\r\n  }\r\n  \r\n  // Calculate total increment\r\n  const totalIncrementMs = runIncrement + setupIncrement + downtimeIncrement + plannedDowntimeIncrement;\r\n  \r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  // CAPACITY CHECK: Will this increment fit?\r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  if (totalIncrementMs > remainingCapacityMs) {\r\n    const excessMs = totalIncrementMs - remainingCapacityMs;\r\n    \r\n    console.warn(\r\n      `CAPACITY WARNING: Hour ${hour.id} - requested ${(totalIncrementMs/60000).toFixed(2)}min ` +\r\n      `but only ${(remainingCapacityMs/60000).toFixed(2)}min remaining. ` +\r\n      `Excess: ${(excessMs/60000).toFixed(2)}min. Capping proportionally.`\r\n    );\r\n    \r\n    // Proportionally reduce all increments to fit exactly\r\n    const scaleFactor = remainingCapacityMs / totalIncrementMs;\r\n    \r\n    runIncrement = Math.floor(runIncrement * scaleFactor);\r\n    setupIncrement = Math.floor(setupIncrement * scaleFactor);\r\n    downtimeIncrement = Math.floor(downtimeIncrement * scaleFactor);\r\n    plannedDowntimeIncrement = Math.floor(plannedDowntimeIncrement * scaleFactor);\r\n    \r\n    // Assign any rounding remainder to the largest increment\r\n    const adjustedTotal = runIncrement + setupIncrement + downtimeIncrement + plannedDowntimeIncrement;\r\n    const remainder = remainingCapacityMs - adjustedTotal;\r\n    \r\n    if (remainder > 0) {\r\n      if (runIncrement >= setupIncrement && runIncrement >= downtimeIncrement && runIncrement >= plannedDowntimeIncrement) {\r\n        runIncrement += remainder;\r\n      } else if (setupIncrement >= downtimeIncrement && setupIncrement >= plannedDowntimeIncrement) {\r\n        setupIncrement += remainder;\r\n      } else if (downtimeIncrement >= plannedDowntimeIncrement) {\r\n        downtimeIncrement += remainder;\r\n      } else {\r\n        plannedDowntimeIncrement += remainder;\r\n      }\r\n    }\r\n  }\r\n  \r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  // CALCULATE NEW TOTALS - ENSURE PURE NUMBERS\r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  const newRunMs = Math.floor(currentRunMs + runIncrement);\r\n  const newSetupMs = Math.floor(currentSetupMs + setupIncrement);\r\n  const newDowntimeMs = Math.floor(currentDowntimeMs + downtimeIncrement);\r\n  const newPlannedDowntimeMs = Math.floor(currentPlannedDowntimeMs + plannedDowntimeIncrement);\r\n  \r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  // FINAL VALIDATION: Absolute guarantee we don't exceed\r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  const finalTotalMs = newRunMs + newSetupMs + newDowntimeMs + newPlannedDowntimeMs;\r\n  \r\n  if (finalTotalMs > hourTotalDurationMs) {\r\n    const excessMs = finalTotalMs - hourTotalDurationMs;\r\n    console.error(\r\n      `CRITICAL LOGIC ERROR: Hour ${hour.id} final total ${(finalTotalMs/60000).toFixed(4)}min ` +\r\n      `exceeds duration ${(hourTotalDurationMs/60000).toFixed(4)}min by ${(excessMs/1000).toFixed(4)}s! ` +\r\n      `This indicates a bug in the capping logic. REFUSING UPDATE.`\r\n    );\r\n    return null;\r\n  }\r\n  \r\n  // Verify our increment was within allowed capacity\r\n  const actualIncrementMs = finalTotalMs - currentTotalAccountedMs;\r\n  if (actualIncrementMs > remainingCapacityMs) {\r\n    console.error(\r\n      `CRITICAL LOGIC ERROR: Increment ${(actualIncrementMs/60000).toFixed(4)}min ` +\r\n      `exceeds remaining capacity ${(remainingCapacityMs/60000).toFixed(4)}min. REFUSING UPDATE.`\r\n    );\r\n    return null;\r\n  }\r\n  \r\n  // Calculate accounting percentage\r\n  const percentAccounted = (finalTotalMs / hourTotalDurationMs * 100).toFixed(1);\r\n  \r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  // ISO 22400-2 AVAILABILITY CALCULATION\r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  // Availability = (Planned Production Time - Downtime) / Planned Production Time\r\n  // Where: Planned Production Time = Scheduled Time - Planned Downtime\r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  let newAvailability = null;\r\n  let calculatedPlannedMinutesMs = plannedMinutesMs;\r\n  \r\n  // If plannedMinutes is not pre-calculated, derive it\r\n  if (!calculatedPlannedMinutesMs && scheduledTimeMs > 0) {\r\n    calculatedPlannedMinutesMs = scheduledTimeMs - newPlannedDowntimeMs;\r\n  }\r\n  \r\n  if (calculatedPlannedMinutesMs > 0) {\r\n    const actualProductionTimeMs = calculatedPlannedMinutesMs - newDowntimeMs;\r\n    newAvailability = actualProductionTimeMs / calculatedPlannedMinutesMs;\r\n    \r\n    // Clamp to 0-1 range\r\n    if (newAvailability < 0) newAvailability = 0;\r\n    if (newAvailability > 1) newAvailability = 1;\r\n  }\r\n  \r\n  console.log(\r\n    `✓ Hour ${hour.id}: +${(actualIncrementMs/60000).toFixed(2)}min ${effectiveMode.code} ` +\r\n    `(R:${(runIncrement/60000).toFixed(2)} S:${(setupIncrement/60000).toFixed(2)} ` +\r\n    `D:${(downtimeIncrement/60000).toFixed(2)} PD:${(plannedDowntimeIncrement/60000).toFixed(2)}) | ` +\r\n    `Total: ${(finalTotalMs/60000).toFixed(2)}/${(hourTotalDurationMs/60000).toFixed(2)}min (${percentAccounted}%) | ` +\r\n    `Avail: ${newAvailability !== null ? (newAvailability * 100).toFixed(1) + '%' : 'N/A'}`\r\n  );\r\n  \r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  // BUILD UPDATE PAYLOAD - PURE NUMBERS ONLY (milliseconds)\r\n  // ═══════════════════════════════════════════════════════════════════════\r\n  const update = {\r\n    runMinutes: newRunMs,                          // Pure number (milliseconds)\r\n    setupMinutes: newSetupMs,                      // Pure number (milliseconds)\r\n    downtimeMinutes: newDowntimeMs,                // Pure number (milliseconds)\r\n    plannedDowntimeMinutes: newPlannedDowntimeMs,  // Pure number (milliseconds)\r\n    modeChanges: currentModeChanges + 1,\r\n    stateChanges: currentStateChanges + 1\r\n  };\r\n  \r\n  if (newAvailability !== null) {\r\n    update.availability = newAvailability;\r\n  }\r\n  \r\n  // Final type verification\r\n  if (typeof update.runMinutes !== 'number' || isNaN(update.runMinutes)) {\r\n    console.error(`ERROR: runMinutes is ${typeof update.runMinutes}, not number!`);\r\n    return null;\r\n  }\r\n  if (typeof update.setupMinutes !== 'number' || isNaN(update.setupMinutes)) {\r\n    console.error(`ERROR: setupMinutes is ${typeof update.setupMinutes}, not number!`);\r\n    return null;\r\n  }\r\n  if (typeof update.downtimeMinutes !== 'number' || isNaN(update.downtimeMinutes)) {\r\n    console.error(`ERROR: downtimeMinutes is ${typeof update.downtimeMinutes}, not number!`);\r\n    return null;\r\n  }\r\n  if (typeof update.plannedDowntimeMinutes !== 'number' || isNaN(update.plannedDowntimeMinutes)) {\r\n    console.error(`ERROR: plannedDowntimeMinutes is ${typeof update.plannedDowntimeMinutes}, not number!`);\r\n    return null;\r\n  }\r\n  \r\n  return {\r\n    hourId: hour.id,\r\n    where: { id: hour.id },\r\n    update: update\r\n  };\r\n}).filter(Boolean);\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// CREATE MUTEX LOCK KEY AND FINALIZE PAYLOAD\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// Create mutex lock key from sorted hour IDs (prevents concurrent updates)\r\nconst mutexLockKey = payload.map(p => p.hourId).join(':');\r\n\r\nconsole.log(`✓ Prepared ${payload.length} hour updates with guaranteed duration compliance`);\r\nconsole.log(`Mutex lock key: ${mutexLockKey}`);\r\n\r\n// Remove hourId from payload (not needed in mutation)\r\nconst cleanPayload = payload.map(({ hourId, ...rest }) => rest);\r\n\r\n// Final debug log - show sample output\r\nif (cleanPayload.length > 0) {\r\n  console.log('=== SAMPLE OUTPUT ===');\r\n  console.log(JSON.stringify(cleanPayload[0], null, 2));\r\n  console.log('=====================');\r\n}\r\n\r\nreturn {\r\n  payload: cleanPayload,\r\n  mutexLockKey: mutexLockKey,\r\n  historyId: $state.context.historyId\r\n};",
+                "nextNodes": [
+                  "214bf925-df57-48c9-949c-cb0f90402bcb"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "calculate_all_hour_updates and avail%"
+            },
+            "214bf925-df57-48c9-949c-cb0f90402bcb": {
+              "id": "214bf925-df57-48c9-949c-cb0f90402bcb",
+              "type": "setContext",
+              "selected": false,
+              "x": 1230,
+              "y": 550,
+              "ports": [
+                {
+                  "id": "cmkwplvhi00ih356riy4csynf",
+                  "type": "default",
+                  "x": 1222,
+                  "y": 581.73,
+                  "name": "cmkwplvhi00ii356rpp0tp18g",
+                  "parentNode": "214bf925-df57-48c9-949c-cb0f90402bcb",
+                  "links": [
+                    "2186a26a-7500-417c-bf30-4334e5a34bca"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkwplvhi00ij356rf5c04391",
+                  "type": "default",
+                  "x": 1449.13,
+                  "y": 581.73,
+                  "name": "cmkwplvhi00ik356rn3oww30b",
+                  "parentNode": "214bf925-df57-48c9-949c-cb0f90402bcb",
+                  "links": [
+                    "284b8c2e-7221-4154-88f7-3ba0037e7e78"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "{\r\n  \"historyId\": $.historyId\r\n}",
+                "nextNodes": [
+                  "7d015d25-3fff-4bea-a3ab-84eac88e539f"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Set Context WC History to Update"
+            },
+            "7d015d25-3fff-4bea-a3ab-84eac88e539f": {
+              "id": "7d015d25-3fff-4bea-a3ab-84eac88e539f",
+              "type": "mutate",
+              "selected": true,
+              "x": 1220,
+              "y": 730,
+              "ports": [
+                {
+                  "id": "cmkwpmm1g00jl356rg09pjqrp",
+                  "type": "default",
+                  "x": 1212,
+                  "y": 761.73,
+                  "name": "cmkwpmm1g00jm356r381fa15s",
+                  "parentNode": "7d015d25-3fff-4bea-a3ab-84eac88e539f",
+                  "links": [
+                    "284b8c2e-7221-4154-88f7-3ba0037e7e78"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkwpmm1g00jn356r6s213byl",
+                  "type": "default",
+                  "x": 1386.61,
+                  "y": 761.73,
+                  "name": "cmkwpmm1g00jo356rocy4lsth",
+                  "parentNode": "7d015d25-3fff-4bea-a3ab-84eac88e539f",
+                  "links": [
+                    "035e7828-f5e2-48da-921a-1d0da990c30e"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "Application",
+                "variablesTransform": "{\r\n  \"payload\": [$.payload]\r\n}",
+                "mutation": "mutation UpdateOeeHourly($payload: [OeeHourlyUpdatePayloadInput!]!) {\r\n  updateOeeHourly(payload: $payload) {\r\n    id\r\n    runMinutes\r\n    setupMinutes\r\n    downtimeMinutes\r\n    modeChanges\r\n    stateChanges\r\n    availability\r\n  }\r\n}",
+                "nextNodes": [
+                  "9a01a12e-b1d3-4215-88c9-d6772cf64408"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": true,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "bulk_update_oee_hourly"
+            },
+            "9a01a12e-b1d3-4215-88c9-d6772cf64408": {
+              "id": "9a01a12e-b1d3-4215-88c9-d6772cf64408",
+              "type": "mutexUnlock",
+              "selected": false,
+              "x": 1420,
+              "y": 805,
+              "ports": [
+                {
+                  "id": "cmkwpq39700kh356r34uh4vtx",
+                  "type": "default",
+                  "x": 1412,
+                  "y": 836.73,
+                  "name": "cmkwpq39700ki356r6hqnshnc",
+                  "parentNode": "9a01a12e-b1d3-4215-88c9-d6772cf64408",
+                  "links": [
+                    "035e7828-f5e2-48da-921a-1d0da990c30e"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkwpq39700kj356rstfhnt3z",
+                  "type": "default",
+                  "x": 1566,
+                  "y": 836.73,
+                  "name": "cmkwpq39700kk356r78lbunve",
+                  "parentNode": "9a01a12e-b1d3-4215-88c9-d6772cf64408",
+                  "links": [
+                    "c127738b-0fe8-40e3-b5d3-5472b685e1f0"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "083fc81a-a3c9-4c55-989b-246b6b1f0e56"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Mutex Unlock"
+            },
+            "083fc81a-a3c9-4c55-989b-246b6b1f0e56": {
+              "id": "083fc81a-a3c9-4c55-989b-246b6b1f0e56",
+              "type": "mutate",
+              "selected": false,
+              "x": 1645,
+              "y": 805,
+              "ports": [
+                {
+                  "id": "cmkwpqb1000kq356r244ekti9",
+                  "type": "default",
+                  "x": 1637,
+                  "y": 836.73,
+                  "name": "cmkwpqb1000kr356rc7o5yi25",
+                  "parentNode": "083fc81a-a3c9-4c55-989b-246b6b1f0e56",
+                  "links": [
+                    "c127738b-0fe8-40e3-b5d3-5472b685e1f0"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkwpqb1000ks356rx9rwrkvd",
+                  "type": "default",
+                  "x": 1892.95,
+                  "y": 836.73,
+                  "name": "cmkwpqb1000kt356r9m4n4ld0",
+                  "parentNode": "083fc81a-a3c9-4c55-989b-246b6b1f0e56",
+                  "links": [],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "Application",
+                "variablesTransform": "{\r\n  \"payload\": [\r\n    {\r\n      \"where\": {\r\n        \"id\": $state.context.historyId\r\n      },\r\n      \"update\": {\r\n        \"processedInOeeHourlyAt\": $now()\r\n      }\r\n    }\r\n  ]\r\n}",
+                "mutation": "mutation MarkHistoryProcessed($payload: [WorkcenterHistoryUpdatePayloadInput!]!) {\r\n  updateWorkcenterHistory(payload: $payload) {\r\n    id\r\n    processedInOeeHourlyAt\r\n  }\r\n}",
+                "nextNodes": []
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Mark Workcenter History as Processed"
+            },
+            "ff8e8a28-1875-4c1d-a0b0-935246fdf68e": {
+              "id": "ff8e8a28-1875-4c1d-a0b0-935246fdf68e",
+              "type": "mutexLock",
+              "selected": false,
+              "x": 1200,
+              "y": 355,
+              "ports": [
+                {
+                  "id": "cmkwua27a007e356r64p637ww",
+                  "type": "default",
+                  "x": 1192,
+                  "y": 386.73,
+                  "name": "cmkwua27a007f356rr2sr7zhx",
+                  "parentNode": "ff8e8a28-1875-4c1d-a0b0-935246fdf68e",
+                  "links": [
+                    "ba465ba4-f815-418f-813d-71869ee15ef2"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkwua27a007g356r5gqpwfzv",
+                  "type": "default",
+                  "x": 1346,
+                  "y": 386.73,
+                  "name": "cmkwua27a007h356r9eyepmy8",
+                  "parentNode": "ff8e8a28-1875-4c1d-a0b0-935246fdf68e",
+                  "links": [
+                    "0cae53a0-8d09-486b-98d0-cc389a911c2c"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "lockTTLms": 30000,
+                "lockRetries": -1,
+                "throwErrorWhenLockNotAcquired": false,
+                "nextNodes": [
+                  "59919f92-07f7-4b36-8150-cd72c933f2e5"
+                ],
+                "resourceIdTransform": "$.workcenterId"
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Mutex Lock"
+            }
+          }
+        }
+      ],
+      "name": "Workcener History to OeeHourly Updates on EndAt",
+      "type": "System",
+      "version": "0.0.2",
+      "walkthrough": {
+        "steps": []
+      }
+    }
+  }
+}

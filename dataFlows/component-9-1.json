@@ -1,0 +1,1348 @@
+{
+  "header": {
+    "id": "weeklyWorkOrderGenerator",
+    "name": "WeeklyWorkOrderGenerator",
+    "description": "Generates work orders for all workcenters weekly",
+    "active": true,
+    "substitutesDataFlowId": null,
+    "dataFlowTypeId": "System",
+    "logLevelId": "Info",
+    "mcpToolConfiguration": null,
+    "moduleId": "machineDataApp",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cml8koktoc2ko0182d29m44ww",
+    "number": "0.0.4",
+    "description": "",
+    "dataFlowId": "weeklyWorkOrderGenerator",
+    "flow": {
+      "id": "cml8koktoc2ko0182d29m44ww",
+      "name": "WeeklyWorkOrderGenerator",
+      "type": "System",
+      "nodes": [
+        {
+          "id": "38d42686-6460-40ee-8ba6-0fd87b0d96f1",
+          "name": "Schedule",
+          "type": "schedule",
+          "data": {
+            "configure": "Open Schedule Editor",
+            "nextNodes": [
+              "8bf1ebfe-f88f-46dc-9982-f4a3499887e4"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "8bf1ebfe-f88f-46dc-9982-f4a3499887e4",
+          "name": "Configuration",
+          "type": "setContext",
+          "data": {
+            "transform": "{ \"config\": {\r\n  \"avgOrdersPerWorkcenter\": 5,\r\n  \"orderVariance\": 0.3,\r\n  \"minOrders\": 3,\r\n  \"maxOrders\": 8,\r\n  \"priorityWeights\": {\r\n    \"1\": 0.10,\r\n    \"3\": 0.20,\r\n    \"5\": 0.40,\r\n    \"7\": 0.20,\r\n    \"9\": 0.10\r\n  }\r\n}}",
+            "nextNodes": [
+              "5ab4d6c7-6feb-4d02-ad64-65474fe66015"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "5ab4d6c7-6feb-4d02-ad64-65474fe66015",
+          "name": "Query Active Workcenters",
+          "type": "query",
+          "data": {
+            "api": "application",
+            "variablesTransform": "{\r\n  \"where\": {\r\n    \"isActive\": {\r\n      \"_eq\": true\r\n    }\r\n  }\r\n}",
+            "query": "query Workcenter($where: WorkcenterWhereInput, $orderBy: [WorkcenterOrderByInput!], $first: Int, $after: String) {\n  workcenter(where: $where, orderBy: $orderBy, first: $first, after: $after) {\n    edges {\n      node {\n        id\n        name\n        isActive\n        code\n        cellId\n        currentWorkOrderId\n        lineId\n      }\n    }\n  }\n}",
+            "nextNodes": [
+              "20c41296-b5dd-4094-a6e2-877c17c6e932"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "20c41296-b5dd-4094-a6e2-877c17c6e932",
+          "name": "JSONata - Reduce to Array",
+          "type": "transform",
+          "data": {
+            "transform": "$.workcenter",
+            "nextNodes": [
+              "d1f138b4-d87e-41c5-8695-879cc261397f"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "3d06416f-eede-472f-8c92-fa51ef77f58d",
+          "name": "Query Active Products",
+          "type": "query",
+          "data": {
+            "api": "application",
+            "variablesTransform": "{\r\n  \"where\": {\r\n    \"isActive\": {\r\n      \"_eq\": true\r\n    },\r\n    \"workcenterId\": {\r\n      \"_isNull\": false\r\n    }\r\n  }\r\n}",
+            "query": "query Product($where: ProductWhereInput, $orderBy: [ProductOrderByInput!], $first: Int, $after: String) {\n  product(where: $where, orderBy: $orderBy, first: $first, after: $after) {\n    edges {\n      node {\n        id\n        name\n        setupTime\n        standardCycleTime\n        targetYield\n        isActive\n        code\n        productFamily\n        unitId\n        workcenterId\n      }\n    }\n  }\n}",
+            "nextNodes": [
+              "6176066c-7181-4cda-b8fd-1cb23d54b97f"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "6176066c-7181-4cda-b8fd-1cb23d54b97f",
+          "name": "JSONata - Reduce to Array",
+          "type": "transform",
+          "data": {
+            "transform": "$.product",
+            "nextNodes": [
+              "9b90cef1-a0ae-492a-b027-6d77cd801ff8"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "d1f138b4-d87e-41c5-8695-879cc261397f",
+          "name": "Merge Context",
+          "type": "mergeContext",
+          "data": {
+            "transform": "{\r\n  \"workcenters\": $\r\n}",
+            "nextNodes": [
+              "3d06416f-eede-472f-8c92-fa51ef77f58d"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "9b90cef1-a0ae-492a-b027-6d77cd801ff8",
+          "name": "Store Products",
+          "type": "mergeContext",
+          "data": {
+            "transform": "{\r\n  \"products\": $\r\n}",
+            "nextNodes": [
+              "9b29e54f-7ea6-4196-9a6e-edf57592e02e"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "9b29e54f-7ea6-4196-9a6e-edf57592e02e",
+          "name": "Generate Work Orders",
+          "type": "javascriptTransform",
+          "data": {
+            "transform": "// Access context differently in Fuuz transformations\r\nconst stateContext = $state && $state.context ? $state.context : {};\r\n\r\n// Get config from context\r\nconst config = stateContext.avgOrdersPerWorkcenter ? stateContext : {\r\n  minOrderDurationHours: 24,        // Minimum 24 hours per order\r\n  maxOrderDurationHours: 72,        // Maximum 72 hours per order\r\n  targetWeekCapacity: 1.10,         // 110% of week capacity\r\n  priorityWeights: { \"1\": 0.10, \"3\": 0.20, \"5\": 0.40, \"7\": 0.20, \"9\": 0.10 }\r\n};\r\n\r\n// Extract workcenters and products from context\r\nconst workcenters = stateContext.workcenters && stateContext.workcenters.edges \r\n  ? stateContext.workcenters.edges.map(e => e.node)\r\n  : [];\r\n\r\nconst products = stateContext.products && stateContext.products.edges\r\n  ? stateContext.products.edges.map(e => e.node)\r\n  : [];\r\n\r\n// Calculate week start (Sunday)\r\nconst now = new Date();\r\nconst startOfWeek = new Date(now);\r\nstartOfWeek.setDate(now.getDate() - now.getDay());\r\nstartOfWeek.setHours(0, 0, 0, 0);\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// CAPACITY PLANNING CONSTANTS\r\n// ═══════════════════════════════════════════════════════════════════════\r\nconst HOURS_PER_WEEK = 7 * 24;  // 168 hours\r\nconst TARGET_CAPACITY_HOURS = HOURS_PER_WEEK * config.targetWeekCapacity;  // 184.8 hours at 110%\r\nconst MIN_ORDER_HOURS = config.minOrderDurationHours;  // 24 hours minimum\r\nconst MAX_ORDER_HOURS = config.maxOrderDurationHours;  // 72 hours maximum\r\n\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\nconsole.log('WORK ORDER GENERATION - CAPACITY BASED');\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\nconsole.log('Target capacity per workcenter: ' + TARGET_CAPACITY_HOURS.toFixed(1) + ' hours (' + (TARGET_CAPACITY_HOURS / 24).toFixed(1) + ' days)');\r\nconsole.log('Order duration range: ' + MIN_ORDER_HOURS + '-' + MAX_ORDER_HOURS + ' hours');\r\nconsole.log('Week start: ' + startOfWeek.toISOString().slice(0, 10));\r\nconsole.log('───────────────────────────────────────────────────────────');\r\n\r\n// Helper functions\r\nfunction randomInRange(min, max) {\r\n  return Math.random() * (max - min) + min;\r\n}\r\n\r\nfunction randomInt(min, max) {\r\n  return Math.floor(randomInRange(min, max + 1));\r\n}\r\n\r\nfunction getRandomPriority() {\r\n  const rand = Math.random();\r\n  let cumulative = 0;\r\n  for (const [priority, weight] of Object.entries(config.priorityWeights)) {\r\n    cumulative += weight;\r\n    if (rand <= cumulative) return parseInt(priority);\r\n  }\r\n  return 5;\r\n}\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// CALCULATE ORDER QUANTITY BASED ON DESIRED DURATION\r\n// ═══════════════════════════════════════════════════════════════════════\r\nfunction calculateOrderQuantity(product, targetHours) {\r\n  const { standardCycleTime, targetYield = 99 } = product;\r\n  \r\n  // standardCycleTime is in seconds per unit\r\n  // targetHours is how long we want this order to run\r\n  const targetSeconds = targetHours * 3600;\r\n  \r\n  // Calculate raw quantity needed for target duration\r\n  const rawQuantity = targetSeconds / standardCycleTime;\r\n  \r\n  // Account for yield to determine target quantity\r\n  // If yield is 99%, we need 1% more to get the target good units\r\n  const yieldDecimal = targetYield / 100;\r\n  const targetQuantity = Math.ceil(rawQuantity * yieldDecimal);\r\n  \r\n  return targetQuantity;\r\n}\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// CALCULATE ORDER DURATION BASED ON QUANTITY\r\n// ═══════════════════════════════════════════════════════════════════════\r\nfunction calculateOrderDuration(product, quantity) {\r\n  const { standardCycleTime, setupTime = 0 } = product;\r\n  \r\n  // Setup time is in minutes\r\n  const setupHours = setupTime / 60;\r\n  \r\n  // Production time: (quantity * seconds per unit) / 3600 = hours\r\n  const productionHours = (quantity * standardCycleTime) / 3600;\r\n  \r\n  const totalHours = setupHours + productionHours;\r\n  \r\n  return {\r\n    setupHours: setupHours,\r\n    productionHours: productionHours,\r\n    totalHours: totalHours\r\n  };\r\n}\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// UNIQUE CODE GENERATOR\r\n// ═══════════════════════════════════════════════════════════════════════\r\nfunction generateWorkOrderCode(workcenterCode, sequence) {\r\n  const dateTimePart = new Date().toISOString()\r\n    .replace(/[-:T]/g, '')\r\n    .slice(0, 14);\r\n  \r\n  const randomSuffix = Math.random().toString(36).substr(2, 3).toUpperCase();\r\n  \r\n  return `WO-${workcenterCode}-${dateTimePart}-${randomSuffix}`;\r\n}\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// CALCULATE SCHEDULED DATES\r\n// ═══════════════════════════════════════════════════════════════════════\r\nfunction calculateScheduledDates(product, quantity, startDate) {\r\n  const duration = calculateOrderDuration(product, quantity);\r\n  const totalMinutes = duration.totalHours * 60;\r\n  \r\n  const scheduledStartAt = new Date(startDate);\r\n  const scheduledEndAt = new Date(scheduledStartAt.getTime() + totalMinutes * 60000);\r\n  \r\n  return {\r\n    scheduledStartAt: scheduledStartAt.toISOString(),\r\n    scheduledEndAt: scheduledEndAt.toISOString(),\r\n    durationHours: duration.totalHours\r\n  };\r\n}\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// GROUP PRODUCTS BY WORKCENTER\r\n// ═══════════════════════════════════════════════════════════════════════\r\nconst productsByWorkcenter = {};\r\nproducts.forEach(product => {\r\n  if (!productsByWorkcenter[product.workcenterId]) {\r\n    productsByWorkcenter[product.workcenterId] = [];\r\n  }\r\n  productsByWorkcenter[product.workcenterId].push(product);\r\n});\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// GENERATE WORK ORDERS WITH CAPACITY PLANNING\r\n// ═══════════════════════════════════════════════════════════════════════\r\nconst workOrders = [];\r\nconst workcenterStats = [];\r\n\r\nworkcenters.forEach(workcenter => {\r\n  const wcProducts = productsByWorkcenter[workcenter.id] || [];\r\n  if (wcProducts.length === 0) {\r\n    console.log('Workcenter ' + workcenter.code + ': No products, skipping');\r\n    return;\r\n  }\r\n  \r\n  console.log('\\nWorkcenter ' + workcenter.code + ':');\r\n  console.log('  Products available: ' + wcProducts.length);\r\n  \r\n  let totalScheduledHours = 0;\r\n  let orderCount = 0;\r\n  let currentStartTime = new Date(startOfWeek);\r\n  \r\n  // Keep generating orders until we reach 110% capacity\r\n  while (totalScheduledHours < TARGET_CAPACITY_HOURS) {\r\n    // Calculate remaining capacity\r\n    const remainingHours = TARGET_CAPACITY_HOURS - totalScheduledHours;\r\n    \r\n    // Determine order duration (random between min and max, but not more than remaining)\r\n    let orderDuration = randomInRange(MIN_ORDER_HOURS, MAX_ORDER_HOURS);\r\n    orderDuration = Math.min(orderDuration, remainingHours);\r\n    \r\n    // If remaining capacity is too small for a meaningful order, add one more full order\r\n    if (remainingHours < MIN_ORDER_HOURS && orderCount > 0) {\r\n      orderDuration = MIN_ORDER_HOURS;\r\n    }\r\n    \r\n    // Skip if duration too small\r\n    if (orderDuration < 1) {\r\n      break;\r\n    }\r\n    \r\n    // Select random product\r\n    const product = wcProducts[randomInt(0, wcProducts.length - 1)];\r\n    const quantity = calculateOrderQuantity(product, orderDuration);\r\n    const priority = getRandomPriority();\r\n    \r\n    // Calculate actual duration with this quantity\r\n    const schedule = calculateScheduledDates(product, quantity, currentStartTime);\r\n    const actualDuration = schedule.durationHours;\r\n    \r\n    workOrders.push({\r\n      create: {\r\n        code: generateWorkOrderCode(workcenter.code, orderCount + 1),\r\n        productId: product.id,\r\n        workcenterId: workcenter.id,\r\n        quantityTarget: quantity,\r\n        quantityCompleted: 0,\r\n        quantityScrap: 0,\r\n        priority: priority,\r\n        status: 'Released',\r\n        scheduledStartAt: schedule.scheduledStartAt,\r\n        scheduledEndAt: schedule.scheduledEndAt,\r\n        notes: 'Auto-generated for week of ' + startOfWeek.toISOString().slice(0, 10) + ' - Duration: ' + actualDuration.toFixed(1) + 'h'\r\n      }\r\n    });\r\n    \r\n    // Update tracking\r\n    totalScheduledHours += actualDuration;\r\n    orderCount++;\r\n    \r\n    // Move start time forward for next order\r\n    currentStartTime = new Date(schedule.scheduledEndAt);\r\n    \r\n    console.log('  Order ' + orderCount + ': ' + product.code + ', ' + quantity + ' units, ' + actualDuration.toFixed(1) + 'h (Total: ' + totalScheduledHours.toFixed(1) + 'h)');\r\n  }\r\n  \r\n  const utilizationPercent = (totalScheduledHours / HOURS_PER_WEEK) * 100;\r\n  \r\n  workcenterStats.push({\r\n    workcenterId: workcenter.id,\r\n    workcenterCode: workcenter.code,\r\n    ordersGenerated: orderCount,\r\n    totalScheduledHours: Math.round(totalScheduledHours * 10) / 10,\r\n    totalScheduledDays: Math.round((totalScheduledHours / 24) * 10) / 10,\r\n    utilizationPercent: Math.round(utilizationPercent * 10) / 10,\r\n    targetCapacityHours: TARGET_CAPACITY_HOURS\r\n  });\r\n  \r\n  console.log('  Summary: ' + orderCount + ' orders, ' + totalScheduledHours.toFixed(1) + ' hours (' + (totalScheduledHours / 24).toFixed(1) + ' days), ' + utilizationPercent.toFixed(1) + '% utilization');\r\n});\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// CALCULATE OVERALL STATISTICS\r\n// ═══════════════════════════════════════════════════════════════════════\r\nconst totalHoursScheduled = workcenterStats.reduce((sum, wc) => sum + wc.totalScheduledHours, 0);\r\nconst avgUtilization = workcenterStats.length > 0 \r\n  ? workcenterStats.reduce((sum, wc) => sum + wc.utilizationPercent, 0) / workcenterStats.length\r\n  : 0;\r\n\r\nconsole.log('\\n═══════════════════════════════════════════════════════════');\r\nconsole.log('GENERATION COMPLETE');\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\nconsole.log('Total work orders: ' + workOrders.length);\r\nconsole.log('Workcenters processed: ' + workcenters.length);\r\nconsole.log('Total hours scheduled: ' + totalHoursScheduled.toFixed(1) + ' hours');\r\nconsole.log('Average utilization: ' + avgUtilization.toFixed(1) + '%');\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\n\r\nreturn {\r\n  workOrders: workOrders,\r\n  summary: {\r\n    totalOrders: workOrders.length,\r\n    workcentersProcessed: workcenters.length,\r\n    productsAvailable: products.length,\r\n    weekStart: startOfWeek.toISOString().slice(0, 10),\r\n    targetCapacityHours: TARGET_CAPACITY_HOURS,\r\n    totalHoursScheduled: Math.round(totalHoursScheduled * 10) / 10,\r\n    totalDaysScheduled: Math.round((totalHoursScheduled / 24) * 10) / 10,\r\n    averageUtilization: Math.round(avgUtilization * 10) / 10,\r\n    workcenterStats: workcenterStats\r\n  }\r\n};",
+            "nextNodes": [
+              "2f1e7ec4-8b90-4728-973c-6d2fa7a1b803"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "2f1e7ec4-8b90-4728-973c-6d2fa7a1b803",
+          "name": "Create Work Orders",
+          "type": "mutate",
+          "data": {
+            "api": "Application",
+            "variablesTransform": "{ \"payload\": $.workOrders }",
+            "mutation": "mutation CreateWorkOrders($payload: [WorkOrderCreatePayloadInput!]!) {\r\n  createWorkOrder(payload: $payload) {\r\n    id\r\n    code\r\n    status\r\n  }\r\n}",
+            "nextNodes": [
+              "8f1c9c92-180d-46ee-ae5e-a9a8f4c6a556"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "4cad46f1-77d7-473b-8935-6e0a19f7138a",
+          "name": "Request",
+          "type": "request",
+          "data": {
+            "nextNodes": [
+              "8bf1ebfe-f88f-46dc-9982-f4a3499887e4"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "8f1c9c92-180d-46ee-ae5e-a9a8f4c6a556",
+          "name": "Response",
+          "type": "response",
+          "data": {
+            "responseTransform": "$",
+            "nextNodes": []
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        }
+      ],
+      "version": "0.0.4"
+    },
+    "diagram": {
+      "id": "cml8koktoc2ko0182d29m44ww",
+      "offsetX": -517,
+      "offsetY": -102,
+      "zoom": 100,
+      "gridSize": 5,
+      "layers": [
+        {
+          "id": "8e302b06-222b-463a-b613-9161305766dc",
+          "type": "diagram-links",
+          "isSvg": true,
+          "transformed": true,
+          "models": {
+            "874566f8-ee03-49a2-afaf-abb373c31f94": {
+              "points": [
+                {
+                  "id": "fb0e5d08-cfa4-4ca8-8951-27b6ace0aa36",
+                  "type": "point",
+                  "x": 404,
+                  "y": 149.73
+                },
+                {
+                  "id": "9e44ba63-63b0-44e9-8565-e01986ac841e",
+                  "type": "point",
+                  "x": 515,
+                  "y": 204.73
+                }
+              ],
+              "id": "874566f8-ee03-49a2-afaf-abb373c31f94",
+              "type": "default",
+              "selected": false,
+              "source": "41845bd1-17be-43d9-bc25-818c6327dbf8",
+              "sourcePort": "cmkczergf00up356ruc067e5p",
+              "target": "8bf1ebfe-f88f-46dc-9982-f4a3499887e4",
+              "targetPort": "cmkczf4w700uz356rv353y6ka",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "88d1441d-6f09-43c8-80f7-078c2513964e": {
+              "points": [
+                {
+                  "id": "cedbac42-fafa-42b9-9f3c-ce0c616bee7e",
+                  "type": "point",
+                  "x": 374,
+                  "y": 304.73
+                },
+                {
+                  "id": "3925bfbf-c028-4c41-9bc7-1082cd30ff48",
+                  "type": "point",
+                  "x": 515,
+                  "y": 204.73
+                }
+              ],
+              "id": "88d1441d-6f09-43c8-80f7-078c2513964e",
+              "type": "default",
+              "selected": false,
+              "source": "38d42686-6460-40ee-8ba6-0fd87b0d96f1",
+              "sourcePort": "cmkczew9r00uv356r5p401n60",
+              "target": "8bf1ebfe-f88f-46dc-9982-f4a3499887e4",
+              "targetPort": "cmkczf4w700uz356rv353y6ka",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "789b70dd-f345-4ecc-abec-43d58320879d": {
+              "points": [
+                {
+                  "id": "255610b8-ca3d-46f4-a203-37b78cf011ea",
+                  "type": "point",
+                  "x": 739.25,
+                  "y": 294.73
+                },
+                {
+                  "id": "bd489b3f-5d38-4446-833a-0cce45332530",
+                  "type": "point",
+                  "x": 800,
+                  "y": 294.73
+                }
+              ],
+              "id": "789b70dd-f345-4ecc-abec-43d58320879d",
+              "type": "default",
+              "selected": false,
+              "source": "5ab4d6c7-6feb-4d02-ad64-65474fe66015",
+              "sourcePort": "cmkczgt3r000w356r074bqd69",
+              "target": "20c41296-b5dd-4094-a6e2-877c17c6e932",
+              "targetPort": "cmkczhreu0025356ryvkqaqdq",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "ff3f74da-dd11-4965-84df-bb38c269475b": {
+              "points": [
+                {
+                  "id": "936e47b3-8359-44ce-b4cb-19c8b34b68d1",
+                  "type": "point",
+                  "x": 1014.88,
+                  "y": 449.73
+                },
+                {
+                  "id": "8a76b785-4752-4e14-8cb7-1264ff20cd43",
+                  "type": "point",
+                  "x": 1100,
+                  "y": 454.73
+                }
+              ],
+              "id": "ff3f74da-dd11-4965-84df-bb38c269475b",
+              "type": "default",
+              "selected": false,
+              "source": "3d06416f-eede-472f-8c92-fa51ef77f58d",
+              "sourcePort": "cmkczlxhf0075356rrvctlep0",
+              "target": "6176066c-7181-4cda-b8fd-1cb23d54b97f",
+              "targetPort": "cmkczq2qg00b6356rd0uhpf0s",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "2c38df41-c891-411e-831b-238960eb0d7c": {
+              "points": [
+                {
+                  "id": "4b424f16-0d09-40d9-8414-203bffb39d36",
+                  "type": "point",
+                  "x": 988.18,
+                  "y": 294.73
+                },
+                {
+                  "id": "3cd35adc-ef20-4374-a0a6-493a63e32100",
+                  "type": "point",
+                  "x": 1055,
+                  "y": 294.73
+                }
+              ],
+              "id": "2c38df41-c891-411e-831b-238960eb0d7c",
+              "type": "default",
+              "selected": false,
+              "source": "20c41296-b5dd-4094-a6e2-877c17c6e932",
+              "sourcePort": "cmkczhreu0027356r5z36cv9u",
+              "target": "d1f138b4-d87e-41c5-8695-879cc261397f",
+              "targetPort": "cmkczr5i900dn356rjw4tr3vn",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "ca631e64-4123-4c7c-92a8-872838bba0ef": {
+              "points": [
+                {
+                  "id": "649c4daa-9444-454c-91bd-dadf0b2c8adf",
+                  "type": "point",
+                  "x": 1288.18,
+                  "y": 454.73
+                },
+                {
+                  "id": "d9ae2105-0cd6-40a5-8f73-e8f4450e9ae5",
+                  "type": "point",
+                  "x": 1350,
+                  "y": 454.73
+                }
+              ],
+              "id": "ca631e64-4123-4c7c-92a8-872838bba0ef",
+              "type": "default",
+              "selected": false,
+              "source": "6176066c-7181-4cda-b8fd-1cb23d54b97f",
+              "sourcePort": "cmkczq2qg00b8356rehvz2i5q",
+              "target": "9b90cef1-a0ae-492a-b027-6d77cd801ff8",
+              "targetPort": "cmkczrh4300ek356rdd466jol",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "febebc74-ff42-429b-8d31-683633cc0469": {
+              "points": [
+                {
+                  "id": "1dccfbbf-bf99-4cb8-bb48-90fc460cd3e6",
+                  "type": "point",
+                  "x": 1209,
+                  "y": 294.73
+                },
+                {
+                  "id": "f8b70884-aaaa-4dd0-91ef-d01d795685bd",
+                  "type": "point",
+                  "x": 850,
+                  "y": 449.73
+                }
+              ],
+              "id": "febebc74-ff42-429b-8d31-683633cc0469",
+              "type": "default",
+              "selected": false,
+              "source": "d1f138b4-d87e-41c5-8695-879cc261397f",
+              "sourcePort": "cmkczr5i900dp356rr79ux2f8",
+              "target": "3d06416f-eede-472f-8c92-fa51ef77f58d",
+              "targetPort": "cmkczlxhf0073356rlot4jn0d",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "c1d5c402-ea37-4bc8-a4a6-5f10c22f641a": {
+              "points": [
+                {
+                  "id": "a17eaef1-4e13-4410-b711-3799ee8604cb",
+                  "type": "point",
+                  "x": 669,
+                  "y": 204.73
+                },
+                {
+                  "id": "6f8795c6-4ee3-4f9c-8148-fb580012df97",
+                  "type": "point",
+                  "x": 555,
+                  "y": 294.73
+                }
+              ],
+              "id": "c1d5c402-ea37-4bc8-a4a6-5f10c22f641a",
+              "type": "default",
+              "selected": false,
+              "source": "8bf1ebfe-f88f-46dc-9982-f4a3499887e4",
+              "sourcePort": "cmkczf4w700v1356rdvf87zmr",
+              "target": "5ab4d6c7-6feb-4d02-ad64-65474fe66015",
+              "targetPort": "cmkczgt3r000u356rpdq5j23y",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "85d6f092-b2b2-4f30-87b8-4acf3a3820cb": {
+              "points": [
+                {
+                  "id": "3827b600-c239-4405-bb8e-3e39071de33b",
+                  "type": "point",
+                  "x": 1504,
+                  "y": 454.73
+                },
+                {
+                  "id": "15be0ae6-77bf-4261-a834-f18016ba72fe",
+                  "type": "point",
+                  "x": 1565,
+                  "y": 454.73
+                }
+              ],
+              "id": "85d6f092-b2b2-4f30-87b8-4acf3a3820cb",
+              "type": "default",
+              "selected": false,
+              "source": "9b90cef1-a0ae-492a-b027-6d77cd801ff8",
+              "sourcePort": "cmkczrh4300em356rtiu2vh35",
+              "target": "9b29e54f-7ea6-4196-9a6e-edf57592e02e",
+              "targetPort": "cmkd0hcie00w5356rb2c0nabe",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "8855ec61-01bc-49cf-817c-8295ad3b22d2": {
+              "points": [
+                {
+                  "id": "edbc1dab-4e6c-47c3-8cff-c0dbc657c4a5",
+                  "type": "point",
+                  "x": 1728.68,
+                  "y": 454.73
+                },
+                {
+                  "id": "e7725053-1a81-4e14-8876-4493b9586135",
+                  "type": "point",
+                  "x": 1805,
+                  "y": 454.73
+                }
+              ],
+              "id": "8855ec61-01bc-49cf-817c-8295ad3b22d2",
+              "type": "default",
+              "selected": false,
+              "source": "9b29e54f-7ea6-4196-9a6e-edf57592e02e",
+              "sourcePort": "cmkd0hcie00w7356ry8xlcrxb",
+              "target": "2f1e7ec4-8b90-4728-973c-6d2fa7a1b803",
+              "targetPort": "cmkd0nl360108356r2nltcjs5",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "84b36836-670b-4e59-8879-cee3358eb2de": {
+              "points": [
+                {
+                  "id": "6b7fb9ad-b97b-4be7-b927-7d0ad6fc628f",
+                  "type": "point",
+                  "x": 364,
+                  "y": 379.73
+                },
+                {
+                  "id": "55da4968-3334-41fe-a99c-ecd0f0b1eb25",
+                  "type": "point",
+                  "x": 515,
+                  "y": 204.73
+                }
+              ],
+              "id": "84b36836-670b-4e59-8879-cee3358eb2de",
+              "type": "default",
+              "selected": false,
+              "source": "4cad46f1-77d7-473b-8935-6e0a19f7138a",
+              "sourcePort": "cml8konvp00of356rgk126264",
+              "target": "8bf1ebfe-f88f-46dc-9982-f4a3499887e4",
+              "targetPort": "cmkczf4w700uz356rv353y6ka",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "aa40ea6d-31fc-43fe-bd18-c99b51c63551": {
+              "points": [
+                {
+                  "id": "e7bbb2a3-6f4b-4bbc-bbab-08f20268e252",
+                  "type": "point",
+                  "x": 1959,
+                  "y": 454.73
+                },
+                {
+                  "id": "c6143170-aa93-4092-b8de-72f57055d455",
+                  "type": "point",
+                  "x": 1929,
+                  "y": 552.73
+                }
+              ],
+              "id": "aa40ea6d-31fc-43fe-bd18-c99b51c63551",
+              "type": "default",
+              "selected": true,
+              "source": "2f1e7ec4-8b90-4728-973c-6d2fa7a1b803",
+              "sourcePort": "cmkd0nl36010a356rm05tqazt",
+              "target": "8f1c9c92-180d-46ee-ae5e-a9a8f4c6a556",
+              "targetPort": "cml8kot6a00ol356rkms9hojh",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            }
+          }
+        },
+        {
+          "id": "71e2cb51-144b-4594-ba04-92944176baa3",
+          "type": "diagram-nodes",
+          "isSvg": false,
+          "transformed": true,
+          "models": {
+            "41845bd1-17be-43d9-bc25-818c6327dbf8": {
+              "id": "41845bd1-17be-43d9-bc25-818c6327dbf8",
+              "type": "debugSource",
+              "selected": false,
+              "x": 250,
+              "y": 110,
+              "ports": [
+                {
+                  "id": "cmkczergf00up356ruc067e5p",
+                  "type": "default",
+                  "x": 396,
+                  "y": 141.73,
+                  "name": "cmkczergf00uq356rhsmgn2gj",
+                  "parentNode": "41845bd1-17be-43d9-bc25-818c6327dbf8",
+                  "links": [
+                    "874566f8-ee03-49a2-afaf-abb373c31f94"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "payload": {},
+                "context": {},
+                "nextNodes": [
+                  "8bf1ebfe-f88f-46dc-9982-f4a3499887e4"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Source"
+            },
+            "38d42686-6460-40ee-8ba6-0fd87b0d96f1": {
+              "id": "38d42686-6460-40ee-8ba6-0fd87b0d96f1",
+              "type": "schedule",
+              "selected": false,
+              "x": 220,
+              "y": 265,
+              "ports": [
+                {
+                  "id": "cmkczew9r00uv356r5p401n60",
+                  "type": "default",
+                  "x": 366,
+                  "y": 296.73,
+                  "name": "cmkczew9r00uw356ric0dr4h2",
+                  "parentNode": "38d42686-6460-40ee-8ba6-0fd87b0d96f1",
+                  "links": [
+                    "88d1441d-6f09-43c8-80f7-078c2513964e"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Payload",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "configure": "Open Schedule Editor",
+                "nextNodes": [
+                  "8bf1ebfe-f88f-46dc-9982-f4a3499887e4"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Schedule"
+            },
+            "8bf1ebfe-f88f-46dc-9982-f4a3499887e4": {
+              "id": "8bf1ebfe-f88f-46dc-9982-f4a3499887e4",
+              "type": "setContext",
+              "selected": false,
+              "x": 515,
+              "y": 165,
+              "ports": [
+                {
+                  "id": "cmkczf4w700uz356rv353y6ka",
+                  "type": "default",
+                  "x": 507,
+                  "y": 196.73,
+                  "name": "cmkczf4w700v0356rw9vagxew",
+                  "parentNode": "8bf1ebfe-f88f-46dc-9982-f4a3499887e4",
+                  "links": [
+                    "874566f8-ee03-49a2-afaf-abb373c31f94",
+                    "88d1441d-6f09-43c8-80f7-078c2513964e",
+                    "84b36836-670b-4e59-8879-cee3358eb2de"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkczf4w700v1356rdvf87zmr",
+                  "type": "default",
+                  "x": 661,
+                  "y": 196.73,
+                  "name": "cmkczf4w700v2356rov2zk56r",
+                  "parentNode": "8bf1ebfe-f88f-46dc-9982-f4a3499887e4",
+                  "links": [
+                    "c1d5c402-ea37-4bc8-a4a6-5f10c22f641a"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "{ \"config\": {\r\n  \"avgOrdersPerWorkcenter\": 5,\r\n  \"orderVariance\": 0.3,\r\n  \"minOrders\": 3,\r\n  \"maxOrders\": 8,\r\n  \"priorityWeights\": {\r\n    \"1\": 0.10,\r\n    \"3\": 0.20,\r\n    \"5\": 0.40,\r\n    \"7\": 0.20,\r\n    \"9\": 0.10\r\n  }\r\n}}",
+                "nextNodes": [
+                  "5ab4d6c7-6feb-4d02-ad64-65474fe66015"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Configuration"
+            },
+            "5ab4d6c7-6feb-4d02-ad64-65474fe66015": {
+              "id": "5ab4d6c7-6feb-4d02-ad64-65474fe66015",
+              "type": "query",
+              "selected": false,
+              "x": 555,
+              "y": 255,
+              "ports": [
+                {
+                  "id": "cmkczgt3r000u356rpdq5j23y",
+                  "type": "default",
+                  "x": 547,
+                  "y": 286.73,
+                  "name": "cmkczgt3r000v356rwuql9brs",
+                  "parentNode": "5ab4d6c7-6feb-4d02-ad64-65474fe66015",
+                  "links": [
+                    "c1d5c402-ea37-4bc8-a4a6-5f10c22f641a"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkczgt3r000w356r074bqd69",
+                  "type": "default",
+                  "x": 731.25,
+                  "y": 286.73,
+                  "name": "cmkczgt3r000x356rbxkuz3rp",
+                  "parentNode": "5ab4d6c7-6feb-4d02-ad64-65474fe66015",
+                  "links": [
+                    "789b70dd-f345-4ecc-abec-43d58320879d"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "application",
+                "variablesTransform": "{\r\n  \"where\": {\r\n    \"isActive\": {\r\n      \"_eq\": true\r\n    }\r\n  }\r\n}",
+                "query": "query Workcenter($where: WorkcenterWhereInput, $orderBy: [WorkcenterOrderByInput!], $first: Int, $after: String) {\n  workcenter(where: $where, orderBy: $orderBy, first: $first, after: $after) {\n    edges {\n      node {\n        id\n        name\n        isActive\n        code\n        cellId\n        currentWorkOrderId\n        lineId\n      }\n    }\n  }\n}",
+                "nextNodes": [
+                  "20c41296-b5dd-4094-a6e2-877c17c6e932"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Query Active Workcenters"
+            },
+            "20c41296-b5dd-4094-a6e2-877c17c6e932": {
+              "id": "20c41296-b5dd-4094-a6e2-877c17c6e932",
+              "type": "transform",
+              "selected": false,
+              "x": 800,
+              "y": 255,
+              "ports": [
+                {
+                  "id": "cmkczhreu0025356ryvkqaqdq",
+                  "type": "default",
+                  "x": 792,
+                  "y": 286.73,
+                  "name": "cmkczhreu0026356rpya1w15z",
+                  "parentNode": "20c41296-b5dd-4094-a6e2-877c17c6e932",
+                  "links": [
+                    "789b70dd-f345-4ecc-abec-43d58320879d"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkczhreu0027356r5z36cv9u",
+                  "type": "default",
+                  "x": 980.18,
+                  "y": 286.73,
+                  "name": "cmkczhreu0028356rfn06c71y",
+                  "parentNode": "20c41296-b5dd-4094-a6e2-877c17c6e932",
+                  "links": [
+                    "2c38df41-c891-411e-831b-238960eb0d7c"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "$.workcenter",
+                "nextNodes": [
+                  "d1f138b4-d87e-41c5-8695-879cc261397f"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "JSONata - Reduce to Array"
+            },
+            "3d06416f-eede-472f-8c92-fa51ef77f58d": {
+              "id": "3d06416f-eede-472f-8c92-fa51ef77f58d",
+              "type": "query",
+              "selected": false,
+              "x": 850,
+              "y": 410,
+              "ports": [
+                {
+                  "id": "cmkczlxhf0073356rlot4jn0d",
+                  "type": "default",
+                  "x": 842,
+                  "y": 441.73,
+                  "name": "cmkczlxhf0074356r8huyeaxz",
+                  "parentNode": "3d06416f-eede-472f-8c92-fa51ef77f58d",
+                  "links": [
+                    "febebc74-ff42-429b-8d31-683633cc0469"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkczlxhf0075356rrvctlep0",
+                  "type": "default",
+                  "x": 1006.88,
+                  "y": 441.73,
+                  "name": "cmkczlxhf0076356r4atbe4w8",
+                  "parentNode": "3d06416f-eede-472f-8c92-fa51ef77f58d",
+                  "links": [
+                    "ff3f74da-dd11-4965-84df-bb38c269475b"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "application",
+                "variablesTransform": "{\r\n  \"where\": {\r\n    \"isActive\": {\r\n      \"_eq\": true\r\n    },\r\n    \"workcenterId\": {\r\n      \"_isNull\": false\r\n    }\r\n  }\r\n}",
+                "query": "query Product($where: ProductWhereInput, $orderBy: [ProductOrderByInput!], $first: Int, $after: String) {\n  product(where: $where, orderBy: $orderBy, first: $first, after: $after) {\n    edges {\n      node {\n        id\n        name\n        setupTime\n        standardCycleTime\n        targetYield\n        isActive\n        code\n        productFamily\n        unitId\n        workcenterId\n      }\n    }\n  }\n}",
+                "nextNodes": [
+                  "6176066c-7181-4cda-b8fd-1cb23d54b97f"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Query Active Products"
+            },
+            "6176066c-7181-4cda-b8fd-1cb23d54b97f": {
+              "id": "6176066c-7181-4cda-b8fd-1cb23d54b97f",
+              "type": "transform",
+              "selected": false,
+              "x": 1100,
+              "y": 415,
+              "ports": [
+                {
+                  "id": "cmkczq2qg00b6356rd0uhpf0s",
+                  "type": "default",
+                  "x": 1092,
+                  "y": 446.73,
+                  "name": "cmkczq2qg00b7356rywcg9b53",
+                  "parentNode": "6176066c-7181-4cda-b8fd-1cb23d54b97f",
+                  "links": [
+                    "ff3f74da-dd11-4965-84df-bb38c269475b"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkczq2qg00b8356rehvz2i5q",
+                  "type": "default",
+                  "x": 1280.18,
+                  "y": 446.73,
+                  "name": "cmkczq2qg00b9356rhns9vc9m",
+                  "parentNode": "6176066c-7181-4cda-b8fd-1cb23d54b97f",
+                  "links": [
+                    "ca631e64-4123-4c7c-92a8-872838bba0ef"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "$.product",
+                "nextNodes": [
+                  "9b90cef1-a0ae-492a-b027-6d77cd801ff8"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "JSONata - Reduce to Array"
+            },
+            "d1f138b4-d87e-41c5-8695-879cc261397f": {
+              "id": "d1f138b4-d87e-41c5-8695-879cc261397f",
+              "type": "mergeContext",
+              "selected": false,
+              "x": 1055,
+              "y": 255,
+              "ports": [
+                {
+                  "id": "cmkczr5i900dn356rjw4tr3vn",
+                  "type": "default",
+                  "x": 1047,
+                  "y": 286.73,
+                  "name": "cmkczr5i900do356rqyo1dwx0",
+                  "parentNode": "d1f138b4-d87e-41c5-8695-879cc261397f",
+                  "links": [
+                    "2c38df41-c891-411e-831b-238960eb0d7c"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkczr5i900dp356rr79ux2f8",
+                  "type": "default",
+                  "x": 1201,
+                  "y": 286.73,
+                  "name": "cmkczr5i900dq356r6002ik6i",
+                  "parentNode": "d1f138b4-d87e-41c5-8695-879cc261397f",
+                  "links": [
+                    "febebc74-ff42-429b-8d31-683633cc0469"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "{\r\n  \"workcenters\": $\r\n}",
+                "nextNodes": [
+                  "3d06416f-eede-472f-8c92-fa51ef77f58d"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Merge Context"
+            },
+            "9b90cef1-a0ae-492a-b027-6d77cd801ff8": {
+              "id": "9b90cef1-a0ae-492a-b027-6d77cd801ff8",
+              "type": "mergeContext",
+              "selected": false,
+              "x": 1350,
+              "y": 415,
+              "ports": [
+                {
+                  "id": "cmkczrh4300ek356rdd466jol",
+                  "type": "default",
+                  "x": 1342,
+                  "y": 446.73,
+                  "name": "cmkczrh4300el356rys0jy8ga",
+                  "parentNode": "9b90cef1-a0ae-492a-b027-6d77cd801ff8",
+                  "links": [
+                    "ca631e64-4123-4c7c-92a8-872838bba0ef"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkczrh4300em356rtiu2vh35",
+                  "type": "default",
+                  "x": 1496,
+                  "y": 446.73,
+                  "name": "cmkczrh4300en356r39nvr6rq",
+                  "parentNode": "9b90cef1-a0ae-492a-b027-6d77cd801ff8",
+                  "links": [
+                    "85d6f092-b2b2-4f30-87b8-4acf3a3820cb"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "{\r\n  \"products\": $\r\n}",
+                "nextNodes": [
+                  "9b29e54f-7ea6-4196-9a6e-edf57592e02e"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Store Products"
+            },
+            "9b29e54f-7ea6-4196-9a6e-edf57592e02e": {
+              "id": "9b29e54f-7ea6-4196-9a6e-edf57592e02e",
+              "type": "javascriptTransform",
+              "selected": false,
+              "x": 1565,
+              "y": 415,
+              "ports": [
+                {
+                  "id": "cmkd0hcie00w5356rb2c0nabe",
+                  "type": "default",
+                  "x": 1557,
+                  "y": 446.73,
+                  "name": "cmkd0hcie00w6356r0lrwdc7n",
+                  "parentNode": "9b29e54f-7ea6-4196-9a6e-edf57592e02e",
+                  "links": [
+                    "85d6f092-b2b2-4f30-87b8-4acf3a3820cb"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkd0hcie00w7356ry8xlcrxb",
+                  "type": "default",
+                  "x": 1720.68,
+                  "y": 446.73,
+                  "name": "cmkd0hcie00w8356rwspgp5im",
+                  "parentNode": "9b29e54f-7ea6-4196-9a6e-edf57592e02e",
+                  "links": [
+                    "8855ec61-01bc-49cf-817c-8295ad3b22d2"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "// Access context differently in Fuuz transformations\r\nconst stateContext = $state && $state.context ? $state.context : {};\r\n\r\n// Get config from context\r\nconst config = stateContext.avgOrdersPerWorkcenter ? stateContext : {\r\n  minOrderDurationHours: 24,        // Minimum 24 hours per order\r\n  maxOrderDurationHours: 72,        // Maximum 72 hours per order\r\n  targetWeekCapacity: 1.10,         // 110% of week capacity\r\n  priorityWeights: { \"1\": 0.10, \"3\": 0.20, \"5\": 0.40, \"7\": 0.20, \"9\": 0.10 }\r\n};\r\n\r\n// Extract workcenters and products from context\r\nconst workcenters = stateContext.workcenters && stateContext.workcenters.edges \r\n  ? stateContext.workcenters.edges.map(e => e.node)\r\n  : [];\r\n\r\nconst products = stateContext.products && stateContext.products.edges\r\n  ? stateContext.products.edges.map(e => e.node)\r\n  : [];\r\n\r\n// Calculate week start (Sunday)\r\nconst now = new Date();\r\nconst startOfWeek = new Date(now);\r\nstartOfWeek.setDate(now.getDate() - now.getDay());\r\nstartOfWeek.setHours(0, 0, 0, 0);\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// CAPACITY PLANNING CONSTANTS\r\n// ═══════════════════════════════════════════════════════════════════════\r\nconst HOURS_PER_WEEK = 7 * 24;  // 168 hours\r\nconst TARGET_CAPACITY_HOURS = HOURS_PER_WEEK * config.targetWeekCapacity;  // 184.8 hours at 110%\r\nconst MIN_ORDER_HOURS = config.minOrderDurationHours;  // 24 hours minimum\r\nconst MAX_ORDER_HOURS = config.maxOrderDurationHours;  // 72 hours maximum\r\n\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\nconsole.log('WORK ORDER GENERATION - CAPACITY BASED');\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\nconsole.log('Target capacity per workcenter: ' + TARGET_CAPACITY_HOURS.toFixed(1) + ' hours (' + (TARGET_CAPACITY_HOURS / 24).toFixed(1) + ' days)');\r\nconsole.log('Order duration range: ' + MIN_ORDER_HOURS + '-' + MAX_ORDER_HOURS + ' hours');\r\nconsole.log('Week start: ' + startOfWeek.toISOString().slice(0, 10));\r\nconsole.log('───────────────────────────────────────────────────────────');\r\n\r\n// Helper functions\r\nfunction randomInRange(min, max) {\r\n  return Math.random() * (max - min) + min;\r\n}\r\n\r\nfunction randomInt(min, max) {\r\n  return Math.floor(randomInRange(min, max + 1));\r\n}\r\n\r\nfunction getRandomPriority() {\r\n  const rand = Math.random();\r\n  let cumulative = 0;\r\n  for (const [priority, weight] of Object.entries(config.priorityWeights)) {\r\n    cumulative += weight;\r\n    if (rand <= cumulative) return parseInt(priority);\r\n  }\r\n  return 5;\r\n}\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// CALCULATE ORDER QUANTITY BASED ON DESIRED DURATION\r\n// ═══════════════════════════════════════════════════════════════════════\r\nfunction calculateOrderQuantity(product, targetHours) {\r\n  const { standardCycleTime, targetYield = 99 } = product;\r\n  \r\n  // standardCycleTime is in seconds per unit\r\n  // targetHours is how long we want this order to run\r\n  const targetSeconds = targetHours * 3600;\r\n  \r\n  // Calculate raw quantity needed for target duration\r\n  const rawQuantity = targetSeconds / standardCycleTime;\r\n  \r\n  // Account for yield to determine target quantity\r\n  // If yield is 99%, we need 1% more to get the target good units\r\n  const yieldDecimal = targetYield / 100;\r\n  const targetQuantity = Math.ceil(rawQuantity * yieldDecimal);\r\n  \r\n  return targetQuantity;\r\n}\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// CALCULATE ORDER DURATION BASED ON QUANTITY\r\n// ═══════════════════════════════════════════════════════════════════════\r\nfunction calculateOrderDuration(product, quantity) {\r\n  const { standardCycleTime, setupTime = 0 } = product;\r\n  \r\n  // Setup time is in minutes\r\n  const setupHours = setupTime / 60;\r\n  \r\n  // Production time: (quantity * seconds per unit) / 3600 = hours\r\n  const productionHours = (quantity * standardCycleTime) / 3600;\r\n  \r\n  const totalHours = setupHours + productionHours;\r\n  \r\n  return {\r\n    setupHours: setupHours,\r\n    productionHours: productionHours,\r\n    totalHours: totalHours\r\n  };\r\n}\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// UNIQUE CODE GENERATOR\r\n// ═══════════════════════════════════════════════════════════════════════\r\nfunction generateWorkOrderCode(workcenterCode, sequence) {\r\n  const dateTimePart = new Date().toISOString()\r\n    .replace(/[-:T]/g, '')\r\n    .slice(0, 14);\r\n  \r\n  const randomSuffix = Math.random().toString(36).substr(2, 3).toUpperCase();\r\n  \r\n  return `WO-${workcenterCode}-${dateTimePart}-${randomSuffix}`;\r\n}\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// CALCULATE SCHEDULED DATES\r\n// ═══════════════════════════════════════════════════════════════════════\r\nfunction calculateScheduledDates(product, quantity, startDate) {\r\n  const duration = calculateOrderDuration(product, quantity);\r\n  const totalMinutes = duration.totalHours * 60;\r\n  \r\n  const scheduledStartAt = new Date(startDate);\r\n  const scheduledEndAt = new Date(scheduledStartAt.getTime() + totalMinutes * 60000);\r\n  \r\n  return {\r\n    scheduledStartAt: scheduledStartAt.toISOString(),\r\n    scheduledEndAt: scheduledEndAt.toISOString(),\r\n    durationHours: duration.totalHours\r\n  };\r\n}\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// GROUP PRODUCTS BY WORKCENTER\r\n// ═══════════════════════════════════════════════════════════════════════\r\nconst productsByWorkcenter = {};\r\nproducts.forEach(product => {\r\n  if (!productsByWorkcenter[product.workcenterId]) {\r\n    productsByWorkcenter[product.workcenterId] = [];\r\n  }\r\n  productsByWorkcenter[product.workcenterId].push(product);\r\n});\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// GENERATE WORK ORDERS WITH CAPACITY PLANNING\r\n// ═══════════════════════════════════════════════════════════════════════\r\nconst workOrders = [];\r\nconst workcenterStats = [];\r\n\r\nworkcenters.forEach(workcenter => {\r\n  const wcProducts = productsByWorkcenter[workcenter.id] || [];\r\n  if (wcProducts.length === 0) {\r\n    console.log('Workcenter ' + workcenter.code + ': No products, skipping');\r\n    return;\r\n  }\r\n  \r\n  console.log('\\nWorkcenter ' + workcenter.code + ':');\r\n  console.log('  Products available: ' + wcProducts.length);\r\n  \r\n  let totalScheduledHours = 0;\r\n  let orderCount = 0;\r\n  let currentStartTime = new Date(startOfWeek);\r\n  \r\n  // Keep generating orders until we reach 110% capacity\r\n  while (totalScheduledHours < TARGET_CAPACITY_HOURS) {\r\n    // Calculate remaining capacity\r\n    const remainingHours = TARGET_CAPACITY_HOURS - totalScheduledHours;\r\n    \r\n    // Determine order duration (random between min and max, but not more than remaining)\r\n    let orderDuration = randomInRange(MIN_ORDER_HOURS, MAX_ORDER_HOURS);\r\n    orderDuration = Math.min(orderDuration, remainingHours);\r\n    \r\n    // If remaining capacity is too small for a meaningful order, add one more full order\r\n    if (remainingHours < MIN_ORDER_HOURS && orderCount > 0) {\r\n      orderDuration = MIN_ORDER_HOURS;\r\n    }\r\n    \r\n    // Skip if duration too small\r\n    if (orderDuration < 1) {\r\n      break;\r\n    }\r\n    \r\n    // Select random product\r\n    const product = wcProducts[randomInt(0, wcProducts.length - 1)];\r\n    const quantity = calculateOrderQuantity(product, orderDuration);\r\n    const priority = getRandomPriority();\r\n    \r\n    // Calculate actual duration with this quantity\r\n    const schedule = calculateScheduledDates(product, quantity, currentStartTime);\r\n    const actualDuration = schedule.durationHours;\r\n    \r\n    workOrders.push({\r\n      create: {\r\n        code: generateWorkOrderCode(workcenter.code, orderCount + 1),\r\n        productId: product.id,\r\n        workcenterId: workcenter.id,\r\n        quantityTarget: quantity,\r\n        quantityCompleted: 0,\r\n        quantityScrap: 0,\r\n        priority: priority,\r\n        status: 'Released',\r\n        scheduledStartAt: schedule.scheduledStartAt,\r\n        scheduledEndAt: schedule.scheduledEndAt,\r\n        notes: 'Auto-generated for week of ' + startOfWeek.toISOString().slice(0, 10) + ' - Duration: ' + actualDuration.toFixed(1) + 'h'\r\n      }\r\n    });\r\n    \r\n    // Update tracking\r\n    totalScheduledHours += actualDuration;\r\n    orderCount++;\r\n    \r\n    // Move start time forward for next order\r\n    currentStartTime = new Date(schedule.scheduledEndAt);\r\n    \r\n    console.log('  Order ' + orderCount + ': ' + product.code + ', ' + quantity + ' units, ' + actualDuration.toFixed(1) + 'h (Total: ' + totalScheduledHours.toFixed(1) + 'h)');\r\n  }\r\n  \r\n  const utilizationPercent = (totalScheduledHours / HOURS_PER_WEEK) * 100;\r\n  \r\n  workcenterStats.push({\r\n    workcenterId: workcenter.id,\r\n    workcenterCode: workcenter.code,\r\n    ordersGenerated: orderCount,\r\n    totalScheduledHours: Math.round(totalScheduledHours * 10) / 10,\r\n    totalScheduledDays: Math.round((totalScheduledHours / 24) * 10) / 10,\r\n    utilizationPercent: Math.round(utilizationPercent * 10) / 10,\r\n    targetCapacityHours: TARGET_CAPACITY_HOURS\r\n  });\r\n  \r\n  console.log('  Summary: ' + orderCount + ' orders, ' + totalScheduledHours.toFixed(1) + ' hours (' + (totalScheduledHours / 24).toFixed(1) + ' days), ' + utilizationPercent.toFixed(1) + '% utilization');\r\n});\r\n\r\n// ═══════════════════════════════════════════════════════════════════════\r\n// CALCULATE OVERALL STATISTICS\r\n// ═══════════════════════════════════════════════════════════════════════\r\nconst totalHoursScheduled = workcenterStats.reduce((sum, wc) => sum + wc.totalScheduledHours, 0);\r\nconst avgUtilization = workcenterStats.length > 0 \r\n  ? workcenterStats.reduce((sum, wc) => sum + wc.utilizationPercent, 0) / workcenterStats.length\r\n  : 0;\r\n\r\nconsole.log('\\n═══════════════════════════════════════════════════════════');\r\nconsole.log('GENERATION COMPLETE');\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\nconsole.log('Total work orders: ' + workOrders.length);\r\nconsole.log('Workcenters processed: ' + workcenters.length);\r\nconsole.log('Total hours scheduled: ' + totalHoursScheduled.toFixed(1) + ' hours');\r\nconsole.log('Average utilization: ' + avgUtilization.toFixed(1) + '%');\r\nconsole.log('═══════════════════════════════════════════════════════════');\r\n\r\nreturn {\r\n  workOrders: workOrders,\r\n  summary: {\r\n    totalOrders: workOrders.length,\r\n    workcentersProcessed: workcenters.length,\r\n    productsAvailable: products.length,\r\n    weekStart: startOfWeek.toISOString().slice(0, 10),\r\n    targetCapacityHours: TARGET_CAPACITY_HOURS,\r\n    totalHoursScheduled: Math.round(totalHoursScheduled * 10) / 10,\r\n    totalDaysScheduled: Math.round((totalHoursScheduled / 24) * 10) / 10,\r\n    averageUtilization: Math.round(avgUtilization * 10) / 10,\r\n    workcenterStats: workcenterStats\r\n  }\r\n};",
+                "nextNodes": [
+                  "2f1e7ec4-8b90-4728-973c-6d2fa7a1b803"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Generate Work Orders"
+            },
+            "2f1e7ec4-8b90-4728-973c-6d2fa7a1b803": {
+              "id": "2f1e7ec4-8b90-4728-973c-6d2fa7a1b803",
+              "type": "mutate",
+              "selected": false,
+              "x": 1805,
+              "y": 415,
+              "ports": [
+                {
+                  "id": "cmkd0nl360108356r2nltcjs5",
+                  "type": "default",
+                  "x": 1797,
+                  "y": 446.73,
+                  "name": "cmkd0nl360109356rvy7c26f1",
+                  "parentNode": "2f1e7ec4-8b90-4728-973c-6d2fa7a1b803",
+                  "links": [
+                    "8855ec61-01bc-49cf-817c-8295ad3b22d2"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkd0nl36010a356rm05tqazt",
+                  "type": "default",
+                  "x": 1951,
+                  "y": 446.73,
+                  "name": "cmkd0nl36010b356rrx4efahl",
+                  "parentNode": "2f1e7ec4-8b90-4728-973c-6d2fa7a1b803",
+                  "links": [
+                    "aa40ea6d-31fc-43fe-bd18-c99b51c63551"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "Application",
+                "variablesTransform": "{ \"payload\": $.workOrders }",
+                "mutation": "mutation CreateWorkOrders($payload: [WorkOrderCreatePayloadInput!]!) {\r\n  createWorkOrder(payload: $payload) {\r\n    id\r\n    code\r\n    status\r\n  }\r\n}",
+                "nextNodes": [
+                  "8f1c9c92-180d-46ee-ae5e-a9a8f4c6a556"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Create Work Orders"
+            },
+            "4cad46f1-77d7-473b-8935-6e0a19f7138a": {
+              "id": "4cad46f1-77d7-473b-8935-6e0a19f7138a",
+              "type": "request",
+              "selected": false,
+              "x": 210,
+              "y": 340,
+              "ports": [
+                {
+                  "id": "cml8konvp00of356rgk126264",
+                  "type": "default",
+                  "x": 356,
+                  "y": 371.73,
+                  "name": "cml8konvp00og356r1qv5ezpj",
+                  "parentNode": "4cad46f1-77d7-473b-8935-6e0a19f7138a",
+                  "links": [
+                    "84b36836-670b-4e59-8879-cee3358eb2de"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Payload",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "8bf1ebfe-f88f-46dc-9982-f4a3499887e4"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Request"
+            },
+            "8f1c9c92-180d-46ee-ae5e-a9a8f4c6a556": {
+              "id": "8f1c9c92-180d-46ee-ae5e-a9a8f4c6a556",
+              "type": "response",
+              "x": 1929,
+              "y": 513,
+              "ports": [
+                {
+                  "id": "cml8kot6a00ol356rkms9hojh",
+                  "type": "default",
+                  "x": 1921,
+                  "y": 544.73,
+                  "name": "cml8kot6a00om356rxrjcd17q",
+                  "parentNode": "8f1c9c92-180d-46ee-ae5e-a9a8f4c6a556",
+                  "links": [
+                    "aa40ea6d-31fc-43fe-bd18-c99b51c63551"
+                  ],
+                  "in": true,
+                  "fieldLabel": "Response"
+                },
+                {
+                  "id": "cml8kot6a00on356r78wrreyg",
+                  "type": "default",
+                  "x": 2075,
+                  "y": 544.73,
+                  "name": "cml8kot6a00oo356rzow79dsr",
+                  "parentNode": "8f1c9c92-180d-46ee-ae5e-a9a8f4c6a556",
+                  "links": [],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "responseTransform": "$",
+                "nextNodes": []
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Response"
+            }
+          }
+        }
+      ],
+      "name": "WeeklyWorkOrderGenerator",
+      "type": "System",
+      "version": "0.0.4",
+      "walkthrough": {
+        "steps": []
+      }
+    }
+  }
+}

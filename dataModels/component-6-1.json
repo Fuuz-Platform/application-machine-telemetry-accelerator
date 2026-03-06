@@ -1,0 +1,308 @@
+{
+  "header": {
+    "id": "line",
+    "name": "Line",
+    "description": "Represents a production line or sequential manufacturing flow within an Area. A Line is a core operational unit for scheduling, OEE (Overall Equipment Effectiveness), throughput analysis, and changeover planning.\n\n**Typical Use Cases**\n\n- Plan and execute jobs or work orders.\n- Aggregate performance metrics from Cells for line-level KPIs.\n- Apply shift profiles and capacity constraints for scheduling.\n- Monitor real-time states and events for production optimization.\n- Associate assets (machines, tools) for maintenance and telemetry.",
+    "dataModelKindId": "reference",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cmk5kpd7401wi0180c33tgmy1",
+    "number": "5",
+    "dataModelId": "line",
+    "modelDefinition": {
+      "name": "Line",
+      "metadata": {
+        "mfgx": {
+          "module": {
+            "id": "machineDataApp",
+            "group": {
+              "id": "machineTelemetrySiteApplication"
+            }
+          },
+          "exposed": true,
+          "mutable": true,
+          "mutations": {
+            "create": true,
+            "update": true,
+            "del": true
+          },
+          "dataChangeCapture": {
+            "exposed": false,
+            "retentionDays": 120
+          },
+          "customFields": {
+            "exposed": true
+          },
+          "editor": {
+            "autosort": true
+          },
+          "labelField": "code"
+        },
+        "mongo": {
+          "collection": "line"
+        },
+        "graphql": {
+          "type": "Object"
+        }
+      },
+      "kind": "Reference",
+      "fields": [
+        {
+          "name": "id",
+          "type": "ID!",
+          "description": "The immutable, primary unique identifier for the Line record.\n\n- **Behavior:** Required on creation; cannot be updated.\n- **Usage:** Used for queries, filters, and as a foreign key in related models (e.g., Cells reference Line via `lineId`).\n- **Example:** `\"b2c3d4e5-6789-01fg-hijk-234567890abc\"`",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": false
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": true
+          }
+        },
+        {
+          "name": "code",
+          "type": "String!",
+          "description": "A unique, human-readable code for the Line within its parent Area.\n\n- **Behavior:** Required at creation; can be updated.\n- **Usage:** Acts as the label field for UI and integrations.\n- **Example:** `L01`, `ASSEMBLY-LINE-01`\n- **Constraint:** Must be unique within the Area.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": true
+          }
+        },
+        {
+          "name": "isActive",
+          "type": "Boolean!",
+          "description": "Indicates whether the Line is active for scheduling, telemetry, and reporting.\n\n- **Default:** `true`\n- **Behavior:**When `false`, new operations should be blocked; historical data remains accessible.\n\n- **Example:** `true` (operational), `false` (inactive).",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              },
+              "defaultValue": true
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "description": "The descriptive name of the Line for display and reporting purposes.\n\n- **Example:** `Assembly Line 1`, `Machining Line A`.",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "areaId",
+          "type": "ID!",
+          "description": "Foreign key linking the Line to its parent Area.\n\n- **Behavior:** Required; ensures hierarchical integrity.\n- **Usage:** Used in queries and mutations to associate the Line with an Area.\n- **Example:** `\"a1b2c3d4-5678-90ef-ghij-1234567890ab\"`",
+          "metadata": {
+            "mfgx": {
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "area",
+          "description": "The related Area object for this Line.\n\n- **Behavior:**Relation enforced via `areaId → Area.id`.\nDeletion of the Area is prevented if Lines exist.\n\n- **Usage:** Enables nested queries and mutations for hierarchical data.\n- **Example:** `{ id: \"...\", code: \"A01\", name: \"Assembly Zone\" }`",
+          "type": "Area!",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "deletionReferenceBehavior": "prevent",
+                "fields": {
+                  "from": "areaId",
+                  "to": "id"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "cells",
+          "description": "Collection of Cells associated with this Line.\n\n- **Behavior:**Relation enforced via `Line.id → Cell.lineId`.\nIncluded in queries and mutations for nested operations.\n\n- **Usage:** Represents the next level in the manufacturing hierarchy under the Line.\n- **Example:** `[ { id: \"...\", code: \"C01\", name: \"Station 1\" }, ... ]`",
+          "type": "[Cell!]!",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "fields": {
+                  "from": "id",
+                  "to": "lineId"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        },
+        {
+          "name": "assets",
+          "description": "",
+          "type": "[Asset!]!",
+          "metadata": {
+            "mfgx": {
+              "relation": {
+                "fields": {
+                  "from": "id",
+                  "to": "lineId"
+                }
+              },
+              "mutations": {
+                "create": {
+                  "include": true
+                },
+                "update": {
+                  "include": true
+                }
+              },
+              "queries": {
+                "include": true
+              },
+              "where": {
+                "include": true
+              }
+            },
+            "unique": false
+          }
+        }
+      ],
+      "description": "Represents a production line or sequential manufacturing flow within an Area. A Line is a core operational unit for scheduling, OEE (Overall Equipment Effectiveness), throughput analysis, and changeover planning.\n\n**Typical Use Cases**\n\n- Plan and execute jobs or work orders.\n- Aggregate performance metrics from Cells for line-level KPIs.\n- Apply shift profiles and capacity constraints for scheduling.\n- Monitor real-time states and events for production optimization.\n- Associate assets (machines, tools) for maintenance and telemetry."
+    },
+    "dataModelTypeId": "master"
+  },
+  "migration": "$",
+  "migrations": [
+    {
+      "dataModelVersionId": "cmk5kpd7401wi0180c33tgmy1",
+      "dataModelVersion": {
+        "number": "5"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmk1bx8jj4ga7016c6ics36fz",
+      "dataModelVersion": {
+        "number": "4"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmjzv1hrn20ez016car97bqqd",
+      "dataModelVersion": {
+        "number": "3"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmjzt81yx2f15017j30hq483n",
+      "dataModelVersion": {
+        "number": "2"
+      },
+      "mappingExpression": "$"
+    },
+    {
+      "dataModelVersionId": "cmjzt64gi2ev6017ja9tb8ws9",
+      "dataModelVersion": {
+        "number": "1"
+      },
+      "mappingExpression": "$"
+    }
+  ]
+}

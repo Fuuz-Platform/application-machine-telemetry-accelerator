@@ -1,0 +1,23 @@
+{
+  "header": {
+    "id": "utilizeTimezone",
+    "name": "Utilize Timezone",
+    "description": "",
+    "substitutesSavedTransformId": null,
+    "active": true,
+    "deprecated": false,
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "clpkslqxf003501swa8rwhbp4",
+    "number": "1.0.0",
+    "description": "",
+    "savedTransformId": "utilizeTimezone",
+    "scriptLanguageId": "JSONata",
+    "transform": "(\n  $timezone := $appConfig.testApplicationConfiguration.timezone;  \n  $date := $.date;\n  \n  {\n    \"date\": $moment($date).tz($timezone).format(),\n    \"timezone\": $timezone\n  };\n)",
+    "inputSchema": {},
+    "outputSchema": {}
+  }
+}

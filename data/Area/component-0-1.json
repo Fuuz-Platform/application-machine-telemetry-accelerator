@@ -1,0 +1,97 @@
+{
+  "api": "application",
+  "modelName": "Area",
+  "payload": [
+    {
+      "id": "cmmk01grpn00lflvh1uz",
+      "code": "STAMP",
+      "name": "Stamping",
+      "isActive": true,
+      "siteId": "cmmk01grpn00lfls9su1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lflw9mkt",
+      "code": "MACH",
+      "name": "Machining",
+      "isActive": true,
+      "siteId": "cmmk01grpn00lfls9su1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lflx5y5v",
+      "code": "ASSY",
+      "name": "Assembly",
+      "isActive": true,
+      "siteId": "cmmk01grpn00lfls9su1",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfly0gin",
+      "code": "REACT",
+      "name": "Reaction",
+      "isActive": true,
+      "siteId": "cmmk01grpn00lfltn4w7",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lflzwujo",
+      "code": "SEP",
+      "name": "Separation",
+      "isActive": true,
+      "siteId": "cmmk01grpn00lfltn4w7",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfm0g56s",
+      "code": "UTIL",
+      "name": "Utilities",
+      "isActive": true,
+      "siteId": "cmmk01grpn00lfltn4w7",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfm1eq3c",
+      "code": "MIX",
+      "name": "Mixing & Blending",
+      "isActive": true,
+      "siteId": "cmmk01grpn00lfluh3op",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfm25toe",
+      "code": "PACK",
+      "name": "Packaging",
+      "isActive": true,
+      "siteId": "cmmk01grpn00lfluh3op",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmmk01grpn00lfm3ooh8",
+      "code": "CIP",
+      "name": "Clean-In-Place",
+      "isActive": true,
+      "siteId": "cmmk01grpn00lfluh3op",
+      "_customFields": {
+        "_externalId": null
+      }
+    }
+  ],
+  "metadata": {}
+}

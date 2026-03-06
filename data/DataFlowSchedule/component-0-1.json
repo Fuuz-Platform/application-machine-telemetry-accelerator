@@ -1,0 +1,106 @@
+{
+  "api": "application",
+  "modelName": "DataFlowSchedule",
+  "payload": [
+    {
+      "id": "cmkcsddgj214d016f2ej38gfh",
+      "name": "Raw Telemetry Data Generation - Real time",
+      "description": null,
+      "active": true,
+      "inputSchema": {},
+      "dataFlowId": "telemetryGeneratorScheduler",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmkcser5hpikp016h0qz30bi8",
+      "name": "Aggregate Raw Telemetry Data Hourly - Prior Hour",
+      "description": null,
+      "active": true,
+      "inputSchema": {},
+      "dataFlowId": "telemetryRawDataAggregationHourly",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmkcsjk37pim0016hdfmg454y",
+      "name": "Workcenter History Data Generation",
+      "description": null,
+      "active": true,
+      "inputSchema": {},
+      "dataFlowId": "workcenterHistoryScheduler",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmkd0zdoda5g201642ddve86d",
+      "name": "Weekly Work Order Creation",
+      "description": null,
+      "active": true,
+      "inputSchema": {},
+      "dataFlowId": "weeklyWorkOrderGenerator",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmkd4zltpu51u016h7krh0jar",
+      "name": "Production Data Creation - Production Logs & workorder updates",
+      "description": null,
+      "active": true,
+      "inputSchema": {},
+      "dataFlowId": "productionSimulatorDaily",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmkeke2kdjsrz016gfj9kezym",
+      "name": "Aggregate Raw Telemetry Hourly Data - to Daily - Prior Day",
+      "description": "Takes all the hourly data from today - 1 day, aggregates by datapoin & shift, then loads into the aggregation table.",
+      "active": true,
+      "inputSchema": {},
+      "dataFlowId": "dailyAggregationFlow",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmknaj42tfj79015mc3qj7k16",
+      "name": "Generate OeeHourly Stubs for Next Day - Run Nightly",
+      "description": null,
+      "active": true,
+      "inputSchema": {},
+      "dataFlowId": "generatePayloadForOeeScheduleTomorrowParentFlowScheduled",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cmksjudjxhu37017na93h7uw3",
+      "name": "Aggregate OEE Data - for the Day (Complete Recalc)",
+      "description": "do not exceed every 15 minutes. or you may have failures.",
+      "active": true,
+      "inputSchema": {},
+      "dataFlowId": "oeeDailyAggregationFlow",
+      "_customFields": {
+        "_externalId": null
+      }
+    },
+    {
+      "id": "cml8inqflbfjf018l97sof8cu",
+      "name": "OEE Hourly Catchup Flow (Full Previous Hour Aggregation)",
+      "description": null,
+      "active": true,
+      "inputSchema": {},
+      "dataFlowId": "calculateOeeHourly",
+      "_customFields": {
+        "_externalId": null
+      }
+    }
+  ],
+  "metadata": {}
+}

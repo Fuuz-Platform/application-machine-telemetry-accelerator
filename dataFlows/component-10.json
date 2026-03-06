@@ -1,0 +1,2387 @@
+{
+  "header": {
+    "id": "workcenterHistoryScheduler",
+    "name": "WorkcenterHistoryScheduler",
+    "description": "ISO 22400-Compliant Workcenter State Change Generator\n\nThis node generates realistic workcenter state changes for manufacturing simulation, strictly adhering to ISO 22400-2 standards for OEE calculation.\n\nCore Functions:\n\n- Processes workcenters in batches to simulate operational state transitions\n\n- Maintains open history records (one active state per workcenter)\n\n- Closes previous states and creates new states atomically\n\n- Applies weighted randomness for realistic production patterns\n\n- Enforces ISO 22400-compliant mode-state relationships\n\nISO 22400-2 Compliance:\n\nThe mode-state transition logic ensures proper OEE classification:\n\n- PRODUCTION mode: Only states where equipment actively produces (running, running-slow)\n\n- DISABLED mode: Unscheduled downtime states (faulted, blocked, starved, e-stopped)\n\n- SETUP mode: Planned minor stops within production time (changeover, warmup, cleaning)\n\n- IDLE mode: Planned idle time within production schedule (stopped)\n\n- MAINTENANCE mode: Scheduled maintenance outside production (maintenance, offline)\n\n- CLEANING mode: Deep cleaning activities (cleaning, offline)\n\n- NO-SCHEDULE mode: Outside production calendar (offline)\n\n- ENGINEERING mode: Engineering/testing activities outside production (stopped, offline)\n\nState Transition Rules:\n\n- Blocked/Starved/E-Stopped → Always classified as DOWNTIME (disabled mode)\n\n- Production mode → Only allows actively producing states\n\n- Minor stops (setup/changeover) → Counted within planned production time\n\n- Scheduled maintenance → Excluded from OEE calculations\n\n- Unscheduled workcenters → Automatically transition to no-schedule mode\n\nDuration Calculation:\n\n- Closes open records with precise ISO 8601 duration (PT#H#M#S)\n\n- Calculates durationMinutes as decimal (rounded to 3 places)\n\n- Uses occurAt and endAt timestamps for accurate period tracking\n\nBatch Processing:\n\nGenerates three separate batch arrays for sequential execution:\n\n1. Close Batches - Updates existing open records with endAt/duration\n\n2. Create Batches - Inserts new history records with current state\n\n3. Update Batches - Updates workcenter current state fields\n\nOutput Structure:\n\nReturns array of batch objects, each containing:\n\n- batchType: 'close', 'create', or 'update'\n\n- batchIndex: Sequential batch number\n\n- historyToClose/historyToCreate/workcentersToUpdate: Mutation payloads\n\n- stats: Execution metadata (timezone, timestamp, record counts)\n\nExecution Order:\n\nClose → Create → Update ensures data integrity and prevents orphaned open records.\n\nError Handling:\n\n- Validates required modes (no-schedule) and states (offline) exist\n\n- Falls back to first available mode/state if required values missing\n\n- Logs warnings when fallbacks are used\n\n- Returns null if no batches generated (no state changes needed)\n\nConfiguration Parameters:\n\n- batchSize: Number of workcenters per batch (default: 10)\n\n- changeProb: Probability of state change per execution (default: 0.30)\n\n- minProductionRatio: Minimum fraction in production mode (default: 0.40)\n\nSchedule Integration:\n\n- Uses currentScheduleByGroup mapping from upstream JSONata transform\n\n- Applies scheduleId from active schedule for the workcenter's schedule group\n\n- Transitions unscheduled workcenters to no-schedule mode automatically\n\nThis engine forms the core of the manufacturing simulation system, generating realistic operational data for OEE analysis, downtime tracking, and production monitoring dashboards.",
+    "active": true,
+    "substitutesDataFlowId": null,
+    "dataFlowTypeId": "System",
+    "logLevelId": "Info",
+    "mcpToolConfiguration": null,
+    "moduleId": "machineDataApp",
+    "_customFields": {
+      "_externalId": null
+    }
+  },
+  "version": {
+    "id": "cml8cf5xg6q5p019h3fwqdedh",
+    "number": "0.0.17",
+    "description": "",
+    "dataFlowId": "workcenterHistoryScheduler",
+    "flow": {
+      "id": "cml8cf5xg6q5p019h3fwqdedh",
+      "name": "WorkcenterHistoryScheduler",
+      "type": "System",
+      "nodes": [
+        {
+          "id": "0166580e-a5b8-4a6a-8b3a-b127529ab763",
+          "name": "Schedule",
+          "type": "schedule",
+          "data": {
+            "configure": "Open Schedule Editor",
+            "nextNodes": [
+              "73d0204f-9e75-42f5-8104-4a397fcec971"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "d51fff75-18e8-4735-8632-8b1004546fa0",
+          "name": "Primary State Processing Engine",
+          "type": "javascriptTransform",
+          "data": {
+            "transform": "'use strict';\r\n\r\n// ============================================================================\r\n// ISO 22400-COMPLIANT WORKCENTER STATE CHANGE GENERATOR\r\n// ============================================================================\r\n// Generates realistic workcenter state transitions for manufacturing simulation\r\n// Strictly adheres to ISO 22400-2 standards for proper OEE classification\r\n//\r\n// Key Principles:\r\n// - Production mode = Equipment ACTIVELY PRODUCING (runTime)\r\n// - Planned downtime = SCHEDULED STOPS (maintenance, breaks, etc.)\r\n// - Unplanned downtime = UNSCHEDULED STOPS (faults, breakdowns, etc.)\r\n// - Blocked/Starved/Faulted = Always DOWNTIME, never production\r\n// - Maintenance/No-Schedule = OUTSIDE production time (excluded from OEE)\r\n//\r\n// Time Classification Fields (ISO 22400):\r\n// - duration: Total duration in milliseconds\r\n// - runTime: milliseconds in production mode (countAsProductionTime = true)\r\n// - plannedDowntime: milliseconds in planned downtime (countAsDowntime & countAsPlannedDowntime)\r\n// - unplannedDowntime: milliseconds in unplanned downtime (countAsDowntime & !countAsPlannedDowntime)\r\n//\r\n// Output Structure:\r\n// Returns up to 2 batches:\r\n// - One close batch (if any records need closing)\r\n// - One combined create+update batch (if any state changes occur)\r\n// ============================================================================\r\n\r\n// Extract tenant timezone from settings\r\nvar settingEdges = ($ && $.setting && $.setting.edges) || [];\r\nvar timezone = ($ && $.tenantTimezone) || \r\n               (settingEdges.length > 0 && settingEdges[0].node && settingEdges[0].node.defaultValue) || \r\n               'UTC';\r\n\r\n// Current execution timestamp in tenant local time, represented as UTC\r\nvar nowMoment = $moment().tz(timezone);\r\nvar nowUTCTs = nowMoment.utc().toISOString();\r\nvar nowUTCMs = nowMoment.valueOf();\r\n\r\n// ============================================================================\r\n// CONFIGURATION PARAMETERS\r\n// ============================================================================\r\nvar changeProb = 0.30;            // Probability of state change (30%)\r\nvar minProductionRatio = 0.40;    // Minimum 40% in production mode\r\n\r\n// ============================================================================\r\n// EXTRACT REFERENCE DATA WITH NULL SAFETY\r\n// ============================================================================\r\nvar workcenters = ($ && $.workcenter && $.workcenter.edges) \r\n  ? $.workcenter.edges.map(function(e) { return e.node; }) \r\n  : [];\r\n\r\nvar events = ($ && $.event && $.event.edges)\r\n  ? $.event.edges.map(function(e) { return e.node; })\r\n  : [];\r\n\r\nvar modes = ($ && $.mode && $.mode.edges)\r\n  ? $.mode.edges.map(function(e) { return e.node; })\r\n  : [];\r\n\r\nvar states = ($ && $.state && $.state.edges)\r\n  ? $.state.edges.map(function(e) { return e.node; })\r\n  : [];\r\n\r\nvar currentScheduleByGroup = ($ && $.currentScheduleByGroup) || {};\r\n\r\n// ============================================================================\r\n// BUILD OPEN HISTORY LOOKUP - DETECT DUPLICATES\r\n// ============================================================================\r\nvar openHistoryByWc = {};\r\nvar duplicateOpenHistory = [];\r\n\r\n($.workcenterHistory && $.workcenterHistory.edges ? $.workcenterHistory.edges : []).forEach(function(e) {\r\n  var wcId = e.node.workcenterId;\r\n  \r\n  if (!openHistoryByWc[wcId]) {\r\n    openHistoryByWc[wcId] = e.node;\r\n  } else {\r\n    var existing = openHistoryByWc[wcId];\r\n    var existingMs = $moment(existing.occurAt).valueOf();\r\n    var newMs = $moment(e.node.occurAt).valueOf();\r\n    \r\n    if (newMs > existingMs) {\r\n      duplicateOpenHistory.push(existing);\r\n      openHistoryByWc[wcId] = e.node;\r\n    } else {\r\n      duplicateOpenHistory.push(e.node);\r\n    }\r\n  }\r\n});\r\n\r\nif (duplicateOpenHistory.length > 0) {\r\n  console.log('WARNING: Found ' + duplicateOpenHistory.length + ' duplicate open history records. Will close them.');\r\n}\r\n\r\n// ============================================================================\r\n// BUILD MODE AND STATE LOOKUPS\r\n// ============================================================================\r\nvar modeById = {};\r\nmodes.forEach(function(m) { modeById[m.id] = m; });\r\n\r\nvar stateById = {};\r\nstates.forEach(function(s) { stateById[s.id] = s; });\r\n\r\n// Required modes and states\r\nvar noScheduleMode = modeById['no-schedule'];\r\nvar offlineState = stateById['offline'];\r\n\r\n// Validate required reference data exists\r\nif (!noScheduleMode) {\r\n  console.error('ERROR: no-schedule mode not found - required for unscheduled workcenters');\r\n}\r\nif (!offlineState) {\r\n  console.error('ERROR: offline state not found - required for default state');\r\n}\r\n\r\n// Fallback to first available if required data missing\r\nif (!noScheduleMode && modes.length > 0) {\r\n  noScheduleMode = modes[0];\r\n  console.warn('Using fallback mode: ' + noScheduleMode.id);\r\n}\r\nif (!offlineState && states.length > 0) {\r\n  offlineState = states[0];\r\n  console.warn('Using fallback state: ' + offlineState.id);\r\n}\r\n\r\n// Critical validation - cannot proceed without modes and states\r\nif (modes.length === 0 || states.length === 0) {\r\n  console.error('CRITICAL ERROR: No modes or states found in system. Cannot proceed.');\r\n  return null;\r\n}\r\n\r\n// ============================================================================\r\n// ISO 22400-2 COMPLIANT MODE-STATE TRANSITIONS\r\n// ============================================================================\r\nvar validStatesByMode = {\r\n  'production': ['running', 'running-slow', 'unknown'],\r\n  'disabled': ['faulted', 'e-stopped', 'blocked', 'starved', 'offline'],\r\n  'setup': ['changeover', 'warmup', 'cleaning'],\r\n  'cleaning': ['cleaning', 'offline'],\r\n  'idle': ['stopped', 'offline'],\r\n  'maintenance': ['maintenance', 'offline'],\r\n  'no-schedule': ['offline'],\r\n  'engineering': ['stopped', 'offline', 'changeover']\r\n};\r\n\r\nvar defaultStateByMode = {\r\n  'production': 'running',\r\n  'disabled': 'faulted',\r\n  'setup': 'changeover',\r\n  'cleaning': 'cleaning',\r\n  'idle': 'stopped',\r\n  'maintenance': 'maintenance',\r\n  'no-schedule': 'offline',\r\n  'engineering': 'stopped'\r\n};\r\n\r\n// ============================================================================\r\n// HELPER FUNCTIONS\r\n// ============================================================================\r\n\r\nfunction getValidStatesForMode(modeId) {\r\n  var validStateIds = validStatesByMode[modeId] || [];\r\n  return validStateIds.map(function(sid) { return stateById[sid]; }).filter(function(s) { return s; });\r\n}\r\n\r\nfunction selectValidStateForMode(mode) {\r\n  if (!mode) return states[0];\r\n  \r\n  var validStates = getValidStatesForMode(mode.id);\r\n  \r\n  if (validStates.length === 0) {\r\n    var defaultSid = defaultStateByMode[mode.id];\r\n    return stateById[defaultSid] || states[0];\r\n  }\r\n  \r\n  if (mode.id === 'production') {\r\n    var producingStates = validStates.filter(function(s) { return s.isProducing; });\r\n    if (producingStates.length > 0 && Math.random() < 0.85) {\r\n      return producingStates[Math.floor(Math.random() * producingStates.length)];\r\n    }\r\n  }\r\n  \r\n  return validStates[Math.floor(Math.random() * validStates.length)];\r\n}\r\n\r\nfunction shouldChangeState(openHistory, nowMs) {\r\n  if (!openHistory) return true;\r\n  \r\n  var openMoment = $moment(openHistory.occurAt);\r\n  var elapsedMs = nowMs - openMoment.valueOf();\r\n  var elapsedMinutes = elapsedMs / 60000;\r\n  \r\n  var randomMultiplier = Math.floor(Math.random() * 100) + 1;\r\n  var requiredMinutes = randomMultiplier * 3;\r\n  \r\n  return elapsedMinutes >= requiredMinutes;\r\n}\r\n\r\nfunction isScheduled(wc, scheduleMap) {\r\n  if (!wc.scheduleGroupId) return false;\r\n  return scheduleMap[wc.scheduleGroupId] ? true : false;\r\n}\r\n\r\nfunction calculateDuration(startTimestamp, endTimestamp) {\r\n  var startMs = $moment(startTimestamp).valueOf();\r\n  var endMs = $moment(endTimestamp).valueOf();\r\n  \r\n  var durationMs = endMs - startMs;\r\n  if (durationMs < 0) durationMs = 0;\r\n  \r\n  return durationMs;\r\n}\r\n\r\n/**\r\n * Calculate ISO 22400 time classification based on mode flags\r\n * @param {number} durationMs - Duration in milliseconds\r\n * @param {object} mode - Mode object with flags\r\n * @returns {object} { runTime, plannedDowntime, unplannedDowntime }\r\n */\r\nfunction calculateTimeClassification(durationMs, mode) {\r\n  var runTime = 0;\r\n  var plannedDowntime = 0;\r\n  var unplannedDowntime = 0;\r\n  \r\n  if (!mode) {\r\n    // No mode = treat as unplanned downtime\r\n    unplannedDowntime = durationMs;\r\n  } else if (mode.countAsProductionTime) {\r\n    // Production time (ISO 22400: Actual Production Time)\r\n    runTime = durationMs;\r\n  } else if (mode.countAsDowntime) {\r\n    if (mode.countAsPlannedDowntime) {\r\n      // Planned downtime (ISO 22400: Planned Downtime)\r\n      plannedDowntime = durationMs;\r\n    } else {\r\n      // Unplanned downtime (ISO 22400: Unplanned Downtime)\r\n      unplannedDowntime = durationMs;\r\n    }\r\n  }\r\n  // else: mode doesn't count as production or downtime = all zeros (excluded time)\r\n  \r\n  return {\r\n    runTime: runTime,\r\n    plannedDowntime: plannedDowntime,\r\n    unplannedDowntime: unplannedDowntime\r\n  };\r\n}\r\n\r\n// ============================================================================\r\n// INITIALIZE ARRAYS\r\n// ============================================================================\r\nvar allHistoryToClose = [];\r\nvar allHistoryToCreate = [];\r\nvar allWorkcentersToUpdate = [];\r\nvar codeCounter = Date.now();\r\n\r\n// Track time classification stats\r\nvar timeStats = {\r\n  totalRunTime: 0,\r\n  totalPlannedDowntime: 0,\r\n  totalUnplannedDowntime: 0,\r\n  recordsClassified: 0\r\n};\r\n\r\n// ============================================================================\r\n// STEP 1: CLOSE ALL DUPLICATE OPEN HISTORY RECORDS\r\n// ============================================================================\r\nduplicateOpenHistory.forEach(function(hist) {\r\n  var endMoment = $moment(nowUTCMs - 1).tz(timezone);\r\n  var endAt = endMoment.utc().toISOString();\r\n  \r\n  var durationMs = calculateDuration(hist.occurAt, endAt);\r\n  \r\n  // Get mode for time classification\r\n  var histMode = modeById[hist.modeId];\r\n  var timeClass = calculateTimeClassification(durationMs, histMode);\r\n  \r\n  // Track stats\r\n  timeStats.totalRunTime += timeClass.runTime;\r\n  timeStats.totalPlannedDowntime += timeClass.plannedDowntime;\r\n  timeStats.totalUnplannedDowntime += timeClass.unplannedDowntime;\r\n  timeStats.recordsClassified++;\r\n  \r\n  allHistoryToClose.push({\r\n    where: { id: hist.id },\r\n    update: {\r\n      endAt: endAt,\r\n      duration: durationMs,\r\n      runTime: timeClass.runTime,\r\n      plannedDowntime: timeClass.plannedDowntime,\r\n      unplannedDowntime: timeClass.unplannedDowntime\r\n    }\r\n  });\r\n});\r\n\r\n// ============================================================================\r\n// STEP 2: PROCESS ALL WORKCENTERS IN ONE PASS\r\n// ============================================================================\r\n\r\n// Select workcenters that will change state this iteration\r\nvar changingWcs = workcenters.filter(function() { \r\n  return Math.random() < changeProb; \r\n});\r\n\r\nvar minProdCount = Math.max(1, Math.ceil(changingWcs.length * minProductionRatio));\r\n\r\nchangingWcs.forEach(function(wc, idx) {\r\n  var openHistory = openHistoryByWc[wc.id];\r\n  var scheduled = isScheduled(wc, currentScheduleByGroup);\r\n  \r\n  // --------------------------------------------------------------------------\r\n  // UNSCHEDULED WORKCENTER LOGIC\r\n  // --------------------------------------------------------------------------\r\n  if (!scheduled) {\r\n    if (openHistory && openHistory.modeId !== 'no-schedule' && noScheduleMode && offlineState) {\r\n      var endMoment = $moment(nowUTCMs - 1).tz(timezone);\r\n      var endAt = endMoment.utc().toISOString();\r\n      \r\n      var durationMs = calculateDuration(openHistory.occurAt, endAt);\r\n      \r\n      // Get mode for time classification\r\n      var histMode = modeById[openHistory.modeId];\r\n      var timeClass = calculateTimeClassification(durationMs, histMode);\r\n      \r\n      // Track stats\r\n      timeStats.totalRunTime += timeClass.runTime;\r\n      timeStats.totalPlannedDowntime += timeClass.plannedDowntime;\r\n      timeStats.totalUnplannedDowntime += timeClass.unplannedDowntime;\r\n      timeStats.recordsClassified++;\r\n      \r\n      allHistoryToClose.push({\r\n        where: { id: openHistory.id },\r\n        update: {\r\n          endAt: endAt,\r\n          duration: durationMs,\r\n          runTime: timeClass.runTime,\r\n          plannedDowntime: timeClass.plannedDowntime,\r\n          unplannedDowntime: timeClass.unplannedDowntime\r\n        }\r\n      });\r\n      \r\n      codeCounter++;\r\n      var noScheduleCode = 'WCH-' + codeCounter.toString(36).toUpperCase();\r\n      \r\n      allHistoryToCreate.push({\r\n        create: {\r\n          code: noScheduleCode,\r\n          workcenterId: wc.id,\r\n          occurAt: nowUTCTs,\r\n          modeId: noScheduleMode.id,\r\n          stateId: offlineState.id,\r\n          eventId: null,\r\n          scheduleId: null,\r\n          notes: 'No active schedule defined'\r\n        }\r\n      });\r\n      \r\n      allWorkcentersToUpdate.push({\r\n        where: { id: wc.id },\r\n        update: {\r\n          currentModeId: noScheduleMode.id,\r\n          currentStateId: offlineState.id,\r\n          currentEventId: null,\r\n          stateChangedAt: nowUTCTs\r\n        }\r\n      });\r\n    }\r\n    return;\r\n  }\r\n  \r\n  // --------------------------------------------------------------------------\r\n  // SCHEDULED WORKCENTER LOGIC\r\n  // --------------------------------------------------------------------------\r\n  \r\n  if (!shouldChangeState(openHistory, nowUTCMs)) {\r\n    return;\r\n  }\r\n  \r\n  if (openHistory) {\r\n    var openMoment = $moment(openHistory.occurAt);\r\n    \r\n    if (openMoment.valueOf() >= nowUTCMs) {\r\n      return;\r\n    }\r\n    \r\n    var endMoment = $moment(nowUTCMs - 1).tz(timezone);\r\n    var endAt = endMoment.utc().toISOString();\r\n    \r\n    var durationMs = calculateDuration(openHistory.occurAt, endAt);\r\n    \r\n    // Get mode for time classification\r\n    var histMode = modeById[openHistory.modeId];\r\n    var timeClass = calculateTimeClassification(durationMs, histMode);\r\n    \r\n    // Track stats\r\n    timeStats.totalRunTime += timeClass.runTime;\r\n    timeStats.totalPlannedDowntime += timeClass.plannedDowntime;\r\n    timeStats.totalUnplannedDowntime += timeClass.unplannedDowntime;\r\n    timeStats.recordsClassified++;\r\n    \r\n    allHistoryToClose.push({\r\n      where: { id: openHistory.id },\r\n      update: {\r\n        endAt: endAt,\r\n        duration: durationMs,\r\n        runTime: timeClass.runTime,\r\n        plannedDowntime: timeClass.plannedDowntime,\r\n        unplannedDowntime: timeClass.unplannedDowntime\r\n      }\r\n    });\r\n  }\r\n  \r\n  // --------------------------------------------------------------------------\r\n  // SELECT NEW MODE AND STATE\r\n  // --------------------------------------------------------------------------\r\n  var forceProduction = idx < minProdCount;\r\n  var newMode, newState;\r\n  \r\n  if (forceProduction) {\r\n    var prodMode = modeById['production'];\r\n    if (!prodMode) {\r\n      prodMode = modes.filter(function(m) { return m.countAsProductionTime; })[0] || modes[0];\r\n    }\r\n    \r\n    var validStates = getValidStatesForMode(prodMode.id);\r\n    var producingStates = validStates.filter(function(s) { return s.isProducing; });\r\n    \r\n    newState = producingStates.length > 0 \r\n      ? producingStates[Math.floor(Math.random() * producingStates.length)]\r\n      : validStates[0] || stateById['running'] || states[0];\r\n    \r\n    newMode = prodMode;\r\n    \r\n  } else {\r\n    var modeWeights = {\r\n      'production': 0.60,\r\n      'idle': 0.15,\r\n      'setup': 0.10,\r\n      'maintenance': 0.10,\r\n      'no-schedule': 0.05\r\n    };\r\n    \r\n    var totalWeight = 0;\r\n    var weights = modes.map(function(m) {\r\n      var w = modeWeights[m.id] || modeWeights[m.code] || modeWeights[m.name] || 1;\r\n      totalWeight += w;\r\n      return w;\r\n    });\r\n    \r\n    var rand = Math.random() * totalWeight;\r\n    newMode = modes[0];\r\n    for (var j = 0; j < modes.length; j++) {\r\n      rand -= weights[j];\r\n      if (rand <= 0) {\r\n        newMode = modes[j];\r\n        break;\r\n      }\r\n    }\r\n    \r\n    newState = selectValidStateForMode(newMode);\r\n  }\r\n  \r\n  // CRITICAL: Ensure newMode and newState are NEVER null\r\n  if (!newMode) {\r\n    newMode = modes[0];\r\n    console.warn('Using fallback mode for workcenter: ' + wc.id);\r\n  }\r\n  if (!newState) {\r\n    newState = states[0];\r\n    console.warn('Using fallback state for workcenter: ' + wc.id);\r\n  }\r\n  \r\n  var newEvent = (newMode && newMode.countAsDowntime && events.length > 0) \r\n    ? events[Math.floor(Math.random() * events.length)] \r\n    : null;\r\n  \r\n  var scheduleId = wc.scheduleGroupId \r\n    ? (currentScheduleByGroup[wc.scheduleGroupId] || null) \r\n    : null;\r\n  \r\n  codeCounter++;\r\n  var newCode = 'WCH-' + codeCounter.toString(36).toUpperCase();\r\n  \r\n  allHistoryToCreate.push({\r\n    create: {\r\n      code: newCode,\r\n      workcenterId: wc.id,\r\n      occurAt: nowUTCTs,\r\n      modeId: newMode.id,\r\n      stateId: newState.id,\r\n      eventId: newEvent ? newEvent.id : null,\r\n      scheduleId: scheduleId,\r\n      notes: null\r\n    }\r\n  });\r\n  \r\n  allWorkcentersToUpdate.push({\r\n    where: { id: wc.id },\r\n    update: {\r\n      currentModeId: newMode.id,\r\n      currentStateId: newState.id,\r\n      currentEventId: newEvent ? newEvent.id : null,\r\n      stateChangedAt: nowUTCTs\r\n    }\r\n  });\r\n});\r\n\r\n// ============================================================================\r\n// BUILD OUTPUT BATCHES\r\n// ============================================================================\r\nvar batches = [];\r\n\r\n// Add close batch if needed\r\nif (allHistoryToClose.length > 0) {\r\n  batches.push({\r\n    batchType: 'close',\r\n    batchIndex: 1,\r\n    historyToClose: allHistoryToClose,\r\n    stats: {\r\n      tenantTimezone: timezone,\r\n      executedAt: nowUTCTs,\r\n      recordsClosed: allHistoryToClose.length,\r\n      timeClassification: {\r\n        totalRunTimeMs: timeStats.totalRunTime,\r\n        totalPlannedDowntimeMs: timeStats.totalPlannedDowntime,\r\n        totalUnplannedDowntimeMs: timeStats.totalUnplannedDowntime,\r\n        recordsClassified: timeStats.recordsClassified\r\n      }\r\n    }\r\n  });\r\n}\r\n\r\n// Add combined create+update batch if needed\r\nif (allHistoryToCreate.length > 0 && allWorkcentersToUpdate.length > 0) {\r\n  batches.push({\r\n    batchType: 'create',\r\n    batchIndex: 2,\r\n    historyToCreate: allHistoryToCreate,\r\n    workcentersToUpdate: allWorkcentersToUpdate,\r\n    stats: {\r\n      tenantTimezone: timezone,\r\n      executedAt: nowUTCTs,\r\n      recordsCreated: allHistoryToCreate.length,\r\n      workcentersUpdated: allWorkcentersToUpdate.length\r\n    }\r\n  });\r\n}\r\n\r\n// ============================================================================\r\n// EXECUTION SUMMARY LOGGING\r\n// ============================================================================\r\nconsole.log('=============================================================');\r\nconsole.log('Workcenter History State Change Processor (ISO 22400)');\r\nconsole.log('=============================================================');\r\nconsole.log('  Execution Time (UTC): ' + nowUTCTs);\r\nconsole.log('  Tenant Timezone: ' + timezone);\r\nconsole.log('  Total Workcenters: ' + workcenters.length);\r\nconsole.log('  Changing Workcenters: ' + changingWcs.length);\r\nconsole.log('  Records to Close: ' + allHistoryToClose.length);\r\nconsole.log('  Records to Create: ' + allHistoryToCreate.length);\r\nconsole.log('  Workcenters to Update: ' + allWorkcentersToUpdate.length);\r\nconsole.log('─────────────────────────────────────────────────────────────');\r\nconsole.log('ISO 22400 Time Classification:');\r\nconsole.log('  Run Time: ' + Math.round(timeStats.totalRunTime / 1000) + 's (' + timeStats.totalRunTime + 'ms)');\r\nconsole.log('  Planned Downtime: ' + Math.round(timeStats.totalPlannedDowntime / 1000) + 's (' + timeStats.totalPlannedDowntime + 'ms)');\r\nconsole.log('  Unplanned Downtime: ' + Math.round(timeStats.totalUnplannedDowntime / 1000) + 's (' + timeStats.totalUnplannedDowntime + 'ms)');\r\nconsole.log('  Records Classified: ' + timeStats.recordsClassified);\r\nconsole.log('─────────────────────────────────────────────────────────────');\r\nconsole.log('  Total Batches: ' + batches.length);\r\nconsole.log('=============================================================');\r\n\r\nreturn batches.length > 0 ? batches : null;",
+            "nextNodes": [
+              "45623f92-9548-40b8-ad28-34fed399c404",
+              "9d6ac9f4-8190-440f-ab4e-be8857ab2a86"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "45623f92-9548-40b8-ad28-34fed399c404",
+          "name": "Filter Array History to Close",
+          "type": "filterArray",
+          "data": {
+            "inputTransform": "$",
+            "outputTransform": "$map(historyToClose, function($item) {\r\n  {\r\n    \"where\": $item.where,\r\n    \"update\": $item.update\r\n  }\r\n})",
+            "enableAdvancedConfiguration": true,
+            "filterTransform": "$.batchType = \"close\"",
+            "nextNodes": [
+              "c2982698-9689-4c1d-84b1-d239f6ef540e"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "9d6ac9f4-8190-440f-ab4e-be8857ab2a86",
+          "name": "Filter Array History to Create & Workcenters to Update",
+          "type": "filterArray",
+          "data": {
+            "inputTransform": "$",
+            "outputTransform": "{\r\n  \"historyToCreate\": $map(historyToCreate, function($item) { $item }),\r\n  \"workcentersToUpdate\": $map(workcentersToUpdate, function($item) { $item })\r\n}",
+            "enableAdvancedConfiguration": true,
+            "filterTransform": "$.batchType = \"create\"",
+            "nextNodes": [
+              "ac0bb01d-6f38-45fb-aaae-515da0d4f12a"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "73d0204f-9e75-42f5-8104-4a397fcec971",
+          "name": "Query All Relevant Data",
+          "type": "query",
+          "data": {
+            "api": "application",
+            "variablesTransform": "{}",
+            "query": "query GetWorkcenterHistoryData {\r\n  # Get tenant timezone setting\r\n  setting(where: { id: { _eq: \"TimeZone\" } }) {\r\n    edges {\r\n      node {\r\n        id\r\n        defaultValue\r\n      }\r\n    }\r\n  }\r\n  \r\n  # Get all active workcenters with schedule group assignments\r\n  workcenter(where: { isActive: { _eq: true } }) {\r\n    edges {\r\n      node {\r\n        id\r\n        code\r\n        name\r\n        scheduleGroupId\r\n        currentWorkcenterHistoryId\r\n      }\r\n    }\r\n  }\r\n  \r\n  # Get open workcenter history records\r\n  workcenterHistory(where: { endAt: { _isNull: true } }) {\r\n    edges {\r\n      node {\r\n        id\r\n        code\r\n        workcenterId\r\n        occurAt\r\n        endAt\r\n        modeId\r\n        stateId\r\n        eventId\r\n        scheduleId\r\n        duration\r\n        processedInOeeHourlyAt\r\n        runTime\r\n        plannedDowntime\r\n        unplannedDowntime\r\n        notes\r\n      }\r\n    }\r\n  }\r\n  \r\n  # Get all downtime events\r\n  event {\r\n    edges {\r\n      node {\r\n        id\r\n        code\r\n        name\r\n        description\r\n      }\r\n    }\r\n  }\r\n  \r\n  # Get all operational modes\r\n  mode {\r\n    edges {\r\n      node {\r\n        id\r\n        code\r\n        name\r\n        countAsProductionTime\r\n        countAsDowntime\r\n        countAsPlannedDowntime\r\n      }\r\n    }\r\n  }\r\n  \r\n  # Get all operational states\r\n  state {\r\n    edges {\r\n      node {\r\n        id\r\n        code\r\n        name\r\n        isProducing\r\n        isFault\r\n      }\r\n    }\r\n  }\r\n}",
+            "nextNodes": [
+              "c6b701bc-3377-4bbd-8a2e-60cedebd8cc9"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "c6b701bc-3377-4bbd-8a2e-60cedebd8cc9",
+          "name": "Get Schedules",
+          "type": "transform",
+          "data": {
+            "transform": "(\r\n  $now := $moment();\r\n  $workcenters := workcenter.edges.node;\r\n  $timezone := setting.edges[0].node.defaultValue ? setting.edges[0].node.defaultValue : \"UTC\";\r\n  \r\n  /* Get unique scheduleGroupIds */\r\n  $scheduleGroupIds := $distinct($workcenters.scheduleGroupId)[$ != null];\r\n  \r\n  /* Build mapping: scheduleGroupId → current active scheduleId */\r\n  $currentScheduleByGroup := $merge($scheduleGroupIds.(\r\n    $groupId := $;\r\n    $currentSchedules := $scheduleGroup($groupId).getCurrentSchedules($now, $now, { \"inclusive\": true });\r\n    $activeSchedule := $currentSchedules[0];\r\n    { ($groupId): $activeSchedule.scheduleId }\r\n  ));\r\n  \r\n  /* Merge with original query results and add schedule mapping */\r\n  $merge([$, { \r\n    \"currentScheduleByGroup\": $currentScheduleByGroup,\r\n    \"tenantTimezone\": $timezone\r\n  }])\r\n)",
+            "nextNodes": [
+              "d51fff75-18e8-4735-8632-8b1004546fa0"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "1de3f563-69d9-49f7-bede-a508756e40f3",
+          "name": "Mutate WorkcenterHistory Update",
+          "type": "mutate",
+          "data": {
+            "api": "Application",
+            "variablesTransform": "{\r\n  \"payload\": $\r\n}",
+            "nextNodes": [
+              "abf06960-39a0-437d-b452-12bf0202b622"
+            ],
+            "mutation": "mutation UpdateWorkcenterHistory($payload: [WorkcenterHistoryUpdatePayloadInput!]!) {\n  updateWorkcenterHistory(payload: $payload) {\n    id\n    endAt\n  }\n}"
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "e89c7aa3-efe8-4b6a-9660-1b8c52679a21",
+          "name": "Mutate WorkcenterHistory Create",
+          "type": "mutate",
+          "data": {
+            "api": "Application",
+            "variablesTransform": "{\r\n  \"payload\": $\r\n}",
+            "nextNodes": [
+              "d5ae0dfa-78c8-4e44-bac5-bbfb3d7214b7"
+            ],
+            "mutation": "mutation CreateWorkcenterHistory($payload: [WorkcenterHistoryCreatePayloadInput!]!) {\n  createWorkcenterHistory(payload: $payload) {\n    id\n    workcenterId\n  }\n}"
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "93750354-b745-4b5e-b527-d443920d6777",
+          "name": "Mutate Workcenter Update - Current WorkcenterHistoryId",
+          "type": "mutate",
+          "data": {
+            "api": "Application",
+            "variablesTransform": "{\r\n  \"payload\": $.createWorkcenterHistory.{\r\n    \"where\": { \"id\": workcenterId },\r\n    \"update\": {\r\n      \"currentWorkcenterHistoryId\": id\r\n    }\r\n  }\r\n}",
+            "nextNodes": [
+              "234781ca-b49c-4b05-8442-4631530b79ce"
+            ],
+            "mutation": "mutation UpdateWorkcenter($payload: [WorkcenterUpdatePayloadInput!]!) {\n  updateWorkcenter(payload: $payload) {\n    id\n    currentWorkcenterHistoryId\n\n  }\n}"
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "c2982698-9689-4c1d-84b1-d239f6ef540e",
+          "name": "Route",
+          "type": "switch",
+          "data": {
+            "branches": [
+              {
+                "name": "Has Data",
+                "nextNodes": [
+                  "f337a047-7d9b-4dfb-801a-c2d888793399"
+                ],
+                "transform": "$isNotNilOrEmpty($)"
+              },
+              {
+                "name": "No Data",
+                "nextNodes": [
+                  "c4c6be1d-4f98-46fd-a2dd-be23ca4a3b8e"
+                ],
+                "transform": "$isNilOrEmpty($)"
+              }
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "ac0bb01d-6f38-45fb-aaae-515da0d4f12a",
+          "name": "Route",
+          "type": "switch",
+          "data": {
+            "branches": [
+              {
+                "name": "Has Data",
+                "nextNodes": [
+                  "12368fce-1a4e-4f37-bf8b-c9f5e7670f2c"
+                ],
+                "transform": "$count($.historyToCreate) > 0"
+              },
+              {
+                "name": "No Data",
+                "nextNodes": [
+                  "16da8ce5-7a97-4b8c-b76e-e7d8ec7b2c30"
+                ],
+                "transform": "$count($.historyToCreate) = 0"
+              }
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "12368fce-1a4e-4f37-bf8b-c9f5e7670f2c",
+          "name": "store_workcenters_to_update",
+          "type": "setContext",
+          "data": {
+            "transform": "{\r\n  \"workcentersToUpdate\": $.workcentersToUpdate\r\n}",
+            "nextNodes": [
+              "38f17d33-5ad2-43d7-8ad4-5b1e097511ce"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "38f17d33-5ad2-43d7-8ad4-5b1e097511ce",
+          "name": "extract_history_to_create",
+          "type": "transform",
+          "data": {
+            "nextNodes": [
+              "e89c7aa3-efe8-4b6a-9660-1b8c52679a21"
+            ],
+            "transform": "$.historyToCreate"
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "f337a047-7d9b-4dfb-801a-c2d888793399",
+          "name": "Mutex Lock",
+          "type": "mutexLock",
+          "data": {
+            "lockTTLms": 30000,
+            "lockRetries": -1,
+            "throwErrorWhenLockNotAcquired": false,
+            "nextNodes": [
+              "1de3f563-69d9-49f7-bede-a508756e40f3"
+            ],
+            "resourceIdTransform": "\"\""
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "abf06960-39a0-437d-b452-12bf0202b622",
+          "name": "Mutex Unlock",
+          "type": "mutexUnlock",
+          "data": {
+            "nextNodes": []
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "d5ae0dfa-78c8-4e44-bac5-bbfb3d7214b7",
+          "name": "Mutex Lock",
+          "type": "mutexLock",
+          "data": {
+            "lockTTLms": 30000,
+            "lockRetries": -1,
+            "throwErrorWhenLockNotAcquired": false,
+            "nextNodes": [
+              "93750354-b745-4b5e-b527-d443920d6777"
+            ],
+            "resourceIdTransform": "\"\""
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "234781ca-b49c-4b05-8442-4631530b79ce",
+          "name": "Mutex Unlock",
+          "type": "mutexUnlock",
+          "data": {
+            "nextNodes": [
+              "8f891a87-6339-4a78-9c8d-ebdadc3b7091"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "16da8ce5-7a97-4b8c-b76e-e7d8ec7b2c30",
+          "name": "Response",
+          "type": "response",
+          "data": {
+            "responseTransform": "$",
+            "nextNodes": []
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "c4c6be1d-4f98-46fd-a2dd-be23ca4a3b8e",
+          "name": "Response",
+          "type": "response",
+          "data": {
+            "responseTransform": "$",
+            "nextNodes": []
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "8f891a87-6339-4a78-9c8d-ebdadc3b7091",
+          "name": "Response",
+          "type": "response",
+          "data": {
+            "responseTransform": "$",
+            "nextNodes": []
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        },
+        {
+          "id": "6c5df0a9-14b0-4ae7-97a5-4c15b654806e",
+          "name": "Request",
+          "type": "request",
+          "data": {
+            "nextNodes": [
+              "73d0204f-9e75-42f5-8104-4a397fcec971"
+            ]
+          },
+          "debug": {
+            "breakpointEnabled": false,
+            "publishSubscribeClient": false,
+            "publishToMFGx": false
+          },
+          "logging": {
+            "executionMetrics": false,
+            "executionStarted": false,
+            "executionSucceeded": false,
+            "executionFailed": true,
+            "enableTraceLogging": false
+          }
+        }
+      ],
+      "version": "0.0.16"
+    },
+    "diagram": {
+      "id": "cml8cf5xg6q5p019h3fwqdedh",
+      "offsetX": -2001.45,
+      "offsetY": -8.43,
+      "zoom": 91.11,
+      "gridSize": 5,
+      "layers": [
+        {
+          "id": "df8f267d-e609-40e4-83c7-5b5ec1794b89",
+          "type": "diagram-links",
+          "isSvg": true,
+          "transformed": true,
+          "models": {
+            "7900af3b-2cca-4a90-acb1-9ed5193f1478": {
+              "points": [
+                {
+                  "id": "db2cfc71-dba0-4eec-9f4a-10e9a7f0a9ab",
+                  "type": "point",
+                  "x": 691.17,
+                  "y": 399.73
+                },
+                {
+                  "id": "e76135ef-3d0a-446e-8c15-0c724f12e93d",
+                  "type": "point",
+                  "x": 740,
+                  "y": 439.73
+                }
+              ],
+              "id": "7900af3b-2cca-4a90-acb1-9ed5193f1478",
+              "type": "default",
+              "selected": false,
+              "source": "73d0204f-9e75-42f5-8104-4a397fcec971",
+              "sourcePort": "cmksb38ng00v0356o1cvvno74",
+              "target": "c6b701bc-3377-4bbd-8a2e-60cedebd8cc9",
+              "targetPort": "cmksb3zay00wa356o92g8489g",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "8eeaeeef-1872-42c7-bcec-d7386cf9c375": {
+              "points": [
+                {
+                  "id": "90596757-4fb9-4ff0-8991-0902e2821d54",
+                  "type": "point",
+                  "x": 894,
+                  "y": 439.73
+                },
+                {
+                  "id": "43432a33-d69d-4551-8033-c39db1d97e86",
+                  "type": "point",
+                  "x": 970,
+                  "y": 439.73
+                }
+              ],
+              "id": "8eeaeeef-1872-42c7-bcec-d7386cf9c375",
+              "type": "default",
+              "selected": false,
+              "source": "c6b701bc-3377-4bbd-8a2e-60cedebd8cc9",
+              "sourcePort": "cmksb3zay00wc356ocwr3yas6",
+              "target": "d51fff75-18e8-4735-8632-8b1004546fa0",
+              "targetPort": "cmksapaq000on356oov54yl5y",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "5204736f-1818-41de-9476-c31fb80eec3e": {
+              "points": [
+                {
+                  "id": "805725b5-3908-4b03-968a-18415760de43",
+                  "type": "point",
+                  "x": 1191.88,
+                  "y": 439.73
+                },
+                {
+                  "id": "dbb4ea65-5ceb-49bf-95a2-9b16f90081ab",
+                  "type": "point",
+                  "x": 1340,
+                  "y": 439.73
+                }
+              ],
+              "id": "5204736f-1818-41de-9476-c31fb80eec3e",
+              "type": "default",
+              "selected": false,
+              "source": "d51fff75-18e8-4735-8632-8b1004546fa0",
+              "sourcePort": "cmksapaq000op356ol5b62ch8",
+              "target": "45623f92-9548-40b8-ad28-34fed399c404",
+              "targetPort": "cmksatpa000sx356olei6b5ph",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "3029bedf-44c8-4457-bce3-817d0f5d048f": {
+              "points": [
+                {
+                  "id": "7f31bd38-e6a8-4bb7-827f-f5509b0384d2",
+                  "type": "point",
+                  "x": 1191.88,
+                  "y": 439.73
+                },
+                {
+                  "id": "dcf3fba3-095c-49ff-996f-11c4ea0b8a98",
+                  "type": "point",
+                  "x": 1250,
+                  "y": 619.73
+                }
+              ],
+              "id": "3029bedf-44c8-4457-bce3-817d0f5d048f",
+              "type": "default",
+              "selected": false,
+              "source": "d51fff75-18e8-4735-8632-8b1004546fa0",
+              "sourcePort": "cmksapaq000op356ol5b62ch8",
+              "target": "9d6ac9f4-8190-440f-ab4e-be8857ab2a86",
+              "targetPort": "cmksau6hx00tx356oe29vbh8c",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "0ef02010-08e4-47cf-adeb-489f0edd0f42": {
+              "points": [
+                {
+                  "id": "0b3492d6-1082-4302-a97a-853c13d8debc",
+                  "type": "point",
+                  "x": 409,
+                  "y": 304.73
+                },
+                {
+                  "id": "9e555010-abb2-414a-986d-7275e93895a4",
+                  "type": "point",
+                  "x": 520,
+                  "y": 399.73
+                }
+              ],
+              "id": "0ef02010-08e4-47cf-adeb-489f0edd0f42",
+              "type": "default",
+              "selected": false,
+              "source": "722eabe3-c0d5-4f4e-b4e2-aeaa8366c356",
+              "sourcePort": "cmksb5gew00xa356owxcn8fq4",
+              "target": "73d0204f-9e75-42f5-8104-4a397fcec971",
+              "targetPort": "cmksb38ng00uy356opesjx0bi",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "a3b35a76-760b-4fc2-924a-e8f3d85f6b5e": {
+              "points": [
+                {
+                  "id": "e216895e-69a1-433b-ab1c-f25bcdb4388e",
+                  "type": "point",
+                  "x": 394,
+                  "y": 434.73
+                },
+                {
+                  "id": "a6ec7d27-014a-48a2-b45f-1aae0e20e6f5",
+                  "type": "point",
+                  "x": 520,
+                  "y": 399.73
+                }
+              ],
+              "id": "a3b35a76-760b-4fc2-924a-e8f3d85f6b5e",
+              "type": "default",
+              "selected": false,
+              "source": "0166580e-a5b8-4a6a-8b3a-b127529ab763",
+              "sourcePort": "cmkcpsyay01mm356r7wjhjkru",
+              "target": "73d0204f-9e75-42f5-8104-4a397fcec971",
+              "targetPort": "cmksb38ng00uy356opesjx0bi",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "de7a061a-5408-40a8-90b4-6af04b044de1": {
+              "points": [
+                {
+                  "id": "4814c34c-74a8-44c8-bb24-399d95c78d93",
+                  "type": "point",
+                  "x": 1533.15,
+                  "y": 439.73
+                },
+                {
+                  "id": "07b35285-06e3-4421-83e4-8eea65c554e0",
+                  "type": "point",
+                  "x": 1615,
+                  "y": 439.73
+                }
+              ],
+              "id": "de7a061a-5408-40a8-90b4-6af04b044de1",
+              "type": "default",
+              "selected": false,
+              "source": "45623f92-9548-40b8-ad28-34fed399c404",
+              "sourcePort": "cmksatpa000sz356ohipko8yk",
+              "target": "c2982698-9689-4c1d-84b1-d239f6ef540e",
+              "targetPort": "cmksgi1ib0181356ovkp0mnqc",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "7768186f-f8e4-4eb9-900e-102c3e443fb2": {
+              "points": [
+                {
+                  "id": "4383fc04-e083-4697-8dcf-acc09f3b94b4",
+                  "type": "point",
+                  "x": 1586.36,
+                  "y": 619.73
+                },
+                {
+                  "id": "08cb75d1-5bbc-4b84-ada1-2b63ef5727df",
+                  "type": "point",
+                  "x": 1650,
+                  "y": 619.73
+                }
+              ],
+              "id": "7768186f-f8e4-4eb9-900e-102c3e443fb2",
+              "type": "default",
+              "selected": false,
+              "source": "9d6ac9f4-8190-440f-ab4e-be8857ab2a86",
+              "sourcePort": "cmksau6hx00tz356o59hb42jl",
+              "target": "ac0bb01d-6f38-45fb-aaae-515da0d4f12a",
+              "targetPort": "cmksgihou019c356oanzong46",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "40eab5dc-6279-4aad-a3d3-67f685195bb6": {
+              "points": [
+                {
+                  "id": "d0694fed-690f-46a7-aad8-82da4d0b708c",
+                  "type": "point",
+                  "x": 1804,
+                  "y": 619.73
+                },
+                {
+                  "id": "878fc6fd-ca0b-483f-8f68-e261225cf850",
+                  "type": "point",
+                  "x": 1850,
+                  "y": 614.73
+                }
+              ],
+              "id": "40eab5dc-6279-4aad-a3d3-67f685195bb6",
+              "type": "default",
+              "selected": false,
+              "source": "ac0bb01d-6f38-45fb-aaae-515da0d4f12a",
+              "sourcePort": "cmksgihou019e356o5j6t7wn1",
+              "target": "12368fce-1a4e-4f37-bf8b-c9f5e7670f2c",
+              "targetPort": "cmkwr7z6c02bx356rhlkfzky5",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "a434cb76-78d5-45d3-9dee-638328ba8287": {
+              "points": [
+                {
+                  "id": "3865155b-03a3-4516-bc47-1d39f106a556",
+                  "type": "point",
+                  "x": 2054.09,
+                  "y": 614.73
+                },
+                {
+                  "id": "1ecc451c-5088-4d2c-96bf-210003f55e4d",
+                  "type": "point",
+                  "x": 2110,
+                  "y": 614.73
+                }
+              ],
+              "id": "a434cb76-78d5-45d3-9dee-638328ba8287",
+              "type": "default",
+              "selected": false,
+              "source": "12368fce-1a4e-4f37-bf8b-c9f5e7670f2c",
+              "sourcePort": "cmkwr7z6d02bz356rn2b4wfn6",
+              "target": "38f17d33-5ad2-43d7-8ad4-5b1e097511ce",
+              "targetPort": "cmkwr8h9p02cg356rgf9ucnyj",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "22efc54c-bfd4-4a6c-8a7c-bfccf4e58b2f": {
+              "points": [
+                {
+                  "id": "023b38f5-af6d-4f1b-a8aa-24f1b7df1488",
+                  "type": "point",
+                  "x": 2290.48,
+                  "y": 614.73
+                },
+                {
+                  "id": "9f031556-4d7a-4a12-921b-f89d8ab58e9d",
+                  "type": "point",
+                  "x": 2335,
+                  "y": 614.73
+                }
+              ],
+              "id": "22efc54c-bfd4-4a6c-8a7c-bfccf4e58b2f",
+              "type": "default",
+              "selected": false,
+              "source": "38f17d33-5ad2-43d7-8ad4-5b1e097511ce",
+              "sourcePort": "cmkwr8h9q02ci356rri6uoa3c",
+              "target": "e89c7aa3-efe8-4b6a-9660-1b8c52679a21",
+              "targetPort": "cmksf409n00ij356o83j8bmz4",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "433011ae-5beb-4ab6-bcf8-c4cb6777ab96": {
+              "points": [
+                {
+                  "id": "d8126c23-fb1c-4692-89b9-deb883c82cda",
+                  "type": "point",
+                  "x": 1769,
+                  "y": 439.73
+                },
+                {
+                  "id": "552fdde7-9a66-4abb-a811-0b7321bf1f9d",
+                  "type": "point",
+                  "x": 1825,
+                  "y": 439.73
+                }
+              ],
+              "id": "433011ae-5beb-4ab6-bcf8-c4cb6777ab96",
+              "type": "default",
+              "selected": false,
+              "source": "c2982698-9689-4c1d-84b1-d239f6ef540e",
+              "sourcePort": "cmksgi5sl0188356o4op09ecv",
+              "target": "f337a047-7d9b-4dfb-801a-c2d888793399",
+              "targetPort": "cmkwt1zsi007b356r57vxcuwn",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "0178da2b-dbe4-4975-989a-64acfab8eb75": {
+              "points": [
+                {
+                  "id": "6c54d324-2861-4ce5-8899-b7e6981bc5ae",
+                  "type": "point",
+                  "x": 1979,
+                  "y": 439.73
+                },
+                {
+                  "id": "ba5184c8-eef6-47e6-b7a0-b1874bb91f7f",
+                  "type": "point",
+                  "x": 2035,
+                  "y": 439.73
+                }
+              ],
+              "id": "0178da2b-dbe4-4975-989a-64acfab8eb75",
+              "type": "default",
+              "selected": false,
+              "source": "f337a047-7d9b-4dfb-801a-c2d888793399",
+              "sourcePort": "cmkwt1zsi007d356r1kbmze9y",
+              "target": "1de3f563-69d9-49f7-bede-a508756e40f3",
+              "targetPort": "cmksf3wmw00i3356ockbnguqp",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "fde1802b-f292-4f66-a78f-f433cfd5294e": {
+              "points": [
+                {
+                  "id": "6a74b642-c287-4518-bccc-10e80d15181e",
+                  "type": "point",
+                  "x": 2263.91,
+                  "y": 439.73
+                },
+                {
+                  "id": "f5a792bf-cab7-4ec3-8ea2-15f5d23008c6",
+                  "type": "point",
+                  "x": 2355,
+                  "y": 439.73
+                }
+              ],
+              "id": "fde1802b-f292-4f66-a78f-f433cfd5294e",
+              "type": "default",
+              "selected": false,
+              "source": "1de3f563-69d9-49f7-bede-a508756e40f3",
+              "sourcePort": "cmksf3wmw00i5356ojrqhfyag",
+              "target": "abf06960-39a0-437d-b452-12bf0202b622",
+              "targetPort": "cmkwt2ccv007v356rajrq76ca",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "9d60e4c5-21b0-4ee4-8d6d-17d1ceefa4df": {
+              "points": [
+                {
+                  "id": "0885069c-5482-4479-ba67-bb67b6c67474",
+                  "type": "point",
+                  "x": 2560.75,
+                  "y": 614.73
+                },
+                {
+                  "id": "16a687dd-2f7b-480c-8709-6a85cdae1a48",
+                  "type": "point",
+                  "x": 2610,
+                  "y": 594.73
+                }
+              ],
+              "id": "9d60e4c5-21b0-4ee4-8d6d-17d1ceefa4df",
+              "type": "default",
+              "selected": false,
+              "source": "e89c7aa3-efe8-4b6a-9660-1b8c52679a21",
+              "sourcePort": "cmksf409n00il356owwbaobf6",
+              "target": "d5ae0dfa-78c8-4e44-bac5-bbfb3d7214b7",
+              "targetPort": "cmkwt2mxd0087356r8b0p1cs8",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "0dbd9357-853f-464a-b94c-b6a259289d68": {
+              "points": [
+                {
+                  "id": "72b4fe61-2d19-4bd2-9b79-b14242ed69cd",
+                  "type": "point",
+                  "x": 2764,
+                  "y": 594.73
+                },
+                {
+                  "id": "bc4da791-ef46-43a1-b5ce-3b71874d705a",
+                  "type": "point",
+                  "x": 2805,
+                  "y": 594.73
+                }
+              ],
+              "id": "0dbd9357-853f-464a-b94c-b6a259289d68",
+              "type": "default",
+              "selected": false,
+              "source": "d5ae0dfa-78c8-4e44-bac5-bbfb3d7214b7",
+              "sourcePort": "cmkwt2mxd0089356rqbvbot3b",
+              "target": "93750354-b745-4b5e-b527-d443920d6777",
+              "targetPort": "cmksf459d00ix356orez7g534",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "e71417f5-2c8b-4719-adf6-8ac3809cf20b": {
+              "points": [
+                {
+                  "id": "4a111544-0f91-4e15-b133-e08c5edf8257",
+                  "type": "point",
+                  "x": 3159.39,
+                  "y": 594.73
+                },
+                {
+                  "id": "713822ab-f999-41b3-a29f-5ac5d8e38d01",
+                  "type": "point",
+                  "x": 3248.5,
+                  "y": 539.03
+                }
+              ],
+              "id": "e71417f5-2c8b-4719-adf6-8ac3809cf20b",
+              "type": "default",
+              "selected": false,
+              "source": "93750354-b745-4b5e-b527-d443920d6777",
+              "sourcePort": "cmksf459d00iz356owrw02jdn",
+              "target": "234781ca-b49c-4b05-8442-4631530b79ce",
+              "targetPort": "cmkwt2zsg008r356ra1jbuhl6",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "aab4f94e-86d0-43e4-8724-40acefa3f253": {
+              "points": [
+                {
+                  "id": "83e97d4e-85db-4f50-a6f6-a7aef2749b4a",
+                  "type": "point",
+                  "x": 1804,
+                  "y": 644.89
+                },
+                {
+                  "id": "9292d5f4-65d2-49be-b644-36febb730502",
+                  "type": "point",
+                  "x": 1905,
+                  "y": 699.73
+                }
+              ],
+              "id": "aab4f94e-86d0-43e4-8724-40acefa3f253",
+              "type": "default",
+              "selected": false,
+              "source": "ac0bb01d-6f38-45fb-aaae-515da0d4f12a",
+              "sourcePort": "cmksgihou019g356onhwq4x8d",
+              "target": "16da8ce5-7a97-4b8c-b76e-e7d8ec7b2c30",
+              "targetPort": "cml6m1dtd0059356rla4an141",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "4262f95f-bf6a-4954-b45e-ce6d7cdf92b3": {
+              "points": [
+                {
+                  "id": "0d4f945e-793f-40b6-9151-138ea7a9e150",
+                  "type": "point",
+                  "x": 1769,
+                  "y": 464.89
+                },
+                {
+                  "id": "d6ab5706-d690-4aaa-84eb-1e4a056898e7",
+                  "type": "point",
+                  "x": 1850,
+                  "y": 519.73
+                }
+              ],
+              "id": "4262f95f-bf6a-4954-b45e-ce6d7cdf92b3",
+              "type": "default",
+              "selected": false,
+              "source": "c2982698-9689-4c1d-84b1-d239f6ef540e",
+              "sourcePort": "cmksgi9w4018j356oday7rvue",
+              "target": "c4c6be1d-4f98-46fd-a2dd-be23ca4a3b8e",
+              "targetPort": "cml6m1ilg005p356rgfiqur21",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "9200a49b-a2ab-475e-b229-34078bce2d40": {
+              "points": [
+                {
+                  "id": "b42b6f99-c979-43d7-b67a-86b8381773b6",
+                  "type": "point",
+                  "x": 3402.5,
+                  "y": 539.03
+                },
+                {
+                  "id": "9e3c0fd5-af29-417c-8311-5a932ffab184",
+                  "type": "point",
+                  "x": 3505.04,
+                  "y": 557.16
+                }
+              ],
+              "id": "9200a49b-a2ab-475e-b229-34078bce2d40",
+              "type": "default",
+              "selected": false,
+              "source": "234781ca-b49c-4b05-8442-4631530b79ce",
+              "sourcePort": "cmkwt2zsg008t356rbrnmk6rm",
+              "target": "8f891a87-6339-4a78-9c8d-ebdadc3b7091",
+              "targetPort": "cml6m1tzv00ae356r0ux4ant4",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            },
+            "291edd67-bd64-4968-aee3-57dfa476ac04": {
+              "points": [
+                {
+                  "id": "2aa0e8a0-19f7-4e40-a670-bfa762a92dfe",
+                  "type": "point",
+                  "x": 414,
+                  "y": 549.73
+                },
+                {
+                  "id": "bf2dac3e-59a0-4a0b-8bdd-4567d0788623",
+                  "type": "point",
+                  "x": 520,
+                  "y": 399.73
+                }
+              ],
+              "id": "291edd67-bd64-4968-aee3-57dfa476ac04",
+              "type": "default",
+              "selected": false,
+              "source": "6c5df0a9-14b0-4ae7-97a5-4c15b654806e",
+              "sourcePort": "cml6m240r00al356rv5seg3yu",
+              "target": "73d0204f-9e75-42f5-8104-4a397fcec971",
+              "targetPort": "cmksb38ng00uy356opesjx0bi",
+              "labels": [],
+              "width": 3,
+              "curvyness": 50
+            }
+          }
+        },
+        {
+          "id": "e938ba9b-45b4-481d-a32b-4b5cdbf19a6e",
+          "type": "diagram-nodes",
+          "isSvg": false,
+          "transformed": true,
+          "models": {
+            "0166580e-a5b8-4a6a-8b3a-b127529ab763": {
+              "id": "0166580e-a5b8-4a6a-8b3a-b127529ab763",
+              "type": "schedule",
+              "selected": false,
+              "x": 240,
+              "y": 395,
+              "ports": [
+                {
+                  "id": "cmkcpsyay01mm356r7wjhjkru",
+                  "type": "default",
+                  "x": 386,
+                  "y": 426.73,
+                  "name": "cmkcpsyay01mn356ree4i7qit",
+                  "parentNode": "0166580e-a5b8-4a6a-8b3a-b127529ab763",
+                  "links": [
+                    "a3b35a76-760b-4fc2-924a-e8f3d85f6b5e"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Payload",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "configure": "Open Schedule Editor",
+                "nextNodes": [
+                  "73d0204f-9e75-42f5-8104-4a397fcec971"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Schedule"
+            },
+            "d51fff75-18e8-4735-8632-8b1004546fa0": {
+              "id": "d51fff75-18e8-4735-8632-8b1004546fa0",
+              "type": "javascriptTransform",
+              "selected": false,
+              "x": 970,
+              "y": 400,
+              "ports": [
+                {
+                  "id": "cmksapaq000on356oov54yl5y",
+                  "type": "default",
+                  "x": 962,
+                  "y": 431.73,
+                  "name": "cmksapaq000oo356oxg5ydvvy",
+                  "parentNode": "d51fff75-18e8-4735-8632-8b1004546fa0",
+                  "links": [
+                    "8eeaeeef-1872-42c7-bcec-d7386cf9c375"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmksapaq000op356ol5b62ch8",
+                  "type": "default",
+                  "x": 1183.88,
+                  "y": 431.73,
+                  "name": "cmksapaq100oq356o5pmvbdkc",
+                  "parentNode": "d51fff75-18e8-4735-8632-8b1004546fa0",
+                  "links": [
+                    "5204736f-1818-41de-9476-c31fb80eec3e",
+                    "3029bedf-44c8-4457-bce3-817d0f5d048f"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "'use strict';\r\n\r\n// ============================================================================\r\n// ISO 22400-COMPLIANT WORKCENTER STATE CHANGE GENERATOR\r\n// ============================================================================\r\n// Generates realistic workcenter state transitions for manufacturing simulation\r\n// Strictly adheres to ISO 22400-2 standards for proper OEE classification\r\n//\r\n// Key Principles:\r\n// - Production mode = Equipment ACTIVELY PRODUCING (runTime)\r\n// - Planned downtime = SCHEDULED STOPS (maintenance, breaks, etc.)\r\n// - Unplanned downtime = UNSCHEDULED STOPS (faults, breakdowns, etc.)\r\n// - Blocked/Starved/Faulted = Always DOWNTIME, never production\r\n// - Maintenance/No-Schedule = OUTSIDE production time (excluded from OEE)\r\n//\r\n// Time Classification Fields (ISO 22400):\r\n// - duration: Total duration in milliseconds\r\n// - runTime: milliseconds in production mode (countAsProductionTime = true)\r\n// - plannedDowntime: milliseconds in planned downtime (countAsDowntime & countAsPlannedDowntime)\r\n// - unplannedDowntime: milliseconds in unplanned downtime (countAsDowntime & !countAsPlannedDowntime)\r\n//\r\n// Output Structure:\r\n// Returns up to 2 batches:\r\n// - One close batch (if any records need closing)\r\n// - One combined create+update batch (if any state changes occur)\r\n// ============================================================================\r\n\r\n// Extract tenant timezone from settings\r\nvar settingEdges = ($ && $.setting && $.setting.edges) || [];\r\nvar timezone = ($ && $.tenantTimezone) || \r\n               (settingEdges.length > 0 && settingEdges[0].node && settingEdges[0].node.defaultValue) || \r\n               'UTC';\r\n\r\n// Current execution timestamp in tenant local time, represented as UTC\r\nvar nowMoment = $moment().tz(timezone);\r\nvar nowUTCTs = nowMoment.utc().toISOString();\r\nvar nowUTCMs = nowMoment.valueOf();\r\n\r\n// ============================================================================\r\n// CONFIGURATION PARAMETERS\r\n// ============================================================================\r\nvar changeProb = 0.30;            // Probability of state change (30%)\r\nvar minProductionRatio = 0.40;    // Minimum 40% in production mode\r\n\r\n// ============================================================================\r\n// EXTRACT REFERENCE DATA WITH NULL SAFETY\r\n// ============================================================================\r\nvar workcenters = ($ && $.workcenter && $.workcenter.edges) \r\n  ? $.workcenter.edges.map(function(e) { return e.node; }) \r\n  : [];\r\n\r\nvar events = ($ && $.event && $.event.edges)\r\n  ? $.event.edges.map(function(e) { return e.node; })\r\n  : [];\r\n\r\nvar modes = ($ && $.mode && $.mode.edges)\r\n  ? $.mode.edges.map(function(e) { return e.node; })\r\n  : [];\r\n\r\nvar states = ($ && $.state && $.state.edges)\r\n  ? $.state.edges.map(function(e) { return e.node; })\r\n  : [];\r\n\r\nvar currentScheduleByGroup = ($ && $.currentScheduleByGroup) || {};\r\n\r\n// ============================================================================\r\n// BUILD OPEN HISTORY LOOKUP - DETECT DUPLICATES\r\n// ============================================================================\r\nvar openHistoryByWc = {};\r\nvar duplicateOpenHistory = [];\r\n\r\n($.workcenterHistory && $.workcenterHistory.edges ? $.workcenterHistory.edges : []).forEach(function(e) {\r\n  var wcId = e.node.workcenterId;\r\n  \r\n  if (!openHistoryByWc[wcId]) {\r\n    openHistoryByWc[wcId] = e.node;\r\n  } else {\r\n    var existing = openHistoryByWc[wcId];\r\n    var existingMs = $moment(existing.occurAt).valueOf();\r\n    var newMs = $moment(e.node.occurAt).valueOf();\r\n    \r\n    if (newMs > existingMs) {\r\n      duplicateOpenHistory.push(existing);\r\n      openHistoryByWc[wcId] = e.node;\r\n    } else {\r\n      duplicateOpenHistory.push(e.node);\r\n    }\r\n  }\r\n});\r\n\r\nif (duplicateOpenHistory.length > 0) {\r\n  console.log('WARNING: Found ' + duplicateOpenHistory.length + ' duplicate open history records. Will close them.');\r\n}\r\n\r\n// ============================================================================\r\n// BUILD MODE AND STATE LOOKUPS\r\n// ============================================================================\r\nvar modeById = {};\r\nmodes.forEach(function(m) { modeById[m.id] = m; });\r\n\r\nvar stateById = {};\r\nstates.forEach(function(s) { stateById[s.id] = s; });\r\n\r\n// Required modes and states\r\nvar noScheduleMode = modeById['no-schedule'];\r\nvar offlineState = stateById['offline'];\r\n\r\n// Validate required reference data exists\r\nif (!noScheduleMode) {\r\n  console.error('ERROR: no-schedule mode not found - required for unscheduled workcenters');\r\n}\r\nif (!offlineState) {\r\n  console.error('ERROR: offline state not found - required for default state');\r\n}\r\n\r\n// Fallback to first available if required data missing\r\nif (!noScheduleMode && modes.length > 0) {\r\n  noScheduleMode = modes[0];\r\n  console.warn('Using fallback mode: ' + noScheduleMode.id);\r\n}\r\nif (!offlineState && states.length > 0) {\r\n  offlineState = states[0];\r\n  console.warn('Using fallback state: ' + offlineState.id);\r\n}\r\n\r\n// Critical validation - cannot proceed without modes and states\r\nif (modes.length === 0 || states.length === 0) {\r\n  console.error('CRITICAL ERROR: No modes or states found in system. Cannot proceed.');\r\n  return null;\r\n}\r\n\r\n// ============================================================================\r\n// ISO 22400-2 COMPLIANT MODE-STATE TRANSITIONS\r\n// ============================================================================\r\nvar validStatesByMode = {\r\n  'production': ['running', 'running-slow', 'unknown'],\r\n  'disabled': ['faulted', 'e-stopped', 'blocked', 'starved', 'offline'],\r\n  'setup': ['changeover', 'warmup', 'cleaning'],\r\n  'cleaning': ['cleaning', 'offline'],\r\n  'idle': ['stopped', 'offline'],\r\n  'maintenance': ['maintenance', 'offline'],\r\n  'no-schedule': ['offline'],\r\n  'engineering': ['stopped', 'offline', 'changeover']\r\n};\r\n\r\nvar defaultStateByMode = {\r\n  'production': 'running',\r\n  'disabled': 'faulted',\r\n  'setup': 'changeover',\r\n  'cleaning': 'cleaning',\r\n  'idle': 'stopped',\r\n  'maintenance': 'maintenance',\r\n  'no-schedule': 'offline',\r\n  'engineering': 'stopped'\r\n};\r\n\r\n// ============================================================================\r\n// HELPER FUNCTIONS\r\n// ============================================================================\r\n\r\nfunction getValidStatesForMode(modeId) {\r\n  var validStateIds = validStatesByMode[modeId] || [];\r\n  return validStateIds.map(function(sid) { return stateById[sid]; }).filter(function(s) { return s; });\r\n}\r\n\r\nfunction selectValidStateForMode(mode) {\r\n  if (!mode) return states[0];\r\n  \r\n  var validStates = getValidStatesForMode(mode.id);\r\n  \r\n  if (validStates.length === 0) {\r\n    var defaultSid = defaultStateByMode[mode.id];\r\n    return stateById[defaultSid] || states[0];\r\n  }\r\n  \r\n  if (mode.id === 'production') {\r\n    var producingStates = validStates.filter(function(s) { return s.isProducing; });\r\n    if (producingStates.length > 0 && Math.random() < 0.85) {\r\n      return producingStates[Math.floor(Math.random() * producingStates.length)];\r\n    }\r\n  }\r\n  \r\n  return validStates[Math.floor(Math.random() * validStates.length)];\r\n}\r\n\r\nfunction shouldChangeState(openHistory, nowMs) {\r\n  if (!openHistory) return true;\r\n  \r\n  var openMoment = $moment(openHistory.occurAt);\r\n  var elapsedMs = nowMs - openMoment.valueOf();\r\n  var elapsedMinutes = elapsedMs / 60000;\r\n  \r\n  var randomMultiplier = Math.floor(Math.random() * 100) + 1;\r\n  var requiredMinutes = randomMultiplier * 3;\r\n  \r\n  return elapsedMinutes >= requiredMinutes;\r\n}\r\n\r\nfunction isScheduled(wc, scheduleMap) {\r\n  if (!wc.scheduleGroupId) return false;\r\n  return scheduleMap[wc.scheduleGroupId] ? true : false;\r\n}\r\n\r\nfunction calculateDuration(startTimestamp, endTimestamp) {\r\n  var startMs = $moment(startTimestamp).valueOf();\r\n  var endMs = $moment(endTimestamp).valueOf();\r\n  \r\n  var durationMs = endMs - startMs;\r\n  if (durationMs < 0) durationMs = 0;\r\n  \r\n  return durationMs;\r\n}\r\n\r\n/**\r\n * Calculate ISO 22400 time classification based on mode flags\r\n * @param {number} durationMs - Duration in milliseconds\r\n * @param {object} mode - Mode object with flags\r\n * @returns {object} { runTime, plannedDowntime, unplannedDowntime }\r\n */\r\nfunction calculateTimeClassification(durationMs, mode) {\r\n  var runTime = 0;\r\n  var plannedDowntime = 0;\r\n  var unplannedDowntime = 0;\r\n  \r\n  if (!mode) {\r\n    // No mode = treat as unplanned downtime\r\n    unplannedDowntime = durationMs;\r\n  } else if (mode.countAsProductionTime) {\r\n    // Production time (ISO 22400: Actual Production Time)\r\n    runTime = durationMs;\r\n  } else if (mode.countAsDowntime) {\r\n    if (mode.countAsPlannedDowntime) {\r\n      // Planned downtime (ISO 22400: Planned Downtime)\r\n      plannedDowntime = durationMs;\r\n    } else {\r\n      // Unplanned downtime (ISO 22400: Unplanned Downtime)\r\n      unplannedDowntime = durationMs;\r\n    }\r\n  }\r\n  // else: mode doesn't count as production or downtime = all zeros (excluded time)\r\n  \r\n  return {\r\n    runTime: runTime,\r\n    plannedDowntime: plannedDowntime,\r\n    unplannedDowntime: unplannedDowntime\r\n  };\r\n}\r\n\r\n// ============================================================================\r\n// INITIALIZE ARRAYS\r\n// ============================================================================\r\nvar allHistoryToClose = [];\r\nvar allHistoryToCreate = [];\r\nvar allWorkcentersToUpdate = [];\r\nvar codeCounter = Date.now();\r\n\r\n// Track time classification stats\r\nvar timeStats = {\r\n  totalRunTime: 0,\r\n  totalPlannedDowntime: 0,\r\n  totalUnplannedDowntime: 0,\r\n  recordsClassified: 0\r\n};\r\n\r\n// ============================================================================\r\n// STEP 1: CLOSE ALL DUPLICATE OPEN HISTORY RECORDS\r\n// ============================================================================\r\nduplicateOpenHistory.forEach(function(hist) {\r\n  var endMoment = $moment(nowUTCMs - 1).tz(timezone);\r\n  var endAt = endMoment.utc().toISOString();\r\n  \r\n  var durationMs = calculateDuration(hist.occurAt, endAt);\r\n  \r\n  // Get mode for time classification\r\n  var histMode = modeById[hist.modeId];\r\n  var timeClass = calculateTimeClassification(durationMs, histMode);\r\n  \r\n  // Track stats\r\n  timeStats.totalRunTime += timeClass.runTime;\r\n  timeStats.totalPlannedDowntime += timeClass.plannedDowntime;\r\n  timeStats.totalUnplannedDowntime += timeClass.unplannedDowntime;\r\n  timeStats.recordsClassified++;\r\n  \r\n  allHistoryToClose.push({\r\n    where: { id: hist.id },\r\n    update: {\r\n      endAt: endAt,\r\n      duration: durationMs,\r\n      runTime: timeClass.runTime,\r\n      plannedDowntime: timeClass.plannedDowntime,\r\n      unplannedDowntime: timeClass.unplannedDowntime\r\n    }\r\n  });\r\n});\r\n\r\n// ============================================================================\r\n// STEP 2: PROCESS ALL WORKCENTERS IN ONE PASS\r\n// ============================================================================\r\n\r\n// Select workcenters that will change state this iteration\r\nvar changingWcs = workcenters.filter(function() { \r\n  return Math.random() < changeProb; \r\n});\r\n\r\nvar minProdCount = Math.max(1, Math.ceil(changingWcs.length * minProductionRatio));\r\n\r\nchangingWcs.forEach(function(wc, idx) {\r\n  var openHistory = openHistoryByWc[wc.id];\r\n  var scheduled = isScheduled(wc, currentScheduleByGroup);\r\n  \r\n  // --------------------------------------------------------------------------\r\n  // UNSCHEDULED WORKCENTER LOGIC\r\n  // --------------------------------------------------------------------------\r\n  if (!scheduled) {\r\n    if (openHistory && openHistory.modeId !== 'no-schedule' && noScheduleMode && offlineState) {\r\n      var endMoment = $moment(nowUTCMs - 1).tz(timezone);\r\n      var endAt = endMoment.utc().toISOString();\r\n      \r\n      var durationMs = calculateDuration(openHistory.occurAt, endAt);\r\n      \r\n      // Get mode for time classification\r\n      var histMode = modeById[openHistory.modeId];\r\n      var timeClass = calculateTimeClassification(durationMs, histMode);\r\n      \r\n      // Track stats\r\n      timeStats.totalRunTime += timeClass.runTime;\r\n      timeStats.totalPlannedDowntime += timeClass.plannedDowntime;\r\n      timeStats.totalUnplannedDowntime += timeClass.unplannedDowntime;\r\n      timeStats.recordsClassified++;\r\n      \r\n      allHistoryToClose.push({\r\n        where: { id: openHistory.id },\r\n        update: {\r\n          endAt: endAt,\r\n          duration: durationMs,\r\n          runTime: timeClass.runTime,\r\n          plannedDowntime: timeClass.plannedDowntime,\r\n          unplannedDowntime: timeClass.unplannedDowntime\r\n        }\r\n      });\r\n      \r\n      codeCounter++;\r\n      var noScheduleCode = 'WCH-' + codeCounter.toString(36).toUpperCase();\r\n      \r\n      allHistoryToCreate.push({\r\n        create: {\r\n          code: noScheduleCode,\r\n          workcenterId: wc.id,\r\n          occurAt: nowUTCTs,\r\n          modeId: noScheduleMode.id,\r\n          stateId: offlineState.id,\r\n          eventId: null,\r\n          scheduleId: null,\r\n          notes: 'No active schedule defined'\r\n        }\r\n      });\r\n      \r\n      allWorkcentersToUpdate.push({\r\n        where: { id: wc.id },\r\n        update: {\r\n          currentModeId: noScheduleMode.id,\r\n          currentStateId: offlineState.id,\r\n          currentEventId: null,\r\n          stateChangedAt: nowUTCTs\r\n        }\r\n      });\r\n    }\r\n    return;\r\n  }\r\n  \r\n  // --------------------------------------------------------------------------\r\n  // SCHEDULED WORKCENTER LOGIC\r\n  // --------------------------------------------------------------------------\r\n  \r\n  if (!shouldChangeState(openHistory, nowUTCMs)) {\r\n    return;\r\n  }\r\n  \r\n  if (openHistory) {\r\n    var openMoment = $moment(openHistory.occurAt);\r\n    \r\n    if (openMoment.valueOf() >= nowUTCMs) {\r\n      return;\r\n    }\r\n    \r\n    var endMoment = $moment(nowUTCMs - 1).tz(timezone);\r\n    var endAt = endMoment.utc().toISOString();\r\n    \r\n    var durationMs = calculateDuration(openHistory.occurAt, endAt);\r\n    \r\n    // Get mode for time classification\r\n    var histMode = modeById[openHistory.modeId];\r\n    var timeClass = calculateTimeClassification(durationMs, histMode);\r\n    \r\n    // Track stats\r\n    timeStats.totalRunTime += timeClass.runTime;\r\n    timeStats.totalPlannedDowntime += timeClass.plannedDowntime;\r\n    timeStats.totalUnplannedDowntime += timeClass.unplannedDowntime;\r\n    timeStats.recordsClassified++;\r\n    \r\n    allHistoryToClose.push({\r\n      where: { id: openHistory.id },\r\n      update: {\r\n        endAt: endAt,\r\n        duration: durationMs,\r\n        runTime: timeClass.runTime,\r\n        plannedDowntime: timeClass.plannedDowntime,\r\n        unplannedDowntime: timeClass.unplannedDowntime\r\n      }\r\n    });\r\n  }\r\n  \r\n  // --------------------------------------------------------------------------\r\n  // SELECT NEW MODE AND STATE\r\n  // --------------------------------------------------------------------------\r\n  var forceProduction = idx < minProdCount;\r\n  var newMode, newState;\r\n  \r\n  if (forceProduction) {\r\n    var prodMode = modeById['production'];\r\n    if (!prodMode) {\r\n      prodMode = modes.filter(function(m) { return m.countAsProductionTime; })[0] || modes[0];\r\n    }\r\n    \r\n    var validStates = getValidStatesForMode(prodMode.id);\r\n    var producingStates = validStates.filter(function(s) { return s.isProducing; });\r\n    \r\n    newState = producingStates.length > 0 \r\n      ? producingStates[Math.floor(Math.random() * producingStates.length)]\r\n      : validStates[0] || stateById['running'] || states[0];\r\n    \r\n    newMode = prodMode;\r\n    \r\n  } else {\r\n    var modeWeights = {\r\n      'production': 0.60,\r\n      'idle': 0.15,\r\n      'setup': 0.10,\r\n      'maintenance': 0.10,\r\n      'no-schedule': 0.05\r\n    };\r\n    \r\n    var totalWeight = 0;\r\n    var weights = modes.map(function(m) {\r\n      var w = modeWeights[m.id] || modeWeights[m.code] || modeWeights[m.name] || 1;\r\n      totalWeight += w;\r\n      return w;\r\n    });\r\n    \r\n    var rand = Math.random() * totalWeight;\r\n    newMode = modes[0];\r\n    for (var j = 0; j < modes.length; j++) {\r\n      rand -= weights[j];\r\n      if (rand <= 0) {\r\n        newMode = modes[j];\r\n        break;\r\n      }\r\n    }\r\n    \r\n    newState = selectValidStateForMode(newMode);\r\n  }\r\n  \r\n  // CRITICAL: Ensure newMode and newState are NEVER null\r\n  if (!newMode) {\r\n    newMode = modes[0];\r\n    console.warn('Using fallback mode for workcenter: ' + wc.id);\r\n  }\r\n  if (!newState) {\r\n    newState = states[0];\r\n    console.warn('Using fallback state for workcenter: ' + wc.id);\r\n  }\r\n  \r\n  var newEvent = (newMode && newMode.countAsDowntime && events.length > 0) \r\n    ? events[Math.floor(Math.random() * events.length)] \r\n    : null;\r\n  \r\n  var scheduleId = wc.scheduleGroupId \r\n    ? (currentScheduleByGroup[wc.scheduleGroupId] || null) \r\n    : null;\r\n  \r\n  codeCounter++;\r\n  var newCode = 'WCH-' + codeCounter.toString(36).toUpperCase();\r\n  \r\n  allHistoryToCreate.push({\r\n    create: {\r\n      code: newCode,\r\n      workcenterId: wc.id,\r\n      occurAt: nowUTCTs,\r\n      modeId: newMode.id,\r\n      stateId: newState.id,\r\n      eventId: newEvent ? newEvent.id : null,\r\n      scheduleId: scheduleId,\r\n      notes: null\r\n    }\r\n  });\r\n  \r\n  allWorkcentersToUpdate.push({\r\n    where: { id: wc.id },\r\n    update: {\r\n      currentModeId: newMode.id,\r\n      currentStateId: newState.id,\r\n      currentEventId: newEvent ? newEvent.id : null,\r\n      stateChangedAt: nowUTCTs\r\n    }\r\n  });\r\n});\r\n\r\n// ============================================================================\r\n// BUILD OUTPUT BATCHES\r\n// ============================================================================\r\nvar batches = [];\r\n\r\n// Add close batch if needed\r\nif (allHistoryToClose.length > 0) {\r\n  batches.push({\r\n    batchType: 'close',\r\n    batchIndex: 1,\r\n    historyToClose: allHistoryToClose,\r\n    stats: {\r\n      tenantTimezone: timezone,\r\n      executedAt: nowUTCTs,\r\n      recordsClosed: allHistoryToClose.length,\r\n      timeClassification: {\r\n        totalRunTimeMs: timeStats.totalRunTime,\r\n        totalPlannedDowntimeMs: timeStats.totalPlannedDowntime,\r\n        totalUnplannedDowntimeMs: timeStats.totalUnplannedDowntime,\r\n        recordsClassified: timeStats.recordsClassified\r\n      }\r\n    }\r\n  });\r\n}\r\n\r\n// Add combined create+update batch if needed\r\nif (allHistoryToCreate.length > 0 && allWorkcentersToUpdate.length > 0) {\r\n  batches.push({\r\n    batchType: 'create',\r\n    batchIndex: 2,\r\n    historyToCreate: allHistoryToCreate,\r\n    workcentersToUpdate: allWorkcentersToUpdate,\r\n    stats: {\r\n      tenantTimezone: timezone,\r\n      executedAt: nowUTCTs,\r\n      recordsCreated: allHistoryToCreate.length,\r\n      workcentersUpdated: allWorkcentersToUpdate.length\r\n    }\r\n  });\r\n}\r\n\r\n// ============================================================================\r\n// EXECUTION SUMMARY LOGGING\r\n// ============================================================================\r\nconsole.log('=============================================================');\r\nconsole.log('Workcenter History State Change Processor (ISO 22400)');\r\nconsole.log('=============================================================');\r\nconsole.log('  Execution Time (UTC): ' + nowUTCTs);\r\nconsole.log('  Tenant Timezone: ' + timezone);\r\nconsole.log('  Total Workcenters: ' + workcenters.length);\r\nconsole.log('  Changing Workcenters: ' + changingWcs.length);\r\nconsole.log('  Records to Close: ' + allHistoryToClose.length);\r\nconsole.log('  Records to Create: ' + allHistoryToCreate.length);\r\nconsole.log('  Workcenters to Update: ' + allWorkcentersToUpdate.length);\r\nconsole.log('─────────────────────────────────────────────────────────────');\r\nconsole.log('ISO 22400 Time Classification:');\r\nconsole.log('  Run Time: ' + Math.round(timeStats.totalRunTime / 1000) + 's (' + timeStats.totalRunTime + 'ms)');\r\nconsole.log('  Planned Downtime: ' + Math.round(timeStats.totalPlannedDowntime / 1000) + 's (' + timeStats.totalPlannedDowntime + 'ms)');\r\nconsole.log('  Unplanned Downtime: ' + Math.round(timeStats.totalUnplannedDowntime / 1000) + 's (' + timeStats.totalUnplannedDowntime + 'ms)');\r\nconsole.log('  Records Classified: ' + timeStats.recordsClassified);\r\nconsole.log('─────────────────────────────────────────────────────────────');\r\nconsole.log('  Total Batches: ' + batches.length);\r\nconsole.log('=============================================================');\r\n\r\nreturn batches.length > 0 ? batches : null;",
+                "nextNodes": [
+                  "45623f92-9548-40b8-ad28-34fed399c404",
+                  "9d6ac9f4-8190-440f-ab4e-be8857ab2a86"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Primary State Processing Engine"
+            },
+            "45623f92-9548-40b8-ad28-34fed399c404": {
+              "id": "45623f92-9548-40b8-ad28-34fed399c404",
+              "type": "filterArray",
+              "selected": false,
+              "x": 1340,
+              "y": 400,
+              "ports": [
+                {
+                  "id": "cmksatpa000sx356olei6b5ph",
+                  "type": "default",
+                  "x": 1332,
+                  "y": 431.73,
+                  "name": "cmksatpa000sy356o3ioj7rx3",
+                  "parentNode": "45623f92-9548-40b8-ad28-34fed399c404",
+                  "links": [
+                    "5204736f-1818-41de-9476-c31fb80eec3e"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmksatpa000sz356ohipko8yk",
+                  "type": "default",
+                  "x": 1525.15,
+                  "y": 431.73,
+                  "name": "cmksatpa000t0356ogv37um9j",
+                  "parentNode": "45623f92-9548-40b8-ad28-34fed399c404",
+                  "links": [
+                    "de7a061a-5408-40a8-90b4-6af04b044de1"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "inputTransform": "$",
+                "outputTransform": "$map(historyToClose, function($item) {\r\n  {\r\n    \"where\": $item.where,\r\n    \"update\": $item.update\r\n  }\r\n})",
+                "enableAdvancedConfiguration": true,
+                "filterTransform": "$.batchType = \"close\"",
+                "nextNodes": [
+                  "c2982698-9689-4c1d-84b1-d239f6ef540e"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Filter Array History to Close"
+            },
+            "9d6ac9f4-8190-440f-ab4e-be8857ab2a86": {
+              "id": "9d6ac9f4-8190-440f-ab4e-be8857ab2a86",
+              "type": "filterArray",
+              "selected": false,
+              "x": 1250,
+              "y": 580,
+              "ports": [
+                {
+                  "id": "cmksau6hx00tx356oe29vbh8c",
+                  "type": "default",
+                  "x": 1242,
+                  "y": 611.73,
+                  "name": "cmksau6hx00ty356ojxaotx9g",
+                  "parentNode": "9d6ac9f4-8190-440f-ab4e-be8857ab2a86",
+                  "links": [
+                    "3029bedf-44c8-4457-bce3-817d0f5d048f"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmksau6hx00tz356o59hb42jl",
+                  "type": "default",
+                  "x": 1578.36,
+                  "y": 611.73,
+                  "name": "cmksau6hx00u0356oafeq0f59",
+                  "parentNode": "9d6ac9f4-8190-440f-ab4e-be8857ab2a86",
+                  "links": [
+                    "7768186f-f8e4-4eb9-900e-102c3e443fb2"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "inputTransform": "$",
+                "outputTransform": "{\r\n  \"historyToCreate\": $map(historyToCreate, function($item) { $item }),\r\n  \"workcentersToUpdate\": $map(workcentersToUpdate, function($item) { $item })\r\n}",
+                "enableAdvancedConfiguration": true,
+                "filterTransform": "$.batchType = \"create\"",
+                "nextNodes": [
+                  "ac0bb01d-6f38-45fb-aaae-515da0d4f12a"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Filter Array History to Create & Workcenters to Update"
+            },
+            "73d0204f-9e75-42f5-8104-4a397fcec971": {
+              "id": "73d0204f-9e75-42f5-8104-4a397fcec971",
+              "type": "query",
+              "selected": false,
+              "x": 520,
+              "y": 360,
+              "ports": [
+                {
+                  "id": "cmksb38ng00uy356opesjx0bi",
+                  "type": "default",
+                  "x": 512,
+                  "y": 391.73,
+                  "name": "cmksb38ng00uz356orpio9c2p",
+                  "parentNode": "73d0204f-9e75-42f5-8104-4a397fcec971",
+                  "links": [
+                    "0ef02010-08e4-47cf-adeb-489f0edd0f42",
+                    "a3b35a76-760b-4fc2-924a-e8f3d85f6b5e",
+                    "291edd67-bd64-4968-aee3-57dfa476ac04"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmksb38ng00v0356o1cvvno74",
+                  "type": "default",
+                  "x": 683.17,
+                  "y": 391.73,
+                  "name": "cmksb38ng00v1356oyxb9o5ia",
+                  "parentNode": "73d0204f-9e75-42f5-8104-4a397fcec971",
+                  "links": [
+                    "7900af3b-2cca-4a90-acb1-9ed5193f1478"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "application",
+                "variablesTransform": "{}",
+                "query": "query GetWorkcenterHistoryData {\r\n  # Get tenant timezone setting\r\n  setting(where: { id: { _eq: \"TimeZone\" } }) {\r\n    edges {\r\n      node {\r\n        id\r\n        defaultValue\r\n      }\r\n    }\r\n  }\r\n  \r\n  # Get all active workcenters with schedule group assignments\r\n  workcenter(where: { isActive: { _eq: true } }) {\r\n    edges {\r\n      node {\r\n        id\r\n        code\r\n        name\r\n        scheduleGroupId\r\n        currentWorkcenterHistoryId\r\n      }\r\n    }\r\n  }\r\n  \r\n  # Get open workcenter history records\r\n  workcenterHistory(where: { endAt: { _isNull: true } }) {\r\n    edges {\r\n      node {\r\n        id\r\n        code\r\n        workcenterId\r\n        occurAt\r\n        endAt\r\n        modeId\r\n        stateId\r\n        eventId\r\n        scheduleId\r\n        duration\r\n        processedInOeeHourlyAt\r\n        runTime\r\n        plannedDowntime\r\n        unplannedDowntime\r\n        notes\r\n      }\r\n    }\r\n  }\r\n  \r\n  # Get all downtime events\r\n  event {\r\n    edges {\r\n      node {\r\n        id\r\n        code\r\n        name\r\n        description\r\n      }\r\n    }\r\n  }\r\n  \r\n  # Get all operational modes\r\n  mode {\r\n    edges {\r\n      node {\r\n        id\r\n        code\r\n        name\r\n        countAsProductionTime\r\n        countAsDowntime\r\n        countAsPlannedDowntime\r\n      }\r\n    }\r\n  }\r\n  \r\n  # Get all operational states\r\n  state {\r\n    edges {\r\n      node {\r\n        id\r\n        code\r\n        name\r\n        isProducing\r\n        isFault\r\n      }\r\n    }\r\n  }\r\n}",
+                "nextNodes": [
+                  "c6b701bc-3377-4bbd-8a2e-60cedebd8cc9"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Query All Relevant Data"
+            },
+            "c6b701bc-3377-4bbd-8a2e-60cedebd8cc9": {
+              "id": "c6b701bc-3377-4bbd-8a2e-60cedebd8cc9",
+              "type": "transform",
+              "selected": false,
+              "x": 740,
+              "y": 400,
+              "ports": [
+                {
+                  "id": "cmksb3zay00wa356o92g8489g",
+                  "type": "default",
+                  "x": 732,
+                  "y": 431.73,
+                  "name": "cmksb3zay00wb356o22qvqpti",
+                  "parentNode": "c6b701bc-3377-4bbd-8a2e-60cedebd8cc9",
+                  "links": [
+                    "7900af3b-2cca-4a90-acb1-9ed5193f1478"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmksb3zay00wc356ocwr3yas6",
+                  "type": "default",
+                  "x": 886,
+                  "y": 431.73,
+                  "name": "cmksb3zay00wd356orgc63g7v",
+                  "parentNode": "c6b701bc-3377-4bbd-8a2e-60cedebd8cc9",
+                  "links": [
+                    "8eeaeeef-1872-42c7-bcec-d7386cf9c375"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "(\r\n  $now := $moment();\r\n  $workcenters := workcenter.edges.node;\r\n  $timezone := setting.edges[0].node.defaultValue ? setting.edges[0].node.defaultValue : \"UTC\";\r\n  \r\n  /* Get unique scheduleGroupIds */\r\n  $scheduleGroupIds := $distinct($workcenters.scheduleGroupId)[$ != null];\r\n  \r\n  /* Build mapping: scheduleGroupId → current active scheduleId */\r\n  $currentScheduleByGroup := $merge($scheduleGroupIds.(\r\n    $groupId := $;\r\n    $currentSchedules := $scheduleGroup($groupId).getCurrentSchedules($now, $now, { \"inclusive\": true });\r\n    $activeSchedule := $currentSchedules[0];\r\n    { ($groupId): $activeSchedule.scheduleId }\r\n  ));\r\n  \r\n  /* Merge with original query results and add schedule mapping */\r\n  $merge([$, { \r\n    \"currentScheduleByGroup\": $currentScheduleByGroup,\r\n    \"tenantTimezone\": $timezone\r\n  }])\r\n)",
+                "nextNodes": [
+                  "d51fff75-18e8-4735-8632-8b1004546fa0"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Get Schedules"
+            },
+            "722eabe3-c0d5-4f4e-b4e2-aeaa8366c356": {
+              "id": "722eabe3-c0d5-4f4e-b4e2-aeaa8366c356",
+              "type": "debugSource",
+              "selected": false,
+              "x": 255,
+              "y": 265,
+              "ports": [
+                {
+                  "id": "cmksb5gew00xa356owxcn8fq4",
+                  "type": "default",
+                  "x": 401,
+                  "y": 296.73,
+                  "name": "cmksb5gew00xb356oe7oeryq6",
+                  "parentNode": "722eabe3-c0d5-4f4e-b4e2-aeaa8366c356",
+                  "links": [
+                    "0ef02010-08e4-47cf-adeb-489f0edd0f42"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "payload": {},
+                "context": {},
+                "nextNodes": [
+                  "73d0204f-9e75-42f5-8104-4a397fcec971"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Source"
+            },
+            "1de3f563-69d9-49f7-bede-a508756e40f3": {
+              "id": "1de3f563-69d9-49f7-bede-a508756e40f3",
+              "type": "mutate",
+              "selected": false,
+              "x": 2035,
+              "y": 400,
+              "ports": [
+                {
+                  "id": "cmksf3wmw00i3356ockbnguqp",
+                  "type": "default",
+                  "x": 2027,
+                  "y": 431.73,
+                  "name": "cmksf3wmw00i4356ovkcu6g7v",
+                  "parentNode": "1de3f563-69d9-49f7-bede-a508756e40f3",
+                  "links": [
+                    "0178da2b-dbe4-4975-989a-64acfab8eb75"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmksf3wmw00i5356ojrqhfyag",
+                  "type": "default",
+                  "x": 2255.91,
+                  "y": 431.73,
+                  "name": "cmksf3wmw00i6356ocsmj6s41",
+                  "parentNode": "1de3f563-69d9-49f7-bede-a508756e40f3",
+                  "links": [
+                    "fde1802b-f292-4f66-a78f-f433cfd5294e"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "Application",
+                "variablesTransform": "{\r\n  \"payload\": $\r\n}",
+                "nextNodes": [
+                  "abf06960-39a0-437d-b452-12bf0202b622"
+                ],
+                "mutation": "mutation UpdateWorkcenterHistory($payload: [WorkcenterHistoryUpdatePayloadInput!]!) {\n  updateWorkcenterHistory(payload: $payload) {\n    id\n    endAt\n  }\n}"
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Mutate WorkcenterHistory Update"
+            },
+            "e89c7aa3-efe8-4b6a-9660-1b8c52679a21": {
+              "id": "e89c7aa3-efe8-4b6a-9660-1b8c52679a21",
+              "type": "mutate",
+              "selected": false,
+              "x": 2335,
+              "y": 575,
+              "ports": [
+                {
+                  "id": "cmksf409n00ij356o83j8bmz4",
+                  "type": "default",
+                  "x": 2327,
+                  "y": 606.73,
+                  "name": "cmksf409n00ik356okocykt0k",
+                  "parentNode": "e89c7aa3-efe8-4b6a-9660-1b8c52679a21",
+                  "links": [
+                    "22efc54c-bfd4-4a6c-8a7c-bfccf4e58b2f"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmksf409n00il356owwbaobf6",
+                  "type": "default",
+                  "x": 2552.75,
+                  "y": 606.73,
+                  "name": "cmksf409n00im356oj36nqngd",
+                  "parentNode": "e89c7aa3-efe8-4b6a-9660-1b8c52679a21",
+                  "links": [
+                    "9d60e4c5-21b0-4ee4-8d6d-17d1ceefa4df"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "Application",
+                "variablesTransform": "{\r\n  \"payload\": $\r\n}",
+                "nextNodes": [
+                  "d5ae0dfa-78c8-4e44-bac5-bbfb3d7214b7"
+                ],
+                "mutation": "mutation CreateWorkcenterHistory($payload: [WorkcenterHistoryCreatePayloadInput!]!) {\n  createWorkcenterHistory(payload: $payload) {\n    id\n    workcenterId\n  }\n}"
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Mutate WorkcenterHistory Create"
+            },
+            "93750354-b745-4b5e-b527-d443920d6777": {
+              "id": "93750354-b745-4b5e-b527-d443920d6777",
+              "type": "mutate",
+              "selected": false,
+              "x": 2805,
+              "y": 555,
+              "ports": [
+                {
+                  "id": "cmksf459d00ix356orez7g534",
+                  "type": "default",
+                  "x": 2797,
+                  "y": 586.73,
+                  "name": "cmksf459d00iy356o65k8gd6b",
+                  "parentNode": "93750354-b745-4b5e-b527-d443920d6777",
+                  "links": [
+                    "0dbd9357-853f-464a-b94c-b6a259289d68"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmksf459d00iz356owrw02jdn",
+                  "type": "default",
+                  "x": 3151.39,
+                  "y": 586.73,
+                  "name": "cmksf459d00j0356ojrj34ifq",
+                  "parentNode": "93750354-b745-4b5e-b527-d443920d6777",
+                  "links": [
+                    "e71417f5-2c8b-4719-adf6-8ac3809cf20b"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "api": "Application",
+                "variablesTransform": "{\r\n  \"payload\": $.createWorkcenterHistory.{\r\n    \"where\": { \"id\": workcenterId },\r\n    \"update\": {\r\n      \"currentWorkcenterHistoryId\": id\r\n    }\r\n  }\r\n}",
+                "nextNodes": [
+                  "234781ca-b49c-4b05-8442-4631530b79ce"
+                ],
+                "mutation": "mutation UpdateWorkcenter($payload: [WorkcenterUpdatePayloadInput!]!) {\n  updateWorkcenter(payload: $payload) {\n    id\n    currentWorkcenterHistoryId\n\n  }\n}"
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Mutate Workcenter Update - Current WorkcenterHistoryId"
+            },
+            "c2982698-9689-4c1d-84b1-d239f6ef540e": {
+              "id": "c2982698-9689-4c1d-84b1-d239f6ef540e",
+              "type": "switch",
+              "selected": false,
+              "x": 1615,
+              "y": 400,
+              "ports": [
+                {
+                  "id": "cmksgi1ib0181356ovkp0mnqc",
+                  "type": "default",
+                  "x": 1607,
+                  "y": 431.73,
+                  "name": "cmksgi1ib0182356oz3vfj6eg",
+                  "parentNode": "c2982698-9689-4c1d-84b1-d239f6ef540e",
+                  "links": [
+                    "de7a061a-5408-40a8-90b4-6af04b044de1"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmksgi5sl0188356o4op09ecv",
+                  "type": "default",
+                  "x": 1761,
+                  "y": 431.73,
+                  "name": "cmksgi5sl0189356otu44y1d6",
+                  "parentNode": "c2982698-9689-4c1d-84b1-d239f6ef540e",
+                  "links": [
+                    "433011ae-5beb-4ab6-bcf8-c4cb6777ab96"
+                  ],
+                  "in": false,
+                  "groupName": "Has Data",
+                  "groupIndex": 0,
+                  "groupPath": "data.branches",
+                  "fieldLabel": null,
+                  "fieldPath": "nextNodes"
+                },
+                {
+                  "id": "cmksgi9w4018j356oday7rvue",
+                  "type": "default",
+                  "x": 1761,
+                  "y": 456.89,
+                  "name": "cmksgi9w4018k356oe8skajt9",
+                  "parentNode": "c2982698-9689-4c1d-84b1-d239f6ef540e",
+                  "links": [
+                    "4262f95f-bf6a-4954-b45e-ce6d7cdf92b3"
+                  ],
+                  "in": false,
+                  "groupName": "No Data",
+                  "groupIndex": 1,
+                  "groupPath": "data.branches",
+                  "fieldLabel": null,
+                  "fieldPath": "nextNodes"
+                }
+              ],
+              "data": {
+                "branches": [
+                  {
+                    "name": "Has Data",
+                    "nextNodes": [
+                      "f337a047-7d9b-4dfb-801a-c2d888793399"
+                    ],
+                    "transform": "$isNotNilOrEmpty($)"
+                  },
+                  {
+                    "name": "No Data",
+                    "nextNodes": [
+                      "c4c6be1d-4f98-46fd-a2dd-be23ca4a3b8e"
+                    ],
+                    "transform": "$isNilOrEmpty($)"
+                  }
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Route"
+            },
+            "ac0bb01d-6f38-45fb-aaae-515da0d4f12a": {
+              "id": "ac0bb01d-6f38-45fb-aaae-515da0d4f12a",
+              "type": "switch",
+              "selected": false,
+              "x": 1650,
+              "y": 580,
+              "ports": [
+                {
+                  "id": "cmksgihou019c356oanzong46",
+                  "type": "default",
+                  "x": 1642,
+                  "y": 611.73,
+                  "name": "cmksgihou019d356osl6s26yz",
+                  "parentNode": "ac0bb01d-6f38-45fb-aaae-515da0d4f12a",
+                  "links": [
+                    "7768186f-f8e4-4eb9-900e-102c3e443fb2"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmksgihou019e356o5j6t7wn1",
+                  "type": "default",
+                  "x": 1796,
+                  "y": 611.73,
+                  "name": "cmksgihou019f356opb9ovj7o",
+                  "parentNode": "ac0bb01d-6f38-45fb-aaae-515da0d4f12a",
+                  "links": [
+                    "40eab5dc-6279-4aad-a3d3-67f685195bb6"
+                  ],
+                  "in": false,
+                  "groupName": "Has Data",
+                  "groupIndex": 0,
+                  "groupPath": "data.branches",
+                  "fieldLabel": null,
+                  "fieldPath": "nextNodes"
+                },
+                {
+                  "id": "cmksgihou019g356onhwq4x8d",
+                  "type": "default",
+                  "x": 1796,
+                  "y": 636.89,
+                  "name": "cmksgihou019h356oyshgymmc",
+                  "parentNode": "ac0bb01d-6f38-45fb-aaae-515da0d4f12a",
+                  "links": [
+                    "aab4f94e-86d0-43e4-8724-40acefa3f253"
+                  ],
+                  "in": false,
+                  "groupName": "No Data",
+                  "groupIndex": 1,
+                  "groupPath": "data.branches",
+                  "fieldLabel": null,
+                  "fieldPath": "nextNodes"
+                }
+              ],
+              "data": {
+                "branches": [
+                  {
+                    "name": "Has Data",
+                    "nextNodes": [
+                      "12368fce-1a4e-4f37-bf8b-c9f5e7670f2c"
+                    ],
+                    "transform": "$count($.historyToCreate) > 0"
+                  },
+                  {
+                    "name": "No Data",
+                    "nextNodes": [
+                      "16da8ce5-7a97-4b8c-b76e-e7d8ec7b2c30"
+                    ],
+                    "transform": "$count($.historyToCreate) = 0"
+                  }
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Route"
+            },
+            "12368fce-1a4e-4f37-bf8b-c9f5e7670f2c": {
+              "id": "12368fce-1a4e-4f37-bf8b-c9f5e7670f2c",
+              "type": "setContext",
+              "selected": false,
+              "x": 1850,
+              "y": 575,
+              "ports": [
+                {
+                  "id": "cmkwr7z6c02bx356rhlkfzky5",
+                  "type": "default",
+                  "x": 1842,
+                  "y": 606.73,
+                  "name": "cmkwr7z6c02by356rtpki1yv6",
+                  "parentNode": "12368fce-1a4e-4f37-bf8b-c9f5e7670f2c",
+                  "links": [
+                    "40eab5dc-6279-4aad-a3d3-67f685195bb6"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkwr7z6d02bz356rn2b4wfn6",
+                  "type": "default",
+                  "x": 2046.09,
+                  "y": 606.73,
+                  "name": "cmkwr7z6d02c0356ri982wa6o",
+                  "parentNode": "12368fce-1a4e-4f37-bf8b-c9f5e7670f2c",
+                  "links": [
+                    "a434cb76-78d5-45d3-9dee-638328ba8287"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "transform": "{\r\n  \"workcentersToUpdate\": $.workcentersToUpdate\r\n}",
+                "nextNodes": [
+                  "38f17d33-5ad2-43d7-8ad4-5b1e097511ce"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "store_workcenters_to_update"
+            },
+            "38f17d33-5ad2-43d7-8ad4-5b1e097511ce": {
+              "id": "38f17d33-5ad2-43d7-8ad4-5b1e097511ce",
+              "type": "transform",
+              "selected": false,
+              "x": 2110,
+              "y": 575,
+              "ports": [
+                {
+                  "id": "cmkwr8h9p02cg356rgf9ucnyj",
+                  "type": "default",
+                  "x": 2102,
+                  "y": 606.73,
+                  "name": "cmkwr8h9p02ch356rviiwz1c6",
+                  "parentNode": "38f17d33-5ad2-43d7-8ad4-5b1e097511ce",
+                  "links": [
+                    "a434cb76-78d5-45d3-9dee-638328ba8287"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkwr8h9q02ci356rri6uoa3c",
+                  "type": "default",
+                  "x": 2282.48,
+                  "y": 606.73,
+                  "name": "cmkwr8h9q02cj356rqka8q1xn",
+                  "parentNode": "38f17d33-5ad2-43d7-8ad4-5b1e097511ce",
+                  "links": [
+                    "22efc54c-bfd4-4a6c-8a7c-bfccf4e58b2f"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "e89c7aa3-efe8-4b6a-9660-1b8c52679a21"
+                ],
+                "transform": "$.historyToCreate"
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "extract_history_to_create"
+            },
+            "f337a047-7d9b-4dfb-801a-c2d888793399": {
+              "id": "f337a047-7d9b-4dfb-801a-c2d888793399",
+              "type": "mutexLock",
+              "selected": false,
+              "x": 1825,
+              "y": 400,
+              "ports": [
+                {
+                  "id": "cmkwt1zsi007b356r57vxcuwn",
+                  "type": "default",
+                  "x": 1817,
+                  "y": 431.73,
+                  "name": "cmkwt1zsi007c356rfqcn7g6c",
+                  "parentNode": "f337a047-7d9b-4dfb-801a-c2d888793399",
+                  "links": [
+                    "433011ae-5beb-4ab6-bcf8-c4cb6777ab96"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkwt1zsi007d356r1kbmze9y",
+                  "type": "default",
+                  "x": 1971,
+                  "y": 431.73,
+                  "name": "cmkwt1zsi007e356rj88ec6is",
+                  "parentNode": "f337a047-7d9b-4dfb-801a-c2d888793399",
+                  "links": [
+                    "0178da2b-dbe4-4975-989a-64acfab8eb75"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "lockTTLms": 30000,
+                "lockRetries": -1,
+                "throwErrorWhenLockNotAcquired": false,
+                "nextNodes": [
+                  "1de3f563-69d9-49f7-bede-a508756e40f3"
+                ],
+                "resourceIdTransform": "\"\""
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Mutex Lock"
+            },
+            "abf06960-39a0-437d-b452-12bf0202b622": {
+              "id": "abf06960-39a0-437d-b452-12bf0202b622",
+              "type": "mutexUnlock",
+              "selected": false,
+              "x": 2355,
+              "y": 400,
+              "ports": [
+                {
+                  "id": "cmkwt2ccv007v356rajrq76ca",
+                  "type": "default",
+                  "x": 2347,
+                  "y": 431.73,
+                  "name": "cmkwt2ccv007w356r81vbarz0",
+                  "parentNode": "abf06960-39a0-437d-b452-12bf0202b622",
+                  "links": [
+                    "fde1802b-f292-4f66-a78f-f433cfd5294e"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkwt2ccv007x356rxipivksm",
+                  "type": "default",
+                  "x": 2501,
+                  "y": 431.73,
+                  "name": "cmkwt2ccv007y356rmbcdyh5x",
+                  "parentNode": "abf06960-39a0-437d-b452-12bf0202b622",
+                  "links": [],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": []
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Mutex Unlock"
+            },
+            "d5ae0dfa-78c8-4e44-bac5-bbfb3d7214b7": {
+              "id": "d5ae0dfa-78c8-4e44-bac5-bbfb3d7214b7",
+              "type": "mutexLock",
+              "selected": false,
+              "x": 2610,
+              "y": 555,
+              "ports": [
+                {
+                  "id": "cmkwt2mxd0087356r8b0p1cs8",
+                  "type": "default",
+                  "x": 2602,
+                  "y": 586.73,
+                  "name": "cmkwt2mxd0088356r6wdw6qbq",
+                  "parentNode": "d5ae0dfa-78c8-4e44-bac5-bbfb3d7214b7",
+                  "links": [
+                    "9d60e4c5-21b0-4ee4-8d6d-17d1ceefa4df"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkwt2mxd0089356rqbvbot3b",
+                  "type": "default",
+                  "x": 2756,
+                  "y": 586.73,
+                  "name": "cmkwt2mxd008a356r4dtwbvv6",
+                  "parentNode": "d5ae0dfa-78c8-4e44-bac5-bbfb3d7214b7",
+                  "links": [
+                    "0dbd9357-853f-464a-b94c-b6a259289d68"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "lockTTLms": 30000,
+                "lockRetries": -1,
+                "throwErrorWhenLockNotAcquired": false,
+                "nextNodes": [
+                  "93750354-b745-4b5e-b527-d443920d6777"
+                ],
+                "resourceIdTransform": "\"\""
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Mutex Lock"
+            },
+            "234781ca-b49c-4b05-8442-4631530b79ce": {
+              "id": "234781ca-b49c-4b05-8442-4631530b79ce",
+              "type": "mutexUnlock",
+              "x": 3248.51,
+              "y": 499.31,
+              "ports": [
+                {
+                  "id": "cmkwt2zsg008r356ra1jbuhl6",
+                  "type": "default",
+                  "x": 3240.5,
+                  "y": 531.03,
+                  "name": "cmkwt2zsg008s356rdxvyj036",
+                  "parentNode": "234781ca-b49c-4b05-8442-4631530b79ce",
+                  "links": [
+                    "e71417f5-2c8b-4719-adf6-8ac3809cf20b"
+                  ],
+                  "in": true
+                },
+                {
+                  "id": "cmkwt2zsg008t356rbrnmk6rm",
+                  "type": "default",
+                  "x": 3394.5,
+                  "y": 531.03,
+                  "name": "cmkwt2zsg008u356rp9cslzzw",
+                  "parentNode": "234781ca-b49c-4b05-8442-4631530b79ce",
+                  "links": [
+                    "9200a49b-a2ab-475e-b229-34078bce2d40"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "8f891a87-6339-4a78-9c8d-ebdadc3b7091"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Mutex Unlock"
+            },
+            "16da8ce5-7a97-4b8c-b76e-e7d8ec7b2c30": {
+              "id": "16da8ce5-7a97-4b8c-b76e-e7d8ec7b2c30",
+              "type": "response",
+              "selected": false,
+              "x": 1905,
+              "y": 660,
+              "ports": [
+                {
+                  "id": "cml6m1dtd0059356rla4an141",
+                  "type": "default",
+                  "x": 1897,
+                  "y": 691.73,
+                  "name": "cml6m1dtd005a356r4hc00tud",
+                  "parentNode": "16da8ce5-7a97-4b8c-b76e-e7d8ec7b2c30",
+                  "links": [
+                    "aab4f94e-86d0-43e4-8724-40acefa3f253"
+                  ],
+                  "in": true,
+                  "fieldLabel": "Response"
+                },
+                {
+                  "id": "cml6m1dtd005b356r2h41b9gi",
+                  "type": "default",
+                  "x": 2051,
+                  "y": 691.73,
+                  "name": "cml6m1dtd005c356r63xgh3c7",
+                  "parentNode": "16da8ce5-7a97-4b8c-b76e-e7d8ec7b2c30",
+                  "links": [],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "responseTransform": "$",
+                "nextNodes": []
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Response"
+            },
+            "c4c6be1d-4f98-46fd-a2dd-be23ca4a3b8e": {
+              "id": "c4c6be1d-4f98-46fd-a2dd-be23ca4a3b8e",
+              "type": "response",
+              "selected": false,
+              "x": 1850,
+              "y": 480,
+              "ports": [
+                {
+                  "id": "cml6m1ilg005p356rgfiqur21",
+                  "type": "default",
+                  "x": 1842,
+                  "y": 511.73,
+                  "name": "cml6m1ilg005q356rvqru6qra",
+                  "parentNode": "c4c6be1d-4f98-46fd-a2dd-be23ca4a3b8e",
+                  "links": [
+                    "4262f95f-bf6a-4954-b45e-ce6d7cdf92b3"
+                  ],
+                  "in": true,
+                  "fieldLabel": "Response"
+                },
+                {
+                  "id": "cml6m1ilg005r356rj840x41c",
+                  "type": "default",
+                  "x": 1996,
+                  "y": 511.73,
+                  "name": "cml6m1ilg005s356rd2ozxtwj",
+                  "parentNode": "c4c6be1d-4f98-46fd-a2dd-be23ca4a3b8e",
+                  "links": [],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "responseTransform": "$",
+                "nextNodes": []
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Response"
+            },
+            "8f891a87-6339-4a78-9c8d-ebdadc3b7091": {
+              "id": "8f891a87-6339-4a78-9c8d-ebdadc3b7091",
+              "type": "response",
+              "x": 3505.05,
+              "y": 517.43,
+              "ports": [
+                {
+                  "id": "cml6m1tzv00ae356r0ux4ant4",
+                  "type": "default",
+                  "x": 3497.04,
+                  "y": 549.16,
+                  "name": "cml6m1tzv00af356rjfghj5gr",
+                  "parentNode": "8f891a87-6339-4a78-9c8d-ebdadc3b7091",
+                  "links": [
+                    "9200a49b-a2ab-475e-b229-34078bce2d40"
+                  ],
+                  "in": true,
+                  "fieldLabel": "Response"
+                },
+                {
+                  "id": "cml6m1tzv00ag356rcxrxhq6v",
+                  "type": "default",
+                  "x": 3651.04,
+                  "y": 549.16,
+                  "name": "cml6m1tzv00ah356rxqbk4q78",
+                  "parentNode": "8f891a87-6339-4a78-9c8d-ebdadc3b7091",
+                  "links": [],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Output",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "responseTransform": "$",
+                "nextNodes": []
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Response"
+            },
+            "6c5df0a9-14b0-4ae7-97a5-4c15b654806e": {
+              "id": "6c5df0a9-14b0-4ae7-97a5-4c15b654806e",
+              "type": "request",
+              "selected": false,
+              "x": 260,
+              "y": 510,
+              "ports": [
+                {
+                  "id": "cml6m240r00al356rv5seg3yu",
+                  "type": "default",
+                  "x": 406,
+                  "y": 541.73,
+                  "name": "cml6m240r00am356r77cer7ez",
+                  "parentNode": "6c5df0a9-14b0-4ae7-97a5-4c15b654806e",
+                  "links": [
+                    "291edd67-bd64-4968-aee3-57dfa476ac04"
+                  ],
+                  "in": false,
+                  "groupIndex": null,
+                  "groupPath": null,
+                  "fieldLabel": "Payload",
+                  "fieldPath": "data.nextNodes"
+                }
+              ],
+              "data": {
+                "nextNodes": [
+                  "73d0204f-9e75-42f5-8104-4a397fcec971"
+                ]
+              },
+              "debug": {
+                "breakpointEnabled": false,
+                "publishSubscribeClient": false,
+                "publishToMFGx": false
+              },
+              "logging": {
+                "executionMetrics": false,
+                "executionStarted": false,
+                "executionSucceeded": false,
+                "executionFailed": true,
+                "enableTraceLogging": false
+              },
+              "name": "Request"
+            }
+          }
+        }
+      ],
+      "name": "WorkcenterHistoryScheduler",
+      "type": "System",
+      "version": "0.0.16",
+      "walkthrough": {
+        "steps": []
+      }
+    }
+  }
+}

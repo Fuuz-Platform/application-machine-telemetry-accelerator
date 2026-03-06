@@ -1,0 +1,15 @@
+{
+  "api": "application",
+  "modelName": "AccessControlPolicyGroup",
+  "payload": [
+    {
+      "id": "ckb9nk3u7000y0ish3se5395q",
+      "name": "User with Flow Deployment",
+      "description": "",
+      "_customFields": {
+        "_externalId": null
+      }
+    }
+  ],
+  "metadata": {}
+}
