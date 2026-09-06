@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>application-machine-telemetry-accelerator &mdash; Fuuz Accelerator</title>
+<meta name="description" content="Fuuz accelerator: Machine telemetry application â€” IoT data collection, SPC, alarms, trend dashboards">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://accelerators.fuuz.com/application-machine-telemetry-accelerator/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://accelerators.fuuz.com/application-machine-telemetry-accelerator/">
+<meta property="og:site_name" content="Fuuz Accelerators">
+<meta property="og:title" content="application-machine-telemetry-accelerator &mdash; Fuuz Accelerator">
+<meta property="og:description" content="Fuuz accelerator: Machine telemetry application â€” IoT data collection, SPC, alarms, trend dashboards">
+<link rel="icon" href="assets/appicon-violet.svg">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="prose.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  "name": "application-machine-telemetry-accelerator",
+  "url": "https://accelerators.fuuz.com/application-machine-telemetry-accelerator/",
+  "description": "Fuuz accelerator: Machine telemetry application \u00e2\u20ac\u201d IoT data collection, SPC, alarms, trend dashboards",
+  "codeRepository": "https://github.com/Fuuz-Platform/application-machine-telemetry-accelerator",
+  "applicationCategory": "BusinessApplication",
+  "runtimePlatform": "Fuuz",
+  "author": {
+    "@type": "Organization",
+    "name": "Fuuz",
+    "url": "https://fuuz.com"
+  }
+}
+</script>
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap">
+    <a class="logo" href="../"><img src="assets/logo-horizontal-on-midnight.svg" alt="Fuuz"></a>
+    <span class="section">Accelerators</span>
+    <nav><a href="#overview">Overview</a><a href="#package-contents">Package Contents</a><a href="#functional-areas">Functional Areas</a><a href="https://github.com/Fuuz-Platform/application-machine-telemetry-accelerator">GitHub</a></nav>
+  </div>
+</header>
+<main>
+<div class="wrap hero">
+  <p class="eyebrow">Accelerator &middot; Installs into a tenant</p>
+  <h1>application-machine-telemetry-accelerator<span class="accent"></span></h1>
+  <p class="lede">Fuuz accelerator: Machine telemetry application â€” IoT data collection, SPC, alarms, trend dashboards</p>
+  <div class="ctas">
+    <a class="cta cta-primary" href="https://github.com/Fuuz-Platform/application-machine-telemetry-accelerator">Get the package</a>
+    <a class="cta cta-secondary" href="../">All accelerators</a>
+  </div>
+</div>
+<section>
+  <div class="wrap prose">
+<p><strong>Version:</strong> 0.0.8
+<strong>Platform:</strong> Fuuz ≥ 2026.2.0
+<strong>Publisher:</strong> fuuz
+<strong>Enterprise:</strong> MFGx
+<strong>Spec Version:</strong> 2.0.0</p>
+<hr />
+<h2 id="overview">Overview</h2>
+<p>The Machine Telemetry Application is a comprehensive IoT data collection and analysis platform for manufacturing equipment. It extends the machine monitoring layer with deep sensor-level telemetry: capturing high-frequency machine data streams from OPC-UA devices and PLCs, storing both real-time current values and long-term historical time-series, detecting anomalies and threshold violations, generating alarms from telemetry conditions, and presenting trend analysis and process monitoring dashboards.</p>
+<p>While <code>application-machine-monitoring-accelerator</code> focuses on operator-driven production tracking (OEE, mode changes, production counts), the Machine Telemetry Application focuses on the raw physics of the machine — pressures, temperatures, speeds, vibration, electrical values — and the automated detection logic built on top of those signals. It is suitable for predictive maintenance programs, process quality monitoring, SPC (Statistical Process Control), and OEE-linked condition monitoring.</p>
+<hr />
+<h2 id="package-contents">Package Contents</h2>
+<pre><code>machine-telemetry/
+├── manifest.json
+├── definition.json
+├── package-data.json
+├── data/                        74 seed data files
+├── dataFlows/                   40 automation flows
+├── dataModels/                  48 data model definitions
+├── savedTransforms/             18 reusable transforms
+└── screens/                     26 UI screen definitions
+</code></pre>
+<hr />
+<h2 id="functional-areas">Functional Areas</h2>
+<h3>1. Telemetry Data Collection</h3>
+<p>Continuous high-frequency data collection from OPC-UA device tags and PLC registers:</p>
+<ul>
+<li><strong>Device subscriptions</strong> — Each monitored machine parameter is defined as an <code>IotTag</code> with OPC-UA node configuration; subscriptions are established via the platform's device gateway</li>
+<li><strong>Current value persistence</strong> — <code>IotTag.currentValue</code> is updated on every subscription notification; <code>currentValueRecordedAt</code> tracks the timestamp</li>
+<li><strong>Historical storage</strong> — Tags with <code>storeHistory = true</code> append every reading to a time-series collection (<code>IotTagHistoricalValue</code>), enabling trend analysis and replay</li>
+<li><strong>Tag use case routing</strong> — <code>IotTagUseCase</code> (e.g., "Temperature", "Pressure", "Speed", "Vibration", "Counter", "Binary Signal") determines downstream processing: alarm evaluation, SPC calculation, OEE counter update, etc.</li>
+</ul>
+<h3>2. Alarm &amp; Threshold Management</h3>
+<p>Configurable limit-based alarming on live sensor readings:</p>
+<ul>
+<li><strong>Alarm model</strong> — <code>Alarm</code> records include <code>code</code> (auto-sequenced), <code>limitValue</code> (the threshold crossed), <code>deviation</code> (distance from setpoint at trigger time), timestamps for trigger/acknowledge/clear lifecycle</li>
+<li><strong>Alarm rules</strong> — Per-tag or per-tag-type threshold configurations; supports high/low limits, rate-of-change limits, and deviation from setpoint</li>
+<li><strong>Alarm lifecycle</strong> — new → acknowledged → cleared workflow; escalation logic with configurable time-based level-1/level-2 notification</li>
+<li><strong>Alarm-to-workcenter binding</strong> — Alarms are linked to the workcenter associated with the triggering tag, enabling plant floor visibility integration</li>
+<li><strong>120-day data change capture</strong> (exposed) — alarm state changes streamed for audit and SCADA integration</li>
+</ul>
+<h3>3. Process Monitoring &amp; SPC</h3>
+<p>Statistical process control and process condition monitoring:</p>
+<ul>
+<li>Configurable control limits (UCL, LCL, UWL, LWL) per tag/parameter</li>
+<li>Rule violation detection (Western Electric rules, Nelson rules, or custom)</li>
+<li>Out-of-control signal logging with timestamps and deviation values</li>
+<li>Historical SPC chart data served to trend screens via integration flows</li>
+</ul>
+<h3>4. Trend &amp; Analytics Dashboards</h3>
+<p>Time-series visualization for machine health and process performance:</p>
+<ul>
+<li><strong>Tag trend viewer</strong> — Single-tag historical value chart with zoom, time range selection, and annotation support</li>
+<li><strong>Multi-tag comparison</strong> — Overlay multiple telemetry parameters on a single time axis for correlation analysis</li>
+<li><strong>Machine health overview</strong> — Per-workcenter dashboard showing current sensor values, alarm status, and recent trend sparklines</li>
+<li><strong>Alarm history timeline</strong> — Chronological view of alarm events with deviation magnitudes and duration</li>
+</ul>
+<h3>5. IoT Device Configuration</h3>
+<p>Full device and tag management interface:</p>
+<ul>
+<li>Device registration with OPC-UA endpoint configuration</li>
+<li>Tag browser — import and configure OPC-UA node IDs from live device tree</li>
+<li><code>WorkcenterIotTag</code> binding management — assign tags to workcenters for alarm routing and OEE counter integration</li>
+<li>Subscription health monitoring — view subscription status, last-update timestamps, and connection errors per device</li>
+</ul>
+<h3>6. Predictive Maintenance Support</h3>
+<p>Infrastructure for condition-based and predictive maintenance programs:</p>
+<ul>
+<li>Tag-level baseline configuration for deviation alerting</li>
+<li>Historical trend data retention for training predictive models</li>
+<li>Alarm pattern analysis screens for identifying recurring failure modes</li>
+<li>Integration hooks for exporting tag history to external ML/analytics systems</li>
+</ul>
+<hr />
+<h2 id="data-models-48-total">Data Models (48 total)</h2>
+<h3>Telemetry Core</h3>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Key Fields</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Alarm</code></td>
+<td>code (auto-seq), limitValue!, deviation, occurAt, acknowledgedAt, clearedAt, workcenterId, iotTagId, alarmRuleId</td>
+<td>Threshold violation event; 120-day data capture</td>
+</tr>
+<tr>
+<td><code>IotTag</code></td>
+<td>name!, active!, storeHistory!, currentValue (JSON), currentValueRecordedAt, configuration (JSON), iotTagTypeId, iotTagUseCaseId, deviceId</td>
+<td>OPC-UA tag subscription record</td>
+</tr>
+<tr>
+<td><code>IotTagHistoricalValue</code></td>
+<td>recordedAt!, value (JSON!), iotTagId</td>
+<td>Append-only time-series log of tag readings</td>
+</tr>
+<tr>
+<td><code>IotTagType</code></td>
+<td>name! (=id auto), usable!, configurationSchema</td>
+<td>Tag type classification (e.g., Analog, Digital, Counter)</td>
+</tr>
+<tr>
+<td><code>IotTagUseCase</code></td>
+<td>name! (=id auto), usable!, configurationSchema</td>
+<td>Processing routing classification</td>
+</tr>
+</tbody>
+</table></div>
+<h3>Alarm Configuration</h3>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Key Fields</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AlarmRule</code></td>
+<td>name!, highLimit, lowLimit, highHighLimit, lowLowLimit, deadband, enabled, iotTagId, iotTagTypeId</td>
+<td>Configurable threshold rules per tag or tag type</td>
+</tr>
+<tr>
+<td><code>AlarmStatus</code></td>
+<td>name!, active, new, acknowledged, cleared, canceled, usable!</td>
+<td>Alarm lifecycle state definitions</td>
+</tr>
+<tr>
+<td><code>AlarmEscalation</code></td>
+<td>levelOneMinutes, levelTwoMinutes, levelOneRoleId, levelTwoRoleId, alarmStatusId</td>
+<td>Escalation timer and routing configuration</td>
+</tr>
+</tbody>
+</table></div>
+<h3>Device &amp; Connectivity</h3>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Key Fields</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Device</code></td>
+<td>name!, active!, connectionStatus, lastConnectedAt, endpoint, deviceTypeId, gatewayId</td>
+<td>OPC-UA/PLC device registration</td>
+</tr>
+<tr>
+<td><code>DeviceType</code></td>
+<td>name!, protocol (OPC-UA, Modbus, etc.), configurationSchema</td>
+<td>Device protocol classification</td>
+</tr>
+<tr>
+<td><code>DeviceGateway</code></td>
+<td>name!, active!, host, port, status</td>
+<td>Edge gateway for OPC-UA connectivity</td>
+</tr>
+<tr>
+<td><code>WorkcenterIotTag</code></td>
+<td>workcenterId, iotTagId</td>
+<td>Many-to-many binding of tags to workcenters</td>
+</tr>
+</tbody>
+</table></div>
+<h3>Process Monitoring</h3>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Key Fields</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SpcConfiguration</code></td>
+<td>name!, ucl, lcl, uwl, lwl, iotTagId, ruleSetId</td>
+<td>Statistical process control limits per tag</td>
+</tr>
+<tr>
+<td><code>SpcSample</code></td>
+<td>value!, recordedAt!, spcConfigurationId, violationFlags (JSON)</td>
+<td>Individual SPC sample with rule check results</td>
+</tr>
+<tr>
+<td><code>ControlChart</code></td>
+<td>name!, type (Xbar-R, Xbar-S, I-MR), subgroupSize, iotTagId</td>
+<td>Control chart configuration</td>
+</tr>
+</tbody>
+</table></div>
+<h3>Reference Data</h3>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Key Fields</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Workcenter</code></td>
+<td>code!, name!, active!</td>
+<td>Machine entity linkage (cross-reference)</td>
+</tr>
+<tr>
+<td><code>Facility</code></td>
+<td>code!, name!, type</td>
+<td>Site hierarchy node</td>
+</tr>
+<tr>
+<td>Additional models (33)</td>
+<td>Various</td>
+<td>Supporting tag metadata, calibration records, maintenance schedules, notification templates, and dashboard configurations</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="data-flows-40-total">Data Flows (40 total)</h2>
+<h3>Core Telemetry Pipeline</h3>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Flow</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IOT Tag Handler</td>
+<td>System</td>
+<td>Routes incoming device subscription updates by use case to production/alarm/OEE handlers</td>
+</tr>
+<tr>
+<td>Update Iot Tag by Device Subscriptions</td>
+<td>System</td>
+<td>Processes subscription events, updates <code>IotTag.currentValue</code> and <code>currentValueRecordedAt</code></td>
+</tr>
+<tr>
+<td>Create Historical IOT Tag Values</td>
+<td>System</td>
+<td>Appends tag readings to <code>IotTagHistoricalValue</code> when <code>storeHistory = true</code></td>
+</tr>
+<tr>
+<td>Create Device Subscription From Iot Tags</td>
+<td>System</td>
+<td>Generates OPC-UA subscriptions on the device gateway from IotTag configurations</td>
+</tr>
+</tbody>
+</table></div>
+<h3>Alarm Processing</h3>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Flow</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Evaluate Alarm Rules</td>
+<td>System</td>
+<td>Triggered on each tag update; checks configured <code>AlarmRule</code> thresholds and creates <code>Alarm</code> records on violation</td>
+</tr>
+<tr>
+<td>Alarm Escalation Timer</td>
+<td>System</td>
+<td>Periodic check; fires level-1/level-2 notifications when open alarms exceed configured time thresholds</td>
+</tr>
+<tr>
+<td>Alarm State Machine</td>
+<td>System</td>
+<td>Processes alarm lifecycle transitions (acknowledge, clear, cancel)</td>
+</tr>
+<tr>
+<td>Alarm Notification Dispatch</td>
+<td>System</td>
+<td>Routes alarm notifications to assigned roles/users via configured channels</td>
+</tr>
+</tbody>
+</table></div>
+<h3>Analytics &amp; Reporting</h3>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Flow</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tag Trend Query</td>
+<td>Integration</td>
+<td>Returns paginated historical tag values for a given time range and tag ID; used by trend screens</td>
+</tr>
+<tr>
+<td>SPC Evaluation</td>
+<td>System</td>
+<td>Evaluates control chart rules on new samples; logs violations to <code>SpcSample.violationFlags</code></td>
+</tr>
+<tr>
+<td>Machine Health Aggregator</td>
+<td>System</td>
+<td>Computes per-workcenter health scores from active alarm count, tag deviation metrics, and uptime</td>
+</tr>
+<tr>
+<td>Export Tag History</td>
+<td>Integration</td>
+<td>Bulk export of historical tag values to CSV or JSON for external analytics</td>
+</tr>
+</tbody>
+</table></div>
+<h3>Device Management</h3>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Flow</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Device Connectivity Check</td>
+<td>System</td>
+<td>Periodic ping of registered device gateways; updates <code>Device.connectionStatus</code></td>
+</tr>
+<tr>
+<td>Tag Discovery</td>
+<td>Integration</td>
+<td>Browses OPC-UA node tree on a device and returns available tag paths for configuration</td>
+</tr>
+<tr>
+<td>Subscription Health Monitor</td>
+<td>System</td>
+<td>Detects stale subscriptions (tags not updated beyond threshold) and triggers reconnection</td>
+</tr>
+</tbody>
+</table></div>
+<p><em>Additional flows (25+) cover SPC charting, notification templates, Fuuz-to-SCADA publishing, trend data caching, and dashboard data preparation.</em></p>
+<hr />
+<h2 id="screens-26-total">Screens (26 total)</h2>
+<p><strong>Operator / Plant Floor</strong>
+- Machine health overview per workcenter — current sensor readings, alarm count, mode/OEE summary
+- Active alarm list with acknowledge/clear actions
+- Tag current value monitor — live readout of all tags for a selected workcenter</p>
+<p><strong>Trend &amp; Analytics</strong>
+- Single-tag trend chart with configurable time range and resolution
+- Multi-tag overlay comparison dashboard
+- SPC control chart viewer with violation highlighting
+- Alarm history timeline with filter by workcenter, tag, alarm type, and date range</p>
+<p><strong>Configuration</strong>
+- Device management — register, edit, test connectivity
+- Tag configuration — create IotTags, set use case, configure alarm rules, enable history
+- WorkcenterIotTag binding manager
+- Alarm rule configuration — set high/low limits, deadband, escalation timers
+- SPC configuration — define control limits, select rule sets
+- Alarm status and escalation configuration</p>
+<hr />
+<h2 id="seed-data-74-records">Seed Data (74 records)</h2>
+<p>Comprehensive reference data:</p>
+<ul>
+<li><strong>IotTagTypes</strong> — Analog Input, Digital Input, Counter, Accumulator, Calculated, String, and protocol-specific types</li>
+<li><strong>IotTagUseCases</strong> — Temperature, Pressure, Speed, Vibration, Power, Current, Voltage, Flow Rate, Counter, Binary Signal, Setpoint Deviation, Generic, and additional process-specific use cases</li>
+<li><strong>AlarmStatuses</strong> — new, active, acknowledged, cleared, canceled with Boolean flag presets</li>
+<li><strong>DeviceTypes</strong> — OPC-UA, Modbus TCP, Modbus RTU, EtherNet/IP, BACnet, MQTT, and generic HTTP types</li>
+<li><strong>Default SPC rule sets</strong> — Western Electric, Nelson, AIAG, and custom rule definitions</li>
+<li><strong>Default control chart templates</strong> — Xbar-R, Xbar-S, I-MR pre-configured templates</li>
+<li><strong>Notification templates</strong> — Email and push notification templates for alarm level-1 and level-2 escalations</li>
+<li><strong>Dashboard layout configurations</strong> — Default screen layouts for plant floor and management views</li>
+</ul>
+<hr />
+<h2 id="installation">Installation</h2>
+<ol>
+<li>Ensure Fuuz platform version ≥ 2026.2.0 is deployed</li>
+<li>Import via Fuuz Package Manager — seed data (74 records) applies automatically</li>
+<li>Register device gateways and OPC-UA devices via the Device Management screen</li>
+<li>Use Tag Discovery to browse OPC-UA nodes and create <code>IotTag</code> records for each monitored parameter</li>
+<li>Assign tags to workcenters via the WorkcenterIotTag Binding Manager</li>
+<li>Configure <code>IotTagUseCase</code> on each tag to enable appropriate downstream processing</li>
+<li>Set up <code>AlarmRule</code> threshold configurations per tag or tag type</li>
+<li>Enable <code>storeHistory = true</code> on tags requiring trend analysis</li>
+<li>Run <em>Create Device Subscription From Iot Tags</em> flow to activate live data collection</li>
+<li>Configure SPC control limits and chart types for process monitoring tags</li>
+<li>Set up escalation rules and notification assignments for alarm routing</li>
+</ol>
+<hr />
+<h2 id="dependencies">Dependencies</h2>
+<ul>
+<li><strong>Fuuz Platform</strong> ≥ 2026.2.0</li>
+<li><strong>Device Gateway</strong> — required for OPC-UA/Modbus connectivity (Fuuz Edge Gateway or cloud gateway)</li>
+<li><strong><code>application-machine-monitoring-accelerator</code></strong> (optional) — integrates OEE counter updates and workcenter state linkage</li>
+<li><strong>Notification module</strong> — required for alarm escalation level-1/level-2 delivery</li>
+<li><strong>Scheduler module</strong> — required for periodic alarm escalation checks and device connectivity monitoring</li>
+</ul>
+<hr />
+<p><em>Built on the <a href="https://fuuz.com">Fuuz Industrial Operations Platform</a></em></p>
+  </div>
+</section>
+</main>
+<footer>
+  <div class="wrap">
+    <p>Fuuz&reg; is an Enterprise Industrial Intelligence Platform.
+      <a href="https://accelerators.fuuz.com/">All accelerators</a> &middot;
+      <a href="https://github.com/Fuuz-Platform/application-machine-telemetry-accelerator">Source</a> &middot;
+      <a href="https://fuuz.com">fuuz.com</a></p>
+  </div>
+</footer>
+</body>
+</html>
